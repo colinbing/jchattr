@@ -632,4 +632,85 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-reading-location-questions-and-answers',
+    type: 'reading',
+    title: 'Read where things and people are',
+    targetSkill: 'reading-recognition',
+    contentRefs: {
+      exampleIds: [
+        'ex-kagi-doko',
+        'ex-toire-asoko',
+        'ex-jimusho-koko',
+        'ex-kutsu-genkan-arimasu',
+        'ex-sensei-jimusho-imasu',
+      ],
+    },
+    estimatedMinutes: 6,
+    unlockRules: {
+      requiredMissionIds: ['mission-reading-questions-and-answers'],
+    },
+    readingChecks: [
+      {
+        id: 'reading-check-kagi-doko-question-meaning',
+        exampleId: 'ex-kagi-doko',
+        prompt: 'Which meaning matches this line?',
+        choices: [
+          'Where is the key?',
+          'The key is on the desk.',
+          'Where does the key go?',
+        ],
+        answer: 'Where is the key?',
+        support: 'どこですか marks a location question, so read this as asking where the key is.',
+      },
+      {
+        id: 'reading-check-toire-asoko-answer-role',
+        exampleId: 'ex-toire-asoko',
+        prompt: 'Is this line a question or an answer?',
+        choices: [
+          'It is an answer giving a location.',
+          'It is a question asking for a location.',
+          'It is a sentence about going somewhere.',
+        ],
+        answer: 'It is an answer giving a location.',
+        support: 'あそこです ends as a short location answer, not a question.',
+      },
+      {
+        id: 'reading-check-jimusho-koko-place-word',
+        exampleId: 'ex-jimusho-koko',
+        prompt: 'Which place word appears in this answer?',
+        choices: [
+          'ここ, meaning "here"',
+          'そこ, meaning "there"',
+          'あそこ, meaning "over there"',
+        ],
+        answer: 'ここ, meaning "here"',
+        support: 'Read ここです as a direct answer meaning something is here.',
+      },
+      {
+        id: 'reading-check-kutsu-genkan-location-meaning',
+        exampleId: 'ex-kutsu-genkan-arimasu',
+        prompt: 'What location is being described?',
+        choices: [
+          'The shoes are at the entrance.',
+          'The shoes go to the entrance.',
+          'The entrance is under the shoes.',
+        ],
+        answer: 'The shoes are at the entrance.',
+        support: 'にあります shows where an object is located, not where it goes.',
+      },
+      {
+        id: 'reading-check-sensei-jimusho-animate-existence',
+        exampleId: 'ex-sensei-jimusho-imasu',
+        prompt: 'Why does this line end with います instead of あります?',
+        choices: [
+          'Because it is talking about a person.',
+          'Because it is talking about a key.',
+          'Because it is asking a question.',
+        ],
+        answer: 'Because it is talking about a person.',
+        support: 'います is the beginner existence verb for people and animals.',
+      },
+    ],
+  },
 ] satisfies Mission[];
