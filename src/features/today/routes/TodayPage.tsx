@@ -2,10 +2,15 @@ import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { MissionCard } from '../components/MissionCard';
 import { SessionSummary } from '../components/SessionSummary';
 import { getStarterContent } from '../../../lib/content/loader';
+import {
+  getMissionProgressEntry,
+  useMissionProgress,
+} from '../../../lib/progress/missionProgress';
 
 export function TodayPage() {
   const starterContent = getStarterContent();
   const missions = starterContent.missions;
+  const missionProgress = useMissionProgress();
 
   return (
     <PageShell
@@ -21,12 +26,15 @@ export function TodayPage() {
 
       <SurfaceCard
         title="Daily session"
-        description="Open any mission to move into the placeholder route for the next slice. No recommendation or persistence logic is applied yet."
+        description="Open a starter mission to enter the current mission route. Grammar, listening, and output missions now render focused player slices."
       >
         <div className="mission-list" role="list" aria-label="Daily missions">
           {missions.map((mission) => (
             <div key={mission.id} role="listitem">
-              <MissionCard mission={mission} />
+              <MissionCard
+                mission={mission}
+                progress={getMissionProgressEntry(missionProgress, mission.id)}
+              />
             </div>
           ))}
         </div>
@@ -34,7 +42,7 @@ export function TodayPage() {
 
       <SurfaceCard
         title="Session shape"
-        description="This slice keeps the mapping from content to UI explicit so the next player routes can plug into the same typed mission records."
+        description="This slice keeps the mapping from content to UI explicit so grammar, listening, and output all work through the same typed mission records."
       >
         <ul className="simple-list">
           <li>

@@ -325,6 +325,13 @@ button {
   font-weight: 600;
 }
 
+.mission-card__progress {
+  margin: var(--space-2) 0 0;
+  color: var(--color-accent);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
 .mission-card__title {
   margin: 0;
   font-size: 1.2rem;
@@ -353,9 +360,662 @@ button {
   width: fit-content;
 }
 
+.mission-player-shell {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: var(--space-4);
+}
+
+.mission-overview,
+.mission-overview__lesson,
+.mission-progress,
+.mission-step-panel,
+.mission-copy-stack,
+.mission-drill-list,
+.mission-drill-card,
+.mission-drill-card__header,
+.mission-drill-card__body,
+.mission-reorder {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.mission-overview__eyebrow,
+.mission-progress__label,
+.mission-copy-block__eyebrow,
+.mission-drill-card__eyebrow,
+.mission-input-group__label {
+  margin: 0;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.mission-overview__lesson-title,
+.mission-progress__step,
+.mission-drill-card__prompt,
+.mission-feedback__title {
+  margin: 0;
+}
+
+.mission-overview__objective,
+.mission-copy-block__body,
+.mission-drill-card__support,
+.mission-feedback__body {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.mission-overview__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.mission-overview__stat {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface-strong);
+}
+
+.mission-overview__stat dt {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.82rem;
+}
+
+.mission-overview__stat dd {
+  margin: var(--space-2) 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.mission-progress__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.mission-progress__track {
+  position: relative;
+  overflow: hidden;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: rgba(36, 84, 70, 0.12);
+}
+
+.mission-progress__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #245446 0%, #4b826b 100%);
+}
+
+.mission-step-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.mission-step-tab {
+  display: grid;
+  gap: var(--space-1);
+  min-height: 4.5rem;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  background: var(--color-surface-strong);
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.mission-step-tab--active {
+  border-color: rgba(36, 84, 70, 0.22);
+  background: var(--color-accent-soft);
+}
+
+.mission-step-tab__index {
+  color: var(--color-ink-muted);
+  font-size: 0.8rem;
+}
+
+.mission-step-tab__label {
+  font-weight: 700;
+}
+
+.mission-copy-block,
+.mission-example-card,
+.mission-mistake-card,
+.mission-drill-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface-strong);
+}
+
+.mission-example-list,
+.mission-mistakes-list {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.mission-example-card__japanese,
+.mission-example-card__reading,
+.mission-example-card__english {
+  margin: 0;
+}
+
+.mission-example-card__japanese {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.mission-example-card__reading,
+.mission-example-card__english {
+  color: var(--color-ink-muted);
+}
+
+.mission-mistakes-list {
+  list-style: none;
+}
+
+.mission-mistake-card {
+  position: relative;
+  padding-left: calc(var(--space-5) + var(--space-2));
+}
+
+.mission-mistake-card::before {
+  content: '';
+  position: absolute;
+  left: var(--space-4);
+  top: 1.1rem;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: #c58b4d;
+}
+
+.mission-choice-grid,
+.mission-drill-card__actions,
+.mission-step-actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.mission-choice,
+.mission-button,
+.mission-token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 var(--space-4);
+  border-radius: 999px;
+  border: 1px solid rgba(36, 84, 70, 0.12);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.mission-choice,
+.mission-token {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.mission-choice--selected,
+.mission-token--answer,
+.mission-button,
+.mission-button--link {
+  border-color: transparent;
+  background: var(--color-accent);
+  color: #f7f5ee;
+}
+
+.mission-button--secondary {
+  border-color: rgba(36, 84, 70, 0.12);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.mission-button--link {
+  text-decoration: none;
+}
+
+.mission-button:disabled,
+.mission-choice:disabled,
+.mission-token:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.mission-input-group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.mission-input {
+  min-height: 3.25rem;
+  width: 100%;
+  padding: 0 var(--space-4);
+  border: 1px solid rgba(36, 84, 70, 0.12);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-ink);
+}
+
+.mission-textarea {
+  min-height: 7.5rem;
+  width: 100%;
+  padding: var(--space-4);
+  border: 1px solid rgba(36, 84, 70, 0.12);
+  border-radius: var(--radius-md);
+  background: #fff;
+  color: var(--color-ink);
+  resize: vertical;
+}
+
+.mission-input:focus-visible,
+.mission-textarea:focus-visible,
+.mission-button:focus-visible,
+.mission-choice:focus-visible,
+.mission-token:focus-visible,
+.mission-step-tab:focus-visible {
+  outline: 2px solid rgba(36, 84, 70, 0.36);
+  outline-offset: 2px;
+}
+
+.mission-reorder__answer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: 3.5rem;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px dashed rgba(36, 84, 70, 0.18);
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.mission-reorder__placeholder {
+  color: var(--color-ink-muted);
+}
+
+.mission-choice-grid--tokens {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mission-token--answer {
+  min-height: 2.25rem;
+}
+
+.mission-feedback {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.mission-feedback--correct {
+  background: rgba(36, 84, 70, 0.1);
+  color: var(--color-accent);
+}
+
+.mission-feedback--incorrect {
+  background: rgba(197, 139, 77, 0.12);
+  color: #7f4f21;
+}
+
+.listening-item-panel,
+.listening-support,
+.listening-reveal-stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.listening-prompt-card,
+.listening-reveal-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface-strong);
+}
+
+.listening-reveal-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.listening-reveal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.12);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 700;
+  text-align: center;
+}
+
+.listening-reveal-button--complete {
+  border-color: rgba(36, 84, 70, 0.16);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.listening-reveal-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.listening-reveal-card {
+  min-height: 6rem;
+}
+
+.listening-reveal-card--visible {
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.92), rgba(220, 233, 226, 0.65)),
+    var(--color-surface-strong);
+}
+
+.listening-reveal-card__value,
+.listening-reveal-card__hidden,
+.listening-support__title {
+  margin: 0;
+}
+
+.listening-reveal-card__value {
+  font-size: 1.1rem;
+  line-height: 1.45;
+}
+
+.listening-reveal-card__hidden {
+  color: var(--color-ink-muted);
+}
+
+.output-task-card,
+.output-support-grid,
+.output-support-grid__column,
+.output-vocab-strip {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.output-task-card__prompt,
+.output-vocab-chip__kana,
+.output-vocab-chip__meaning {
+  margin: 0;
+}
+
+.output-task-card__prompt {
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.output-task-card__hint,
+.output-vocab-chip {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface-strong);
+}
+
+.output-vocab-strip {
+  margin-top: var(--space-4);
+}
+
+.output-vocab-chip__kana {
+  font-weight: 700;
+}
+
+.output-vocab-chip__meaning {
+  color: var(--color-ink-muted);
+}
+
+.mission-completion-card {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.mission-completion-card__summary {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.mission-completion-card__status,
+.mission-completion-card__meta {
+  margin: 0;
+}
+
+.mission-completion-card__status {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.mission-completion-card__meta {
+  color: var(--color-ink-muted);
+}
+
+.review-group-list,
+.review-group,
+.review-item-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.review-group__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.review-group__title,
+.review-group__meta,
+.review-item-card__eyebrow,
+.review-item-card__title,
+.review-item-card__body,
+.review-item-card__meta {
+  margin: 0;
+}
+
+.review-group__title {
+  font-size: 1rem;
+}
+
+.review-group__meta,
+.review-item-card__eyebrow,
+.review-item-card__meta {
+  color: var(--color-ink-muted);
+}
+
+.review-item-card__eyebrow {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.review-item-card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface-strong);
+}
+
+.review-launch-card,
+.review-launch-card__summary,
+.review-batch-player,
+.review-current-item,
+.review-retry-card,
+.review-listening-stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.review-launch-card__title,
+.review-launch-card__body,
+.review-launch-card__meta,
+.review-current-item__body,
+.review-current-item__meta {
+  margin: 0;
+}
+
+.review-launch-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.review-launch-card__body,
+.review-launch-card__meta,
+.review-current-item__meta {
+  color: var(--color-ink-muted);
+}
+
+.review-current-item__body {
+  color: var(--color-ink);
+}
+
+.skill-map-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.skill-card {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface-strong);
+}
+
+.skill-card--solid {
+  background:
+    linear-gradient(135deg, rgba(220, 233, 226, 0.72), rgba(255, 253, 247, 0.92)),
+    var(--color-surface-strong);
+}
+
+.skill-card--okay {
+  background:
+    linear-gradient(135deg, rgba(255, 247, 222, 0.9), rgba(255, 253, 247, 0.92)),
+    var(--color-surface-strong);
+}
+
+.skill-card--shaky {
+  background:
+    linear-gradient(135deg, rgba(255, 236, 222, 0.92), rgba(255, 253, 247, 0.92)),
+    var(--color-surface-strong);
+}
+
+.skill-card__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.skill-card__eyebrow,
+.skill-card__note,
+.skill-card__tier,
+.skill-card__stat dt,
+.skill-card__stat dd {
+  margin: 0;
+}
+
+.skill-card__eyebrow {
+  color: var(--color-ink-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.skill-card__title {
+  margin: var(--space-1) 0 0;
+  font-size: 1.1rem;
+}
+
+.skill-card__tier {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 var(--space-3);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.skill-card__tier--solid {
+  background: rgba(36, 84, 70, 0.12);
+  color: var(--color-accent);
+}
+
+.skill-card__tier--okay {
+  background: rgba(197, 139, 77, 0.16);
+  color: #8a5b24;
+}
+
+.skill-card__tier--shaky {
+  background: rgba(168, 82, 48, 0.14);
+  color: #8b3b23;
+}
+
+.skill-card__tier--not-enough-data {
+  background: rgba(99, 88, 76, 0.12);
+  color: var(--color-ink-muted);
+}
+
+.skill-card__note {
+  color: var(--color-ink-muted);
+}
+
+.skill-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.skill-card__stat {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(36, 84, 70, 0.06);
+}
+
+.skill-card__stat dt {
+  color: var(--color-ink-muted);
+  font-size: 0.76rem;
+}
+
+.skill-card__stat dd {
+  margin-top: var(--space-1);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
 @media (hover: hover) {
   .mission-card__cta:hover,
-  .inline-link:hover {
+  .inline-link:hover,
+  .mission-button:hover,
+  .mission-choice:hover,
+  .mission-token:hover,
+  .mission-step-tab:hover,
+  .listening-reveal-button:hover {
     filter: brightness(1.06);
   }
 }
@@ -468,5 +1128,46 @@ button {
   .page-shell__aside {
     justify-self: end;
     align-self: start;
+  }
+
+  .mission-step-tabs,
+  .mission-choice-grid,
+  .mission-drill-card__actions,
+  .mission-step-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-choice-grid--tokens {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .listening-reveal-controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .output-support-grid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  }
+
+  .output-vocab-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .mission-completion-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .review-item-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .review-launch-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .skill-map-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -44,6 +44,18 @@ export const NAV_ITEMS: NavigationItem[] = [
   },
 ];
 
+const MISSION_DETAIL_META: NavigationItem = {
+  to: '/mission/:missionId',
+  label: 'Mission Player',
+  caption: 'Focused session',
+  eyebrow: 'Mission Player',
+  description: 'Work through one mission at a time with a compact, touch-friendly flow.',
+};
+
 export function getRouteMeta(pathname: string) {
+  if (pathname.startsWith('/mission/')) {
+    return MISSION_DETAIL_META;
+  }
+
   return NAV_ITEMS.find((item) => item.to === pathname) ?? NAV_ITEMS[0];
 }

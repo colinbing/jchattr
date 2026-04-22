@@ -73,6 +73,13 @@ export interface MissionUnlockRules {
   requiredMissionIds?: string[];
 }
 
+export interface OutputTask {
+  id: string;
+  prompt: string;
+  acceptableAnswers: string[];
+  hint?: string;
+}
+
 export interface MissionContentRefs {
   grammarLessonIds?: string[];
   vocabIds?: string[];
@@ -88,6 +95,7 @@ export interface Mission {
   contentRefs: MissionContentRefs;
   estimatedMinutes: number;
   unlockRules?: MissionUnlockRules;
+  outputTasks?: OutputTask[];
 }
 
 export interface ContentCollection {

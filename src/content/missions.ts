@@ -43,5 +43,22 @@ export const missions = [
     unlockRules: {
       requiredMissionIds: ['mission-grammar-topic-desu'],
     },
+    outputTasks: [
+      {
+        id: 'output-self-intro',
+        prompt: 'Type a polite self-introduction line: "I am Colin."',
+        acceptableAnswers: ['わたしはコリンです。', 'わたしはコリンです'],
+        hint: 'Use は after the topic and finish with です.',
+      },
+      {
+        id: 'output-home-study',
+        prompt: 'Type a line that says: "I study Japanese at home."',
+        acceptableAnswers: [
+          'うちでにほんごをべんきょうします。',
+          'うちでにほんごをべんきょうします',
+        ],
+        hint: 'Put the place with で before the object and verb.',
+      },
+    ],
   },
 ] satisfies Mission[];

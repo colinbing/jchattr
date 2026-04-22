@@ -76,6 +76,13 @@ export const missionUnlockRulesSchema = z.object({
   requiredMissionIds: z.array(idSchema).min(1).optional(),
 });
 
+export const outputTaskSchema = z.object({
+  id: idSchema,
+  prompt: nonEmptyStringSchema,
+  acceptableAnswers: z.array(nonEmptyStringSchema).min(1),
+  hint: nonEmptyStringSchema.optional(),
+});
+
 export const missionContentRefsSchema = z
   .object({
     grammarLessonIds: z.array(idSchema).min(1).optional(),
@@ -102,6 +109,7 @@ export const missionSchema = z.object({
   contentRefs: missionContentRefsSchema,
   estimatedMinutes: z.number().int().positive(),
   unlockRules: missionUnlockRulesSchema.optional(),
+  outputTasks: z.array(outputTaskSchema).min(1).optional(),
 });
 
 export const contentCollectionSchema = z.object({
