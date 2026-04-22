@@ -58,6 +58,8 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
       'grammar-position-no',
       'grammar-preference-suki-kirai',
       'grammar-preference-questions',
+      'grammar-possession-no',
+      'grammar-family-possession-lines',
     ],
     itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
     available: true,

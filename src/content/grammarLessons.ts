@@ -355,4 +355,86 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-possession-no',
+    title: 'Belonging with の: わたしのほん, あねのかばん',
+    objective:
+      'Show who something belongs to with noun plus の plus noun in short practical lines.',
+    explanation:
+      'Use の between two nouns to show belonging or relationship, as in わたしのほん or あねのかばん. You can place that noun phrase inside a simple これは〜です or それは〜です sentence to identify whose item something is.',
+    prerequisites: ['grammar-question-nan'],
+    tags: ['particles', 'possession', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-kore-watashi-no-hon',
+      'ex-sore-ane-no-kaban',
+      'ex-kore-chichi-no-kamera',
+      'ex-kore-kazoku-no-shashin',
+    ],
+    commonMistakes: [
+      'Dropping の and placing the two nouns next to each other with no link.',
+      'Using は or に instead of の between the owner and the item.',
+      'Breaking the noun phrase apart before finishing with です.',
+    ],
+    drills: [
+      {
+        id: 'drill-possession-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "This is my book."',
+        answer: 'これはわたしのほんです。',
+        choices: [
+          'これはわたしはほんです。',
+          'これはわたしのほんです。',
+          'わたしのこれはほんです。',
+        ],
+      },
+      {
+        id: 'drill-possession-2',
+        type: 'reorder',
+        prompt: 'Reorder: それは / あねの / かばんです',
+        answer: 'それはあねのかばんです。',
+        support: 'Keep the owner plus の attached to the item before です.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-family-possession-lines',
+    title: 'Family ownership lines with これは / それは',
+    objective:
+      'Identify whose everyday item something is using family words and short polite statements.',
+    explanation:
+      'After you build the noun phrase with の, place it inside a short statement like これはちちのカメラです or それはははのかさです. This gives you a practical beginner pattern for family, objects, and personal belongings.',
+    prerequisites: ['grammar-possession-no'],
+    tags: ['particles', 'family', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-sore-haha-no-kasa',
+      'ex-kore-otouto-no-hon',
+      'ex-sore-imouto-no-keitai',
+      'ex-ane-no-shashin',
+    ],
+    commonMistakes: [
+      'Using a family noun alone without linking it to the item with の.',
+      'Dropping the demonstrative when the sentence is meant to identify a visible item.',
+      'Ending the sentence before the item noun appears.',
+    ],
+    drills: [
+      {
+        id: 'drill-family-possession-1',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: これはちち___カメラです。',
+        answer: 'の',
+        support: 'Use の between the family word and the object.',
+      },
+      {
+        id: 'drill-family-possession-2',
+        type: 'multiple-choice',
+        prompt: "Choose the natural sentence for \"That is my mother's umbrella.\"",
+        answer: 'それはははのかさです。',
+        choices: [
+          'それはははのかさです。',
+          'それはははかさです。',
+          'はははそれのかさです。',
+        ],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

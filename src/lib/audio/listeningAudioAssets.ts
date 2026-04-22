@@ -27,6 +27,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-kagi-doko.mp3',
   '/audio/listening/listening-kagi-tsukue-ue.mp3',
   '/audio/listening/listening-sensei-jimusho.mp3',
+  '/audio/listening/listening-kore-watashi-no-hon.mp3',
+  '/audio/listening/listening-sore-ane-no-kaban.mp3',
+  '/audio/listening/listening-kore-chichi-no-kamera.mp3',
+  '/audio/listening/listening-kore-kazoku-no-shashin.mp3',
+  '/audio/listening/listening-sore-haha-no-kasa.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

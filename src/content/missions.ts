@@ -875,4 +875,108 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-possession-no',
+    type: 'grammar',
+    title: 'Say whose item something is with の',
+    targetSkill: 'particles',
+    contentRefs: {
+      grammarLessonIds: ['grammar-possession-no'],
+      vocabIds: [
+        'vocab-no-ownership',
+        'vocab-watashi',
+        'vocab-hon',
+        'vocab-kaban',
+        'vocab-ane',
+        'vocab-chichi',
+        'vocab-kamera',
+        'vocab-kazoku',
+        'vocab-shashin',
+      ],
+      exampleIds: [
+        'ex-kore-watashi-no-hon',
+        'ex-sore-ane-no-kaban',
+        'ex-kore-chichi-no-kamera',
+        'ex-kore-kazoku-no-shashin',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-where-doko-desu'],
+    },
+  },
+  {
+    id: 'mission-listening-family-objects',
+    type: 'listening',
+    title: 'Hear whose item it is',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-possession-no', 'grammar-family-possession-lines'],
+      listeningItemIds: [
+        'listening-kore-watashi-no-hon',
+        'listening-sore-ane-no-kaban',
+        'listening-kore-chichi-no-kamera',
+        'listening-kore-kazoku-no-shashin',
+        'listening-sore-haha-no-kasa',
+      ],
+      exampleIds: [
+        'ex-kore-watashi-no-hon',
+        'ex-sore-ane-no-kaban',
+        'ex-kore-chichi-no-kamera',
+        'ex-kore-kazoku-no-shashin',
+        'ex-sore-haha-no-kasa',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-possession-no'],
+    },
+  },
+  {
+    id: 'mission-output-family-objects',
+    type: 'output',
+    title: 'Write two simple ownership lines',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-possession-no', 'grammar-family-possession-lines'],
+      vocabIds: [
+        'vocab-no-ownership',
+        'vocab-watashi',
+        'vocab-hon',
+        'vocab-kaban',
+        'vocab-ane',
+        'vocab-haha',
+        'vocab-kasa',
+      ],
+      exampleIds: [
+        'ex-kore-watashi-no-hon',
+        'ex-sore-ane-no-kaban',
+        'ex-sore-haha-no-kasa',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-possession-no'],
+    },
+    outputTasks: [
+      {
+        id: 'output-kore-watashi-no-hon',
+        prompt: 'Type a line that says: "This is my book."',
+        acceptableAnswers: ['これはわたしのほんです。', 'これはわたしのほんです'],
+        hint: 'Use これは first, then わたしのほん, then です.',
+        evaluation: {
+          tokenPatterns: [['これ', 'は', 'わたし', 'の', 'ほん', 'です']],
+        },
+      },
+      {
+        id: 'output-sore-ane-no-kaban',
+        prompt: "Type a line that says: \"That is my older sister's bag.\"",
+        acceptableAnswers: ['それはあねのかばんです。', 'それはあねのかばんです'],
+        hint: 'Use それは first, then the owner phrase あねの before かばんです.',
+        evaluation: {
+          tokenPatterns: [['それ', 'は', 'あね', 'の', 'かばん', 'です']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];
