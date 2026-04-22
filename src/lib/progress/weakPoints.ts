@@ -113,6 +113,38 @@ export function recordWeakPoint({
   return nextWeakPoints;
 }
 
+export function resolveWeakPointSuccess(itemId: string) {
+  if (!itemId.trim()) {
+    return readWeakPoints();
+  }
+
+  const currentWeakPoints = readWeakPoints();
+  const existingWeakPoint = currentWeakPoints.weakPointsByItemId[itemId];
+
+  if (!existingWeakPoint) {
+    return currentWeakPoints;
+  }
+
+  const nextWeakPointsByItemId = { ...currentWeakPoints.weakPointsByItemId };
+
+  if (existingWeakPoint.missCount <= 1) {
+    delete nextWeakPointsByItemId[itemId];
+  } else {
+    nextWeakPointsByItemId[itemId] = {
+      ...existingWeakPoint,
+      missCount: existingWeakPoint.missCount - 1,
+    };
+  }
+
+  const nextWeakPoints = parseWeakPoints({
+    ...currentWeakPoints,
+    weakPointsByItemId: nextWeakPointsByItemId,
+  });
+
+  writeWeakPoints(nextWeakPoints);
+  return nextWeakPoints;
+}
+
 export function getWeakPointList(weakPoints: WeakPointStore) {
   return Object.values(weakPoints.weakPointsByItemId).sort((left, right) => {
     return Date.parse(right.lastMissedAt) - Date.parse(left.lastMissedAt);

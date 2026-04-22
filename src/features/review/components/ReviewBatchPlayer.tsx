@@ -11,6 +11,7 @@ import {
 type ReviewBatchPlayerProps = {
   items: ReviewBatchItem[];
   onComplete: (itemIds: string[]) => void;
+  onSuccessfulRetry: (itemId: string) => void;
 };
 
 type ReviewResult = 'correct' | 'incorrect';
@@ -18,6 +19,7 @@ type ReviewResult = 'correct' | 'incorrect';
 export function ReviewBatchPlayer({
   items,
   onComplete,
+  onSuccessfulRetry,
 }: ReviewBatchPlayerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [resultsByItemId, setResultsByItemId] = useState<Record<string, ReviewResult>>({});
@@ -37,7 +39,7 @@ export function ReviewBatchPlayer({
     <div className="review-batch-player">
       <SurfaceCard
         title="Focused review batch"
-        description="Retry a small deterministic set of weak points. This loop stays local and does not clear weak points yet."
+        description="Retry a small deterministic set of weak points. Successful retries reduce weak-point pressure immediately."
       >
         <div className="mission-progress">
           <div className="mission-progress__meta">
@@ -79,6 +81,12 @@ export function ReviewBatchPlayer({
             <GrammarReviewCard
               item={currentItem}
               onReviewed={(result) => {
+                if (
+                  result === 'correct' &&
+                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                ) {
+                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                }
                 setResultsByItemId((current) => ({
                   ...current,
                   [currentItem.weakPoint.itemId]: result,
@@ -91,6 +99,12 @@ export function ReviewBatchPlayer({
             <ListeningReviewCard
               item={currentItem}
               onReviewed={(result) => {
+                if (
+                  result === 'correct' &&
+                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                ) {
+                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                }
                 setResultsByItemId((current) => ({
                   ...current,
                   [currentItem.weakPoint.itemId]: result,
@@ -103,6 +117,12 @@ export function ReviewBatchPlayer({
             <OutputReviewCard
               item={currentItem}
               onReviewed={(result) => {
+                if (
+                  result === 'correct' &&
+                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                ) {
+                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                }
                 setResultsByItemId((current) => ({
                   ...current,
                   [currentItem.weakPoint.itemId]: result,

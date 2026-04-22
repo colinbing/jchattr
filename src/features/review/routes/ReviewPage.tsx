@@ -7,6 +7,7 @@ import {
 } from '../../../lib/progress/reviewLoop';
 import {
   getWeakPointList,
+  resolveWeakPointSuccess,
   type WeakPoint,
   type WeakPointItemType,
   useWeakPoints,
@@ -36,18 +37,7 @@ export function ReviewPage() {
     () => selectReviewBatch(weakPointStore, starterContent),
     [starterContent, weakPointStore],
   );
-  const [activeBatchItemIds, setActiveBatchItemIds] = useState<string[] | null>(null);
-
-  const activeBatch = activeBatchItemIds
-    ? activeBatchItemIds
-        .map((itemId) => weakPointStore.weakPointsByItemId[itemId])
-        .map((weakPoint) =>
-          weakPoint ? resolveReviewBatchItem(weakPoint, starterContent) : null,
-        )
-        .filter((item): item is ReviewBatchItem => Boolean(item))
-    : [];
-  const activeBatchHasAllItems =
-    activeBatchItemIds !== null && activeBatch.length === activeBatchItemIds.length;
+  const [activeBatch, setActiveBatch] = useState<ReviewBatchItem[] | null>(null);
 
   return (
     <PageShell
@@ -89,21 +79,22 @@ export function ReviewPage() {
             type="button"
             className="mission-button"
             disabled={batchItems.length === 0}
-            onClick={() =>
-              setActiveBatchItemIds(batchItems.map((item) => item.weakPoint.itemId))
-            }
+            onClick={() => setActiveBatch(batchItems)}
           >
             Start focused review
           </button>
         </div>
       </SurfaceCard>
 
-      {activeBatchHasAllItems ? (
+      {activeBatch && activeBatch.length > 0 ? (
         <ReviewBatchPlayer
           items={activeBatch}
+          onSuccessfulRetry={(itemId) => {
+            resolveWeakPointSuccess(itemId);
+          }}
           onComplete={(itemIds) => {
             markReviewBatchComplete(itemIds);
-            setActiveBatchItemIds(null);
+            setActiveBatch(null);
           }}
         />
       ) : null}
