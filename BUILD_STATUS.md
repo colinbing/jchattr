@@ -26,6 +26,7 @@
 - Reading slice v2 with a second beginner reading mission for simple questions and answers
 - Reading slice v3 with a third beginner reading mission for location questions and answers
 - Reading slice v4 with a fourth beginner reading mission for preferences and simple opinion questions
+- Reading slice v5 with a fifth beginner reading mission for identity and daily routine lines
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
@@ -52,11 +53,11 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 19 starter missions across 4 mission types:
+- User can complete 20 starter missions across 4 mission types:
   - 5 grammar
   - 5 listening
   - 5 output
-  - 4 reading
+  - 5 reading
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -99,6 +100,7 @@
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
   - location-focused reading prompts like `かぎはどこですか`, `トイレはあそこです`, and `せんせいはじむしょにいます`
   - preference-focused reading prompts like `えいががすきですか`, `アニメがすきです`, and `わたしはコーヒーがきらいです`
+  - identity and daily-routine reading prompts like `わたしはがくせいです`, `うちでにほんごをべんきょうします`, and `まいにちがっこうにいきます`
 
 ## Known Limitations / Gaps
 
@@ -107,12 +109,12 @@
   - 47 example sentences
   - 57 vocab items
   - 24 listening items
-  - 19 missions
+  - 20 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
-- Reading slice is still intentionally small: 4 reading missions with 20 total multiple-choice checks, all built from existing example sentences
+- Reading slice is still intentionally small: 5 reading missions with 25 total multiple-choice checks, all built from existing example sentences
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
@@ -124,7 +126,7 @@
 
 1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
 2. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-3. Expand the reading slice with one more coherent beginner mission set before introducing a larger reading subsystem.
+3. Shift back to broader content expansion or review-depth work now that reading covers several beginner themes.
 4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
 5. Add verb-form-specific content and checks if Progress needs that skill area to become instrumented.
 6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
@@ -168,7 +170,7 @@
   - category questions like `たべものはなにがすきですか`
   - where-questions like `トイレはどこですか`
   - location answers like `トイレはあそこです` and `かぎはつくえのうえにあります`
-  - four reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
+  - five reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
 
 ## Audio / TTS Notes
 

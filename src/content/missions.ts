@@ -794,4 +794,85 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-reading-identity-and-daily-routine',
+    type: 'reading',
+    title: 'Read identity and daily routine lines',
+    targetSkill: 'reading-recognition',
+    contentRefs: {
+      exampleIds: [
+        'ex-student-desu',
+        'ex-study-home',
+        'ex-coffee-cafe',
+        'ex-mainichi-gakkou',
+        'ex-ima-kyoushitsu',
+      ],
+    },
+    estimatedMinutes: 6,
+    unlockRules: {
+      requiredMissionIds: ['mission-reading-preferences-and-opinions'],
+    },
+    readingChecks: [
+      {
+        id: 'reading-check-student-desu-identity-role',
+        exampleId: 'ex-student-desu',
+        prompt: 'What kind of sentence is this?',
+        choices: [
+          'An identity statement about what someone is.',
+          'A line about studying at home.',
+          'A destination line about going to school.',
+        ],
+        answer: 'An identity statement about what someone is.',
+        support: 'がくせいです identifies the speaker, so read this as saying what they are.',
+      },
+      {
+        id: 'reading-check-study-home-place-meaning',
+        exampleId: 'ex-study-home',
+        prompt: 'Which meaning matches this line?',
+        choices: [
+          'I study Japanese at home.',
+          'I go home to study Japanese.',
+          'I am Japanese at home.',
+        ],
+        answer: 'I study Japanese at home.',
+        support: 'うちで marks the place of action with で before the study verb.',
+      },
+      {
+        id: 'reading-check-coffee-cafe-place',
+        exampleId: 'ex-coffee-cafe',
+        prompt: 'Which place is being used in this sentence?',
+        choices: [
+          'A cafe',
+          'A school',
+          'A library',
+        ],
+        answer: 'A cafe',
+        support: 'カフェで shows where the action happens before the object and verb.',
+      },
+      {
+        id: 'reading-check-mainichi-gakkou-destination',
+        exampleId: 'ex-mainichi-gakkou',
+        prompt: 'What is the sentence mainly describing?',
+        choices: [
+          'Going to school every day.',
+          'Studying at school today.',
+          'Being a student at school.',
+        ],
+        answer: 'Going to school every day.',
+        support: 'がっこうにいきます is a destination pattern, with に marking where someone goes.',
+      },
+      {
+        id: 'reading-check-ima-kyoushitsu-time-destination',
+        exampleId: 'ex-ima-kyoushitsu',
+        prompt: 'Which reading of the sentence is correct?',
+        choices: [
+          'I am going to the classroom now.',
+          'I study in the classroom now.',
+          'The classroom is here now.',
+        ],
+        answer: 'I am going to the classroom now.',
+        support: 'いま adds the time, and きょうしつにいきます still shows movement to a destination.',
+      },
+    ],
+  },
 ] satisfies Mission[];
