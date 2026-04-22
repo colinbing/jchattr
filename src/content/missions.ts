@@ -713,4 +713,85 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-reading-preferences-and-opinions',
+    type: 'reading',
+    title: 'Read simple likes and dislikes',
+    targetSkill: 'reading-recognition',
+    contentRefs: {
+      exampleIds: [
+        'ex-eiga-suki-ka',
+        'ex-anime-suki',
+        'ex-cha-suki',
+        'ex-nomimono-nani-suki',
+        'ex-watashi-koohii-kirai',
+      ],
+    },
+    estimatedMinutes: 6,
+    unlockRules: {
+      requiredMissionIds: ['mission-reading-location-questions-and-answers'],
+    },
+    readingChecks: [
+      {
+        id: 'reading-check-eiga-suki-ka-question-role',
+        exampleId: 'ex-eiga-suki-ka',
+        prompt: 'What is this line doing?',
+        choices: [
+          'It asks whether someone likes movies.',
+          'It says the speaker likes movies.',
+          'It asks what movie someone likes.',
+        ],
+        answer: 'It asks whether someone likes movies.',
+        support: 'The ending か makes this a yes-or-no preference question, not a statement.',
+      },
+      {
+        id: 'reading-check-anime-suki-liked-thing',
+        exampleId: 'ex-anime-suki',
+        prompt: 'What thing is being liked in this sentence?',
+        choices: [
+          'Anime',
+          'Tea',
+          'Coffee',
+        ],
+        answer: 'Anime',
+        support: 'The noun before が is the thing being liked in this simple pattern.',
+      },
+      {
+        id: 'reading-check-cha-suki-answer-meaning',
+        exampleId: 'ex-cha-suki',
+        prompt: 'Which meaning matches this short answer?',
+        choices: [
+          'I like tea.',
+          'Do you like tea?',
+          'I dislike tea.',
+        ],
+        answer: 'I like tea.',
+        support: 'ちゃがすきです is a statement, so read it as liking tea rather than asking a question.',
+      },
+      {
+        id: 'reading-check-nomimono-nani-suki-category',
+        exampleId: 'ex-nomimono-nani-suki',
+        prompt: 'What category is this question asking about?',
+        choices: [
+          'Drinks',
+          'Food',
+          'Places',
+        ],
+        answer: 'Drinks',
+        support: 'のみものは sets the topic first, so the question is specifically about drinks.',
+      },
+      {
+        id: 'reading-check-koohii-kirai-opinion',
+        exampleId: 'ex-watashi-koohii-kirai',
+        prompt: 'What opinion is the speaker expressing?',
+        choices: [
+          'They dislike coffee.',
+          'They like coffee.',
+          'They want coffee.',
+        ],
+        answer: 'They dislike coffee.',
+        support: 'きらいです marks dislike, so this line expresses a negative preference.',
+      },
+    ],
+  },
 ] satisfies Mission[];
