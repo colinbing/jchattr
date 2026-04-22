@@ -9,7 +9,7 @@
 
 - Phase: late Phase 2, approaching Phase 3
 - Status: the core MVP loop is working end-to-end with starter content, a real mission library, local progress, weak-point tracking, and a deterministic review/recommendation loop
-- Interpretation: this now feels like a usable local MVP with repeatable mission flow; the biggest gaps are still content breadth, settings, and deeper review/personalization
+- Interpretation: this now feels like a usable local MVP with repeatable mission flow; the biggest gaps are content breadth and deeper review/personalization rather than missing core surfaces
 
 ## Completed Major Slices
 
@@ -18,6 +18,7 @@
 - Starter content pack wired through a loader and `byId` indexes
 - Today screen with deterministic recommendations and continue-mission resume
 - Missions page with real library state for recommended, unlocked, locked, completed, and weak-point pressure
+- Settings page with local study-data reset controls and listening-audio coverage status
 - Grammar mission player
 - Listening mission player with staged reveal and optional audio playback
 - Output mission player with narrow typed-answer checking
@@ -26,6 +27,7 @@
 - Review page with focused retry batches
 - Progress page with simple skill-map tiers derived from completions and misses
 - Content expansion pack 3 around existence and room/object locations
+- Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
 
@@ -39,6 +41,10 @@
   - completed state
   - weak-point pressure by mission
   - plain-language unlock requirements
+- User can open Settings and:
+  - reset mission progress, weak points, review loop, or continue state independently
+  - reset all local study data with explicit confirmation
+  - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
 - User can complete 9 starter missions across 3 mission types:
   - 3 grammar
@@ -83,7 +89,6 @@
   - 36 vocab items
   - 14 listening items
   - 9 missions
-- Settings page is still a placeholder shell; no preference persistence yet
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is strict and narrow; no pattern scoring, partial credit, or AI feedback
@@ -92,17 +97,18 @@
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No dedicated reading mission type or reading-specific checks yet
 - No speech input or pronunciation scoring
+- Settings is intentionally small; there is still no broader preferences system beyond reset controls and audio status
 - No account, sync, backend, analytics, or CMS
 - No automated tests are present in the inspected slice
 
 ## Next Recommended Slices
 
-1. Add a first real Settings slice for local data reset, audio preferences, and visible content/store version info.
-2. Generate audio files for the 5 new listening items so the full listening set matches current `audioRef` coverage.
-3. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-4. Improve output evaluation without adding broad AI scope: support multiple acceptable patterns, light token/order checking, and clearer local feedback.
-5. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-6. Add reading-specific content and instrumentation only after the current mission/review/settings surfaces are stronger.
+1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
+2. Improve output evaluation without adding broad AI scope: support multiple acceptable patterns, light token/order checking, and clearer local feedback.
+3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
+4. Add reading-specific content and instrumentation only after the current mission/review/settings surfaces are stronger.
+5. Add a small audio-preference layer only if there is a concrete UX need beyond current coverage status.
+6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -141,9 +147,12 @@
 ## Audio / TTS Notes
 
 - Listening items may include `audioRef`; all 14 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for the original 9 listening items
-- The 5 pack-3 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
+- Matching MP3 files currently exist for all 14 listening items
+- Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
+- Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
+- `npm run generate:listening-audio` now syncs the manifest after a generation run
+- `npm run sync:listening-audio-manifest` rewrites the manifest from the current `public/audio/listening` folder
 - Current generator uses the OpenAI Speech API with defaults:
   - model `gpt-4o-mini-tts`
   - voice `marin`
