@@ -1,0 +1,68 @@
+import type { ExampleSentence } from '../lib/content/types';
+
+export const exampleSentences = [
+  {
+    id: 'ex-colin-desu',
+    japanese: 'わたしはコリンです。',
+    reading: 'わたしはコリンです。',
+    english: 'I am Colin.',
+    grammarTags: ['topic', 'copula', 'self-introduction'],
+    vocabTags: ['self', 'name'],
+  },
+  {
+    id: 'ex-student-desu',
+    japanese: 'わたしはがくせいです。',
+    reading: 'わたしはがくせいです。',
+    english: 'I am a student.',
+    grammarTags: ['topic', 'copula', 'identity'],
+    vocabTags: ['self', 'school'],
+  },
+  {
+    id: 'ex-teacher-question',
+    japanese: 'せんせいですか。',
+    reading: 'せんせいですか。',
+    english: 'Are you a teacher?',
+    grammarTags: ['copula', 'question'],
+    vocabTags: ['school', 'role'],
+  },
+  {
+    id: 'ex-company-worker',
+    japanese: 'ともだちはかいしゃいんです。',
+    reading: 'ともだちはかいしゃいんです。',
+    english: 'My friend is an office worker.',
+    grammarTags: ['topic', 'copula', 'identity'],
+    vocabTags: ['people', 'work'],
+  },
+  {
+    id: 'ex-study-home',
+    japanese: 'うちでにほんごをべんきょうします。',
+    reading: 'うちでにほんごをべんきょうします。',
+    english: 'I study Japanese at home.',
+    grammarTags: ['location', 'object', 'daily-routine'],
+    vocabTags: ['home', 'study'],
+  },
+  {
+    id: 'ex-coffee-cafe',
+    japanese: 'カフェでコーヒーをのみます。',
+    reading: 'カフェでコーヒーをのみます。',
+    english: 'I drink coffee at a cafe.',
+    grammarTags: ['location', 'object', 'daily-routine'],
+    vocabTags: ['cafe', 'drink'],
+  },
+  {
+    id: 'ex-read-library',
+    japanese: 'としょかんでほんをよみます。',
+    reading: 'としょかんでほんをよみます。',
+    english: 'I read a book at the library.',
+    grammarTags: ['location', 'object', 'daily-routine'],
+    vocabTags: ['library', 'reading'],
+  },
+  {
+    id: 'ex-classroom-study',
+    japanese: 'きょうしつでべんきょうします。',
+    reading: 'きょうしつでべんきょうします。',
+    english: 'I study in the classroom.',
+    grammarTags: ['location', 'daily-routine'],
+    vocabTags: ['school', 'study'],
+  },
+] satisfies ExampleSentence[];
