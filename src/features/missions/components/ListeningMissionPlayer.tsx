@@ -217,6 +217,8 @@ function ListeningItemPanel({
 
   return (
     <div className="listening-item-panel">
+      <ListeningAudioCard item={item} />
+
       <div className="listening-prompt-card">
         <p className="mission-copy-block__eyebrow">First pass</p>
         <p className="mission-copy-block__body">
@@ -366,6 +368,46 @@ function ListeningItemPanel({
   );
 }
 
+function ListeningAudioCard({ item }: { item: ListeningItem }) {
+  const [audioFailed, setAudioFailed] = useState(false);
+
+  if (!item.audioRef) {
+    return null;
+  }
+
+  return (
+    <section className="listening-audio-card">
+      <div className="listening-audio-card__copy">
+        <p className="mission-copy-block__eyebrow">Audio</p>
+        <p className="mission-copy-block__body">
+          Play the line first if you want an audio pass before revealing anything. Audio is
+          optional and AI-generated.
+        </p>
+      </div>
+
+      {!audioFailed ? (
+        <audio
+          key={item.audioRef}
+          className="listening-audio-card__player"
+          controls
+          preload="none"
+          onError={() => setAudioFailed(true)}
+        >
+          <source src={item.audioRef} type={getAudioMimeType(item.audioRef)} />
+          Your browser does not support audio playback for this item.
+        </audio>
+      ) : (
+        <div className="listening-audio-card__fallback" role="status" aria-live="polite">
+          <p className="listening-audio-card__fallback-title">Audio unavailable.</p>
+          <p className="listening-audio-card__fallback-body">
+            This listening item still works with the transcript-first reveal flow below.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+}
+
 type RevealBlockProps = {
   label: string;
   isVisible: boolean;
@@ -396,6 +438,26 @@ function getTranslationChoices(item: ListeningItem, choicePool: ListeningItem[])
   const insertIndex = getChoiceInsertIndex(item.id, options.length + 1);
   options.splice(insertIndex, 0, item.translation);
   return options;
+}
+
+function getAudioMimeType(audioRef: string) {
+  if (audioRef.endsWith('.wav')) {
+    return 'audio/wav';
+  }
+
+  if (audioRef.endsWith('.opus')) {
+    return 'audio/ogg; codecs=opus';
+  }
+
+  if (audioRef.endsWith('.aac')) {
+    return 'audio/aac';
+  }
+
+  if (audioRef.endsWith('.flac')) {
+    return 'audio/flac';
+  }
+
+  return 'audio/mpeg';
 }
 
 function getChoiceInsertIndex(seed: string, optionCount: number) {

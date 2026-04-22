@@ -3,6 +3,7 @@ import type { ListeningItem } from '../lib/content/types';
 export const listeningItems = [
   {
     id: 'listening-self-intro',
+    audioRef: '/audio/listening/listening-self-intro.mp3',
     transcript: 'わたしはコリンです。',
     reading: 'わたしはコリンです。',
     translation: 'I am Colin.',
@@ -11,6 +12,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-teacher-question',
+    audioRef: '/audio/listening/listening-teacher-question.mp3',
     transcript: 'せんせいですか。',
     reading: 'せんせいですか。',
     translation: 'Are you a teacher?',
@@ -19,6 +21,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-home-study',
+    audioRef: '/audio/listening/listening-home-study.mp3',
     transcript: 'うちでにほんごをべんきょうします。',
     reading: 'うちでにほんごをべんきょうします。',
     translation: 'I study Japanese at home.',
@@ -27,6 +30,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-cafe-coffee',
+    audioRef: '/audio/listening/listening-cafe-coffee.mp3',
     transcript: 'カフェでコーヒーをのみます。',
     reading: 'カフェでコーヒーをのみます。',
     translation: 'I drink coffee at a cafe.',
@@ -35,6 +39,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-kore-nan',
+    audioRef: '/audio/listening/listening-kore-nan.mp3',
     transcript: 'これはなんですか。',
     reading: 'これはなんですか。',
     translation: 'What is this?',
@@ -43,6 +48,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-kore-hon',
+    audioRef: '/audio/listening/listening-kore-hon.mp3',
     transcript: 'これはほんです。',
     reading: 'これはほんです。',
     translation: 'This is a book.',
@@ -51,6 +57,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-sore-shukudai',
+    audioRef: '/audio/listening/listening-sore-shukudai.mp3',
     transcript: 'それはしゅくだいです。',
     reading: 'それはしゅくだいです。',
     translation: 'That is homework.',
@@ -59,6 +66,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-kore-eigo-hon',
+    audioRef: '/audio/listening/listening-kore-eigo-hon.mp3',
     transcript: 'これはえいごのほんです。',
     reading: 'これはえいごのほんです。',
     translation: 'This is an English book.',
@@ -67,6 +75,7 @@ export const listeningItems = [
   },
   {
     id: 'listening-sore-nan',
+    audioRef: '/audio/listening/listening-sore-nan.mp3',
     transcript: 'それはなんですか。',
     reading: 'それはなんですか。',
     translation: 'What is that?',

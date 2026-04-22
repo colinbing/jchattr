@@ -680,12 +680,42 @@ button {
   gap: var(--space-4);
 }
 
+.listening-audio-card,
 .listening-prompt-card,
 .listening-reveal-card {
   padding: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid rgba(36, 84, 70, 0.08);
   background: var(--color-surface-strong);
+}
+
+.listening-audio-card,
+.listening-audio-card__copy {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.listening-audio-card__player {
+  width: 100%;
+}
+
+.listening-audio-card__fallback,
+.listening-audio-card__fallback-title,
+.listening-audio-card__fallback-body {
+  margin: 0;
+}
+
+.listening-audio-card__fallback {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(197, 139, 77, 0.12);
+  color: #7f4f21;
+}
+
+.listening-audio-card__fallback-title {
+  font-weight: 700;
 }
 
 .listening-reveal-controls {

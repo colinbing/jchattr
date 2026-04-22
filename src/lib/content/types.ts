@@ -62,6 +62,7 @@ export interface ExampleSentence {
 
 export interface ListeningItem {
   id: string;
+  audioRef?: string;
   transcript: string;
   reading: string;
   translation: string;

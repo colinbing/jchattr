@@ -65,6 +65,7 @@ export const exampleSentenceSchema = z.object({
 
 export const listeningItemSchema = z.object({
   id: idSchema,
+  audioRef: nonEmptyStringSchema.optional(),
   transcript: nonEmptyStringSchema,
   reading: nonEmptyStringSchema,
   translation: nonEmptyStringSchema,
