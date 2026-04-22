@@ -56,6 +56,8 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
       'grammar-destination-ni',
       'grammar-existence-arimasu-imasu',
       'grammar-position-no',
+      'grammar-preference-suki-kirai',
+      'grammar-preference-questions',
     ],
     itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
     available: true,

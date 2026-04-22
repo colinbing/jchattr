@@ -246,4 +246,107 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-preference-suki-kirai',
+    type: 'grammar',
+    title: 'Say what you like and dislike',
+    targetSkill: 'particles',
+    contentRefs: {
+      grammarLessonIds: ['grammar-preference-suki-kirai'],
+      vocabIds: [
+        'vocab-suki',
+        'vocab-kirai',
+        'vocab-sushi',
+        'vocab-raamen',
+        'vocab-ongaku',
+        'vocab-anime',
+        'vocab-sakkaa',
+        'vocab-eiga',
+      ],
+      exampleIds: [
+        'ex-watashi-sushi-suki',
+        'ex-tomodachi-raamen-suki',
+        'ex-watashi-koohii-kirai',
+        'ex-ongaku-suki',
+        'ex-anime-suki',
+        'ex-sakkaa-kirai',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-existence-arimasu-imasu'],
+    },
+  },
+  {
+    id: 'mission-listening-preferences',
+    type: 'listening',
+    title: 'Hear simple likes and dislikes',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-preference-suki-kirai', 'grammar-preference-questions'],
+      listeningItemIds: [
+        'listening-watashi-sushi-suki',
+        'listening-koohii-kirai',
+        'listening-ongaku-suki',
+        'listening-nani-suki',
+        'listening-tabemono-nani-suki',
+      ],
+      exampleIds: [
+        'ex-watashi-sushi-suki',
+        'ex-watashi-koohii-kirai',
+        'ex-ongaku-suki',
+        'ex-nani-suki',
+        'ex-tabemono-nani-suki',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-preference-suki-kirai'],
+    },
+  },
+  {
+    id: 'mission-output-preference-questions',
+    type: 'output',
+    title: 'Ask and answer one simple preference',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-preference-suki-kirai', 'grammar-preference-questions'],
+      vocabIds: [
+        'vocab-suki',
+        'vocab-anime',
+        'vocab-nomimono',
+        'vocab-cha',
+        'vocab-tabemono',
+      ],
+      exampleIds: [
+        'ex-anime-suki',
+        'ex-cha-suki',
+        'ex-nomimono-nani-suki',
+        'ex-tabemono-nani-suki',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-preference-suki-kirai'],
+    },
+    outputTasks: [
+      {
+        id: 'output-anime-suki',
+        prompt: 'Type a line that says: "I like anime."',
+        acceptableAnswers: [
+          'アニメがすきです。',
+          'アニメがすきです',
+          'わたしはアニメがすきです。',
+          'わたしはアニメがすきです',
+        ],
+        hint: 'Use the thing plus が plus すきです. Adding わたしは is also acceptable.',
+      },
+      {
+        id: 'output-nomimono-nani-suki',
+        prompt: 'Type a polite question that says: "What drink do you like?"',
+        acceptableAnswers: ['のみものはなにがすきですか。', 'のみものはなにがすきですか'],
+        hint: 'Start with the category topic のみものは, then ask なにがすきですか.',
+      },
+    ],
+  },
 ] satisfies Mission[];

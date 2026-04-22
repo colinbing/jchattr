@@ -223,4 +223,72 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-preference-suki-kirai',
+    title: 'Likes and dislikes with が すきです / きらいです',
+    objective:
+      'Say simple likes and dislikes about food, drinks, and hobbies in polite Japanese.',
+    explanation:
+      'Put the thing you like or dislike before が, then finish with すきです or きらいです. You can add a topic like わたしは at the start, but the key beginner pattern is X が すきです or X が きらいです.',
+    prerequisites: ['grammar-existence-arimasu-imasu'],
+    tags: ['particles', 'preference', 'daily-conversation', 'n5'],
+    exampleIds: ['ex-watashi-sushi-suki', 'ex-watashi-koohii-kirai', 'ex-ongaku-suki'],
+    commonMistakes: [
+      'Using を instead of が before すきです or きらいです.',
+      'Dropping です when the lesson is teaching the polite basic pattern.',
+      'Putting すき or きらい before the thing instead of after it.',
+    ],
+    drills: [
+      {
+        id: 'drill-preference-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I like sushi."',
+        answer: 'わたしはすしがすきです。',
+        choices: [
+          'わたしはすしをすきです。',
+          'わたしはすしがすきです。',
+          'すきですわたしはすしが。',
+        ],
+      },
+      {
+        id: 'drill-preference-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: サッカー___きらいです。',
+        answer: 'が',
+        support: 'Use が before すきです and きらいです in this beginner pattern.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-preference-questions',
+    title: 'Ask simple preference questions with なにがすきですか',
+    objective:
+      'Ask what someone likes and narrow the question by category such as food or drinks.',
+    explanation:
+      'Use なにがすきですか to ask what someone likes. You can add a topic first, like たべものは or のみものは, to ask about one category. A simple answer uses noun plus が plus すきです or きらいです.',
+    prerequisites: ['grammar-preference-suki-kirai'],
+    tags: ['question', 'preference', 'daily-conversation', 'n5'],
+    exampleIds: ['ex-nani-suki', 'ex-tabemono-nani-suki', 'ex-nomimono-nani-suki'],
+    commonMistakes: [
+      'Using なにを instead of なにが in this beginner preference question.',
+      'Answering with only a noun when the lesson is teaching noun plus が plus すきです.',
+      'Forgetting は after the category word in questions like たべものはなにがすきですか.',
+    ],
+    drills: [
+      {
+        id: 'drill-preference-question-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What do you like?"',
+        answer: 'なにがすきですか。',
+        choices: ['なにをすきですか。', 'なにがすきですか。', 'すきですかなにが。'],
+      },
+      {
+        id: 'drill-preference-question-2',
+        type: 'reorder',
+        prompt: 'Reorder: のみものは / なにが / すきですか',
+        answer: 'のみものはなにがすきですか。',
+        support: 'Put the category topic first, then the question phrase.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
