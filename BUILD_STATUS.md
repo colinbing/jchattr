@@ -124,7 +124,7 @@
 - Reading slice is still intentionally small: 5 reading missions with 25 total multiple-choice checks, all built from existing example sentences
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Pack 9 listening items are audio-ready in content, but their matching MP3 files are not generated yet
+- Current listening audio coverage is complete for the existing content set
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
@@ -134,12 +134,11 @@
 
 ## Next Recommended Slices
 
-1. Generate MP3 files for the 5 new pack-9 listening items so Settings regains full audio coverage for current content.
+1. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
 2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-5. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence beyond the current present/past polite slices.
-6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
+3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+4. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence beyond the current present/past polite slices.
+5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -191,10 +190,10 @@
 ## Audio / TTS Notes
 
 - Listening items may include `audioRef`; all 44 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 39 listening items
+- Matching MP3 files currently exist for all 44 listening items
 - Before this pass, this file was stale: the repo already had full generated audio coverage through pack 8, but the status text still claimed pack-8 files were missing
-- The 5 pack-9 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
-- Settings now reports manifest-backed listening coverage from the current generated asset list, so pack-9 audio will appear as missing until files are generated and the manifest is synced
+- Pack 9 listening audio is now generated and the manifest-backed coverage is fully aligned with the repo
+- Settings now reports full manifest-backed listening coverage for the current content set
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
