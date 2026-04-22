@@ -551,4 +551,85 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-reading-questions-and-answers',
+    type: 'reading',
+    title: 'Read simple questions and answers',
+    targetSkill: 'reading-recognition',
+    contentRefs: {
+      exampleIds: [
+        'ex-kore-nan',
+        'ex-kore-hon',
+        'ex-sore-shukudai',
+        'ex-nani-suki',
+        'ex-tabemono-nani-suki',
+      ],
+    },
+    estimatedMinutes: 6,
+    unlockRules: {
+      requiredMissionIds: ['mission-reading-starter-recognition'],
+    },
+    readingChecks: [
+      {
+        id: 'reading-check-kore-nan-question-type',
+        exampleId: 'ex-kore-nan',
+        prompt: 'What is this line doing?',
+        choices: [
+          'It asks, "What is this?"',
+          'It says, "This is a book."',
+          'It asks where this is.',
+        ],
+        answer: 'It asks, "What is this?"',
+        support: 'これはなんですか ends with か, so read it as a question, not a statement.',
+      },
+      {
+        id: 'reading-check-kore-hon-answer-meaning',
+        exampleId: 'ex-kore-hon',
+        prompt: 'Which answer matches this short line?',
+        choices: [
+          'This is a book.',
+          'What is this book?',
+          'That is homework.',
+        ],
+        answer: 'This is a book.',
+        support: 'ほんです is a plain beginner answer pattern: noun plus です.',
+      },
+      {
+        id: 'reading-check-sore-shukudai-answer-role',
+        exampleId: 'ex-sore-shukudai',
+        prompt: 'Is this sentence a question or an answer?',
+        choices: [
+          'It is an answer identifying something.',
+          'It is a question asking what that is.',
+          'It is a preference question.',
+        ],
+        answer: 'It is an answer identifying something.',
+        support: 'それはしゅくだいです ends as a statement, so treat it as an answer line.',
+      },
+      {
+        id: 'reading-check-nani-suki-general-question',
+        exampleId: 'ex-nani-suki',
+        prompt: 'What kind of information is this question asking for?',
+        choices: [
+          'Something the other person likes.',
+          'Where something is.',
+          'What this object is called.',
+        ],
+        answer: 'Something the other person likes.',
+        support: 'なにがすきですか asks about preference, with なに as the unknown thing.',
+      },
+      {
+        id: 'reading-check-tabemono-nani-suki-category',
+        exampleId: 'ex-tabemono-nani-suki',
+        prompt: 'What category does this question focus on?',
+        choices: [
+          'Food',
+          'Drinks',
+          'Places',
+        ],
+        answer: 'Food',
+        support: 'たべものは sets the topic first, so the question is specifically about food preferences.',
+      },
+    ],
+  },
 ] satisfies Mission[];
