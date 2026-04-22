@@ -69,4 +69,82 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-question-nan',
+    title: 'Ask what something is with なんですか',
+    objective:
+      'Ask and answer simple classroom and study-object questions in polite Japanese.',
+    explanation:
+      'Use これは or それは to point to something, and use なんですか to ask what it is. Answer with a noun plus です. This creates short, high-value beginner lines for class, books, homework, and basic study talk.',
+    prerequisites: ['grammar-topic-desu'],
+    tags: ['question', 'classroom', 'copula', 'n5'],
+    exampleIds: [
+      'ex-kore-hon',
+      'ex-kore-nan',
+      'ex-sore-shukudai',
+      'ex-kore-eigo-hon',
+    ],
+    commonMistakes: [
+      'Using English-style word order like なん これは ですか.',
+      'Dropping です in a polite answer when the lesson is teaching the basic pattern.',
+      'Forgetting that これは and それは should stay together before the noun or question.',
+    ],
+    drills: [
+      {
+        id: 'drill-question-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What is this?"',
+        answer: 'これはなんですか。',
+        choices: ['これはなんです。', 'これはなんですか。', 'なんこれはですか。'],
+      },
+      {
+        id: 'drill-question-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: それはしゅくだい___。',
+        answer: 'です',
+        support: 'Use the polite copula to finish the answer cleanly.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-destination-ni',
+    title: 'Destination with に and いきます',
+    objective:
+      'Say where someone goes in short daily and classroom routine lines.',
+    explanation:
+      'Use に after the destination before verbs like いきます. This is different from で, which marks where an action happens. Destination with に is a core beginner pattern for school, library, and classroom routines.',
+    prerequisites: ['grammar-place-de'],
+    tags: ['particles', 'movement', 'daily-routine', 'n5'],
+    exampleIds: [
+      'ex-doko-ikimasu',
+      'ex-mainichi-gakkou',
+      'ex-kyou-toshokan',
+      'ex-ima-kyoushitsu',
+    ],
+    commonMistakes: [
+      'Using で instead of に when the sentence is about going to a destination.',
+      'Dropping に and leaving the destination noun alone.',
+      'Putting に after the verb instead of after the destination.',
+    ],
+    drills: [
+      {
+        id: 'drill-destination-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I go to school every day."',
+        answer: 'まいにちがっこうにいきます。',
+        choices: [
+          'まいにちがっこうでいきます。',
+          'まいにちがっこうにいきます。',
+          'がっこうにまいにちです。',
+        ],
+      },
+      {
+        id: 'drill-destination-2',
+        type: 'reorder',
+        prompt: 'Reorder: きょう / としょかんに / いきます',
+        answer: 'きょうとしょかんにいきます。',
+        support: 'Time can come first, then the destination with に, then the verb.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

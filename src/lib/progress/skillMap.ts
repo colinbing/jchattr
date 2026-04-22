@@ -50,7 +50,7 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
   {
     id: 'particles',
     label: 'Particles',
-    grammarLessonIds: ['grammar-topic-desu', 'grammar-place-de'],
+    grammarLessonIds: ['grammar-topic-desu', 'grammar-place-de', 'grammar-destination-ni'],
     itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
     available: true,
   },

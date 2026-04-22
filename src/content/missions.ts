@@ -61,4 +61,93 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-destination-ni',
+    type: 'grammar',
+    title: 'Say where someone goes with に',
+    targetSkill: 'particles',
+    contentRefs: {
+      grammarLessonIds: ['grammar-destination-ni'],
+      vocabIds: [
+        'vocab-doko',
+        'vocab-gakkou',
+        'vocab-ikimasu',
+        'vocab-mainichi',
+        'vocab-kyou',
+        'vocab-ima',
+        'vocab-kyoushitsu',
+        'vocab-toshokan',
+      ],
+      exampleIds: [
+        'ex-doko-ikimasu',
+        'ex-mainichi-gakkou',
+        'ex-kyou-toshokan',
+        'ex-ima-kyoushitsu',
+      ],
+    },
+    estimatedMinutes: 7,
+  },
+  {
+    id: 'mission-listening-question-nan',
+    type: 'listening',
+    title: 'Hear simple classroom questions',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-question-nan'],
+      listeningItemIds: [
+        'listening-kore-nan',
+        'listening-kore-hon',
+        'listening-sore-shukudai',
+        'listening-kore-eigo-hon',
+        'listening-sore-nan',
+      ],
+      exampleIds: [
+        'ex-kore-hon',
+        'ex-kore-nan',
+        'ex-sore-shukudai',
+        'ex-kore-eigo-hon',
+      ],
+    },
+    estimatedMinutes: 7,
+  },
+  {
+    id: 'mission-output-classroom-destination',
+    type: 'output',
+    title: 'Ask one question and write one destination line',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-question-nan', 'grammar-destination-ni'],
+      vocabIds: [
+        'vocab-kore',
+        'vocab-nan',
+        'vocab-gakkou',
+        'vocab-ikimasu',
+        'vocab-mainichi',
+      ],
+      exampleIds: [
+        'ex-kore-nan',
+        'ex-kore-hon',
+        'ex-mainichi-gakkou',
+        'ex-doko-ikimasu',
+      ],
+    },
+    estimatedMinutes: 8,
+    outputTasks: [
+      {
+        id: 'output-kore-nan',
+        prompt: 'Type a polite classroom question: "What is this?"',
+        acceptableAnswers: ['これはなんですか。', 'これはなんですか'],
+        hint: 'Use これは first, then なんですか.',
+      },
+      {
+        id: 'output-mainichi-gakkou',
+        prompt: 'Type a line that says: "I go to school every day."',
+        acceptableAnswers: [
+          'まいにちがっこうにいきます。',
+          'まいにちがっこうにいきます',
+        ],
+        hint: 'Put the destination with に before いきます.',
+      },
+    ],
+  },
 ] satisfies Mission[];
