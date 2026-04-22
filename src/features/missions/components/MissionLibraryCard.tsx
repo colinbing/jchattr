@@ -147,6 +147,11 @@ function buildContentNote(mission: Mission, starterContent: StarterContent) {
     return `${listeningCount} listening item${listeningCount === 1 ? '' : 's'} in this set`;
   }
 
+  if (mission.type === 'reading') {
+    const checkCount = mission.readingChecks?.length ?? 0;
+    return `${checkCount} reading check${checkCount === 1 ? '' : 's'} in this set`;
+  }
+
   const taskCount = mission.outputTasks?.length ?? 0;
   return `${taskCount} output task${taskCount === 1 ? '' : 's'} in this set`;
 }
@@ -159,6 +164,8 @@ function formatMissionType(type: Mission['type']) {
       return 'Listening';
     case 'output':
       return 'Output';
+    case 'reading':
+      return 'Reading';
   }
 }
 

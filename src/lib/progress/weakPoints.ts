@@ -8,7 +8,8 @@ const WEAK_POINTS_VERSION = 1;
 export type WeakPointItemType =
   | 'grammar-drill'
   | 'listening-check'
-  | 'output-task';
+  | 'output-task'
+  | 'reading-check';
 
 export interface WeakPoint {
   itemId: string;
@@ -258,7 +259,8 @@ function isWeakPointItemType(value: unknown): value is WeakPointItemType {
   return (
     value === 'grammar-drill' ||
     value === 'listening-check' ||
-    value === 'output-task'
+    value === 'output-task' ||
+    value === 'reading-check'
   );
 }
 

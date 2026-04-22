@@ -977,6 +977,7 @@ button {
 }
 
 .output-task-card,
+.reading-check-card,
 .output-support-grid,
 .output-support-grid__column,
 .output-vocab-strip {
@@ -985,6 +986,7 @@ button {
 }
 
 .output-task-card__prompt,
+.reading-check-card__sentence,
 .output-vocab-chip__kana,
 .output-vocab-chip__meaning {
   margin: 0;
@@ -996,11 +998,24 @@ button {
 }
 
 .output-task-card__hint,
+.reading-check-card__prompt,
+.reading-check-card__question,
+.reading-reveal-card__section,
 .output-vocab-chip {
   padding: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid rgba(36, 84, 70, 0.08);
   background: var(--color-surface-strong);
+}
+
+.reading-check-card__sentence {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  line-height: 1.5;
+}
+
+.reading-reveal-card {
+  display: grid;
+  gap: var(--space-3);
 }
 
 .output-vocab-strip {

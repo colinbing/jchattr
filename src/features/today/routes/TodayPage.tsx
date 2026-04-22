@@ -79,7 +79,7 @@ export function TodayPage() {
 
       <SurfaceCard
         title="All missions"
-        description="Browse the full starter set below. Grammar, listening, and output missions still stay available as the secondary view."
+        description="Browse the full starter set below. Grammar, listening, output, and reading missions all stay available as the secondary view."
       >
         <div className="mission-list" role="list" aria-label="All missions">
           {missions.map((mission) => (
@@ -166,6 +166,16 @@ function formatContinueDetail(
         : 0;
 
     return `Resume listening item ${safeStepIndex + 1} of ${totalItems}.`;
+  }
+
+  if (mission.type === 'reading') {
+    const totalChecks = starterContent.byId.missions[mission.id].readingChecks?.length ?? 0;
+    const safeStepIndex =
+      typeof stepIndex === 'number' && stepIndex >= 0 && stepIndex < totalChecks
+        ? stepIndex
+        : 0;
+
+    return `Resume reading check ${safeStepIndex + 1} of ${totalChecks}.`;
   }
 
   const totalTasks = starterContent.byId.missions[mission.id].outputTasks?.length ?? 0;

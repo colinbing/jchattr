@@ -13,8 +13,8 @@ export function SessionSummary({
         <p className="session-summary__eyebrow">Today&apos;s session</p>
         <h2 className="session-summary__title">{totalMinutes} minute daily loop</h2>
         <p className="session-summary__body">
-          Three short missions covering grammar, listening, and output. Built for a
-          single focused session on mobile first.
+          Short starter missions spanning grammar, listening, output, and reading.
+          Built for a single focused session on mobile first.
         </p>
       </div>
 

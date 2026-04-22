@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const grammarDrillTypeSchema = z.enum(['multiple-choice', 'reorder', 'fill-in']);
-const missionTypeSchema = z.enum(['grammar', 'listening', 'output']);
+const missionTypeSchema = z.enum(['grammar', 'listening', 'output', 'reading']);
 const targetSkillSchema = z.enum([
   'particles',
   'verb-forms',
@@ -89,6 +89,20 @@ export const outputTaskSchema = z.object({
     .optional(),
 });
 
+export const readingCheckSchema = z
+  .object({
+    id: idSchema,
+    exampleId: idSchema,
+    prompt: nonEmptyStringSchema,
+    choices: z.array(nonEmptyStringSchema).min(2),
+    answer: nonEmptyStringSchema,
+    support: nonEmptyStringSchema.optional(),
+  })
+  .refine(
+    (value) => value.choices.includes(value.answer),
+    'Reading check answer must match one of the provided choices.',
+  );
+
 export const missionContentRefsSchema = z
   .object({
     grammarLessonIds: z.array(idSchema).min(1).optional(),
@@ -116,6 +130,23 @@ export const missionSchema = z.object({
   estimatedMinutes: z.number().int().positive(),
   unlockRules: missionUnlockRulesSchema.optional(),
   outputTasks: z.array(outputTaskSchema).min(1).optional(),
+  readingChecks: z.array(readingCheckSchema).min(1).optional(),
+}).superRefine((mission, context) => {
+  if (mission.type === 'output' && !mission.outputTasks?.length) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['outputTasks'],
+      message: 'Output missions must include at least one output task.',
+    });
+  }
+
+  if (mission.type === 'reading' && !mission.readingChecks?.length) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['readingChecks'],
+      message: 'Reading missions must include at least one reading check.',
+    });
+  }
 });
 
 export const contentCollectionSchema = z.object({

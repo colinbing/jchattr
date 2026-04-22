@@ -132,6 +132,24 @@ export function ReviewBatchPlayer({
             />
           ) : null}
 
+          {currentItem.type === 'reading-check' ? (
+            <ReadingReviewCard
+              item={currentItem}
+              onReviewed={(result) => {
+                if (
+                  result === 'correct' &&
+                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                ) {
+                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                }
+                setResultsByItemId((current) => ({
+                  ...current,
+                  [currentItem.weakPoint.itemId]: result,
+                }));
+              }}
+            />
+          ) : null}
+
           <div className="mission-step-actions">
             <button
               type="button"
@@ -479,6 +497,101 @@ function OutputReviewFeedback({
           ? 'Retry recorded for this item.'
           : `${feedback.message} Expected pattern: ${feedback.expectedAnswer}`}
       </p>
+    </div>
+  );
+}
+
+function ReadingReviewCard({
+  item,
+  onReviewed,
+}: ReviewCardProps & {
+  item: Extract<ReviewBatchItem, { type: 'reading-check' }>;
+}) {
+  const [selectedChoice, setSelectedChoice] = useState('');
+  const [feedback, setFeedback] = useState<ReviewResult | null>(null);
+
+  function submitAnswer() {
+    if (!selectedChoice) {
+      return;
+    }
+
+    const result = selectedChoice === item.check.answer ? 'correct' : 'incorrect';
+
+    setFeedback(result);
+    onReviewed(result);
+  }
+
+  return (
+    <div className="review-retry-card">
+      <div className="reading-check-card__prompt">
+        <p className="mission-copy-block__eyebrow">Japanese first</p>
+        <p className="reading-check-card__sentence">{item.example.japanese}</p>
+      </div>
+
+      <div className="reading-check-card__question">
+        <p className="mission-copy-block__eyebrow">Comprehension check</p>
+        <p className="mission-copy-block__body">{item.check.prompt}</p>
+      </div>
+
+      <div className="mission-choice-grid">
+        {item.check.choices.map((choice) => (
+          <button
+            key={choice}
+            type="button"
+            className={`mission-choice${
+              selectedChoice === choice ? ' mission-choice--selected' : ''
+            }`}
+            onClick={() => {
+              setSelectedChoice(choice);
+              setFeedback(null);
+            }}
+          >
+            {choice}
+          </button>
+        ))}
+      </div>
+
+      <div className="mission-drill-card__actions">
+        <button
+          type="button"
+          className="mission-button"
+          onClick={submitAnswer}
+          disabled={!selectedChoice}
+        >
+          Check reading
+        </button>
+        <button
+          type="button"
+          className="mission-button mission-button--secondary"
+          onClick={() => {
+            setSelectedChoice('');
+            setFeedback(null);
+          }}
+        >
+          Reset
+        </button>
+      </div>
+
+      {feedback ? <ReviewFeedback result={feedback} answer={item.check.answer} /> : null}
+
+      {feedback ? (
+        <div className="reading-reveal-card">
+          <div className="reading-reveal-card__section">
+            <p className="mission-copy-block__eyebrow">Reading</p>
+            <p className="mission-copy-block__body">{item.example.reading}</p>
+          </div>
+          <div className="reading-reveal-card__section">
+            <p className="mission-copy-block__eyebrow">Meaning</p>
+            <p className="mission-copy-block__body">{item.example.english}</p>
+          </div>
+          {item.check.support ? (
+            <div className="reading-reveal-card__section">
+              <p className="mission-copy-block__eyebrow">What to notice</p>
+              <p className="mission-copy-block__body">{item.check.support}</p>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

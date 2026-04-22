@@ -15,6 +15,8 @@ function formatMissionType(type: Mission['type']) {
       return 'Listening';
     case 'output':
       return 'Output';
+    case 'reading':
+      return 'Reading';
   }
 }
 

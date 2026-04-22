@@ -4,6 +4,8 @@ import type {
   ListeningItem,
   Mission,
   OutputTask,
+  ReadingCheck,
+  ExampleSentence,
   StarterContent,
 } from '../../../lib/content/types';
 import type { WeakPoint, WeakPointStore } from '../../../lib/progress/weakPoints';
@@ -31,6 +33,13 @@ export type ReviewBatchItem =
       weakPoint: WeakPoint;
       mission: Mission;
       task: OutputTask;
+    }
+  | {
+      type: 'reading-check';
+      weakPoint: WeakPoint;
+      mission: Mission;
+      check: ReadingCheck;
+      example: ExampleSentence;
     };
 
 export function selectReviewBatch(
@@ -79,6 +88,13 @@ export function getReviewBatchSummary(item: ReviewBatchItem) {
         eyebrow: 'Output task',
         title: item.task.prompt,
         body: item.task.hint ?? 'Retry the prompt with one short supported line.',
+        missionTitle: item.mission.title,
+      };
+    case 'reading-check':
+      return {
+        eyebrow: 'Reading check',
+        title: item.example.japanese,
+        body: item.check.prompt,
         missionTitle: item.mission.title,
       };
   }
@@ -147,6 +163,23 @@ function resolveBatchItem(
       mission,
       listeningItem,
       choicePool: starterContent.listeningItems,
+    };
+  }
+
+  if (weakPoint.itemType === 'reading-check') {
+    const check = mission.readingChecks?.find((candidate) => candidate.id === weakPoint.itemId);
+    const example = check ? starterContent.byId.exampleSentences[check.exampleId] : null;
+
+    if (!check || !example) {
+      return null;
+    }
+
+    return {
+      type: 'reading-check',
+      weakPoint,
+      mission,
+      check,
+      example,
     };
   }
 

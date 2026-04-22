@@ -25,6 +25,7 @@ const WEAK_POINT_GROUPS: WeakPointItemType[] = [
   'grammar-drill',
   'listening-check',
   'output-task',
+  'reading-check',
 ];
 
 export function ReviewPage() {
@@ -163,7 +164,7 @@ export function ReviewPage() {
         ) : (
           <ul className="simple-list">
             <li>No weak points recorded yet.</li>
-            <li>Incorrect answers from grammar, listening, and output checks will appear here.</li>
+            <li>Incorrect answers from grammar, listening, output, and reading checks will appear here.</li>
           </ul>
         )}
       </SurfaceCard>
@@ -200,6 +201,8 @@ function formatGroupLabel(itemType: WeakPointItemType) {
       return 'Listening checks';
     case 'output-task':
       return 'Output tasks';
+    case 'reading-check':
+      return 'Reading checks';
   }
 }
 

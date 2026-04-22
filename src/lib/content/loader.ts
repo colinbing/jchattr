@@ -72,6 +72,15 @@ function validateRelations(content: ContentCollection) {
       );
     }
 
+    if (mission.readingChecks) {
+      assertIdsExist(
+        `Mission ${mission.id}`,
+        'example sentence',
+        mission.readingChecks.map((check) => check.exampleId),
+        exampleRecord,
+      );
+    }
+
     if (mission.contentRefs.listeningItemIds) {
       assertIdsExist(
         `Mission ${mission.id}`,

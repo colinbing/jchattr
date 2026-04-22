@@ -9,7 +9,7 @@
 
 - Phase: late Phase 2, approaching Phase 3
 - Status: the core MVP loop is working end-to-end with starter content, a real mission library, local progress, weak-point tracking, and a deterministic review/recommendation loop
-- Interpretation: this now feels like a usable local MVP with repeatable mission flow; the biggest gaps are content breadth and deeper review/personalization rather than missing core surfaces
+- Interpretation: this now feels like a usable local MVP with repeatable mission flow; the biggest gaps are content breadth and deeper review/personalization, not missing core study surfaces
 
 ## Completed Major Slices
 
@@ -22,6 +22,7 @@
 - Grammar mission player
 - Listening mission player with staged reveal and optional audio playback
 - Output mission player with local rule-based answer checking and short diagnostic feedback
+- Reading mission player v1 with Japanese-first comprehension checks and compact reveal
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
@@ -48,10 +49,11 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 15 starter missions across 3 mission types:
+- User can complete 16 starter missions across 4 mission types:
   - 5 grammar
   - 5 listening
   - 5 output
+  - 1 reading
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -66,15 +68,20 @@
   - optional hint
   - textarea response
   - local evaluation with normalization, explicit accepted answers, and token-pattern diagnostics for close answers
+- Reading missions currently include:
+  - Japanese text shown first
+  - one local multiple-choice comprehension decision per line before reveal
+  - compact reveal of reading, meaning, and a short support note after submission
 - Review loop currently:
   - selects top weak points by miss count, then recency
   - caps batch size at 3
   - decrements or clears weak points on successful retry
+  - supports grammar drills, listening checks, output tasks, and reading checks
 - Progress screen currently shows:
   - mission completion totals
   - weak-point totals
-  - skill tiers for particles, sentence structure, listening comprehension, output confidence
-  - verb forms and reading recognition are explicitly marked as not yet instrumented
+  - skill tiers for particles, sentence structure, listening comprehension, reading recognition, and output confidence
+  - verb forms is still explicitly marked as not yet instrumented
 - Current content themes now include:
   - topic statements with `は` / `です`
   - place of action with `で`
@@ -94,14 +101,14 @@
   - 47 example sentences
   - 57 vocab items
   - 24 listening items
-  - 15 missions
+  - 16 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
+- Reading slice is intentionally small: one reading mission with 5 multiple-choice checks, all built from existing example sentences
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
-- No dedicated reading mission type or reading-specific checks yet
 - No speech input or pronunciation scoring
 - Settings is intentionally small; there is still no broader preferences system beyond reset controls and audio status
 - No account, sync, backend, analytics, or CMS
@@ -111,9 +118,10 @@
 
 1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
 2. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-3. Add a first reading-specific slice only after the current mission/review/settings surfaces are stronger.
+3. Expand the new reading slice with a few more beginner reading missions or reuse patterns before introducing a larger reading subsystem.
 4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
+5. Add verb-form-specific content and checks if Progress needs that skill area to become instrumented.
+6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -135,11 +143,12 @@
 
 ## Content-Model Notes
 
-- Mission types: `grammar`, `listening`, `output`
+- Mission types: `grammar`, `listening`, `output`, `reading`
 - Target skills: `particles`, `verb-forms`, `sentence-structure`, `listening-comprehension`, `reading-recognition`, `output-confidence`
 - Grammar drills support `multiple-choice`, `reorder`, and `fill-in`
 - Missions reference content through explicit `contentRefs`
 - Output prompts are embedded directly in mission records as `outputTasks`
+- Reading checks are embedded directly in mission records as `readingChecks`
 - Output tasks may include optional local evaluation token patterns for more forgiving rule-based checking
 - Unlock rules currently support `requiredMissionIds`
 - Current starter content is beginner/N5-oriented and centered on:
@@ -153,6 +162,7 @@
   - category questions like `たべものはなにがすきですか`
   - where-questions like `トイレはどこですか`
   - location answers like `トイレはあそこです` and `かぎはつくえのうえにあります`
+  - one starter reading-recognition mission that reuses existing example sentences for Japanese-first comprehension checks
 
 ## Audio / TTS Notes
 

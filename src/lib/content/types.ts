@@ -1,6 +1,6 @@
 export type GrammarDrillType = 'multiple-choice' | 'reorder' | 'fill-in';
 
-export type MissionType = 'grammar' | 'listening' | 'output';
+export type MissionType = 'grammar' | 'listening' | 'output' | 'reading';
 
 export type TargetSkill =
   | 'particles'
@@ -84,6 +84,15 @@ export interface OutputTask {
   };
 }
 
+export interface ReadingCheck {
+  id: string;
+  exampleId: string;
+  prompt: string;
+  choices: string[];
+  answer: string;
+  support?: string;
+}
+
 export interface MissionContentRefs {
   grammarLessonIds?: string[];
   vocabIds?: string[];
@@ -100,6 +109,7 @@ export interface Mission {
   estimatedMinutes: number;
   unlockRules?: MissionUnlockRules;
   outputTasks?: OutputTask[];
+  readingChecks?: ReadingCheck[];
 }
 
 export interface ContentCollection {

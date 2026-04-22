@@ -208,7 +208,12 @@ function parseContinueState(rawValue: unknown): ContinueStateRecord {
 }
 
 function isMissionType(value: unknown): value is MissionType {
-  return value === 'grammar' || value === 'listening' || value === 'output';
+  return (
+    value === 'grammar' ||
+    value === 'listening' ||
+    value === 'output' ||
+    value === 'reading'
+  );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

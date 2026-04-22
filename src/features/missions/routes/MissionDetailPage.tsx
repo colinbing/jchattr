@@ -6,11 +6,13 @@ import type {
   GrammarLesson,
   ListeningItem,
   OutputTask,
+  ReadingCheck,
   VocabItem,
 } from '../../../lib/content/types';
 import { GrammarMissionPlayer } from '../components/GrammarMissionPlayer';
 import { ListeningMissionPlayer } from '../components/ListeningMissionPlayer';
 import { OutputMissionPlayer } from '../components/OutputMissionPlayer';
+import { ReadingMissionPlayer } from '../components/ReadingMissionPlayer';
 
 export function MissionDetailPage() {
   const { missionId } = useParams<{ missionId: string }>();
@@ -152,10 +154,47 @@ export function MissionDetailPage() {
     );
   }
 
+  if (mission.type === 'reading') {
+    const readingChecks = resolveReadingChecks(mission.readingChecks);
+    const examplesById = readingChecks.reduce<Record<string, ExampleSentence>>((record, check) => {
+      const example = starterContent.byId.exampleSentences[check.exampleId];
+
+      if (example) {
+        record[check.exampleId] = example;
+      }
+
+      return record;
+    }, {});
+
+    if (readingChecks.length === 0 || Object.keys(examplesById).length === 0) {
+      return (
+        <MissionFallbackState
+          title="Reading content missing"
+          description="This reading mission does not have starter reading checks linked yet."
+        />
+      );
+    }
+
+    return (
+      <PageShell
+        eyebrow="Mission Player"
+        title={mission.title}
+        description="A first-pass reading flow built from existing example sentences. Read the Japanese first, choose the best interpretation, then reveal compact support."
+        aside={<span className="status-chip">Reading mission</span>}
+      >
+        <ReadingMissionPlayer
+          mission={mission}
+          checks={readingChecks}
+          examplesById={examplesById}
+        />
+      </PageShell>
+    );
+  }
+
   return (
     <MissionFallbackState
       title="Mission type not supported yet"
-      description="This route currently supports grammar, listening, and output starter missions."
+      description="This route currently supports grammar, listening, output, and reading starter missions."
     />
   );
 }
@@ -201,6 +240,10 @@ function resolveOutputTasks(outputTasks?: OutputTask[]) {
   return (outputTasks ?? []).filter((task): task is OutputTask => Boolean(task));
 }
 
+function resolveReadingChecks(readingChecks?: ReadingCheck[]) {
+  return (readingChecks ?? []).filter((check): check is ReadingCheck => Boolean(check));
+}
+
 type MissionFallbackStateProps = {
   title: string;
   description: string;
@@ -219,7 +262,7 @@ function MissionFallbackState({
     >
       <SurfaceCard
         title="Back to today"
-        description="Return to the daily mission list and open a starter grammar, listening, or output mission to use the current player slices."
+        description="Return to the daily mission list and open a starter grammar, listening, output, or reading mission to use the current player slices."
       >
         <Link to="/" className="inline-link">
           View today&apos;s missions

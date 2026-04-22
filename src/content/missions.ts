@@ -470,4 +470,85 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-reading-starter-recognition',
+    type: 'reading',
+    title: 'Read short beginner lines before the reveal',
+    targetSkill: 'reading-recognition',
+    contentRefs: {
+      exampleIds: [
+        'ex-kore-eigo-hon',
+        'ex-neko-heya-imasu',
+        'ex-watashi-sushi-suki',
+        'ex-toire-doko',
+        'ex-kagi-tsukue-ue-arimasu',
+      ],
+    },
+    estimatedMinutes: 6,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-topic-desu'],
+    },
+    readingChecks: [
+      {
+        id: 'reading-check-kore-eigo-hon-meaning',
+        exampleId: 'ex-kore-eigo-hon',
+        prompt: 'Which meaning matches this line?',
+        choices: [
+          'This is an English book.',
+          'This book is in English class.',
+          'That is an English teacher.',
+        ],
+        answer: 'This is an English book.',
+        support: 'Read これ as "this" and notice how えいごのほん links two nouns before です.',
+      },
+      {
+        id: 'reading-check-neko-heya-location',
+        exampleId: 'ex-neko-heya-imasu',
+        prompt: 'What location does this sentence describe?',
+        choices: [
+          'The cat is in the room.',
+          'The cat goes to the room.',
+          'The room likes the cat.',
+        ],
+        answer: 'The cat is in the room.',
+        support: 'にいます marks where an animate thing is, not where it goes.',
+      },
+      {
+        id: 'reading-check-watashi-sushi-suki-preference',
+        exampleId: 'ex-watashi-sushi-suki',
+        prompt: 'What is the speaker saying here?',
+        choices: [
+          'I like sushi.',
+          'I am sushi.',
+          'I eat sushi at home.',
+        ],
+        answer: 'I like sushi.',
+        support: 'すしがすきです is the beginner preference pattern: the thing you like comes before が.',
+      },
+      {
+        id: 'reading-check-toire-doko-question',
+        exampleId: 'ex-toire-doko',
+        prompt: 'What kind of sentence is this?',
+        choices: [
+          'A where-question asking for a location.',
+          'A statement that says the bathroom is over there.',
+          'A sentence about going to the bathroom.',
+        ],
+        answer: 'A where-question asking for a location.',
+        support: 'どこですか signals a polite where-question, so read it as asking for location information.',
+      },
+      {
+        id: 'reading-check-kagi-tsukue-ue-location',
+        exampleId: 'ex-kagi-tsukue-ue-arimasu',
+        prompt: 'Which English meaning is the best match?',
+        choices: [
+          'The key is on the desk.',
+          'The desk is under the key.',
+          'The key goes to the desk.',
+        ],
+        answer: 'The key is on the desk.',
+        support: 'つくえのうえにあります gives a full location phrase: "on the desk" before the existence verb.',
+      },
+    ],
+  },
 ] satisfies Mission[];

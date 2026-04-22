@@ -86,8 +86,9 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
   {
     id: 'reading-recognition',
     label: 'Reading recognition',
-    available: false,
-    noteIfUnavailable: 'Not enough data yet. The MVP does not have dedicated reading checks or reading missions yet.',
+    missionTargetSkills: ['reading-recognition'],
+    itemTypes: ['reading-check'],
+    available: true,
   },
   {
     id: 'output-confidence',
