@@ -36,6 +36,7 @@
 - Content expansion pack 5 around where-questions with `どこですか` and simple location answers
 - Content expansion pack 6 around possession and family/object identification with `の`
 - Content expansion pack 7 around simple everyday verb forms with `ます` and `ません`
+- Content expansion pack 8 around simple descriptive adjective lines for daily objects, places, and people
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
@@ -55,10 +56,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 26 starter missions across 4 mission types:
-  - 7 grammar
-  - 7 listening
-  - 7 output
+- User can complete 29 starter missions across 4 mission types:
+  - 8 grammar
+  - 8 listening
+  - 8 output
   - 5 reading
 - Grammar missions currently include:
   - lesson intro
@@ -99,6 +100,7 @@
   - where-questions with `どこですか`
   - possession and family/object lines like `これはわたしのほんです` and `それはあねのかばんです`
   - simple daily-life verb-form lines like `あさパンをたべます` and `きょうコーヒーをのみません`
+  - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
   - location-focused reading prompts like `かぎはどこですか`, `トイレはあそこです`, and `せんせいはじむしょにいます`
@@ -108,18 +110,19 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 14 grammar lessons
-  - 67 example sentences
-  - 80 vocab items
-  - 34 listening items
-  - 26 missions
+  - 16 grammar lessons
+  - 79 example sentences
+  - 91 vocab items
+  - 39 listening items
+  - 29 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
 - Reading slice is still intentionally small: 5 reading missions with 25 total multiple-choice checks, all built from existing example sentences
 - Verb-form coverage is now instrumented, but it is still narrow and mostly reflects one daily-life `ます` / `ません` pack rather than broad conjugation coverage
-- Pack 7 listening items are audio-ready in content, but their matching MP3 files are not generated yet
+- Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
+- Pack 8 listening items are audio-ready in content, but their matching MP3 files are not generated yet
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
@@ -129,7 +132,7 @@
 
 ## Next Recommended Slices
 
-1. Generate MP3 files for the 5 new pack-7 listening items so Settings regains full audio coverage for current content.
+1. Generate MP3 files for the 5 new pack-8 listening items so Settings regains full audio coverage for current content.
 2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
 3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
 4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
@@ -173,6 +176,8 @@
   - position words with `の + うえ / した / なか + に`
   - possession with `noun + の + noun`
   - polite present and negative daily-life verbs with `ます` / `ません`
+  - simple adjective predicates like `ほんはおもしろいです` and `へやはしずかです`
+  - adjective plus noun phrases like `あたらしいカメラ` and `しずかなへや`
   - preferences with `が すきです / きらいです`
   - category questions like `たべものはなにがすきですか`
   - where-questions like `トイレはどこですか`
@@ -182,10 +187,11 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 34 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 29 listening items
-- The 5 pack-7 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
-- Settings now reports manifest-backed listening coverage from the current generated asset list, so pack-7 audio will appear as missing until files are generated and the manifest is synced
+- Listening items may include `audioRef`; all 39 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 34 listening items
+- Before this pass, this file was stale: the repo already had full generated audio coverage through pack 7, but the status text still claimed pack-7 files were missing
+- The 5 pack-8 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
+- Settings now reports manifest-backed listening coverage from the current generated asset list, so pack-8 audio will appear as missing until files are generated and the manifest is synced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

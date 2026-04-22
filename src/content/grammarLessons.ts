@@ -520,4 +520,88 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-adjectives-predicates',
+    title: 'Describe things with simple adjective predicates',
+    objective:
+      'Use short beginner adjective statements to describe everyday objects, places, and people.',
+    explanation:
+      'In polite beginner Japanese, you can describe something by putting the topic first and ending with an adjective plus です, as in ほんはおもしろいです or へやはしずかです. This gives you practical daily lines for books, bags, rooms, cameras, and people.',
+    prerequisites: ['grammar-topic-desu'],
+    tags: ['adjectives', 'description', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-hon-omoshiroi',
+      'ex-kaban-ookii',
+      'ex-heya-shizuka',
+      'ex-kamera-atarashii',
+      'ex-hon-furui',
+    ],
+    commonMistakes: [
+      'Dropping です when the lesson is teaching a polite beginner statement.',
+      'Using a noun where the sentence needs an adjective description.',
+      'Forgetting the topic marker は in a basic adjective predicate line.',
+    ],
+    drills: [
+      {
+        id: 'drill-adjective-predicate-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The room is quiet."',
+        answer: 'へやはしずかです。',
+        choices: [
+          'へやはしずかです。',
+          'へやはしずかなです。',
+          'しずかへやはです。',
+        ],
+      },
+      {
+        id: 'drill-adjective-predicate-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: ほんはおもしろい___。',
+        answer: 'です',
+        support: 'Use です to finish the polite beginner description.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-adjectives-noun-description',
+    title: 'Use adjectives before nouns',
+    objective:
+      'Build simple adjective plus noun phrases for everyday beginner descriptions.',
+    explanation:
+      'You can place an adjective directly before a noun, as in あたらしいカメラ or ひろいへや. Some common adjectives need な before the noun, as in しずかなへや or きれいなみせ. This helps you make short, practical description phrases.',
+    prerequisites: ['grammar-adjectives-predicates'],
+    tags: ['adjectives', 'noun-phrases', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-atarashii-kamera-desu',
+      'ex-shizuka-heya-desu',
+      'ex-kirei-mise-desu',
+      'ex-yasashii-sensei-desu',
+      'ex-hiroi-heya-desu',
+    ],
+    commonMistakes: [
+      'Adding な after an い-adjective like あたらしい.',
+      'Forgetting な before a noun with adjectives like しずか or きれい.',
+      'Breaking the adjective and noun apart before the description is complete.',
+    ],
+    drills: [
+      {
+        id: 'drill-adjective-noun-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "It is a quiet room."',
+        answer: 'しずかなへやです。',
+        choices: [
+          'しずかへやです。',
+          'しずかなへやです。',
+          'しずかですへや。',
+        ],
+      },
+      {
+        id: 'drill-adjective-noun-2',
+        type: 'reorder',
+        prompt: 'Reorder: あたらしい / カメラです',
+        answer: 'あたらしいカメラです。',
+        support: 'Keep the adjective directly before the noun.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

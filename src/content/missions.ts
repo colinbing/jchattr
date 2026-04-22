@@ -1086,4 +1086,111 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-adjectives-daily-description',
+    type: 'grammar',
+    title: 'Describe everyday things with adjectives',
+    targetSkill: 'sentence-structure',
+    contentRefs: {
+      grammarLessonIds: ['grammar-adjectives-predicates', 'grammar-adjectives-noun-description'],
+      vocabIds: [
+        'vocab-omoshiroi',
+        'vocab-ookii',
+        'vocab-shizuka',
+        'vocab-atarashii',
+        'vocab-furui',
+        'vocab-kirei',
+        'vocab-yasashii',
+        'vocab-hiroi',
+        'vocab-hon',
+        'vocab-kaban',
+        'vocab-heya',
+        'vocab-kamera',
+        'vocab-mise',
+      ],
+      exampleIds: [
+        'ex-hon-omoshiroi',
+        'ex-kaban-ookii',
+        'ex-heya-shizuka',
+        'ex-kamera-atarashii',
+        'ex-atarashii-kamera-desu',
+        'ex-shizuka-heya-desu',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-verb-forms-routine'],
+    },
+  },
+  {
+    id: 'mission-listening-adjective-descriptions',
+    type: 'listening',
+    title: 'Hear short everyday descriptions',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-adjectives-predicates', 'grammar-adjectives-noun-description'],
+      listeningItemIds: [
+        'listening-hon-omoshiroi',
+        'listening-kaban-ookii',
+        'listening-heya-shizuka',
+        'listening-kamera-atarashii',
+        'listening-kirei-mise',
+      ],
+      exampleIds: [
+        'ex-hon-omoshiroi',
+        'ex-kaban-ookii',
+        'ex-heya-shizuka',
+        'ex-kamera-atarashii',
+        'ex-kirei-mise-desu',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-adjectives-daily-description'],
+    },
+  },
+  {
+    id: 'mission-output-adjective-descriptions',
+    type: 'output',
+    title: 'Write one adjective line and one description phrase',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-adjectives-predicates', 'grammar-adjectives-noun-description'],
+      vocabIds: [
+        'vocab-omoshiroi',
+        'vocab-shizuka',
+        'vocab-hon',
+        'vocab-heya',
+      ],
+      exampleIds: [
+        'ex-hon-omoshiroi',
+        'ex-shizuka-heya-desu',
+        'ex-kamera-atarashii',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-adjectives-daily-description'],
+    },
+    outputTasks: [
+      {
+        id: 'output-hon-omoshiroi',
+        prompt: 'Type a line that says: "The book is interesting."',
+        acceptableAnswers: ['ほんはおもしろいです。', 'ほんはおもしろいです'],
+        hint: 'Use the topic ほんは first, then the adjective plus です.',
+        evaluation: {
+          tokenPatterns: [['ほん', 'は', 'おもしろい', 'です']],
+        },
+      },
+      {
+        id: 'output-shizuka-heya-desu',
+        prompt: 'Type a line that says: "It is a quiet room."',
+        acceptableAnswers: ['しずかなへやです。', 'しずかなへやです'],
+        hint: 'Use しずかな directly before へや, then finish with です.',
+        evaluation: {
+          tokenPatterns: [['しずか', 'な', 'へや', 'です']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];
