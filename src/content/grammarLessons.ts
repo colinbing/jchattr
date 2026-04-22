@@ -604,4 +604,86 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-verb-forms-mashita-routine',
+    title: 'Recent-action lines with ました',
+    objective:
+      'Use polite past-tense verbs for short recent-action and yesterday lines.',
+    explanation:
+      'Change the polite present ます ending to ました to say what someone did, as in きのうほんをよみました or カフェでコーヒーをのみました. This keeps the same familiar beginner word order while adding a clear past-time meaning.',
+    prerequisites: ['grammar-verb-forms-masu-routine'],
+    tags: ['verb-forms', 'past-tense', 'daily-routine', 'n5'],
+    exampleIds: [
+      'ex-kinou-hon-yomimashita',
+      'ex-asa-pan-tabemashita',
+      'ex-kafe-koohii-nomimashita',
+      'ex-kyou-toshokan-ikimashita',
+      'ex-kinou-uchi-nihongo-benkyoushimashita',
+    ],
+    commonMistakes: [
+      'Leaving the verb in ます form when the sentence is supposed to describe a completed action.',
+      'Changing the familiar particle pattern instead of only changing the verb ending to ました.',
+      'Treating ました as plain past when the lesson is teaching polite beginner Japanese.',
+    ],
+    drills: [
+      {
+        id: 'drill-verb-mashita-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Yesterday I read a book."',
+        answer: 'きのうほんをよみました。',
+        choices: [
+          'きのうほんをよみます。',
+          'きのうほんをよみました。',
+          'きのうはよみましたほんを。',
+        ],
+      },
+      {
+        id: 'drill-verb-mashita-2',
+        type: 'reorder',
+        prompt: 'Reorder: カフェで / コーヒーを / のみました',
+        answer: 'カフェでコーヒーをのみました。',
+        support: 'Keep the familiar place plus object order, then finish with the polite past verb.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-verb-forms-masendeshita',
+    title: 'Simple negative past with ませんでした',
+    objective:
+      'Say clear beginner negative-past lines about what someone did not do.',
+    explanation:
+      'Use ませんでした to say that an action did not happen, as in きのうコーヒーをのみませんでした or きのうがっこうにいきませんでした. This keeps the same beginner daily-life patterns while adding a practical recent-action contrast.',
+    prerequisites: ['grammar-verb-forms-mashita-routine'],
+    tags: ['verb-forms', 'negative', 'past-tense', 'n5'],
+    exampleIds: [
+      'ex-kinou-koohii-nomimasendeshita',
+      'ex-kinou-gakkou-ikimasendeshita',
+      'ex-kinou-eiga-mimasendeshita',
+    ],
+    commonMistakes: [
+      'Stopping at ません when the sentence needs a past negative rather than a present negative.',
+      'Changing the sentence into a different tense instead of only changing the verb ending.',
+      'Dropping familiar particles like を or に while focusing on the longer verb ending.',
+    ],
+    drills: [
+      {
+        id: 'drill-verb-masendeshita-1',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: きのうコーヒーをのみ___。',
+        answer: 'ませんでした',
+        support: 'Use ませんでした for a polite negative past action.',
+      },
+      {
+        id: 'drill-verb-masendeshita-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Yesterday I did not go to school."',
+        answer: 'きのうがっこうにいきませんでした。',
+        choices: [
+          'きのうがっこうでいきませんでした。',
+          'きのうがっこうにいきませんでした。',
+          'きのうはいきませんでしたがっこうに。',
+        ],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

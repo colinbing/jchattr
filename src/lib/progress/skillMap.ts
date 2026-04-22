@@ -68,7 +68,12 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
     id: 'verb-forms',
     label: 'Verb forms',
     missionTargetSkills: ['verb-forms'],
-    grammarLessonIds: ['grammar-verb-forms-masu-routine', 'grammar-verb-forms-masen'],
+    grammarLessonIds: [
+      'grammar-verb-forms-masu-routine',
+      'grammar-verb-forms-masen',
+      'grammar-verb-forms-mashita-routine',
+      'grammar-verb-forms-masendeshita',
+    ],
     itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
     available: true,
   },

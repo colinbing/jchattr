@@ -1193,4 +1193,109 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-verb-forms-past-routine',
+    type: 'grammar',
+    title: 'Talk about what you did with polite past verbs',
+    targetSkill: 'verb-forms',
+    contentRefs: {
+      grammarLessonIds: ['grammar-verb-forms-mashita-routine', 'grammar-verb-forms-masendeshita'],
+      vocabIds: [
+        'vocab-kinou',
+        'vocab-yomimashita',
+        'vocab-tabemashita',
+        'vocab-nomimashita',
+        'vocab-ikimashita',
+        'vocab-benkyoushimashita',
+        'vocab-nomimasendeshita',
+        'vocab-ikimasendeshita',
+      ],
+      exampleIds: [
+        'ex-kinou-hon-yomimashita',
+        'ex-asa-pan-tabemashita',
+        'ex-kafe-koohii-nomimashita',
+        'ex-kyou-toshokan-ikimashita',
+        'ex-kinou-koohii-nomimasendeshita',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-adjectives-daily-description'],
+    },
+  },
+  {
+    id: 'mission-listening-verb-forms-past-actions',
+    type: 'listening',
+    title: 'Hear short recent-action lines',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-verb-forms-mashita-routine', 'grammar-verb-forms-masendeshita'],
+      listeningItemIds: [
+        'listening-kinou-hon-yomimashita',
+        'listening-asa-pan-tabemashita',
+        'listening-kafe-koohii-nomimashita',
+        'listening-kyou-toshokan-ikimashita',
+        'listening-kinou-koohii-nomimasendeshita',
+      ],
+      exampleIds: [
+        'ex-kinou-hon-yomimashita',
+        'ex-asa-pan-tabemashita',
+        'ex-kafe-koohii-nomimashita',
+        'ex-kyou-toshokan-ikimashita',
+        'ex-kinou-koohii-nomimasendeshita',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-verb-forms-past-routine'],
+    },
+  },
+  {
+    id: 'mission-output-verb-forms-past-actions',
+    type: 'output',
+    title: 'Write one past line and one negative-past line',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-verb-forms-mashita-routine', 'grammar-verb-forms-masendeshita'],
+      vocabIds: [
+        'vocab-kinou',
+        'vocab-yomimashita',
+        'vocab-nomimasendeshita',
+        'vocab-hon',
+        'vocab-koohii',
+      ],
+      exampleIds: [
+        'ex-kinou-hon-yomimashita',
+        'ex-kinou-koohii-nomimasendeshita',
+        'ex-kafe-koohii-nomimashita',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-verb-forms-past-routine'],
+    },
+    outputTasks: [
+      {
+        id: 'output-kinou-hon-yomimashita',
+        prompt: 'Type a line that says: "I read a book yesterday."',
+        acceptableAnswers: ['きのうほんをよみました。', 'きのうほんをよみました'],
+        hint: 'Use the time word first, then the object phrase, then the past polite verb よみました.',
+        evaluation: {
+          tokenPatterns: [['きのう', 'ほん', 'を', 'よみました']],
+        },
+      },
+      {
+        id: 'output-kinou-koohii-nomimasendeshita',
+        prompt: 'Type a line that says: "I did not drink coffee yesterday."',
+        acceptableAnswers: [
+          'きのうコーヒーをのみませんでした。',
+          'きのうコーヒーをのみませんでした',
+        ],
+        hint: 'Use the time word first, then the object phrase, then the negative-past ending ませんでした.',
+        evaluation: {
+          tokenPatterns: [['きのう', 'コーヒー', 'を', 'のみませんでした']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];
