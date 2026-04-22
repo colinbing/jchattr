@@ -42,6 +42,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-heya-shizuka.mp3',
   '/audio/listening/listening-kamera-atarashii.mp3',
   '/audio/listening/listening-kirei-mise.mp3',
+  '/audio/listening/listening-kinou-hon-yomimashita.mp3',
+  '/audio/listening/listening-asa-pan-tabemashita.mp3',
+  '/audio/listening/listening-kafe-koohii-nomimashita.mp3',
+  '/audio/listening/listening-kyou-toshokan-ikimashita.mp3',
+  '/audio/listening/listening-kinou-koohii-nomimasendeshita.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
