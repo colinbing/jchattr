@@ -22,6 +22,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-ongaku-suki.mp3',
   '/audio/listening/listening-nani-suki.mp3',
   '/audio/listening/listening-tabemono-nani-suki.mp3',
+  '/audio/listening/listening-toire-doko.mp3',
+  '/audio/listening/listening-toire-asoko.mp3',
+  '/audio/listening/listening-kagi-doko.mp3',
+  '/audio/listening/listening-kagi-tsukue-ue.mp3',
+  '/audio/listening/listening-sensei-jimusho.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
