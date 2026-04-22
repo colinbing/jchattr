@@ -979,4 +979,111 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-verb-forms-routine',
+    type: 'grammar',
+    title: 'Use ます and ません in daily routines',
+    targetSkill: 'verb-forms',
+    contentRefs: {
+      grammarLessonIds: ['grammar-verb-forms-masu-routine'],
+      vocabIds: [
+        'vocab-tabemasu',
+        'vocab-yomimasu',
+        'vocab-mimasu',
+        'vocab-kikimasu',
+        'vocab-asa',
+        'vocab-yoru',
+        'vocab-pan',
+        'vocab-terebi',
+        'vocab-kouen',
+      ],
+      exampleIds: [
+        'ex-asa-pan-tabemasu',
+        'ex-yoru-hon-yomimasu',
+        'ex-uchi-terebi-mimasu',
+        'ex-kouen-ongaku-kikimasu',
+        'ex-yoru-nihongo-benkyoushimasu',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-possession-no'],
+    },
+  },
+  {
+    id: 'mission-listening-verb-forms-daily-life',
+    type: 'listening',
+    title: 'Hear everyday ます and ません lines',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-verb-forms-masu-routine', 'grammar-verb-forms-masen'],
+      listeningItemIds: [
+        'listening-asa-pan-tabemasu',
+        'listening-yoru-hon-yomimasu',
+        'listening-uchi-terebi-mimasu',
+        'listening-kyou-koohii-nomimasen',
+        'listening-ashita-toshokan-ikimasen',
+      ],
+      exampleIds: [
+        'ex-asa-pan-tabemasu',
+        'ex-yoru-hon-yomimasu',
+        'ex-uchi-terebi-mimasu',
+        'ex-kyou-koohii-nomimasen',
+        'ex-ashita-toshokan-ikimasen',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-verb-forms-routine'],
+    },
+  },
+  {
+    id: 'mission-output-verb-forms-daily-life',
+    type: 'output',
+    title: 'Write one routine line and one negative line',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-verb-forms-masu-routine', 'grammar-verb-forms-masen'],
+      vocabIds: [
+        'vocab-yomimasu',
+        'vocab-yoru',
+        'vocab-hon',
+        'vocab-koohii',
+        'vocab-kyou',
+        'vocab-nomimasu',
+      ],
+      exampleIds: [
+        'ex-yoru-hon-yomimasu',
+        'ex-kyou-koohii-nomimasen',
+        'ex-asa-pan-tabemasu',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-verb-forms-routine'],
+    },
+    outputTasks: [
+      {
+        id: 'output-yoru-hon-yomimasu',
+        prompt: 'Type a line that says: "I read a book at night."',
+        acceptableAnswers: ['よるほんをよみます。', 'よるほんをよみます'],
+        hint: 'Use the time word first, then ほんを, then the polite verb よみます.',
+        evaluation: {
+          tokenPatterns: [['よる', 'ほん', 'を', 'よみます']],
+        },
+      },
+      {
+        id: 'output-kyou-koohii-nomimasen',
+        prompt: 'Type a line that says: "I do not drink coffee today."',
+        acceptableAnswers: [
+          'きょうコーヒーをのみません。',
+          'きょうコーヒーをのみません',
+        ],
+        hint: 'Use the time word first, then the object phrase, then the negative polite ending ません.',
+        evaluation: {
+          tokenPatterns: [['きょう', 'コーヒー', 'を', 'のみません']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];

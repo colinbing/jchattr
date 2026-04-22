@@ -7,9 +7,9 @@
 
 ## Current Phase / Status
 
-- Phase: late Phase 2, approaching Phase 3
+- Phase: early Phase 3
 - Status: the core MVP loop is working end-to-end with starter content, a real mission library, local progress, weak-point tracking, and a deterministic review/recommendation loop
-- Interpretation: this now feels like a usable local MVP with repeatable mission flow; the biggest gaps are content breadth and deeper review/personalization, not missing core study surfaces
+- Interpretation: this now feels like a usable local MVP with repeatable mission flow and several coherent beginner content lanes; the biggest gaps are content breadth and deeper review/personalization, not missing core study surfaces
 
 ## Completed Major Slices
 
@@ -35,6 +35,7 @@
 - Content expansion pack 4 around likes, dislikes, and simple preference questions
 - Content expansion pack 5 around where-questions with `どこですか` and simple location answers
 - Content expansion pack 6 around possession and family/object identification with `の`
+- Content expansion pack 7 around simple everyday verb forms with `ます` and `ません`
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
@@ -54,10 +55,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 23 starter missions across 4 mission types:
-  - 6 grammar
-  - 6 listening
-  - 6 output
+- User can complete 26 starter missions across 4 mission types:
+  - 7 grammar
+  - 7 listening
+  - 7 output
   - 5 reading
 - Grammar missions currently include:
   - lesson intro
@@ -85,8 +86,7 @@
 - Progress screen currently shows:
   - mission completion totals
   - weak-point totals
-  - skill tiers for particles, sentence structure, listening comprehension, reading recognition, and output confidence
-  - verb forms is still explicitly marked as not yet instrumented
+  - skill tiers for particles, verb forms, sentence structure, listening comprehension, reading recognition, and output confidence
 - Current content themes now include:
   - topic statements with `は` / `です`
   - place of action with `で`
@@ -98,6 +98,7 @@
   - simple preference questions like `なにがすきですか`
   - where-questions with `どこですか`
   - possession and family/object lines like `これはわたしのほんです` and `それはあねのかばんです`
+  - simple daily-life verb-form lines like `あさパンをたべます` and `きょうコーヒーをのみません`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
   - location-focused reading prompts like `かぎはどこですか`, `トイレはあそこです`, and `せんせいはじむしょにいます`
@@ -107,17 +108,18 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 12 grammar lessons
-  - 57 example sentences
-  - 69 vocab items
-  - 29 listening items
-  - 23 missions
+  - 14 grammar lessons
+  - 67 example sentences
+  - 80 vocab items
+  - 34 listening items
+  - 26 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
 - Reading slice is still intentionally small: 5 reading missions with 25 total multiple-choice checks, all built from existing example sentences
-- Pack 6 listening items are audio-ready in content, but their matching MP3 files are not generated yet
+- Verb-form coverage is now instrumented, but it is still narrow and mostly reflects one daily-life `ます` / `ません` pack rather than broad conjugation coverage
+- Pack 7 listening items are audio-ready in content, but their matching MP3 files are not generated yet
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
@@ -127,11 +129,11 @@
 
 ## Next Recommended Slices
 
-1. Generate MP3 files for the 5 new pack-6 listening items so Settings regains full audio coverage for current content.
+1. Generate MP3 files for the 5 new pack-7 listening items so Settings regains full audio coverage for current content.
 2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
 3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
 4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-5. Add verb-form-specific content and checks if Progress needs that skill area to become instrumented.
+5. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence than the current `ます` / `ません` slice.
 6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
@@ -170,6 +172,7 @@
   - existence with `あります` / `います`
   - position words with `の + うえ / した / なか + に`
   - possession with `noun + の + noun`
+  - polite present and negative daily-life verbs with `ます` / `ません`
   - preferences with `が すきです / きらいです`
   - category questions like `たべものはなにがすきですか`
   - where-questions like `トイレはどこですか`
@@ -179,10 +182,10 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 29 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 24 listening items
-- The 5 pack-6 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
-- Settings now reports manifest-backed listening coverage from the current generated asset list, so pack-6 audio will appear as missing until files are generated and the manifest is synced
+- Listening items may include `audioRef`; all 34 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 29 listening items
+- The 5 pack-7 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
+- Settings now reports manifest-backed listening coverage from the current generated asset list, so pack-7 audio will appear as missing until files are generated and the manifest is synced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

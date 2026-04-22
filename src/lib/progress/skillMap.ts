@@ -67,8 +67,10 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
   {
     id: 'verb-forms',
     label: 'Verb forms',
-    available: false,
-    noteIfUnavailable: 'Not enough data yet. Current starter content does not isolate verb-form practice.',
+    missionTargetSkills: ['verb-forms'],
+    grammarLessonIds: ['grammar-verb-forms-masu-routine', 'grammar-verb-forms-masen'],
+    itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
+    available: true,
   },
   {
     id: 'sentence-structure',

@@ -437,4 +437,87 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-verb-forms-masu-routine',
+    title: 'Daily routine lines with ます',
+    objective:
+      'Use polite present and habitual verb forms in short daily-life statements.',
+    explanation:
+      'Use the polite ます form for simple present and routine statements like あさパンをたべます or うちでテレビをみます. This keeps beginner daily-life lines clean and practical while reinforcing already familiar place, time, and object patterns.',
+    prerequisites: ['grammar-place-de', 'grammar-destination-ni'],
+    tags: ['verb-forms', 'daily-routine', 'polite', 'n5'],
+    exampleIds: [
+      'ex-asa-pan-tabemasu',
+      'ex-yoru-hon-yomimasu',
+      'ex-uchi-terebi-mimasu',
+      'ex-kouen-ongaku-kikimasu',
+      'ex-yoru-nihongo-benkyoushimasu',
+    ],
+    commonMistakes: [
+      'Dropping ます and leaving only the verb stem in a polite beginner sentence.',
+      'Using the wrong particle before the verb, such as に instead of で for the place of action.',
+      'Treating the ます line as past tense when it is a present or habitual statement.',
+    ],
+    drills: [
+      {
+        id: 'drill-verb-masu-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I watch TV at home."',
+        answer: 'うちでテレビをみます。',
+        choices: [
+          'うちにテレビをみます。',
+          'うちでテレビをみます。',
+          'テレビはうちでみです。',
+        ],
+      },
+      {
+        id: 'drill-verb-masu-2',
+        type: 'reorder',
+        prompt: 'Reorder: よる / ほんを / よみます',
+        answer: 'よるほんをよみます。',
+        support: 'Put the time expression first, then the object, then the polite verb.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-verb-forms-masen',
+    title: 'Simple negative present with ません',
+    objective:
+      'Say clear beginner negative daily-life lines with polite verbs ending in ません.',
+    explanation:
+      'Change the polite ます ending to ません to say that someone does not do something, as in きょうコーヒーをのみません or あしたとしょかんにいきません. This is a small but useful beginner contrast that stays close to the patterns already used in the app.',
+    prerequisites: ['grammar-verb-forms-masu-routine'],
+    tags: ['verb-forms', 'negative', 'daily-routine', 'n5'],
+    exampleIds: [
+      'ex-kyou-koohii-nomimasen',
+      'ex-ashita-toshokan-ikimasen',
+      'ex-uchi-terebi-mimasen',
+      'ex-asa-pan-tabemasen',
+    ],
+    commonMistakes: [
+      'Leaving the verb in ます form when the sentence is supposed to be negative.',
+      'Putting ません on a noun instead of on the polite verb.',
+      'Switching the sentence to an unrelated plain-form negative when the lesson is teaching polite beginner Japanese.',
+    ],
+    drills: [
+      {
+        id: 'drill-verb-masen-1',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: きょうコーヒーをのみ___。',
+        answer: 'ません',
+        support: 'Use ません to make the polite verb negative.',
+      },
+      {
+        id: 'drill-verb-masen-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I am not going to the library tomorrow."',
+        answer: 'あしたとしょかんにいきません。',
+        choices: [
+          'あしたとしょかんでいきません。',
+          'あしたとしょかんにいきません。',
+          'あしたはいきませんとしょかんに。',
+        ],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
