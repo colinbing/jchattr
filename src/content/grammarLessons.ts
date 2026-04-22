@@ -291,4 +291,68 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-where-doko-desu',
+    title: 'Ask where something is with どこですか',
+    objective:
+      'Ask where a place, person, or thing is in short polite Japanese questions.',
+    explanation:
+      'Put the topic first with は, then ask どこですか. This gives you a direct beginner pattern for questions like トイレはどこですか and せんせいはどこですか.',
+    prerequisites: ['grammar-preference-questions'],
+    tags: ['question', 'location', 'daily-conversation', 'n5'],
+    exampleIds: ['ex-toire-doko', 'ex-kagi-doko', 'ex-sensei-doko-desu'],
+    commonMistakes: [
+      'Dropping は before どこですか when the sentence needs a topic.',
+      'Using どこにですか instead of the simpler beginner pattern どこですか.',
+      'Putting どこ at the start and leaving the topic to the end.',
+    ],
+    drills: [
+      {
+        id: 'drill-where-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Where is the bathroom?"',
+        answer: 'トイレはどこですか。',
+        choices: ['どこトイレですか。', 'トイレはどこですか。', 'トイレはどこにですか。'],
+      },
+      {
+        id: 'drill-where-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: かぎは___ですか。',
+        answer: 'どこ',
+        support: 'Use どこ before ですか to ask where something is.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-location-answer-places',
+    title: 'Answer where questions with ここ, そこ, あそこ and simple location lines',
+    objective:
+      'Give short location answers after a where-question using simple place or existence patterns.',
+    explanation:
+      'For very short answers, use ここです, そこです, or あそこです. When you need a fuller answer about a person or thing, use the location pattern already established in the app, such as つくえのうえにあります or じむしょにいます.',
+    prerequisites: ['grammar-where-doko-desu'],
+    tags: ['location', 'answer-patterns', 'daily-conversation', 'n5'],
+    exampleIds: ['ex-toire-asoko', 'ex-jimusho-koko', 'ex-genkan-soko'],
+    commonMistakes: [
+      'Mixing up ここ, そこ, and あそこ without keeping the answer simple and direct.',
+      'Answering only with a place noun when the lesson is teaching ここです / そこです / あそこです.',
+      'Forgetting that fuller location answers can still use にあります or にいます.',
+    ],
+    drills: [
+      {
+        id: 'drill-location-answer-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural answer for "The bathroom is over there."',
+        answer: 'トイレはあそこです。',
+        choices: ['トイレはあそこです。', 'トイレはどこです。', 'あそこはトイレどこです。'],
+      },
+      {
+        id: 'drill-location-answer-2',
+        type: 'reorder',
+        prompt: 'Reorder: じむしょは / ここです',
+        answer: 'じむしょはここです。',
+        support: 'Keep the topic first, then the short location answer.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

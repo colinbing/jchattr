@@ -376,4 +376,98 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-where-doko-desu',
+    type: 'grammar',
+    title: 'Ask where something is with どこですか',
+    targetSkill: 'sentence-structure',
+    contentRefs: {
+      grammarLessonIds: ['grammar-where-doko-desu'],
+      vocabIds: [
+        'vocab-toire',
+        'vocab-kagi',
+        'vocab-jitensha',
+        'vocab-doko-desu',
+        'vocab-sensei',
+      ],
+      exampleIds: [
+        'ex-toire-doko',
+        'ex-kagi-doko',
+        'ex-sensei-doko-desu',
+        'ex-jitensha-doko',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-preference-suki-kirai'],
+    },
+  },
+  {
+    id: 'mission-listening-where-things-are',
+    type: 'listening',
+    title: 'Hear where things and places are',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-where-doko-desu', 'grammar-location-answer-places'],
+      listeningItemIds: [
+        'listening-toire-doko',
+        'listening-toire-asoko',
+        'listening-kagi-doko',
+        'listening-kagi-tsukue-ue',
+        'listening-sensei-jimusho',
+      ],
+      exampleIds: [
+        'ex-toire-doko',
+        'ex-toire-asoko',
+        'ex-kagi-doko',
+        'ex-kagi-tsukue-ue-arimasu',
+        'ex-sensei-jimusho-imasu',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-where-doko-desu'],
+    },
+  },
+  {
+    id: 'mission-output-where-answers',
+    type: 'output',
+    title: 'Ask one where-question and answer one location',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-where-doko-desu', 'grammar-location-answer-places'],
+      vocabIds: [
+        'vocab-toire',
+        'vocab-kagi',
+        'vocab-tsukue',
+        'vocab-ue',
+        'vocab-doko-desu',
+      ],
+      exampleIds: ['ex-toire-doko', 'ex-kagi-tsukue-ue-arimasu', 'ex-toire-asoko'],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-where-doko-desu'],
+    },
+    outputTasks: [
+      {
+        id: 'output-toire-doko',
+        prompt: 'Type a polite question that says: "Where is the bathroom?"',
+        acceptableAnswers: ['トイレはどこですか。', 'トイレはどこですか'],
+        hint: 'Use the topic first, then どこですか.',
+        evaluation: {
+          tokenPatterns: [['トイレ', 'は', 'どこ', 'です', 'か']],
+        },
+      },
+      {
+        id: 'output-kagi-tsukue-ue',
+        prompt: 'Type a line that says: "The key is on the desk."',
+        acceptableAnswers: ['かぎはつくえのうえにあります。', 'かぎはつくえのうえにあります'],
+        hint: 'Use the topic first, then the location phrase つくえのうえに, then あります.',
+        evaluation: {
+          tokenPatterns: [['かぎ', 'は', 'つくえ', 'の', 'うえ', 'に', 'あります']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];

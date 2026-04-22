@@ -28,6 +28,7 @@
 - Progress page with simple skill-map tiers derived from completions and misses
 - Content expansion pack 3 around existence and room/object locations
 - Content expansion pack 4 around likes, dislikes, and simple preference questions
+- Content expansion pack 5 around where-questions with `どこですか` and simple location answers
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
@@ -47,10 +48,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 12 starter missions across 3 mission types:
-  - 4 grammar
-  - 4 listening
-  - 4 output
+- User can complete 15 starter missions across 3 mission types:
+  - 5 grammar
+  - 5 listening
+  - 5 output
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -83,15 +84,17 @@
   - room/object position with `の + うえ / した / なか + に`
   - likes and dislikes with `が すきです / きらいです`
   - simple preference questions like `なにがすきですか`
+  - where-questions with `どこですか`
+  - short location answers with `ここ / そこ / あそこ` and existing location phrases
 
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 8 grammar lessons
-  - 37 example sentences
-  - 47 vocab items
-  - 19 listening items
-  - 12 missions
+  - 10 grammar lessons
+  - 47 example sentences
+  - 57 vocab items
+  - 24 listening items
+  - 15 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -107,10 +110,10 @@
 ## Next Recommended Slices
 
 1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-2. Generate audio files for the 5 new preference listening items so Settings and the listening flow regain full coverage for current content.
+2. Generate audio files for the 10 missing pack-4 and pack-5 listening items so Settings and the listening flow regain full coverage for current content.
 3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
 4. Add a first reading-specific slice only after the current mission/review/settings surfaces are stronger.
-5. Expand output content using the new token-pattern evaluation path rather than broadening into AI grading.
+5. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
 6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
@@ -149,12 +152,14 @@
   - position words with `の + うえ / した / なか + に`
   - preferences with `が すきです / きらいです`
   - category questions like `たべものはなにがすきですか`
+  - where-questions like `トイレはどこですか`
+  - location answers like `トイレはあそこです` and `かぎはつくえのうえにあります`
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 19 current listening items point to static files under `public/audio/listening`
+- Listening items may include `audioRef`; all 24 current listening items point to static files under `public/audio/listening`
 - Matching MP3 files currently exist for 14 listening items
-- The 5 pack-4 preference listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
+- The 10 pack-4 and pack-5 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
