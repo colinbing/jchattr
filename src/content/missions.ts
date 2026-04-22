@@ -49,6 +49,9 @@ export const missions = [
         prompt: 'Type a polite self-introduction line: "I am Colin."',
         acceptableAnswers: ['わたしはコリンです。', 'わたしはコリンです'],
         hint: 'Use は after the topic and finish with です.',
+        evaluation: {
+          tokenPatterns: [['わたし', 'は', 'コリン', 'です']],
+        },
       },
       {
         id: 'output-home-study',
@@ -58,6 +61,9 @@ export const missions = [
           'うちでにほんごをべんきょうします',
         ],
         hint: 'Put the place with で before the object and verb.',
+        evaluation: {
+          tokenPatterns: [['うち', 'で', 'にほんご', 'を', 'べんきょうします']],
+        },
       },
     ],
   },
@@ -138,6 +144,9 @@ export const missions = [
         prompt: 'Type a polite classroom question: "What is this?"',
         acceptableAnswers: ['これはなんですか。', 'これはなんですか'],
         hint: 'Use これは first, then なんですか.',
+        evaluation: {
+          tokenPatterns: [['これ', 'は', 'なん', 'です', 'か']],
+        },
       },
       {
         id: 'output-mainichi-gakkou',
@@ -147,6 +156,9 @@ export const missions = [
           'まいにちがっこうにいきます',
         ],
         hint: 'Put the destination with に before いきます.',
+        evaluation: {
+          tokenPatterns: [['まいにち', 'がっこう', 'に', 'いきます']],
+        },
       },
     ],
   },
@@ -237,12 +249,18 @@ export const missions = [
         prompt: 'Type a line that says: "The book is on the desk."',
         acceptableAnswers: ['ほんはつくえのうえにあります。', 'ほんはつくえのうえにあります'],
         hint: 'Use noun plus の plus うえ に before あります.',
+        evaluation: {
+          tokenPatterns: [['ほん', 'は', 'つくえ', 'の', 'うえ', 'に', 'あります']],
+        },
       },
       {
         id: 'output-neko-heya-imasu',
         prompt: 'Type a line that says: "The cat is in the room."',
         acceptableAnswers: ['ねこはへやにいます。', 'ねこはへやにいます'],
         hint: 'Use に after へや, then finish with います for the cat.',
+        evaluation: {
+          tokenPatterns: [['ねこ', 'は', 'へや', 'に', 'います']],
+        },
       },
     ],
   },
@@ -340,12 +358,21 @@ export const missions = [
           'わたしはアニメがすきです',
         ],
         hint: 'Use the thing plus が plus すきです. Adding わたしは is also acceptable.',
+        evaluation: {
+          tokenPatterns: [
+            ['アニメ', 'が', 'すき', 'です'],
+            ['わたし', 'は', 'アニメ', 'が', 'すき', 'です'],
+          ],
+        },
       },
       {
         id: 'output-nomimono-nani-suki',
         prompt: 'Type a polite question that says: "What drink do you like?"',
         acceptableAnswers: ['のみものはなにがすきですか。', 'のみものはなにがすきですか'],
         hint: 'Start with the category topic のみものは, then ask なにがすきですか.',
+        evaluation: {
+          tokenPatterns: [['のみもの', 'は', 'なに', 'が', 'すき', 'です', 'か']],
+        },
       },
     ],
   },

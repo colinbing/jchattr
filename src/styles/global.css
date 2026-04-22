@@ -865,6 +865,11 @@ button {
   color: var(--color-accent);
 }
 
+.mission-feedback--close {
+  background: rgba(233, 190, 108, 0.18);
+  color: #8c5a1d;
+}
+
 .mission-feedback--incorrect {
   background: rgba(197, 139, 77, 0.12);
   color: #7f4f21;

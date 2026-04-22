@@ -14,6 +14,7 @@ import {
   updateContinueState,
 } from '../../../lib/progress/continueState';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
+import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import { MissionCompletionCard } from './MissionCompletionCard';
 
 type OutputMissionPlayerProps = {
@@ -23,8 +24,6 @@ type OutputMissionPlayerProps = {
   relatedExamples: ExampleSentence[];
   relatedVocab: VocabItem[];
 };
-
-type OutputFeedback = 'correct' | 'incorrect' | null;
 
 export function OutputMissionPlayer({
   mission,
@@ -110,7 +109,7 @@ export function OutputMissionPlayer({
 
       <SurfaceCard
         title={`Output task ${currentTaskIndex + 1}`}
-        description="Keep the answer short and clean. Evaluation is a narrow local match against explicit starter answers."
+        description="Keep the answer short and clean. Evaluation stays local and rule-based, with light pattern feedback when you are close."
       >
         <div className="mission-step-panel">
           <OutputTaskCard missionId={mission.id} task={currentTask} />
@@ -195,21 +194,16 @@ type OutputTaskCardProps = {
 
 function OutputTaskCard({ missionId, task }: OutputTaskCardProps) {
   const [response, setResponse] = useState('');
-  const [feedback, setFeedback] = useState<OutputFeedback>(null);
+  const [feedback, setFeedback] = useState<OutputEvaluationResult | null>(null);
 
   function submitAnswer() {
     if (!response.trim()) {
       return;
     }
 
-    const nextFeedback =
-      task.acceptableAnswers.some(
-        (answer) => normalizeAnswer(answer) === normalizeAnswer(response),
-      )
-        ? 'correct'
-        : 'incorrect';
+    const nextFeedback = evaluateOutputResponse(task, response);
 
-    if (nextFeedback === 'incorrect') {
+    if (!nextFeedback.isAccepted) {
       recordWeakPoint({
         itemId: task.id,
         itemType: 'output-task',
@@ -274,26 +268,20 @@ function OutputTaskCard({ missionId, task }: OutputTaskCardProps) {
 
       {feedback ? (
         <div
-          className={`mission-feedback mission-feedback--${feedback}`}
+          className={`mission-feedback mission-feedback--${feedback.tone}`}
           role="status"
           aria-live="polite"
         >
-          <p className="mission-feedback__title">
-            {feedback === 'correct' ? 'Correct.' : 'Not quite.'}
-          </p>
+          <p className="mission-feedback__title">{feedback.title}</p>
           <p className="mission-feedback__body">
-            {feedback === 'correct'
-              ? 'Your line matches one of the explicit starter answers.'
-              : `Expected answer: ${task.acceptableAnswers[0]}`}
+            {feedback.isAccepted
+              ? feedback.message
+              : `${feedback.message} Expected pattern: ${feedback.expectedAnswer}`}
           </p>
         </div>
       ) : null}
     </div>
   );
-}
-
-function normalizeAnswer(value: string) {
-  return value.normalize('NFKC').replace(/\s+/g, '').replace(/[。.!?！？]/g, '');
 }
 
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {

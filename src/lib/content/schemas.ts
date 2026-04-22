@@ -82,6 +82,11 @@ export const outputTaskSchema = z.object({
   prompt: nonEmptyStringSchema,
   acceptableAnswers: z.array(nonEmptyStringSchema).min(1),
   hint: nonEmptyStringSchema.optional(),
+  evaluation: z
+    .object({
+      tokenPatterns: z.array(z.array(nonEmptyStringSchema).min(1)).min(1).optional(),
+    })
+    .optional(),
 });
 
 export const missionContentRefsSchema = z

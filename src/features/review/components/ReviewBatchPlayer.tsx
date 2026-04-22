@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { GrammarDrill } from '../../../lib/content/types';
+import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import type { ReviewBatchItem } from '../lib/reviewBatch';
 import {
   getListeningReviewChoices,
@@ -399,21 +400,17 @@ function OutputReviewCard({
   item: Extract<ReviewBatchItem, { type: 'output-task' }>;
 }) {
   const [response, setResponse] = useState('');
-  const [feedback, setFeedback] = useState<ReviewResult | null>(null);
+  const [feedback, setFeedback] = useState<OutputEvaluationResult | null>(null);
 
   function submitAnswer() {
     if (!response.trim()) {
       return;
     }
 
-    const result = item.task.acceptableAnswers.some(
-      (answer) => normalizeReviewAnswer(answer) === normalizeReviewAnswer(response),
-    )
-      ? 'correct'
-      : 'incorrect';
+    const result = evaluateOutputResponse(item.task, response);
 
     setFeedback(result);
-    onReviewed(result);
+    onReviewed(result.isAccepted ? 'correct' : 'incorrect');
   }
 
   return (
@@ -460,7 +457,28 @@ function OutputReviewCard({
         </button>
       </div>
 
-      {feedback ? <ReviewFeedback result={feedback} answer={item.task.acceptableAnswers[0]} /> : null}
+      {feedback ? <OutputReviewFeedback feedback={feedback} /> : null}
+    </div>
+  );
+}
+
+function OutputReviewFeedback({
+  feedback,
+}: {
+  feedback: OutputEvaluationResult;
+}) {
+  return (
+    <div
+      className={`mission-feedback mission-feedback--${feedback.tone}`}
+      role="status"
+      aria-live="polite"
+    >
+      <p className="mission-feedback__title">{feedback.title}</p>
+      <p className="mission-feedback__body">
+        {feedback.isAccepted
+          ? 'Retry recorded for this item.'
+          : `${feedback.message} Expected pattern: ${feedback.expectedAnswer}`}
+      </p>
     </div>
   );
 }

@@ -21,7 +21,7 @@
 - Settings page with local study-data reset controls and listening-audio coverage status
 - Grammar mission player
 - Listening mission player with staged reveal and optional audio playback
-- Output mission player with narrow typed-answer checking
+- Output mission player with local rule-based answer checking and short diagnostic feedback
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
@@ -64,7 +64,7 @@
   - short prompt
   - optional hint
   - textarea response
-  - exact-match evaluation against explicit accepted answers after normalization
+  - local evaluation with normalization, explicit accepted answers, and token-pattern diagnostics for close answers
 - Review loop currently:
   - selects top weak points by miss count, then recency
   - caps batch size at 3
@@ -94,7 +94,7 @@
   - 12 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
-- Output evaluation is strict and narrow; no pattern scoring, partial credit, or AI feedback
+- Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
@@ -108,9 +108,9 @@
 
 1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
 2. Generate audio files for the 5 new preference listening items so Settings and the listening flow regain full coverage for current content.
-3. Improve output evaluation without adding broad AI scope: support multiple acceptable patterns, light token/order checking, and clearer local feedback.
-4. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-5. Add reading-specific content and instrumentation only after the current mission/review/settings surfaces are stronger.
+3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
+4. Add a first reading-specific slice only after the current mission/review/settings surfaces are stronger.
+5. Expand output content using the new token-pattern evaluation path rather than broadening into AI grading.
 6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
@@ -138,6 +138,7 @@
 - Grammar drills support `multiple-choice`, `reorder`, and `fill-in`
 - Missions reference content through explicit `contentRefs`
 - Output prompts are embedded directly in mission records as `outputTasks`
+- Output tasks may include optional local evaluation token patterns for more forgiving rule-based checking
 - Unlock rules currently support `requiredMissionIds`
 - Current starter content is beginner/N5-oriented and centered on:
   - topic statements with `は` / `です`

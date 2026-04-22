@@ -79,6 +79,9 @@ export interface OutputTask {
   prompt: string;
   acceptableAnswers: string[];
   hint?: string;
+  evaluation?: {
+    tokenPatterns?: string[][];
+  };
 }
 
 export interface MissionContentRefs {
