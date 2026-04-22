@@ -8,8 +8,8 @@
 ## Current Phase / Status
 
 - Phase: late Phase 2, approaching Phase 3
-- Status: the core MVP loop is working end-to-end with starter content, local progress, weak-point tracking, and a deterministic review/recommendation loop
-- Interpretation: this feels more like a usable internal MVP than a broad content product; content breadth, mission-library depth, and settings/personalization are still thin
+- Status: the core MVP loop is working end-to-end with starter content, a real mission library, local progress, weak-point tracking, and a deterministic review/recommendation loop
+- Interpretation: this now feels like a usable local MVP with repeatable mission flow; the biggest gaps are still content breadth, settings, and deeper review/personalization
 
 ## Completed Major Slices
 
@@ -17,6 +17,7 @@
 - Typed content model with Zod validation and relation checks at load time
 - Starter content pack wired through a loader and `byId` indexes
 - Today screen with deterministic recommendations and continue-mission resume
+- Missions page with real library state for recommended, unlocked, locked, completed, and weak-point pressure
 - Grammar mission player
 - Listening mission player with staged reveal and optional audio playback
 - Output mission player with narrow typed-answer checking
@@ -24,6 +25,7 @@
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
 - Progress page with simple skill-map tiers derived from completions and misses
+- Content expansion pack 3 around existence and room/object locations
 
 ## Current App Capabilities
 
@@ -31,11 +33,17 @@
   - review first if weak points exist
   - next unlocked incomplete mission
   - one reinforcement / light-pass mission
+- User can open Missions and see all current missions with:
+  - recommended-today membership
+  - unlocked / locked state
+  - completed state
+  - weak-point pressure by mission
+  - plain-language unlock requirements
 - User can resume the last active mission from local continue state
-- User can complete 6 starter missions across 3 mission types:
-  - 2 grammar
-  - 2 listening
-  - 2 output
+- User can complete 9 starter missions across 3 mission types:
+  - 3 grammar
+  - 3 listening
+  - 3 output
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -59,16 +67,22 @@
   - weak-point totals
   - skill tiers for particles, sentence structure, listening comprehension, output confidence
   - verb forms and reading recognition are explicitly marked as not yet instrumented
+- Current content themes now include:
+  - topic statements with `は` / `です`
+  - place of action with `で`
+  - `なんですか` classroom questions
+  - destination with `に` + `いきます`
+  - existence with `あります` / `います`
+  - room/object position with `の + うえ / した / なか + に`
 
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 4 grammar lessons
-  - 18 example sentences
-  - 25 vocab items
-  - 9 listening items
-  - 6 missions
-- Missions page is still a placeholder shell, not a real library/queue
+  - 6 grammar lessons
+  - 26 example sentences
+  - 36 vocab items
+  - 14 listening items
+  - 9 missions
 - Settings page is still a placeholder shell; no preference persistence yet
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
@@ -83,12 +97,12 @@
 
 ## Next Recommended Slices
 
-1. Turn `/missions` into a real mission library with unlocked/completed/recommended states using existing progress and unlock data.
-2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-3. Improve output evaluation without adding broad AI scope: support multiple acceptable patterns, light token/order checking, and clearer local feedback.
-4. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-5. Add a first real Settings slice for local data reset, audio preferences, and visible content/store version info.
-6. Add reading-specific content and instrumentation only after the mission library and content expansion are in place.
+1. Add a first real Settings slice for local data reset, audio preferences, and visible content/store version info.
+2. Generate audio files for the 5 new listening items so the full listening set matches current `audioRef` coverage.
+3. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
+4. Improve output evaluation without adding broad AI scope: support multiple acceptable patterns, light token/order checking, and clearer local feedback.
+5. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
+6. Add reading-specific content and instrumentation only after the current mission/review/settings surfaces are stronger.
 
 ## Important Architecture Constraints
 
@@ -121,11 +135,14 @@
   - place of action with `で`
   - `なんですか` classroom questions
   - destination with `に` + `いきます`
+  - existence with `あります` / `います`
+  - position words with `の + うえ / した / なか + に`
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; current starter listening items all point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for all 9 starter listening items
+- Listening items may include `audioRef`; all 14 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for the original 9 listening items
+- The 5 pack-3 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Current generator uses the OpenAI Speech API with defaults:
   - model `gpt-4o-mini-tts`
@@ -142,3 +159,4 @@
 - Preserve the existing typed content and local-store patterns unless the task explicitly calls for change
 - Avoid unrelated refactors while expanding missions, progress, or review behavior
 - When extending content, keep IDs explicit and let the existing loader/schema checks enforce integrity
+- For audio work, check `public/audio/listening` before assuming a referenced `audioRef` file already exists

@@ -81,6 +81,11 @@ export function markReviewBatchComplete(
   return nextProgress;
 }
 
+export function resetReviewLoopProgress() {
+  writeReviewLoopProgress(EMPTY_REVIEW_LOOP_PROGRESS);
+  return EMPTY_REVIEW_LOOP_PROGRESS;
+}
+
 function subscribeToReviewLoopProgress(onStoreChange: () => void) {
   if (typeof window === 'undefined') {
     return () => undefined;

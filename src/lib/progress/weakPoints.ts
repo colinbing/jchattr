@@ -145,6 +145,11 @@ export function resolveWeakPointSuccess(itemId: string) {
   return nextWeakPoints;
 }
 
+export function resetWeakPoints() {
+  writeWeakPoints(EMPTY_WEAK_POINTS);
+  return EMPTY_WEAK_POINTS;
+}
+
 export function getWeakPointList(weakPoints: WeakPointStore) {
   return Object.values(weakPoints.weakPointsByItemId).sort((left, right) => {
     return Date.parse(right.lastMissedAt) - Date.parse(left.lastMissedAt);

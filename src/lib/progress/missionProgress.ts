@@ -90,6 +90,11 @@ export function markMissionComplete(missionId: string, completedAt = new Date())
   return nextProgress;
 }
 
+export function resetMissionProgress() {
+  writeMissionProgress(EMPTY_MISSION_PROGRESS);
+  return EMPTY_MISSION_PROGRESS;
+}
+
 export function getMissionProgressEntry(
   progress: MissionProgressRecord,
   missionId: string,
