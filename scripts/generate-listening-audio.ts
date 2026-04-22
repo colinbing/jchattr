@@ -14,6 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import OpenAI from 'openai';
 import { listeningItems } from '../src/content/listeningItems';
+import { syncListeningAudioManifest } from './lib/listeningAudioManifest';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC_ROOT = path.join(REPO_ROOT, 'public');
@@ -82,6 +83,11 @@ async function main() {
 
     console.log(`wrote ${item.id} -> ${path.relative(REPO_ROOT, outputFilePath)}`);
   }
+
+  const manifestResult = await syncListeningAudioManifest();
+  console.log(
+    `synced manifest -> ${path.relative(REPO_ROOT, manifestResult.manifestPath)} (${manifestResult.generatedAudioRefs.length} refs)`,
+  );
 }
 
 function readIdsFlag(argv: string[]) {

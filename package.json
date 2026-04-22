@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "generate:listening-audio": "tsx scripts/generate-listening-audio.ts",
     "preview": "vite preview",
+    "sync:listening-audio-manifest": "tsx scripts/sync-listening-audio-manifest.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
