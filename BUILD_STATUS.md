@@ -110,11 +110,10 @@
 ## Next Recommended Slices
 
 1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-2. Generate audio files for the 10 missing pack-4 and pack-5 listening items so Settings and the listening flow regain full coverage for current content.
-3. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-4. Add a first reading-specific slice only after the current mission/review/settings surfaces are stronger.
-5. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
+2. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
+3. Add a first reading-specific slice only after the current mission/review/settings surfaces are stronger.
+4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -158,8 +157,8 @@
 ## Audio / TTS Notes
 
 - Listening items may include `audioRef`; all 24 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 14 listening items
-- The 10 pack-4 and pack-5 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
+- Matching MP3 files currently exist for all 24 listening items
+- Settings now reports full manifest-backed listening coverage for the current content set
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
