@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -7,6 +7,11 @@ import type {
   GrammarLesson,
   Mission,
 } from '../../../lib/content/types';
+import {
+  readContinueState,
+  resolveContinueStepIndex,
+  updateContinueState,
+} from '../../../lib/progress/continueState';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 
@@ -51,9 +56,26 @@ export function GrammarMissionPlayer({
   lesson,
   examples,
 }: GrammarMissionPlayerProps) {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState(() => {
+    return (
+      resolveContinueStepIndex(
+        readContinueState(),
+        mission.id,
+        mission.type,
+        missionSteps.length - 1,
+      ) ?? 0
+    );
+  });
   const currentStep = missionSteps[currentStepIndex];
   const progressValue = ((currentStepIndex + 1) / missionSteps.length) * 100;
+
+  useEffect(() => {
+    updateContinueState({
+      missionId: mission.id,
+      missionType: mission.type,
+      stepIndex: currentStepIndex,
+    });
+  }, [currentStepIndex, mission.id, mission.type]);
 
   return (
     <div className="mission-player-shell">

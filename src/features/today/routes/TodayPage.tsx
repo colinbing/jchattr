@@ -1,22 +1,46 @@
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
+import type { Mission, StarterContent } from '../../../lib/content/types';
 import { MissionCard } from '../components/MissionCard';
+import { ContinueMissionCard } from '../components/ContinueMissionCard';
 import { SessionSummary } from '../components/SessionSummary';
+import { TodayRecommendationCard } from '../components/TodayRecommendationCard';
 import { getStarterContent } from '../../../lib/content/loader';
+import {
+  type ContinueStateRecord,
+  useContinueState,
+} from '../../../lib/progress/continueState';
 import {
   getMissionProgressEntry,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
+import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
+import { useWeakPoints } from '../../../lib/progress/weakPoints';
+import { deriveTodayRecommendations } from '../lib/todayRecommendations';
 
 export function TodayPage() {
   const starterContent = getStarterContent();
   const missions = starterContent.missions;
   const missionProgress = useMissionProgress();
+  const weakPoints = useWeakPoints();
+  const reviewLoopProgress = useReviewLoopProgress();
+  const continueState = useContinueState();
+  const recommendations = deriveTodayRecommendations(
+    starterContent,
+    missionProgress,
+    weakPoints,
+    reviewLoopProgress,
+  );
+  const continueMission = resolveContinueMission(
+    starterContent,
+    missionProgress,
+    continueState,
+  );
 
   return (
     <PageShell
       eyebrow="Daily Entry"
       title="Today"
-      description="A focused daily mission list built from starter content. Short, touch-friendly, and ready to grow into the first serious learning loop."
+      description="Start from a small local-first daily plan, then browse the full mission stack below. Recommendations stay deterministic and easy to inspect."
       aside={<span className="status-chip">Starter session</span>}
     >
       <SessionSummary
@@ -24,11 +48,40 @@ export function TodayPage() {
         totalMinutes={starterContent.summary.totalMissionMinutes}
       />
 
+      {continueMission ? (
+        <SurfaceCard
+          title="Continue where you left off"
+          description="Jump back into the most recent unfinished mission without preserving the full page state."
+        >
+          <ContinueMissionCard
+            mission={continueMission.mission}
+            detail={continueMission.detail}
+            lastVisitedAt={continueState.lastVisitedAt}
+          />
+        </SurfaceCard>
+      ) : null}
+
       <SurfaceCard
-        title="Daily session"
-        description="Open a starter mission to enter the current mission route. Grammar, listening, and output missions now render focused player slices."
+        title="Recommended today"
+        description="This daily plan uses only local mission progress, weak points, and unlock rules. It stays small on purpose: review, next step, then reinforcement."
       >
-        <div className="mission-list" role="list" aria-label="Daily missions">
+        <div className="mission-list" role="list" aria-label="Recommended today">
+          {recommendations.map((recommendation) => (
+            <div key={recommendation.id} role="listitem">
+              <TodayRecommendationCard
+                recommendation={recommendation}
+                missionProgress={missionProgress}
+              />
+            </div>
+          ))}
+        </div>
+      </SurfaceCard>
+
+      <SurfaceCard
+        title="All missions"
+        description="Browse the full starter set below. Grammar, listening, and output missions still stay available as the secondary view."
+      >
+        <div className="mission-list" role="list" aria-label="All missions">
           {missions.map((mission) => (
             <div key={mission.id} role="listitem">
               <MissionCard
@@ -42,23 +95,84 @@ export function TodayPage() {
 
       <SurfaceCard
         title="Session shape"
-        description="This slice keeps the mapping from content to UI explicit so grammar, listening, and output all work through the same typed mission records."
+        description="Recommendations stay explicit: one review pass when needed, one unlocked next step, and one reinforcement slot before the full mission browser."
       >
         <ul className="simple-list">
           <li>
-            {starterContent.summary.missionCount} missions across grammar,
-            listening, and output
+            Up to {recommendations.length} recommended items built from local
+            progress, weak points, and unlock rules
           </li>
           <li>
-            {starterContent.summary.totalMissionMinutes} minutes total for a
-            complete session
+            {starterContent.summary.missionCount} total missions remain visible
+            below as the full starter set
           </li>
           <li>
-            Starter content remains local, typed, and hand-editable under
-            `src/content`
+            Starter content and Today heuristics both remain local, typed, and
+            hand-editable
           </li>
         </ul>
       </SurfaceCard>
     </PageShell>
   );
+}
+
+function resolveContinueMission(
+  starterContent: StarterContent,
+  missionProgress: ReturnType<typeof useMissionProgress>,
+  continueState: ContinueStateRecord,
+) {
+  if (!continueState.lastActiveMissionId || !continueState.missionType) {
+    return null;
+  }
+
+  const mission = starterContent.byId.missions[continueState.lastActiveMissionId];
+
+  if (!mission || mission.type !== continueState.missionType) {
+    return null;
+  }
+
+  const progress = getMissionProgressEntry(missionProgress, mission.id);
+
+  if (progress.isCompleted) {
+    return null;
+  }
+
+  return {
+    mission,
+    detail: formatContinueDetail(starterContent, mission, continueState.stepIndex),
+  };
+}
+
+function formatContinueDetail(
+  starterContent: StarterContent,
+  mission: Mission,
+  stepIndex: number | null,
+) {
+  if (mission.type === 'grammar') {
+    const sectionNames = ['lesson intro', 'examples', 'common mistakes', 'drills'];
+    const safeStepIndex =
+      typeof stepIndex === 'number' && sectionNames[stepIndex]
+        ? stepIndex
+        : 0;
+
+    return `Resume ${sectionNames[safeStepIndex]} (${safeStepIndex + 1} of ${sectionNames.length}).`;
+  }
+
+  if (mission.type === 'listening') {
+    const totalItems = mission.contentRefs.listeningItemIds?.length ?? 0;
+    const safeStepIndex =
+      typeof stepIndex === 'number' && stepIndex >= 0 && stepIndex < totalItems
+        ? stepIndex
+        : 0;
+
+    return `Resume listening item ${safeStepIndex + 1} of ${totalItems}.`;
+  }
+
+  const totalTasks = starterContent.byId.missions[mission.id].outputTasks?.length ?? 0;
+  const safeStepIndex =
+    typeof stepIndex === 'number' && stepIndex >= 0 && stepIndex < totalTasks
+      ? stepIndex
+      : 0;
+
+  return `Resume output task ${safeStepIndex + 1} of ${totalTasks}.`;
 }

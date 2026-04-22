@@ -1,4 +1,5 @@
 import { SurfaceCard } from '../../../components/layout/PageShell';
+import { clearContinueState } from '../../../lib/progress/continueState';
 import {
   getMissionProgressEntry,
   markMissionComplete,
@@ -44,6 +45,7 @@ export function MissionCompletionCard({
           className="mission-button"
           onClick={() => {
             markMissionComplete(missionId);
+            clearContinueState(missionId);
           }}
         >
           {completion.isCompleted ? 'Mark complete again' : 'Mark complete'}

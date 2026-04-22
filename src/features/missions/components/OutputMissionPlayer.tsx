@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -8,6 +8,11 @@ import type {
   OutputTask,
   VocabItem,
 } from '../../../lib/content/types';
+import {
+  readContinueState,
+  resolveContinueStepIndex,
+  updateContinueState,
+} from '../../../lib/progress/continueState';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 
@@ -28,9 +33,22 @@ export function OutputMissionPlayer({
   relatedExamples,
   relatedVocab,
 }: OutputMissionPlayerProps) {
-  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(() => {
+    return (
+      resolveContinueStepIndex(readContinueState(), mission.id, mission.type, tasks.length - 1) ??
+      0
+    );
+  });
   const currentTask = tasks[currentTaskIndex];
   const progressValue = ((currentTaskIndex + 1) / tasks.length) * 100;
+
+  useEffect(() => {
+    updateContinueState({
+      missionId: mission.id,
+      missionType: mission.type,
+      stepIndex: currentTaskIndex,
+    });
+  }, [currentTaskIndex, mission.id, mission.type]);
 
   return (
     <div className="mission-player-shell">

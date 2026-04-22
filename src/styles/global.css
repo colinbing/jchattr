@@ -290,6 +290,20 @@ button {
   border: 1px solid rgba(36, 84, 70, 0.08);
 }
 
+.mission-card--recommended {
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.96), rgba(220, 233, 226, 0.66)),
+    var(--color-surface-strong);
+  border-color: rgba(36, 84, 70, 0.12);
+}
+
+.mission-card--continue {
+  background:
+    linear-gradient(135deg, rgba(255, 248, 235, 0.96), rgba(224, 238, 229, 0.72)),
+    var(--color-surface-strong);
+  border-color: rgba(36, 84, 70, 0.14);
+}
+
 .mission-card__header,
 .mission-card__details {
   display: grid;

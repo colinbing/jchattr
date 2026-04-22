@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -7,6 +7,11 @@ import type {
   ListeningItem,
   Mission,
 } from '../../../lib/content/types';
+import {
+  readContinueState,
+  resolveContinueStepIndex,
+  updateContinueState,
+} from '../../../lib/progress/continueState';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 
@@ -25,10 +30,27 @@ export function ListeningMissionPlayer({
   relatedExamples,
   choicePool,
 }: ListeningMissionPlayerProps) {
-  const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [currentItemIndex, setCurrentItemIndex] = useState(() => {
+    return (
+      resolveContinueStepIndex(
+        readContinueState(),
+        mission.id,
+        mission.type,
+        listeningItems.length - 1,
+      ) ?? 0
+    );
+  });
   const currentItem = listeningItems[currentItemIndex];
   const progressValue = ((currentItemIndex + 1) / listeningItems.length) * 100;
   const primaryLesson = relatedLessons[0];
+
+  useEffect(() => {
+    updateContinueState({
+      missionId: mission.id,
+      missionType: mission.type,
+      stepIndex: currentItemIndex,
+    });
+  }, [currentItemIndex, mission.id, mission.type]);
 
   return (
     <div className="mission-player-shell">

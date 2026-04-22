@@ -147,4 +147,80 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-existence-arimasu-imasu',
+    title: 'Existence with あります and います',
+    objective:
+      'Say where things and living beings are in short, practical beginner sentences.',
+    explanation:
+      'Use に after the place, then use あります for things and います for people and animals. This gives you a useful beginner pattern for rooms, classrooms, books, bags, pets, and people.',
+    prerequisites: ['grammar-destination-ni'],
+    tags: ['particles', 'existence', 'location', 'n5'],
+    exampleIds: [
+      'ex-neko-heya-imasu',
+      'ex-sensei-kyoushitsu-imasu',
+      'ex-hon-toshokan-arimasu',
+    ],
+    commonMistakes: [
+      'Using います for things like books or bags.',
+      'Using あります for people or animals.',
+      'Dropping に after the place and leaving only the location noun.',
+    ],
+    drills: [
+      {
+        id: 'drill-existence-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The cat is in the room."',
+        answer: 'ねこはへやにいます。',
+        choices: [
+          'ねこはへやにあります。',
+          'ねこはへやにいます。',
+          'へやはねこにいます。',
+        ],
+      },
+      {
+        id: 'drill-existence-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: ほんはとしょかんに___。',
+        answer: 'あります',
+        support: 'Use あります for things.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-position-no',
+    title: 'Position words with の: うえ, した, なか',
+    objective:
+      'Say more precisely where something is using on top of, under, and inside.',
+    explanation:
+      'Use noun plus の plus a position word before に: for example, つくえのうえに or かばんのなかに. Then finish with あります or います. This extends the existence pattern into more useful room and classroom descriptions.',
+    prerequisites: ['grammar-existence-arimasu-imasu'],
+    tags: ['particles', 'position', 'location', 'n5'],
+    exampleIds: ['ex-hon-tsukue-ue', 'ex-kaban-isu-shita', 'ex-hon-kaban-naka'],
+    commonMistakes: [
+      'Skipping の between the main noun and the position word.',
+      'Putting に before the position word instead of after it.',
+      'Using the wrong existence verb after building the location phrase.',
+    ],
+    drills: [
+      {
+        id: 'drill-position-1',
+        type: 'reorder',
+        prompt: 'Reorder: つくえのうえに / ほんは / あります',
+        answer: 'ほんはつくえのうえにあります。',
+        support: 'Start with the topic, then the full location phrase, then the existence verb.',
+      },
+      {
+        id: 'drill-position-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The bag is under the chair."',
+        answer: 'かばんはいすのしたにあります。',
+        choices: [
+          'かばんはいすしたにあります。',
+          'かばんはいすのしたにあります。',
+          'かばんはしたのいすにあります。',
+        ],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
