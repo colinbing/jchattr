@@ -17,6 +17,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-hon-tsukue-ue.mp3',
   '/audio/listening/listening-kaban-isu-shita.mp3',
   '/audio/listening/listening-hon-kaban-naka.mp3',
+  '/audio/listening/listening-watashi-sushi-suki.mp3',
+  '/audio/listening/listening-koohii-kirai.mp3',
+  '/audio/listening/listening-ongaku-suki.mp3',
+  '/audio/listening/listening-nani-suki.mp3',
+  '/audio/listening/listening-tabemono-nani-suki.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
