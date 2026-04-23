@@ -53,6 +53,10 @@
 - Content expansion pack 16 around simple invitations and plan-making basics with `いっしょにいきますか`, `なんじにあいますか`, and short yes / no plan responses
 - Content expansion pack 17 around simple meeting-place coordination with `どこであいますか`, `えきであいます`, and `えきまえであいます`
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
+- Dev-only shipped-pack registry for packs 1 through 17 to support curriculum QA and planning integrity
+- Local QA report scripts for content coverage, reading reuse, and BUILD_STATUS summary verification
+- Local QA report scripts for progression gaps and content-overlap/template-drift checks
+- Reading mission QA cleanup to reduce single-pack concentration in two early reading slices and align pack-registry reinforcement tags with repo-native grammar metadata
 
 ## Current App Capabilities
 
@@ -192,6 +196,7 @@
 - Keep TypeScript-only and avoid adding dependencies without a narrow reason
 - Keep content schema-driven and hand-editable
 - Content currently lives in TypeScript modules under `src/content`, not JSON or a CMS
+- `src/content/contentPacks.ts` is a dev-only curriculum manifest for planning and QA; it does not drive runtime mission flow
 - `src/lib/content/loader.ts` validates schema shape, duplicate IDs, and cross-reference integrity at load time
 - Progress stores use `useSyncExternalStore` + `localStorage`, not hidden global state
 - Recommendation/review logic is intentionally deterministic and readable; avoid opaque adaptive logic unless explicitly requested

@@ -8,6 +8,11 @@
     "build": "tsc -b && vite build",
     "generate:listening-audio": "tsx scripts/generate-listening-audio.ts",
     "preview": "vite preview",
+    "report:build-status-summary": "node --import tsx scripts/report-build-status-summary.ts",
+    "report:content-coverage": "node --import tsx scripts/report-content-coverage.ts",
+    "report:content-overlap": "node --import tsx scripts/report-content-overlap.ts",
+    "report:progression-gaps": "node --import tsx scripts/report-progression-gaps.ts",
+    "report:reading-reuse": "node --import tsx scripts/report-reading-reuse.ts",
     "sync:listening-audio-manifest": "tsx scripts/sync-listening-audio-manifest.ts",
     "typecheck": "tsc --noEmit"
   },
