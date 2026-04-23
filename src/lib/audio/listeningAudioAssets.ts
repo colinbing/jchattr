@@ -47,6 +47,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-kafe-koohii-nomimashita.mp3',
   '/audio/listening/listening-kyou-toshokan-ikimashita.mp3',
   '/audio/listening/listening-kinou-koohii-nomimasendeshita.mp3',
+  '/audio/listening/listening-mizu-nonde-mo-ii.mp3',
+  '/audio/listening/listening-toire-itte-mo-ii.mp3',
+  '/audio/listening/listening-chotto-matte-kudasai.mp3',
+  '/audio/listening/listening-koko-suwatte-kudasai.mp3',
+  '/audio/listening/listening-yukkuri-yonde-kudasai.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

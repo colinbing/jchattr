@@ -1298,4 +1298,113 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-permission-and-requests',
+    type: 'grammar',
+    title: 'Ask permission and make simple requests',
+    targetSkill: 'verb-forms',
+    contentRefs: {
+      grammarLessonIds: ['grammar-permission-temo-ii-desu-ka', 'grammar-request-te-kudasai'],
+      vocabIds: [
+        'vocab-temo-ii-desu-ka',
+        'vocab-kudasai',
+        'vocab-chotto',
+        'vocab-yukkuri',
+        'vocab-mou-ichido',
+        'vocab-nonde',
+        'vocab-itte',
+        'vocab-suwatte',
+        'vocab-matte',
+        'vocab-yonde',
+        'vocab-mite',
+        'vocab-mado',
+        'vocab-akete',
+      ],
+      exampleIds: [
+        'ex-mizu-nonde-mo-ii',
+        'ex-toire-itte-mo-ii',
+        'ex-koko-suwatte-mo-ii',
+        'ex-chotto-matte-kudasai',
+        'ex-kore-mite-kudasai',
+        'ex-yukkuri-yonde-kudasai',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-verb-forms-past-routine'],
+    },
+  },
+  {
+    id: 'mission-listening-permission-and-requests',
+    type: 'listening',
+    title: 'Hear simple permission and request lines',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-permission-temo-ii-desu-ka', 'grammar-request-te-kudasai'],
+      listeningItemIds: [
+        'listening-mizu-nonde-mo-ii',
+        'listening-toire-itte-mo-ii',
+        'listening-chotto-matte-kudasai',
+        'listening-koko-suwatte-kudasai',
+        'listening-yukkuri-yonde-kudasai',
+      ],
+      exampleIds: [
+        'ex-mizu-nonde-mo-ii',
+        'ex-toire-itte-mo-ii',
+        'ex-chotto-matte-kudasai',
+        'ex-koko-suwatte-kudasai',
+        'ex-yukkuri-yonde-kudasai',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-permission-and-requests'],
+    },
+  },
+  {
+    id: 'mission-output-permission-and-requests',
+    type: 'output',
+    title: 'Write one permission line and one request line',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-permission-temo-ii-desu-ka', 'grammar-request-te-kudasai'],
+      vocabIds: [
+        'vocab-temo-ii-desu-ka',
+        'vocab-kudasai',
+        'vocab-mizu',
+        'vocab-toire',
+        'vocab-chotto',
+        'vocab-matte',
+      ],
+      exampleIds: [
+        'ex-mizu-nonde-mo-ii',
+        'ex-toire-itte-mo-ii',
+        'ex-chotto-matte-kudasai',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-permission-and-requests'],
+    },
+    outputTasks: [
+      {
+        id: 'output-mizu-nonde-mo-ii',
+        prompt: 'Type a line that says: "May I drink water?"',
+        acceptableAnswers: ['みずをのんでもいいですか。', 'みずをのんでもいいですか'],
+        hint: 'Use the object phrase first, then the permission ending てもいいですか.',
+        evaluation: {
+          tokenPatterns: [['みず', 'を', 'のんで', 'も', 'いい', 'です', 'か']],
+        },
+      },
+      {
+        id: 'output-chotto-matte-kudasai',
+        prompt: 'Type a line that says: "Please wait a moment."',
+        acceptableAnswers: ['ちょっとまってください。', 'ちょっとまってください'],
+        hint: 'Start with ちょっと, then use the て-form plus ください.',
+        evaluation: {
+          tokenPatterns: [['ちょっと', 'まって', 'ください']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];

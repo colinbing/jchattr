@@ -73,6 +73,8 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
       'grammar-verb-forms-masen',
       'grammar-verb-forms-mashita-routine',
       'grammar-verb-forms-masendeshita',
+      'grammar-permission-temo-ii-desu-ka',
+      'grammar-request-te-kudasai',
     ],
     itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
     available: true,

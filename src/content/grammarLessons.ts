@@ -686,4 +686,88 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-permission-temo-ii-desu-ka',
+    title: 'Ask permission with てもいいですか',
+    objective:
+      'Ask short polite permission questions for everyday classroom and daily-life actions.',
+    explanation:
+      'Use the て-form plus もいいですか to ask if something is okay, as in みずをのんでもいいですか or トイレにいってもいいですか. This gives you a practical beginner pattern for asking permission without changing the rest of the sentence structure too much.',
+    prerequisites: ['grammar-verb-forms-masu-routine'],
+    tags: ['verb-forms', 'permission', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-mizu-nonde-mo-ii',
+      'ex-toire-itte-mo-ii',
+      'ex-koko-suwatte-mo-ii',
+      'ex-hon-yonde-mo-ii',
+      'ex-mado-akete-mo-ii',
+    ],
+    commonMistakes: [
+      'Leaving the verb in ます form instead of changing it into the て-form before もいいですか.',
+      'Dropping か and turning the permission question into a plain statement.',
+      'Changing the familiar particles instead of only changing the verb phrase.',
+    ],
+    drills: [
+      {
+        id: 'drill-permission-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "May I drink water?"',
+        answer: 'みずをのんでもいいですか。',
+        choices: [
+          'みずをのみますか。',
+          'みずをのんでもいいですか。',
+          'みずはのんでいいです。',
+        ],
+      },
+      {
+        id: 'drill-permission-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: トイレにいっ___いいですか。',
+        answer: 'ても',
+        support: 'Use the て-form plus も before いいですか.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-request-te-kudasai',
+    title: 'Make simple requests with てください',
+    objective:
+      'Use short polite request lines for practical classroom and daily-life actions.',
+    explanation:
+      'Use the て-form plus ください to ask someone to do something politely, as in ちょっとまってください or これをみてください. This is a compact beginner pattern that fits well with classroom and daily-life needs.',
+    prerequisites: ['grammar-permission-temo-ii-desu-ka'],
+    tags: ['verb-forms', 'request', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-chotto-matte-kudasai',
+      'ex-kore-mite-kudasai',
+      'ex-koko-suwatte-kudasai',
+      'ex-yukkuri-yonde-kudasai',
+      'ex-mou-ichido-yonde-kudasai',
+    ],
+    commonMistakes: [
+      'Using the ます form before ください instead of the て-form.',
+      'Dropping ください and leaving only the bare て-form when the lesson is teaching the polite request pattern.',
+      'Moving adverbs like ちょっと or ゆっくり into awkward positions after the request verb.',
+    ],
+    drills: [
+      {
+        id: 'drill-request-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Please wait a moment."',
+        answer: 'ちょっとまってください。',
+        choices: [
+          'ちょっとまってください。',
+          'ちょっとまちますください。',
+          'まってちょっとです。',
+        ],
+      },
+      {
+        id: 'drill-request-2',
+        type: 'reorder',
+        prompt: 'Reorder: これを / みてください',
+        answer: 'これをみてください。',
+        support: 'Keep the object phrase first, then finish with the て-form plus ください request.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
