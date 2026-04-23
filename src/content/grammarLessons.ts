@@ -1151,4 +1151,80 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-invitation-plan-questions',
+    title: 'Ask simple invitation and plan questions',
+    objective:
+      'Invite someone and ask simple day and time plan questions in short polite Japanese.',
+    explanation:
+      'Use いっしょにいきますか for a simple invitation, どようびにいきますか to check the day, and なんじにあいますか to ask what time to meet. Keep the question short, practical, and polite.',
+    prerequisites: ['grammar-navigation-place-answers'],
+    tags: ['invitation', 'question', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-issho-ni-ikimasu-ka',
+      'ex-doyoubi-ni-ikimasu-ka',
+      'ex-nanji-ni-aimasu-ka',
+      'ex-issho-ni-eigakan-ni-ikimasu-ka',
+      'ex-shuumatsu-ni-resutoran-ni-ikimasu-ka',
+    ],
+    commonMistakes: [
+      'Dropping に from いっしょに and turning the invitation into an unnatural fragment.',
+      'Leaving out に after the time in なんじにあいますか.',
+      'Adding です before か after a verb instead of ending the question with いきますか or あいますか.',
+    ],
+    drills: [
+      {
+        id: 'drill-invitation-plan-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Will you go together?"',
+        answer: 'いっしょにいきますか。',
+        choices: ['いっしょいきますか。', 'いっしょにいきますか。', 'いきますかいっしょに。'],
+      },
+      {
+        id: 'drill-invitation-plan-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: なんじ___あいますか。',
+        answer: 'に',
+        support: 'Use に after the time expression before あいますか.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-plan-responses-yes-no',
+    title: 'Give short yes/no plan responses',
+    objective:
+      'Answer a simple invitation and confirm plan details with short polite response lines.',
+    explanation:
+      'Reply to a simple plan question with はい、いきます or いいえ、いきません. After that, confirm the plan with a short day or time line like どようびにいきます or ろくじはんにえきまえであいます.',
+    prerequisites: ['grammar-invitation-plan-questions'],
+    tags: ['invitation', 'response', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-hai-ikimasu',
+      'ex-iie-ikimasen',
+      'ex-hai-doyoubi-ni-ikimasu',
+      'ex-rokujihan-ni-ekimae-de-aimasu',
+      'ex-shuumatsu-ni-eigakan-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Keeping the question ending か in a response instead of switching to a plain polite answer.',
+      'Mixing up いきます and いきません when giving a short yes or no reply.',
+      'Dropping に after the time or で after the meeting place in a confirmation line.',
+    ],
+    drills: [
+      {
+        id: 'drill-plan-responses-yes-no-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural reply for "Yes, I will go."',
+        answer: 'はい、いきます。',
+        choices: ['はい、いきます。', 'はい、いきますか。', 'はい、いきません。'],
+      },
+      {
+        id: 'drill-plan-responses-yes-no-2',
+        type: 'reorder',
+        prompt: 'Reorder: ろくじはんに / えきまえで / あいます',
+        answer: 'ろくじはんにえきまえであいます。',
+        support: 'Put the time phrase first, then the meeting place, then the verb.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

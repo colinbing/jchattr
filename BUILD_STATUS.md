@@ -130,7 +130,7 @@
   - simple weekday plan lines like `げつようびにがっこうにいきます`, `どようびになにをしますか`, and `にちようびはうちでやすみます`
   - simple transport and movement lines like `バスでいきます`, `どこまでいきますか`, and `えきまであるきます`
   - simple navigation and direction lines like `みぎにまがります`, `まっすぐいきます`, and `えきはあそこです`
-  - simple invitation and plan lines like `いっしょにいきますか`, `どようびにいきますか`, `なんじにあいますか`, and `はい、いきます`
+  - simple invitation and plan lines like `いっしょにいきますか`, `どようびにいきますか`, `なんじにあいますか`, `はい、いきます`, and `いいえ、いきません`
   - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
@@ -142,8 +142,8 @@
 
 - Content is still small starter content only:
   - 32 grammar lessons
-  - 166 example sentences
-  - 179 vocab items
+  - 167 example sentences
+  - 178 vocab items
   - 79 listening items
   - 53 missions
 - Mission completion is manual; there is no auto-complete logic
@@ -160,7 +160,7 @@
 - Direction and navigation coverage now exists, but it is still a narrow beginner slice rather than broader route-following, landmarks, or multi-step navigation coverage
 - Invitation and plan-making coverage now exists, but it is still a narrow beginner slice rather than broader suggestion, availability, or future-planning coverage
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is complete through the previously checked-in generated set, but each new pack still requires a manual audio pass and manifest sync after new listening items are added
+- Current listening audio coverage is now partial again because the new pack-16 listening refs are in content before a manual audio pass and manifest sync
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -173,11 +173,12 @@
 
 ## Next Recommended Slices
 
-1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-2. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-3. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
-4. Improve the current kana assist only if it stays dependency-light and explicit rather than turning into a broad IME system.
-5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
+1. Add the missing pack-16 listening audio files and resync the manifest so Settings returns to full listening-audio coverage.
+2. Implement the next narrow content pack in the current schema before adding new systems, especially another grammar/listening/output pack for repeated daily use.
+3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+4. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
+5. Improve the current kana assist only if it stays dependency-light and explicit rather than turning into a broad IME system.
+6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -237,7 +238,7 @@
 
 - Listening items may include `audioRef`; all 79 current listening items point to static files under `public/audio/listening`
 - Matching MP3 files currently exist for 74 of the 79 listening items
-- Manifest-backed listening-audio coverage is fully aligned for the checked-in generated set, with 5 new pack-16 files still missing
+- Manifest-backed listening-audio coverage is intentionally partial until the 5 new pack-16 files are added and synced
 - Settings currently reports partial listening-audio coverage until the new pack-16 audio is generated and the manifest is resynced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
