@@ -162,6 +162,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-resutoran-yori-kafe-no-hou-ga-yasui-desu.mp3',
   '/audio/listening/listening-basu-yori-densha-no-hou-ga-hayai-desu.mp3',
   '/audio/listening/listening-eki-yori-toshokan-no-hou-ga-shizuka-desu.mp3',
+  '/audio/listening/listening-eiga-ga-ichiban-suki-desu.mp3',
+  '/audio/listening/listening-kafe-ga-ichiban-yasui-desu.mp3',
+  '/audio/listening/listening-toshokan-ga-ichiban-shizuka-desu.mp3',
+  '/audio/listening/listening-densha-ga-ichiban-hayai-desu.mp3',
+  '/audio/listening/listening-keeki-ga-ichiban-oishii-desu.mp3',
+  '/audio/listening/listening-itsumo-asa-pan-o-tabemasu.mp3',
+  '/audio/listening/listening-yoku-kafe-de-koohii-o-nomimasu.mp3',
+  '/audio/listening/listening-tokidoki-eiga-o-mimasu.mp3',
+  '/audio/listening/listening-amari-koohii-o-nomimasen.mp3',
+  '/audio/listening/listening-amari-kafe-ni-ikimasen.mp3',
+  '/audio/listening/listening-kono-kafe-wa-yasui-desukara-yoku-ikimasu.mp3',
+  '/audio/listening/listening-toshokan-wa-shizuka-desukara-benkyoushimasu.mp3',
+  '/audio/listening/listening-kyou-wa-benkyoushimasu-kara-eiga-o-mimasen.mp3',
+  '/audio/listening/listening-kono-resutoran-wa-takai-desukara-ikimasen.mp3',
+  '/audio/listening/listening-kinou-eiga-o-mimashita-kara-kyou-wa-mimasen.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

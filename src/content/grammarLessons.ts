@@ -2506,4 +2506,256 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-superlatives-ichiban-preferences',
+    title: 'Use いちばん for strongest preferences',
+    objective:
+      'Use short preference lines like えいががいちばんすきです and おちゃがいちばんすきです.',
+    explanation:
+      'Use いちばん before a familiar preference expression to say what you like best. Keep the pattern narrow and concrete with food, drinks, places, study topics, and hobbies the learner already knows.',
+    prerequisites: ['grammar-comparison-yori-houga-preferences'],
+    tags: ['superlative', 'preference', 'particle-ga', 'n5'],
+    exampleIds: [
+      'ex-eiga-ga-ichiban-suki-desu',
+      'ex-cha-ga-ichiban-suki-desu',
+      'ex-toshokan-ga-ichiban-suki-desu',
+      'ex-keeki-ga-ichiban-suki-desu',
+      'ex-nihongo-ga-ichiban-suki-desu',
+    ],
+    commonMistakes: [
+      'Dropping が after the thing you like best and turning the sentence into an incomplete chunk.',
+      'Placing いちばん after すきです instead of before the preference phrase.',
+      'Mixing this pattern up with より / のほうが comparisons when the prompt only asks for a strongest preference.',
+    ],
+    drills: [
+      {
+        id: 'drill-superlatives-ichiban-preferences-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Movies are what I like best."',
+        answer: 'えいががいちばんすきです。',
+        choices: [
+          'えいががいちばんすきです。',
+          'えいがはいちばんのすきです。',
+          'えいががすきいちばんです。',
+        ],
+      },
+      {
+        id: 'drill-superlatives-ichiban-preferences-2',
+        type: 'reorder',
+        prompt: 'Reorder: おちゃが / いちばんすきです',
+        answer: 'おちゃがいちばんすきです。',
+        support: 'Put the liked item first with が, then add いちばん before すきです.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-superlatives-ichiban-adjectives',
+    title: 'Use いちばん with familiar adjectives',
+    objective:
+      'Use short superlative descriptions like カフェがいちばんやすいです and としょかんがいちばんしずかです.',
+    explanation:
+      'The same いちばん pattern works with familiar beginner adjectives. Put the thing first, then いちばん, then the adjective. Keep the comparisons implicit and practical so the learner can say what is cheapest, quietest, fastest, tastiest, or most interesting in a small known set.',
+    prerequisites: ['grammar-superlatives-ichiban-preferences'],
+    tags: ['superlative', 'adjectives', 'description', 'n5'],
+    exampleIds: [
+      'ex-kafe-ga-ichiban-yasui-desu',
+      'ex-toshokan-ga-ichiban-shizuka-desu',
+      'ex-densha-ga-ichiban-hayai-desu',
+      'ex-keeki-ga-ichiban-oishii-desu',
+      'ex-eiga-ga-ichiban-omoshiroi-desu',
+    ],
+    commonMistakes: [
+      'Leaving out いちばん and falling back to a plain adjective description.',
+      'Putting the adjective before いちばん instead of keeping いちばん right before the adjective.',
+      'Using より / のほうが when the sentence is meant to be a simple strongest-description line.',
+    ],
+    drills: [
+      {
+        id: 'drill-superlatives-ichiban-adjectives-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The train is the fastest."',
+        answer: 'でんしゃがいちばんはやいです。',
+        choices: [
+          'でんしゃがいちばんはやいです。',
+          'でんしゃはいちばんのはやいです。',
+          'でんしゃがはやいいちばんです。',
+        ],
+      },
+      {
+        id: 'drill-superlatives-ichiban-adjectives-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: としょかんが___しずかです。',
+        answer: 'いちばん',
+        support: 'Place いちばん right before the adjective to make the description strongest.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-frequency-adverbs-routine',
+    title: 'Use frequency adverbs for real routines',
+    objective:
+      'Use short routine lines with いつも, よく, and ときどき to describe how often something happens.',
+    explanation:
+      'Frequency adverbs make routine Japanese sound more real than one fixed daily line. Put the adverb early in the sentence, then keep the familiar time, place, object, and polite verb pattern that the learner already knows.',
+    prerequisites: ['grammar-superlatives-ichiban-adjectives'],
+    tags: ['frequency', 'daily-routine', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-itsumo-asa-pan-o-tabemasu',
+      'ex-yoku-kafe-de-koohii-o-nomimasu',
+      'ex-tokidoki-eiga-o-mimasu',
+      'ex-itsumo-yoru-nihongo-o-benkyoushimasu',
+      'ex-yoku-ongaku-o-kikimasu',
+    ],
+    commonMistakes: [
+      'Dropping the adverb and leaving only a plain routine line.',
+      'Placing the adverb after the object instead of near the front of the sentence.',
+      'Using あまり with a positive verb ending instead of saving it for the negative pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-frequency-adverbs-routine-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I sometimes watch movies."',
+        answer: 'ときどきえいがをみます。',
+        choices: [
+          'ときどきえいがをみます。',
+          'えいがをときどきみますです。',
+          'ときどきえいがをみません。',
+        ],
+      },
+      {
+        id: 'drill-frequency-adverbs-routine-2',
+        type: 'reorder',
+        prompt: 'Reorder: よく / おんがくをききます',
+        answer: 'よくおんがくをききます。',
+        support: 'Put the frequency adverb first, then keep the familiar object + verb order.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-frequency-adverbs-amari-masen',
+    title: 'Use あまり with negative routine lines',
+    objective:
+      'Use short low-frequency lines like あまりコーヒーをのみません and あまりカフェにいきません.',
+    explanation:
+      'For beginner-safe frequency talk, pair あまり with a negative polite verb ending. This creates a useful "not very often" meaning without needing a more advanced adverb system. Keep the lines short and familiar.',
+    prerequisites: ['grammar-frequency-adverbs-routine'],
+    tags: ['frequency', 'negative', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-amari-koohii-o-nomimasen',
+      'ex-amari-eiga-o-mimasen',
+      'ex-amari-kafe-ni-ikimasen',
+      'ex-amari-pan-o-tabemasen',
+      'ex-amari-hon-o-yomimasen',
+    ],
+    commonMistakes: [
+      'Using あまり with a positive ます ending instead of a negative ません ending.',
+      'Dropping あまり and turning the line into a plain negative routine statement.',
+      'Treating あまり like a topic or object word instead of an adverb that changes frequency.',
+    ],
+    drills: [
+      {
+        id: 'drill-frequency-adverbs-amari-masen-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I do not drink coffee very often."',
+        answer: 'あまりコーヒーをのみません。',
+        choices: [
+          'あまりコーヒーをのみません。',
+          'あまりコーヒーをのみます。',
+          'コーヒーをあまりのみますません。',
+        ],
+      },
+      {
+        id: 'drill-frequency-adverbs-amari-masen-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: あまりほんを___。',
+        answer: 'よみません',
+        support: 'Keep the pattern negative after あまり so the line means "not very often."',
+      },
+    ],
+  },
+  {
+    id: 'grammar-reasons-kara-choices',
+    title: 'Use から to give short polite reasons for choices',
+    objective:
+      'Use short reason lines like このカフェはやすいですからよくいきます and としょかんはしずかですからべんきょうします.',
+    explanation:
+      'To keep reason language beginner-safe in this repo, the first clause stays polite and short: Xですから or Xますから. Then add the result or choice in a second short clause. This is narrower than full plain-style reason grammar, but it covers practical beginner explanation well.',
+    prerequisites: ['grammar-frequency-adverbs-amari-masen'],
+    tags: ['reason', 'adjectives', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-kono-kafe-wa-yasui-desukara-yoku-ikimasu',
+      'ex-toshokan-wa-shizuka-desukara-benkyoushimasu',
+      'ex-eiga-wa-omoshiroi-desukara-yoku-mimasu',
+      'ex-densha-wa-hayai-desukara-yoku-norimasu',
+      'ex-keeki-wa-oishii-desukara-yoku-tabemasu',
+    ],
+    commonMistakes: [
+      'Stopping after the reason clause and forgetting to add the result part of the sentence.',
+      'Dropping から so the line becomes two unrelated statements.',
+      'Trying to add too much extra detail instead of keeping both clauses short and clear.',
+    ],
+    drills: [
+      {
+        id: 'drill-reasons-kara-choices-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Because the library is quiet, I study there."',
+        answer: 'としょかんはしずかですからべんきょうします。',
+        choices: [
+          'としょかんはしずかですからべんきょうします。',
+          'としょかんはしずかべんきょうしますからです。',
+          'としょかんはしずかですべんきょうしますから。',
+        ],
+      },
+      {
+        id: 'drill-reasons-kara-choices-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: このカフェはやすいです___よくいきます。',
+        answer: 'から',
+        support: 'Use から to connect the reason clause to the result clause.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-reasons-kara-refusals',
+    title: 'Use から for simple refusals and follow-up decisions',
+    objective:
+      'Use short reason lines like きょうはべんきょうしますからえいがをみません and このレストランはたかいですからいきません.',
+    explanation:
+      'The same から pattern works well for small refusals and changed plans. Keep the reason clause first, then follow it with a short negative or decision line. This helps the learner explain a choice without needing broader connective grammar.',
+    prerequisites: ['grammar-reasons-kara-choices'],
+    tags: ['reason', 'negative', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-kyou-wa-benkyoushimasu-kara-eiga-o-mimasen',
+      'ex-ashita-wa-shigoto-desukara-yoru-eiga-o-mimasen',
+      'ex-kono-resutoran-wa-takai-desukara-ikimasen',
+      'ex-heya-wa-shizuka-janai-desukara-koko-de-benkyoushimasen',
+      'ex-kinou-eiga-o-mimashita-kara-kyou-wa-mimasen',
+    ],
+    commonMistakes: [
+      'Putting the refusal first and the reason second when the target pattern starts with the reason clause.',
+      'Losing the negative ending in the result clause and changing the meaning completely.',
+      'Breaking the line into two unrelated statements by omitting から.',
+    ],
+    drills: [
+      {
+        id: 'drill-reasons-kara-refusals-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Because this restaurant is expensive, I do not go there."',
+        answer: 'このレストランはたかいですからいきません。',
+        choices: [
+          'このレストランはたかいですからいきません。',
+          'このレストランはいきませんからたかいです。',
+          'このレストランはたかいですいきませんから。',
+        ],
+      },
+      {
+        id: 'drill-reasons-kara-refusals-2',
+        type: 'reorder',
+        prompt: 'Reorder: きょうはべんきょうしますから / えいがをみません',
+        answer: 'きょうはべんきょうしますからえいがをみません。',
+        support: 'Keep the reason clause first, then add the short negative result.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
