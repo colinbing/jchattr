@@ -87,6 +87,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-ekimae-de-aimasu.mp3',
   '/audio/listening/listening-kouen-no-iriguchi-de-aimasu.mp3',
   '/audio/listening/listening-biru-no-deguchi-de-aimasu.mp3',
+  '/audio/listening/listening-tsukimashita.mp3',
+  '/audio/listening/listening-ima-eki-desu.mp3',
+  '/audio/listening/listening-eki-de-matteimasu.mp3',
+  '/audio/listening/listening-kaisatsu-no-mae-de-matteimasu.mp3',
+  '/audio/listening/listening-sugu-ikimasu.mp3',
+  '/audio/listening/listening-issho-ni-eiga-o-mimasen-ka.mp3',
+  '/audio/listening/listening-rokuji-ni-aimasen-ka.mp3',
+  '/audio/listening/listening-konya-resutoran-ni-ikimasen-ka.mp3',
+  '/audio/listening/listening-koohii-o-nomimasen-ka.mp3',
+  '/audio/listening/listening-issho-ni-benkyoushimasen-ka.mp3',
+  '/audio/listening/listening-rokuji-ni-aimashou.mp3',
+  '/audio/listening/listening-doyoubi-ni-eigakan-ni-ikimashou.mp3',
+  '/audio/listening/listening-eki-de-aimashou.mp3',
+  '/audio/listening/listening-nani-o-shimashou-ka.mp3',
+  '/audio/listening/listening-ashita-toshokan-ni-ikimashou-ka.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

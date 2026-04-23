@@ -1306,4 +1306,236 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-arrival-status-updates',
+    title: 'Give short arrival and location updates',
+    objective:
+      'Send simple meetup status updates like つきました and いまえきです in short polite Japanese.',
+    explanation:
+      'When coordinating a meetup, short status lines are often enough. Use つきました to say you arrived, and use いま plus a place plus です to say where you are right now. Keep the update practical and compact.',
+    prerequisites: ['grammar-meeting-place-landmark-lines'],
+    tags: ['meeting', 'location', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-tsukimashita',
+      'ex-mou-tsukimashita',
+      'ex-ima-eki-desu',
+      'ex-ima-kaisatsu-no-mae-desu',
+      'ex-ima-chuouguchi-desu',
+    ],
+    commonMistakes: [
+      'Using いきます even though the speaker already arrived and should say つきました.',
+      'Adding に inside a short current-location status like いまえきにです.',
+      'Turning a status update into a question when the goal is simply to report where you are.',
+    ],
+    drills: [
+      {
+        id: 'drill-arrival-status-updates-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural short update for "I arrived."',
+        answer: 'つきました。',
+        choices: ['つきました。', 'つきます。', 'いきました。'],
+      },
+      {
+        id: 'drill-arrival-status-updates-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: いま___です。',
+        answer: 'えき',
+        support: 'Use a short place noun before です to say where you are now.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-waiting-status-lines',
+    title: 'Say you are waiting in short status lines',
+    objective:
+      'Use まっています in practical meetup status lines like えきでまっています and すぐいきます.',
+    explanation:
+      'A common beginner-safe status line is place plus で plus まっています, like えきでまっています. In the same narrow meetup context, すぐいきます is a practical follow-up when you are about to move. Treat these as compact status updates, not as a full te-form grammar expansion yet.',
+    prerequisites: ['grammar-arrival-status-updates'],
+    tags: ['meeting', 'verb-forms', 'location', 'n5'],
+    exampleIds: [
+      'ex-eki-de-matteimasu',
+      'ex-higashiguchi-de-matteimasu',
+      'ex-nishiguchi-de-matteimasu',
+      'ex-kaisatsu-no-mae-de-matteimasu',
+      'ex-sugu-ikimasu',
+    ],
+    commonMistakes: [
+      'Dropping で after the waiting place and leaving only a place noun before まっています.',
+      'Using あいます instead of まっています when the speaker is describing waiting, not the actual meetup.',
+      'Forgetting that すぐいきます is a short movement update, not a question.',
+    ],
+    drills: [
+      {
+        id: 'drill-waiting-status-lines-1',
+        type: 'reorder',
+        prompt: 'Reorder: えきで / まっています',
+        answer: 'えきでまっています。',
+        support: 'Keep the place phrase together before the waiting verb.',
+      },
+      {
+        id: 'drill-waiting-status-lines-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: かいさつのまえ___まっています。',
+        answer: 'で',
+        support: 'Use で after the place where you are waiting.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-suggestion-masenka-basics',
+    title: 'Invite politely with ませんか',
+    objective:
+      'Make polite beginner suggestions like いっしょにえいがをみませんか and ろくじにあいませんか.',
+    explanation:
+      'Use ませんか to invite someone politely to do something together. It is a high-value beginner pattern for suggesting a plan without sounding abrupt. Keep the lines practical: suggest a place, activity, or meeting time.',
+    prerequisites: ['grammar-waiting-status-lines'],
+    tags: ['invitation', 'verb-forms', 'question', 'n5'],
+    exampleIds: [
+      'ex-issho-ni-eiga-o-mimasen-ka',
+      'ex-doyoubi-ni-kafe-ni-ikimasen-ka',
+      'ex-rokuji-ni-aimasen-ka',
+      'ex-konya-resutoran-ni-ikimasen-ka',
+      'ex-kondo-toshokan-ni-ikimasen-ka',
+    ],
+    commonMistakes: [
+      'Replacing ませんか with a plain negative line and losing the invitation meaning.',
+      'Dropping に from a time or destination phrase inside the suggestion.',
+      'Adding です before か after a verb instead of using the fixed polite suggestion form.',
+    ],
+    drills: [
+      {
+        id: 'drill-suggestion-masenka-basics-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Won’t you meet at six?"',
+        answer: 'ろくじにあいませんか。',
+        choices: ['ろくじにあいませんか。', 'ろくじにあいますか。', 'ろくじあいませんか。'],
+      },
+      {
+        id: 'drill-suggestion-masenka-basics-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: こんやレストランにいき___か。',
+        answer: 'ません',
+        support: 'Use the polite suggestion ending ませんか after the verb stem.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-suggestion-masenka-activities',
+    title: 'Make activity suggestions with ませんか',
+    objective:
+      'Use ませんか with simple activities like eating, drinking, and studying together.',
+    explanation:
+      'Once the basic suggestion shape is clear, reuse it with practical everyday activities: コーヒーをのみませんか, ひるごはんをたべませんか, and いっしょにべんきょうしませんか. This keeps suggestion practice broad enough to feel useful without widening into advanced invitation language.',
+    prerequisites: ['grammar-suggestion-masenka-basics'],
+    tags: ['invitation', 'verb-forms', 'daily-conversation', 'n5'],
+    exampleIds: [
+      'ex-koohii-o-nomimasen-ka',
+      'ex-hiru-o-tabemasen-ka',
+      'ex-issho-ni-benkyoushimasen-ka',
+      'ex-shuumatsu-ni-kouen-ni-ikimasen-ka',
+      'ex-ashita-eigakan-ni-ikimasen-ka',
+    ],
+    commonMistakes: [
+      'Changing the suggestion into a plain statement and losing the invite meaning.',
+      'Dropping を before the activity noun in a verb phrase like コーヒーをのみませんか.',
+      'Using broad casual suggestion forms when the lesson is staying in polite beginner Japanese.',
+    ],
+    drills: [
+      {
+        id: 'drill-suggestion-masenka-activities-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Won’t you drink coffee?"',
+        answer: 'コーヒーをのみませんか。',
+        choices: [
+          'コーヒーのみませんか。',
+          'コーヒーをのみませんか。',
+          'コーヒーをのみますかません。',
+        ],
+      },
+      {
+        id: 'drill-suggestion-masenka-activities-2',
+        type: 'reorder',
+        prompt: 'Reorder: いっしょに / べんきょうしませんか',
+        answer: 'いっしょにべんきょうしませんか。',
+        support: 'Keep いっしょに together before the polite suggestion verb.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-mashou-plan-proposals',
+    title: 'Propose a plan with ましょう',
+    objective:
+      'Make short beginner plan proposals like ろくじにあいましょう and えきであいましょう.',
+    explanation:
+      'Use ましょう when you want to propose a plan directly and politely. It works well for meeting times, places, and simple activities. Keep the proposal short and practical so it feels like a real plan-making line, not a grammar display sentence.',
+    prerequisites: ['grammar-suggestion-masenka-activities'],
+    tags: ['invitation', 'verb-forms', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-rokuji-ni-aimashou',
+      'ex-doyoubi-ni-eigakan-ni-ikimashou',
+      'ex-kafe-de-koohii-o-nomimashou',
+      'ex-eki-de-aimashou',
+      'ex-kondo-eiga-o-mimashou',
+    ],
+    commonMistakes: [
+      'Keeping the softer ませんか pattern when the lesson target is a direct proposal with ましょう.',
+      'Dropping に from the time phrase in a proposal like ろくじにあいましょう.',
+      'Breaking the place phrase order before ましょう.',
+    ],
+    drills: [
+      {
+        id: 'drill-mashou-plan-proposals-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Let’s meet at the station."',
+        answer: 'えきであいましょう。',
+        choices: ['えきにあいましょう。', 'えきであいましょう。', 'えきであいます。'],
+      },
+      {
+        id: 'drill-mashou-plan-proposals-2',
+        type: 'reorder',
+        prompt: 'Reorder: ろくじに / あいましょう',
+        answer: 'ろくじにあいましょう。',
+        support: 'Keep the time phrase together before the proposal verb.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-mashou-plan-questions',
+    title: 'Ask simple plan-shaping questions with ましょうか',
+    objective:
+      'Use ましょうか in short beginner planning questions like なにをしましょうか and どこであいましょうか.',
+    explanation:
+      'Use ましょうか when shaping the next step of a plan together. It is useful for deciding what to do, where to meet, or whether a plan sounds good. Keep it narrow and practical so it stays distinct from broader invitation grammar.',
+    prerequisites: ['grammar-mashou-plan-proposals'],
+    tags: ['invitation', 'verb-forms', 'question', 'n5'],
+    exampleIds: [
+      'ex-nani-o-shimashou-ka',
+      'ex-doko-de-aimashou-ka',
+      'ex-ashita-toshokan-ni-ikimashou-ka',
+      'ex-konya-uchi-de-benkyoushimashou',
+      'ex-shuumatsu-ni-kouen-ni-ikimashou',
+    ],
+    commonMistakes: [
+      'Mixing up ましょう and ましょうか when the line is asking for a decision rather than stating one.',
+      'Dropping を in なにをしましょうか and leaving the question too incomplete.',
+      'Using a broad casual planning form instead of the polite beginner pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-mashou-plan-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What shall we do?"',
+        answer: 'なにをしましょうか。',
+        choices: ['なにしましょうか。', 'なにをしましょうか。', 'なにをしますかしょう。'],
+      },
+      {
+        id: 'drill-mashou-plan-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: どこであいましょう___。',
+        answer: 'か',
+        support: 'Add か at the end when the line is asking for a decision together.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

@@ -52,6 +52,9 @@
 - Content expansion pack 15 around simple directions and navigation basics with `みぎにまがります`, `まっすぐいきます`, and short place answers
 - Content expansion pack 16 around simple invitations and plan-making basics with `いっしょにいきますか`, `なんじにあいますか`, and short yes / no plan responses
 - Content expansion pack 17 around simple meeting-place coordination with `どこであいますか`, `えきであいます`, and `えきまえであいます`
+- Content expansion pack 18 around short arrival and waiting status updates with `つきました`, `いまえきです`, and `えきでまっています`
+- Content expansion pack 19 around polite suggestions with `〜ませんか` for simple meetup, food, drink, and study plans
+- Content expansion pack 20 around direct plan proposals with `〜ましょう` and short decision questions with `〜ましょうか`
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 - Dev-only shipped-pack registry for packs 1 through 17 to support curriculum QA and planning integrity
 - Local QA report scripts for content coverage, reading reuse, and BUILD_STATUS summary verification
@@ -75,10 +78,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 58 starter missions across 4 mission types:
-  - 17 grammar
-  - 17 listening
-  - 17 output
+- User can complete 67 starter missions across 4 mission types:
+  - 20 grammar
+  - 20 listening
+  - 20 output
   - 7 reading
 - Grammar missions currently include:
   - lesson intro
@@ -139,6 +142,9 @@
   - simple navigation and direction lines like `みぎにまがります`, `まっすぐいきます`, and `えきはあそこです`
   - simple invitation and plan lines like `いっしょにいきますか`, `どようびにいきますか`, `なんじにあいますか`, `はい、いきます`, and `いいえ、いきません`
   - simple meeting-place coordination lines like `どこであいますか`, `えきであいます`, `えきまえであいます`, and short landmark answers like `としょかんのまえであいます`
+  - short meetup status lines like `つきました`, `いまえきです`, `かいさつのまえでまっています`, and `すぐいきます`
+  - polite suggestion lines with `〜ませんか` like `ろくじにあいませんか`, `コーヒーをのみませんか`, and `いっしょにべんきょうしませんか`
+  - direct plan proposals with `〜ましょう` and short decision questions with `〜ましょうか` like `ろくじにあいましょう`, `えきであいましょう`, and `なにをしましょうか`
   - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
@@ -151,11 +157,11 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 34 grammar lessons
-  - 179 example sentences
-  - 188 vocab items
-  - 84 listening items
-  - 58 missions
+  - 40 grammar lessons
+  - 209 example sentences
+  - 215 vocab items
+  - 99 listening items
+  - 67 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -170,8 +176,11 @@
 - Direction and navigation coverage now exists, but it is still a narrow beginner slice rather than broader route-following, landmarks, or multi-step navigation coverage
 - Invitation and plan-making coverage now exists, but it is still a narrow beginner slice rather than broader suggestion, availability, or future-planning coverage
 - Meeting-place coordination coverage now exists, but it is still a narrow beginner slice rather than broader schedule negotiation, lateness handling, or route-specific meetup talk
+- Arrival and waiting status coverage now exists, but it is still a narrow beginner slice rather than broader delay handling, travel-problem language, or full `〜ています` coverage
+- Suggestion coverage with `〜ませんか` now exists, but it is still a narrow beginner slice rather than broader refusal, availability, or negotiation coverage
+- Proposal coverage with `〜ましょう / 〜ましょうか` now exists, but it is still a narrow beginner slice rather than broader decision-making or comparison-driven planning coverage
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is complete again for the current worktree content set
+- Current listening audio coverage is partial again for the expanded worktree content set until a manual audio pass lands for packs 18 to 20
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -184,11 +193,11 @@
 
 ## Next Recommended Slices
 
-1. Implement the next narrow content pack in the current schema before adding new systems, especially another grammar/listening/output pack for repeated daily use.
-2. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-3. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
-4. Improve the current kana assist only if it stays dependency-light and explicit rather than turning into a broad IME system.
-5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
+1. Implement Batch 2 from `N5_CURRICULUM_PLAN.md`: time ranges with `から / まで`, dates/months, and calendar-plan recombination.
+2. Add the Batch 2 reading follow-up immediately after packs 21 to 23 so the reading lane keeps pace with the newer planning content.
+3. Generate and sync listening audio for the 15 new listening items from packs 18 to 20 when doing the next manual audio pass.
+4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+5. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -248,10 +257,10 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 84 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for all 84 listening items
-- Manifest-backed listening-audio coverage is fully aligned with the current worktree content set
-- Settings currently reports full listening-audio coverage for the existing content set
+- Listening items may include `audioRef`; all 99 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 84 of the 99 listening items
+- Manifest-backed listening-audio coverage is currently partial for the expanded worktree content set
+- Settings currently reports partial listening-audio coverage until the new pack 18 to 20 files are generated and synced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
