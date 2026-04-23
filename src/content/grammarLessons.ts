@@ -1538,4 +1538,236 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-time-ranges-kara-made',
+    title: 'Use から and まで for simple time ranges',
+    objective:
+      'Use から and まで in practical schedule lines like じゅぎょうはくじからです and くじからごじまでです.',
+    explanation:
+      'Use から to mark a starting time and まで to mark an ending time. In short planning talk, these patterns help you say when class, work, study, or a plan starts and ends. Keep the lines compact and practical so the learner hears time windows as real schedule language.',
+    prerequisites: ['grammar-mashou-plan-questions'],
+    tags: ['schedule', 'time', 'particles', 'n5'],
+    exampleIds: [
+      'ex-jugyou-wa-kuji-kara-desu',
+      'ex-shigoto-wa-goji-made-desu',
+      'ex-jugyou-wa-kuji-kara-juuji-made-desu',
+      'ex-gogo-rokuji-kara-eiga-o-mimasu',
+      'ex-kyou-wa-shichiji-made-benkyoushimasu',
+    ],
+    commonMistakes: [
+      'Mixing up から and まで so the start and end times are reversed.',
+      'Dropping one side of the range in a sentence that is meant to say both the start and end.',
+      'Using に instead of から when the point is the start of a time window.',
+    ],
+    drills: [
+      {
+        id: 'drill-time-ranges-kara-made-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Class is from nine."',
+        answer: 'じゅぎょうはくじからです。',
+        choices: ['じゅぎょうはくじからです。', 'じゅぎょうはくじにからです。', 'じゅぎょうはくじまでからです。'],
+      },
+      {
+        id: 'drill-time-ranges-kara-made-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: じゅぎょうはくじ___じゅうじまでです。',
+        answer: 'から',
+        support: 'Use から to mark the start time before the full range.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-time-range-questions',
+    title: 'Ask simple start and end time questions',
+    objective:
+      'Ask practical schedule questions like なんじからですか and なんじからなんじまでですか.',
+    explanation:
+      'Once the basic time-range pattern is clear, use it in short questions. These lines are high-value for checking start time, end time, or the full time window of a class, plan, or appointment. Keep the questions narrow and context-friendly.',
+    prerequisites: ['grammar-time-ranges-kara-made'],
+    tags: ['schedule', 'question', 'time', 'n5'],
+    exampleIds: [
+      'ex-nanji-kara-desu-ka',
+      'ex-nanji-made-desu-ka',
+      'ex-nanji-kara-nanji-made-desu-ka',
+      'ex-kuji-kara-desu',
+      'ex-kuji-kara-goji-made-desu',
+    ],
+    commonMistakes: [
+      'Dropping the second なんじ in なんじからなんじまでですか.',
+      'Turning the time-range question into a plain statement by forgetting か.',
+      'Using only まで when asking for the full start-to-end window.',
+    ],
+    drills: [
+      {
+        id: 'drill-time-range-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural question for "From what time until what time is it?"',
+        answer: 'なんじからなんじまでですか。',
+        choices: ['なんじからなんじまでですか。', 'なんじからまでですか。', 'なんじまでなんじからですか。'],
+      },
+      {
+        id: 'drill-time-range-questions-2',
+        type: 'reorder',
+        prompt: 'Reorder: なんじから / ですか',
+        answer: 'なんじからですか。',
+        support: 'Keep the question word with から before the short ですか ending.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-calendar-when-questions',
+    title: 'Ask when something happens',
+    objective:
+      'Use practical date-planning questions like いつあいますか and なんがつにいきますか.',
+    explanation:
+      'Use いつ for a broad "when?" question and なんがつに for a month-based question. These patterns are useful when moving from loose plan talk into actual calendar planning. Keep the topic practical: meetings, outings, and simple schedule decisions.',
+    prerequisites: ['grammar-time-range-questions'],
+    tags: ['calendar', 'question', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-itsu-aimasu-ka',
+      'ex-nangatsu-ni-ikimasu-ka',
+      'ex-shigatsu-ni-aimasu',
+      'ex-gogatsu-ni-toshokan-ni-ikimasu',
+      'ex-raigetsu-ni-yasumimasu',
+    ],
+    commonMistakes: [
+      'Using なんじ when the question is about the day or month, not the clock time.',
+      'Dropping に after the month phrase in a line like なんがつにいきますか.',
+      'Answering a broad いつ question with a mismatched time-only answer when the context is date planning.',
+    ],
+    drills: [
+      {
+        id: 'drill-calendar-when-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural question for "When shall we meet?"',
+        answer: 'いつあいますか。',
+        choices: ['いつあいますか。', 'なんじあいますか。', 'いつにあいますか。'],
+      },
+      {
+        id: 'drill-calendar-when-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: なんがつ___いきますか。',
+        answer: 'に',
+        support: 'Use に after the month question when asking when someone will go.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-calendar-date-lines',
+    title: 'Use simple month and day-of-month lines',
+    objective:
+      'Use month and date lines like しがつみっかにあいます and ごがつようかにとしょかんにいきます.',
+    explanation:
+      'After asking when something happens, answer with a month or a specific day of the month. Keep the date lines practical and tied to simple plans. This pack does not try to teach every calendar edge case at once; it builds a small, usable date set.',
+    prerequisites: ['grammar-calendar-when-questions'],
+    tags: ['calendar', 'schedule', 'time', 'n5'],
+    exampleIds: [
+      'ex-nannichi-ni-aimasu-ka',
+      'ex-shigatsu-mikka-ni-aimasu',
+      'ex-gogatsu-youka-ni-toshokan-ni-ikimasu',
+      'ex-rokugatsu-tooka-ni-eiga-o-mimasu',
+      'ex-raigetsu-futsuka-ni-kafe-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Dropping に after the date phrase when the date is marking when the action happens.',
+      'Confusing the month reading with the day-of-month reading in longer date lines.',
+      'Using a weekday answer when the question is specifically asking for the day of the month.',
+    ],
+    drills: [
+      {
+        id: 'drill-calendar-date-lines-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "We will meet on April third."',
+        answer: 'しがつみっかにあいます。',
+        choices: ['しがつみっかにあいます。', 'しがつにみっかあいます。', 'しがつみっかあいますに。'],
+      },
+      {
+        id: 'drill-calendar-date-lines-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: なんにち___あいますか。',
+        answer: 'に',
+        support: 'Use に after the date question when you are asking on which day something happens.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-calendar-appointment-lines',
+    title: 'Combine dates and times in appointment lines',
+    objective:
+      'Build fuller plan lines like しがつみっかのろくじにあいます and ごがつようかのくじからべんきょうします.',
+    explanation:
+      'Use date plus の plus time to build a fuller calendar line. This lets the learner move from simple date answers into real appointment details. Keep the combination narrow: one date phrase, one time phrase, then one familiar action.',
+    prerequisites: ['grammar-calendar-date-lines'],
+    tags: ['calendar', 'schedule', 'meeting', 'n5'],
+    exampleIds: [
+      'ex-shigatsu-mikka-no-rokuji-ni-aimasu',
+      'ex-raigetsu-futsuka-no-gogo-shichiji-ni-eki-de-aimasu',
+      'ex-gogatsu-youka-no-kuji-kara-benkyoushimasu',
+      'ex-shigatsu-mikka-no-rokuji-kara-eiga-o-mimasu',
+      'ex-rokugatsu-tooka-no-gogo-rokuji-made-eki-de-matteimasu',
+    ],
+    commonMistakes: [
+      'Dropping の between the date phrase and the time phrase.',
+      'Putting に directly after the date even though the sentence is using date plus の plus time.',
+      'Trying to add too many details beyond one date and one time phrase in this beginner pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-calendar-appointment-lines-1',
+        type: 'reorder',
+        prompt: 'Reorder: しがつみっかの / ろくじに / あいます',
+        answer: 'しがつみっかのろくじにあいます。',
+        support: 'Keep the date phrase and time phrase together before the meeting verb.',
+      },
+      {
+        id: 'drill-calendar-appointment-lines-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: しがつみっか___ろくじにあいます。',
+        answer: 'の',
+        support: 'Use の between the date and time phrases in this appointment pattern.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-calendar-plan-combination',
+    title: 'Use full calendar details in invitations and proposals',
+    objective:
+      'Recombine dates, times, and simple plan language in lines like しがつみっかのろくじにあいましょう and いつあいましょうか.',
+    explanation:
+      'This lesson recombines the recent planning lane instead of adding a broad new grammar family. Use dates, times, and familiar invitation shapes to make fuller plans that still feel beginner-safe. The goal is not more grammar sprawl. The goal is better control over plans.',
+    prerequisites: ['grammar-calendar-appointment-lines'],
+    tags: ['calendar', 'invitation', 'proposal', 'n5'],
+    exampleIds: [
+      'ex-itsu-aimashou-ka',
+      'ex-shigatsu-mikka-no-rokuji-ni-aimashou',
+      'ex-gogatsu-youka-ni-toshokan-ni-ikimashou-ka',
+      'ex-raigetsu-futsuka-no-gogo-shichiji-ni-eiga-o-mimasen-ka',
+      'ex-rokugatsu-tooka-no-kuji-kara-benkyoushimashou',
+    ],
+    commonMistakes: [
+      'Forgetting the invitation or proposal ending after building a longer date-and-time phrase.',
+      'Mixing ませんか and ましょう randomly instead of choosing the intended plan tone.',
+      'Dropping a key particle like に after the time phrase once the sentence gets longer.',
+    ],
+    drills: [
+      {
+        id: 'drill-calendar-plan-combination-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Shall we meet on April third at six?"',
+        answer: 'しがつみっかのろくじにあいましょうか。',
+        choices: [
+          'しがつみっかのろくじにあいましょうか。',
+          'しがつみっかにろくじのあいましょうか。',
+          'しがつみっかのろくじあいましょうかに。',
+        ],
+      },
+      {
+        id: 'drill-calendar-plan-combination-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: いつあいましょう___。',
+        answer: 'か',
+        support: 'Add か at the end when the line is asking for the plan detail together.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

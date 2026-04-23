@@ -102,6 +102,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-eki-de-aimashou.mp3',
   '/audio/listening/listening-nani-o-shimashou-ka.mp3',
   '/audio/listening/listening-ashita-toshokan-ni-ikimashou-ka.mp3',
+  '/audio/listening/listening-jugyou-wa-kuji-kara-desu.mp3',
+  '/audio/listening/listening-shigoto-wa-goji-made-desu.mp3',
+  '/audio/listening/listening-jugyou-wa-kuji-kara-juuji-made-desu.mp3',
+  '/audio/listening/listening-nanji-kara-desu-ka.mp3',
+  '/audio/listening/listening-nanji-kara-nanji-made-desu-ka.mp3',
+  '/audio/listening/listening-itsu-aimasu-ka.mp3',
+  '/audio/listening/listening-nangatsu-ni-ikimasu-ka.mp3',
+  '/audio/listening/listening-shigatsu-ni-aimasu.mp3',
+  '/audio/listening/listening-nannichi-ni-aimasu-ka.mp3',
+  '/audio/listening/listening-gogatsu-youka-ni-toshokan-ni-ikimasu.mp3',
+  '/audio/listening/listening-shigatsu-mikka-no-rokuji-ni-aimasu.mp3',
+  '/audio/listening/listening-raigetsu-futsuka-no-gogo-shichiji-ni-eki-de-aimasu.mp3',
+  '/audio/listening/listening-itsu-aimashou-ka.mp3',
+  '/audio/listening/listening-gogatsu-youka-ni-toshokan-ni-ikimashou-ka.mp3',
+  '/audio/listening/listening-raigetsu-futsuka-no-gogo-shichiji-ni-eiga-o-mimasen-ka.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
