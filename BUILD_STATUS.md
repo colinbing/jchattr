@@ -135,7 +135,7 @@
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is complete through pack 9, but pack 10 listening items are audio-ready in content and not generated yet
+- Current listening audio coverage is complete for the checked-in content set, but future packs still require manual audio generation and manifest sync after new listening items are added
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
 - Today is now more review-aware, but recommendation logic is still intentionally simple and deterministic rather than adaptive or scheduled
@@ -147,10 +147,10 @@
 
 ## Next Recommended Slices
 
-1. Generate MP3 files for the 5 new pack-10 listening items so Settings regains full audio coverage for current content.
-2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-4. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence beyond the current present/past polite slices.
+1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
+2. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+3. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence beyond the current present/past polite slices.
+4. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
 5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
@@ -204,10 +204,9 @@
 ## Audio / TTS Notes
 
 - Listening items may include `audioRef`; all 49 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 44 listening items
-- Pack 9 listening audio is now generated and the manifest-backed coverage is fully aligned with the repo
-- Pack 10 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
-- Settings will report pack-10 listening audio as missing until those files are generated and the manifest is synced
+- Matching MP3 files currently exist for all 49 listening items
+- Manifest-backed listening-audio coverage is fully aligned with the checked-in repo state
+- Settings currently reports full listening-audio coverage for the existing content set
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
