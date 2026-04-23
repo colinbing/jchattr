@@ -32,6 +32,8 @@
 - Reading slice v7 with a seventh beginner reading mission for navigation, invitation, and meetup lines from packs 15 to 17
 - Reading slice v8 with an eighth beginner reading mission for time-range and calendar lines from packs 21 to 23
 - Reading slice v9 with a ninth beginner reading mission for invitation, meetup, and appointment recombination from packs 19 to 23
+- Reading slice v10 with a tenth beginner reading mission for shopping quantities and prices from packs 11 and 24 to 25
+- Reading slice v11 with an eleventh beginner reading mission for store availability and choice lines from packs 11, 24, and 26
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
@@ -60,6 +62,9 @@
 - Content expansion pack 21 around simple time-range control with `から / まで` and short start/end time questions
 - Content expansion pack 22 around date planning with `いつ`, `なんがつ`, `なんにち`, and practical month/day lines
 - Content expansion pack 23 around fuller calendar appointment and plan-recombination lines that combine dates, times, and meetup language
+- Content expansion pack 24 around simple quantity questions with `いくつ` and short request lines with `ひとつ / ふたつ / みっつ`
+- Content expansion pack 25 around basic price questions with `いくらですか` and fixed `X円です` price answers
+- Content expansion pack 26 around store availability and short choice lines like `みずはありますか`, `それをください`, and `これでいいです`
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 - Dev-only shipped-pack registry for shipped content packs to support curriculum QA and planning integrity
 - Local QA report scripts for content coverage, reading reuse, and BUILD_STATUS summary verification
@@ -83,11 +88,11 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 78 starter missions across 4 mission types:
-  - 23 grammar
-  - 23 listening
-  - 23 output
-  - 9 reading
+- User can complete 89 starter missions across 4 mission types:
+  - 26 grammar
+  - 26 listening
+  - 26 output
+  - 11 reading
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -153,6 +158,9 @@
   - simple time-range lines with `から / まで` like `じゅぎょうはくじからです`, `くじからごじまでです`, and `なんじからなんじまでですか`
   - simple date and month planning lines like `いつあいますか`, `なんがつにいきますか`, `しがつみっかにあいます`, and `ごがつようかにとしょかんにいきます`
   - fuller calendar appointment and plan lines like `しがつみっかのろくじにあいます`, `いつあいましょうか`, and `ごがつようかにとしょかんにいきましょうか`
+  - simple quantity and counter lines like `いくつかいますか`, `ひとつください`, and `パンをみっつください`
+  - simple price lines like `これはいくらですか`, `これはひゃくえんです`, and `このほんはごひゃくえんです`
+  - short store availability and selection lines like `みずはありますか`, `はい、あります`, `それをください`, and `これでいいです`
   - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
@@ -163,23 +171,25 @@
   - directions, invitation, and meetup reading prompts like `まっすぐいきます`, `いっしょにいきますか`, and `どこであいますか`
   - calendar and time-range reading prompts like `くじからごじまでです`, `いつあいますか`, and `しがつみっかにあいます`
   - fuller appointment and plan reading prompts like `しがつみっかのろくじにあいます`, `えきであいましょう`, and `ごがつようかにとしょかんにいきましょうか`
+  - shopping quantity and price reading prompts like `りんごをふたつかいます`, `これはいくらですか`, and `パンはにひゃくえんです`
+  - store availability and choice reading prompts like `みずはありますか`, `はい、あります`, and `これでいいです`
 
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 46 grammar lessons
-  - 239 example sentences
-  - 230 vocab items
-  - 114 listening items
-  - 78 missions
+  - 52 grammar lessons
+  - 269 example sentences
+  - 248 vocab items
+  - 129 listening items
+  - 89 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
-- Reading slice is still intentionally small: 9 reading missions with 45 total multiple-choice checks, all built from existing example sentences
+- Reading slice is still intentionally small: 11 reading missions with 55 total multiple-choice checks, all built from existing example sentences
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
-- Shopping coverage now exists, but it is still a narrow beginner slice rather than broader money, quantity, price, or transaction coverage
+- Shopping coverage now includes quantities, prices, availability checks, and short choice lines, but it is still a narrow beginner slice rather than broader payment, returns, or service-interaction coverage
 - Time and schedule coverage now includes clock time, weekday plans, time ranges, and basic calendar dates, but it is still a narrow beginner slice rather than broader availability, recurrence, or full real-world scheduling coverage
 - Weekday and calendar planning coverage now exists, but it is still a narrow beginner slice rather than broader future-planning, comparison, or negotiation coverage
 - Transport and movement coverage now exists, but it is still a narrow beginner slice rather than broader travel-planning, directions, or comparison coverage
@@ -191,7 +201,7 @@
 - Proposal coverage with `〜ましょう / 〜ましょうか` now includes simple calendar recombination, but it is still a narrow beginner slice rather than broader decision-making or comparison-driven planning coverage
 - Date and appointment coverage now exists, but it is still a narrow beginner slice rather than broader reservations, deadlines, or schedule-change language
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is partial again for the expanded worktree content set until a manual audio pass lands for packs 21 to 23
+- Current listening audio coverage is partial again for the expanded worktree content set until a manual audio pass lands for packs 24 to 26
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -204,9 +214,9 @@
 
 ## Next Recommended Slices
 
-1. Implement Batch 3 from `N5_CURRICULUM_PLAN.md`: counters and quantity basics, price/payment basics, and store availability/item-request depth.
-2. Add the Batch 3 reading follow-up immediately after packs 24 to 26 so the reading lane keeps pace with the newer shopping content.
-3. Generate and sync listening audio for the 15 new listening items from packs 21 to 23 when doing the next manual audio pass.
+1. Implement Batch 4 from `N5_CURRICULUM_PLAN.md`: te-form core for a narrow everyday verb set, short action-sequence lines with `て / てから`, and carefully scoped `〜ています` coverage.
+2. Add the planned Batch 4 reading follow-up after packs 27 to 29 so the reading lane keeps pace with the new te-form family.
+3. Generate and sync listening audio for the 15 new listening items from packs 24 to 26 when doing the next manual audio pass.
 4. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
 5. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
 
@@ -251,6 +261,9 @@
   - polite recent-action and negative-past verbs with `ました` / `ませんでした`
   - simple permission and request patterns with `てもいいですか` and `てください`
   - simple shopping request and buying patterns with `これをください`, `このほんをください`, and `X をかいます`
+  - simple quantity patterns with `いくつ`, `ひとつ / ふたつ / みっつ`, and short counter requests with `ください`
+  - simple price patterns with `いくらですか` and fixed `X円です` answers
+  - simple store availability and choice patterns with `Xはありますか`, `はい、あります`, `それをください`, and `これでいいです`
   - simple time-question and schedule patterns with `なんじですか`, `Xじです`, and `Xじに ...`
   - simple weekday plan patterns with `Xようびに ...` and `Xようびになにをしますか`
   - simple time-range patterns with `Xじから`, `Xじまで`, and `なんじからなんじまでですか`
@@ -267,14 +280,14 @@
   - where-questions like `トイレはどこですか`
   - location answers like `トイレはあそこです` and `かぎはつくえのうえにあります`
   - family/object ownership like `これはちちのカメラです` and `それはははのかさです`
-  - nine reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
+  - eleven reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 114 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 99 of the 114 listening items
+- Listening items may include `audioRef`; all 129 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 114 of the 129 listening items
 - Manifest-backed listening-audio coverage is currently partial for the expanded worktree content set
-- Settings currently reports partial listening-audio coverage until the new pack 21 to 23 files are generated and synced
+- Settings currently reports partial listening-audio coverage until the new pack 24 to 26 files are generated and synced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

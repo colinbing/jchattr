@@ -1770,4 +1770,236 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-quantity-ikutsu-questions',
+    title: 'Ask how many with いくつ',
+    objective:
+      'Use いくつ in simple shopping questions like いくつかいますか and りんごをいくつかいますか.',
+    explanation:
+      'Use いくつ to ask how many items someone will buy or wants. Keep the pattern practical and shopping-focused so it stays connected to real beginner transactions. This pack introduces a small set of general counters without widening into a full counter system.',
+    prerequisites: ['grammar-calendar-plan-combination'],
+    tags: ['shopping', 'question', 'quantity', 'n5'],
+    exampleIds: [
+      'ex-ikutsu-kaimasu-ka',
+      'ex-ringo-o-ikutsu-kaimasu-ka',
+      'ex-ringo-o-hitotsu-kaimasu',
+      'ex-ringo-o-futatsu-kaimasu',
+      'ex-ringo-o-itsutsu-kaimasu',
+    ],
+    commonMistakes: [
+      'Dropping いくつ and turning the line into a plain buying statement instead of a quantity question.',
+      'Forgetting を before the item in a sentence like りんごをいくつかいますか.',
+      'Mixing the question line and the answer line so the sentence contains both いくつ and a counter answer at once.',
+    ],
+    drills: [
+      {
+        id: 'drill-quantity-ikutsu-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural question for "How many apples will you buy?"',
+        answer: 'りんごをいくつかいますか。',
+        choices: [
+          'りんごをいくつかいますか。',
+          'りんごいくつをかいますか。',
+          'りんごをいくつですか。',
+        ],
+      },
+      {
+        id: 'drill-quantity-ikutsu-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: りんごを___かいますか。',
+        answer: 'いくつ',
+        support: 'Use いくつ right before かいますか when asking the quantity.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-quantity-request-lines',
+    title: 'Use simple counters in request lines',
+    objective:
+      'Use short request lines like ひとつください and パンをみっつください.',
+    explanation:
+      'After asking how many, answer with a small set of general counters like ひとつ, ふたつ, and みっつ. In a shop, these counters work well in compact request lines with ください. Keep the requests practical and short.',
+    prerequisites: ['grammar-quantity-ikutsu-questions'],
+    tags: ['shopping', 'request', 'quantity', 'n5'],
+    exampleIds: [
+      'ex-hitotsu-kudasai',
+      'ex-futatsu-kudasai',
+      'ex-mittsu-kudasai',
+      'ex-pan-o-mittsu-kudasai',
+      'ex-okashi-o-yottsu-kudasai',
+    ],
+    commonMistakes: [
+      'Leaving out ください when the lesson target is a request line rather than a plain statement.',
+      'Placing the counter after ください instead of before it.',
+      'Dropping を in a full item-request line like パンをみっつください.',
+    ],
+    drills: [
+      {
+        id: 'drill-quantity-request-lines-1',
+        type: 'reorder',
+        prompt: 'Reorder: パンを / みっつください',
+        answer: 'パンをみっつください。',
+        support: 'Keep the item first, then the counter, then ください.',
+      },
+      {
+        id: 'drill-quantity-request-lines-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Two, please."',
+        answer: 'ふたつください。',
+        choices: ['ふたつください。', 'くださいふたつ。', 'ふたつをくださいです。'],
+      },
+    ],
+  },
+  {
+    id: 'grammar-price-ikura-questions',
+    title: 'Ask the price with いくらですか',
+    objective:
+      'Use simple price questions like これはいくらですか and パンはいくらですか.',
+    explanation:
+      'Use いくらですか to ask how much something costs. Keep the question compact and tied to familiar shop items so the learner can hear and use price questions without extra transaction grammar.',
+    prerequisites: ['grammar-quantity-request-lines'],
+    tags: ['shopping', 'question', 'price', 'n5'],
+    exampleIds: [
+      'ex-kore-wa-ikura-desu-ka',
+      'ex-pan-wa-ikura-desu-ka',
+      'ex-kono-hon-wa-ikura-desu-ka',
+      'ex-kore-wa-hyaku-en-desu',
+      'ex-pan-wa-nihyaku-en-desu',
+    ],
+    commonMistakes: [
+      'Dropping は in a line like これはいくらですか when the item is the topic of the price question.',
+      'Using なに instead of いくら when the question is about price rather than identity.',
+      'Turning the question into a statement by forgetting か.',
+    ],
+    drills: [
+      {
+        id: 'drill-price-ikura-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural question for "How much is this?"',
+        answer: 'これはいくらですか。',
+        choices: ['これはいくらですか。', 'これをいくらですか。', 'これはいくらかいますか。'],
+      },
+      {
+        id: 'drill-price-ikura-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: パンは___ですか。',
+        answer: 'いくら',
+        support: 'Use いくら before ですか when asking the price.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-price-yen-lines',
+    title: 'Answer with simple 円 price lines',
+    objective:
+      'Use short price answers like これはひゃくえんです and このほんはごひゃくえんです.',
+    explanation:
+      'After asking the price, answer with a fixed price expression plus です. Keep the number set small and practical so the pack stays usable without turning into a full number system lesson.',
+    prerequisites: ['grammar-price-ikura-questions'],
+    tags: ['shopping', 'price', 'copula', 'n5'],
+    exampleIds: [
+      'ex-kore-wa-hyaku-en-desu',
+      'ex-pan-wa-nihyaku-en-desu',
+      'ex-ringo-wa-sanbyaku-en-desu',
+      'ex-kono-hon-wa-gohyaku-en-desu',
+      'ex-kono-kaban-wa-sen-en-desu',
+    ],
+    commonMistakes: [
+      'Dropping えん from a price answer and leaving only the number.',
+      'Using the question line いくらですか instead of answering with a fixed price.',
+      'Forgetting です at the end of the polite price answer.',
+    ],
+    drills: [
+      {
+        id: 'drill-price-yen-lines-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "This is one hundred yen."',
+        answer: 'これはひゃくえんです。',
+        choices: ['これはひゃくえんです。', 'これはひゃくですえん。', 'これをひゃくえんです。'],
+      },
+      {
+        id: 'drill-price-yen-lines-2',
+        type: 'reorder',
+        prompt: 'Reorder: このほんは / ごひゃくえんです',
+        answer: 'このほんはごひゃくえんです。',
+        support: 'Keep the item topic first, then the price answer.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-shopping-availability-arimasu-ka',
+    title: 'Ask if an item is available with ありますか',
+    objective:
+      'Use practical store questions like みずはありますか and このほんはありますか.',
+    explanation:
+      'Use item plus は plus ありますか to ask whether something is available. This is a high-value beginner shop pattern because it extends the earlier existence grammar into a practical buying context.',
+    prerequisites: ['grammar-price-yen-lines'],
+    tags: ['shopping', 'question', 'availability', 'n5'],
+    exampleIds: [
+      'ex-mizu-wa-arimasu-ka',
+      'ex-pan-wa-arimasu-ka',
+      'ex-kono-hon-wa-arimasu-ka',
+      'ex-ringo-wa-arimasu-ka',
+      'ex-hai-arimasu',
+    ],
+    commonMistakes: [
+      'Using を instead of は when the item is the topic of the availability question.',
+      'Treating ありますか like a movement verb instead of an existence/availability pattern.',
+      'Dropping か and turning the line into a plain statement.',
+    ],
+    drills: [
+      {
+        id: 'drill-shopping-availability-arimasu-ka-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Do you have water?"',
+        answer: 'みずはありますか。',
+        choices: ['みずはありますか。', 'みずをありますか。', 'みずはあります。か'],
+      },
+      {
+        id: 'drill-shopping-availability-arimasu-ka-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: このほん___ありますか。',
+        answer: 'は',
+        support: 'Use は after the item when asking if it is available.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-shopping-selection-korede-ii-desu',
+    title: 'Choose and confirm with short shop lines',
+    objective:
+      'Use short selection lines like それをください, これでいいです, and もうひとつください.',
+    explanation:
+      'Once the learner can ask for quantity and price, add short shop-decision lines. These compact expressions let the learner choose an item, confirm it is fine, or ask for one more without widening into broader service talk.',
+    prerequisites: ['grammar-shopping-availability-arimasu-ka'],
+    tags: ['shopping', 'request', 'decision', 'n5'],
+    exampleIds: [
+      'ex-sore-o-kudasai',
+      'ex-korede-ii-desu',
+      'ex-mou-hitotsu-kudasai',
+      'ex-ringo-o-hitotsu-kudasai',
+      'ex-pan-o-futatsu-kudasai',
+    ],
+    commonMistakes: [
+      'Using これをいいです instead of the fixed expression これでいいです.',
+      'Dropping を in それをください when directly requesting the chosen item.',
+      'Forgetting that もうひとつください is a request for one more item, not a quantity answer by itself.',
+    ],
+    drills: [
+      {
+        id: 'drill-shopping-selection-korede-ii-desu-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "This is fine."',
+        answer: 'これでいいです。',
+        choices: ['これでいいです。', 'これをいいです。', 'これでいいかいます。'],
+      },
+      {
+        id: 'drill-shopping-selection-korede-ii-desu-2',
+        type: 'reorder',
+        prompt: 'Reorder: もうひとつ / ください',
+        answer: 'もうひとつください。',
+        support: 'Keep the fixed expression together before ください.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

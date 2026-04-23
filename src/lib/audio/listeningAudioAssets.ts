@@ -117,6 +117,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-itsu-aimashou-ka.mp3',
   '/audio/listening/listening-gogatsu-youka-ni-toshokan-ni-ikimashou-ka.mp3',
   '/audio/listening/listening-raigetsu-futsuka-no-gogo-shichiji-ni-eiga-o-mimasen-ka.mp3',
+  '/audio/listening/listening-ikutsu-kaimasu-ka.mp3',
+  '/audio/listening/listening-hitotsu-kudasai.mp3',
+  '/audio/listening/listening-futatsu-kudasai.mp3',
+  '/audio/listening/listening-pan-o-mittsu-kudasai.mp3',
+  '/audio/listening/listening-ringo-o-futatsu-kaimasu.mp3',
+  '/audio/listening/listening-kore-wa-ikura-desu-ka.mp3',
+  '/audio/listening/listening-pan-wa-ikura-desu-ka.mp3',
+  '/audio/listening/listening-kore-wa-hyaku-en-desu.mp3',
+  '/audio/listening/listening-pan-wa-nihyaku-en-desu.mp3',
+  '/audio/listening/listening-kono-hon-wa-gohyaku-en-desu.mp3',
+  '/audio/listening/listening-mizu-wa-arimasu-ka.mp3',
+  '/audio/listening/listening-kono-hon-wa-arimasu-ka.mp3',
+  '/audio/listening/listening-hai-arimasu.mp3',
+  '/audio/listening/listening-sore-o-kudasai.mp3',
+  '/audio/listening/listening-korede-ii-desu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
