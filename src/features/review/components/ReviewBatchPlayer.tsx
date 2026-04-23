@@ -11,7 +11,7 @@ import {
 
 type ReviewBatchPlayerProps = {
   items: ReviewBatchItem[];
-  onComplete: (itemIds: string[]) => void;
+  onComplete: (itemIds: string[], resultsByItemId: Record<string, ReviewResult>) => void;
   onSuccessfulRetry: (itemId: string) => void;
 };
 
@@ -175,7 +175,12 @@ export function ReviewBatchPlayer({
               <button
                 type="button"
                 className="mission-button"
-                onClick={() => onComplete(items.map((item) => item.weakPoint.itemId))}
+                onClick={() =>
+                  onComplete(
+                    items.map((item) => item.weakPoint.itemId),
+                    resultsByItemId,
+                  )
+                }
                 disabled={!allItemsAttempted}
               >
                 Finish review batch

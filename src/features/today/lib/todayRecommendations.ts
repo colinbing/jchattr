@@ -5,12 +5,17 @@ import {
 } from '../../../lib/progress/missionProgress';
 import type { ReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import {
+  type WeakPoint,
   getWeakPointList,
   type WeakPointStore,
 } from '../../../lib/progress/weakPoints';
 import { selectReviewBatch } from '../../review/lib/reviewBatch';
 
 export const TODAY_RECOMMENDATION_LIMIT = 3;
+const FRESH_WEAK_POINT_WINDOW_MS = 24 * 60 * 60 * 1000;
+const RECENT_REVIEW_WINDOW_MS = 12 * 60 * 60 * 1000;
+const URGENT_WEAK_POINT_COUNT = 3;
+const REPEATED_MISS_THRESHOLD = 2;
 
 export type TodayRecommendation =
   | {
@@ -37,9 +42,11 @@ export type TodayRecommendation =
 
 // Keep the heuristics intentionally small and readable:
 // 1. Recommend Review first when there are unresolved weak points.
-// 2. Recommend the next unlocked incomplete mission in starter order.
-// 3. Recommend one reinforcement mission from completed or lightly practiced work.
-// 4. If slots remain, fill them with the next least-practiced unlocked missions.
+// 2. Mark review as urgent when weak points are fresh, repeated, or numerous.
+// 3. Recommend the next unlocked incomplete mission in starter order.
+// 4. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
+// 5. Otherwise recommend one reinforcement mission, but avoid immediately repeating missions that were just reviewed.
+// 6. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
 export function deriveTodayRecommendations(
   starterContent: StarterContent,
   missionProgress: MissionProgressRecord,
@@ -52,11 +59,14 @@ export function deriveTodayRecommendations(
   const unlockedMissions = starterContent.missions.filter((mission) =>
     isMissionUnlocked(mission, missionProgress),
   );
-
-  const reviewRecommendation = getReviewRecommendation(
+  const reviewAwareness = deriveReviewAwareness(
     starterContent,
     weakPoints,
     reviewLoopProgress,
+  );
+
+  const reviewRecommendation = getReviewRecommendation(
+    reviewAwareness,
   );
 
   if (reviewRecommendation) {
@@ -73,7 +83,11 @@ export function deriveTodayRecommendations(
       kind: 'mission',
       slotLabel: 'Next up',
       title: nextMission.title,
-      reason: 'This unlocked mission is still incomplete, so it is the cleanest next step.',
+      reason: reviewRecommendation
+        ? 'After your retry pass, this unlocked mission is still the cleanest next step.'
+        : reviewAwareness.hasRecentReview
+          ? 'You cleared review recently, so keep momentum with the next unlocked mission.'
+          : 'This unlocked mission is still incomplete, so it is the cleanest next step.',
       ctaLabel: 'Open mission',
       to: `/mission/${nextMission.id}`,
       mission: nextMission,
@@ -81,24 +95,25 @@ export function deriveTodayRecommendations(
     selectedMissionIds.add(nextMission.id);
   }
 
-  const reinforcementMission = selectReinforcementMission(
+  const supportMission = selectSupportMission(
     unlockedMissions,
     missionProgress,
     selectedMissionIds,
+    reviewAwareness,
   );
 
-  if (reinforcementMission) {
+  if (supportMission) {
     recommendations.push({
-      id: reinforcementMission.id,
+      id: supportMission.mission.id,
       kind: 'mission',
-      slotLabel: 'Reinforce',
-      title: reinforcementMission.title,
-      reason: buildReinforcementReason(reinforcementMission, missionProgress),
-      ctaLabel: 'Reinforce mission',
-      to: `/mission/${reinforcementMission.id}`,
-      mission: reinforcementMission,
+      slotLabel: supportMission.slotLabel,
+      title: supportMission.mission.title,
+      reason: supportMission.reason,
+      ctaLabel: supportMission.ctaLabel,
+      to: `/mission/${supportMission.mission.id}`,
+      mission: supportMission.mission,
     });
-    selectedMissionIds.add(reinforcementMission.id);
+    selectedMissionIds.add(supportMission.mission.id);
   }
 
   if (recommendations.length >= limit) {
@@ -108,6 +123,13 @@ export function deriveTodayRecommendations(
   const remainingMissions = unlockedMissions
     .filter((mission) => !selectedMissionIds.has(mission.id))
     .sort((left, right) => {
+      const leftWasReviewed = reviewAwareness.recentlyReviewedMissionIds.has(left.id);
+      const rightWasReviewed = reviewAwareness.recentlyReviewedMissionIds.has(right.id);
+
+      if (leftWasReviewed !== rightWasReviewed) {
+        return leftWasReviewed ? 1 : -1;
+      }
+
       const leftProgress = getMissionProgressEntry(missionProgress, left.id);
       const rightProgress = getMissionProgressEntry(missionProgress, right.id);
 
@@ -174,26 +196,28 @@ export function isMissionUnlocked(
 }
 
 function getReviewRecommendation(
-  starterContent: StarterContent,
-  weakPoints: WeakPointStore,
-  reviewLoopProgress: ReviewLoopProgress,
+  reviewAwareness: ReviewAwareness,
 ): TodayRecommendation | null {
-  const weakPointList = getWeakPointList(weakPoints);
-  const reviewBatch = selectReviewBatch(weakPoints, starterContent);
+  const { weakPointList, reviewBatch } = reviewAwareness;
 
   if (weakPointList.length === 0 || reviewBatch.length === 0) {
     return null;
   }
 
-  const reviewReason = reviewLoopProgress.lastCompletedAt
-    ? `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} are still open after your last review pass, so start by retrying them.`
-    : `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} are waiting for a retry, so lead with a short review batch.`;
+  const repeatedWeakPointCount = weakPointList.filter(
+    (weakPoint) => weakPoint.missCount >= REPEATED_MISS_THRESHOLD,
+  ).length;
+  const reviewReason = reviewAwareness.isUrgent
+    ? buildUrgentReviewReason(reviewAwareness, repeatedWeakPointCount)
+    : reviewAwareness.lastReviewAt
+      ? `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} are still open after your last review pass, so start by retrying them.`
+      : `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} are waiting for a retry, so lead with a short review batch.`;
 
   return {
     id: 'review-loop',
     kind: 'review',
-    slotLabel: 'Review',
-    title: 'Retry weak spots first',
+    slotLabel: reviewAwareness.isUrgent ? 'Review now' : 'Review',
+    title: reviewAwareness.isUrgent ? 'Fresh weak spots need a retry' : 'Retry weak spots first',
     reason: reviewReason,
     ctaLabel: 'Open review',
     to: '/review',
@@ -202,20 +226,62 @@ function getReviewRecommendation(
   };
 }
 
-function selectReinforcementMission(
+type ReviewAwareness = {
+  weakPointList: WeakPoint[];
+  reviewBatch: ReturnType<typeof selectReviewBatch>;
+  lastReviewAt: number | null;
+  latestWeakPointAt: number | null;
+  hasFreshWeakPoints: boolean;
+  hasRecentReview: boolean;
+  isUrgent: boolean;
+  topWeakPoint: WeakPoint | null;
+  recentlyReviewedMissionIds: Set<string>;
+};
+
+type SupportMissionSelection = {
+  mission: Mission;
+  slotLabel: string;
+  reason: string;
+  ctaLabel: string;
+};
+
+function selectSupportMission(
   unlockedMissions: Mission[],
   missionProgress: MissionProgressRecord,
   selectedMissionIds: Set<string>,
-) {
+  reviewAwareness: ReviewAwareness,
+): SupportMissionSelection | null {
+  if (reviewAwareness.isUrgent) {
+    const stabilizeMission = selectTopWeakPointMission(
+      unlockedMissions,
+      selectedMissionIds,
+      reviewAwareness.topWeakPoint,
+    );
+
+    if (stabilizeMission) {
+      return {
+        mission: stabilizeMission,
+        slotLabel: 'Stabilize',
+        reason: buildStabilizeReason(reviewAwareness.topWeakPoint),
+        ctaLabel: 'Retry mission',
+      };
+    }
+  }
+
   const remainingMissions = unlockedMissions.filter(
-    (mission) => !selectedMissionIds.has(mission.id),
+    (mission) =>
+      !selectedMissionIds.has(mission.id) &&
+      !reviewAwareness.recentlyReviewedMissionIds.has(mission.id),
   );
-  const completedCandidates = remainingMissions.filter((mission) => {
+  const fallbackMissions = remainingMissions.length > 0
+    ? remainingMissions
+    : unlockedMissions.filter((mission) => !selectedMissionIds.has(mission.id));
+  const completedCandidates = fallbackMissions.filter((mission) => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount > 0;
   });
 
   if (completedCandidates.length > 0) {
-    return completedCandidates.sort((left, right) => {
+    const mission = completedCandidates.sort((left, right) => {
       const leftProgress = getMissionProgressEntry(missionProgress, left.id);
       const rightProgress = getMissionProgressEntry(missionProgress, right.id);
 
@@ -232,20 +298,187 @@ function selectReinforcementMission(
 
       return leftTime - rightTime;
     })[0];
+
+    return {
+      mission,
+      slotLabel: 'Reinforce',
+      reason: buildReinforcementReason(mission, missionProgress, reviewAwareness),
+      ctaLabel: 'Reinforce mission',
+    };
   }
 
-  return remainingMissions[0] ?? null;
+  const mission = fallbackMissions[0] ?? null;
+
+  if (!mission) {
+    return null;
+  }
+
+  return {
+    mission,
+    slotLabel: 'Light pass',
+    reason: buildReinforcementReason(mission, missionProgress, reviewAwareness),
+    ctaLabel: 'Open mission',
+  };
 }
 
 function buildReinforcementReason(
   mission: Mission,
   missionProgress: MissionProgressRecord,
+  reviewAwareness: ReviewAwareness,
 ) {
   const progress = getMissionProgressEntry(missionProgress, mission.id);
+
+  if (reviewAwareness.hasRecentReview && !reviewAwareness.isUrgent) {
+    return 'You reviewed recently, so this keeps practice moving without sending you straight back into the same retry lane.';
+  }
 
   if (progress.completionCount <= 1) {
     return 'You have only cleared this once, so one more pass will make it less brittle.';
   }
 
   return 'This mission is already in rotation, but it still has a lighter practice count than the rest.';
+}
+
+function deriveReviewAwareness(
+  starterContent: StarterContent,
+  weakPoints: WeakPointStore,
+  reviewLoopProgress: ReviewLoopProgress,
+): ReviewAwareness {
+  const weakPointList = getWeakPointList(weakPoints);
+  const reviewBatch = selectReviewBatch(weakPoints, starterContent);
+  const lastReviewAt = reviewLoopProgress.lastCompletedAt
+    ? Date.parse(reviewLoopProgress.lastCompletedAt)
+    : null;
+  const latestWeakPointAt = weakPointList[0]
+    ? Date.parse(weakPointList[0].lastMissedAt)
+    : null;
+  const now = Date.now();
+  const hasFreshWeakPoints =
+    latestWeakPointAt !== null && now - latestWeakPointAt <= FRESH_WEAK_POINT_WINDOW_MS;
+  const hasRecentReview =
+    lastReviewAt !== null && now - lastReviewAt <= RECENT_REVIEW_WINDOW_MS;
+  const hasRepeatedWeakPoint = weakPointList.some(
+    (weakPoint) => weakPoint.missCount >= REPEATED_MISS_THRESHOLD,
+  );
+  const needsReviewRefresh =
+    latestWeakPointAt !== null && (lastReviewAt === null || latestWeakPointAt > lastReviewAt);
+  const isUrgent =
+    weakPointList.length > 0 &&
+    (weakPointList.length >= URGENT_WEAK_POINT_COUNT ||
+      hasRepeatedWeakPoint ||
+      (hasFreshWeakPoints && needsReviewRefresh));
+
+  return {
+    weakPointList,
+    reviewBatch,
+    lastReviewAt,
+    latestWeakPointAt,
+    hasFreshWeakPoints,
+    hasRecentReview,
+    isUrgent,
+    topWeakPoint: selectTopWeakPoint(weakPointList),
+    recentlyReviewedMissionIds: hasRecentReview
+      ? resolveRecentlyReviewedMissionIds(starterContent, reviewLoopProgress.lastCompletedItemIds)
+      : new Set<string>(),
+  };
+}
+
+function selectTopWeakPoint(weakPointList: WeakPoint[]) {
+  return [...weakPointList].sort((left, right) => {
+    if (right.missCount !== left.missCount) {
+      return right.missCount - left.missCount;
+    }
+
+    return Date.parse(right.lastMissedAt) - Date.parse(left.lastMissedAt);
+  })[0] ?? null;
+}
+
+function selectTopWeakPointMission(
+  unlockedMissions: Mission[],
+  selectedMissionIds: Set<string>,
+  topWeakPoint: WeakPoint | null,
+) {
+  if (!topWeakPoint) {
+    return null;
+  }
+
+  return (
+    unlockedMissions.find(
+      (mission) =>
+        mission.id === topWeakPoint.missionId && !selectedMissionIds.has(mission.id),
+    ) ?? null
+  );
+}
+
+function buildUrgentReviewReason(
+  reviewAwareness: ReviewAwareness,
+  repeatedWeakPointCount: number,
+) {
+  const weakPointCount = reviewAwareness.weakPointList.length;
+
+  if (repeatedWeakPointCount > 0 && reviewAwareness.hasFreshWeakPoints) {
+    return `${weakPointCount} weak point${weakPointCount === 1 ? '' : 's'} are open, including ${repeatedWeakPointCount} with repeated misses and fresh errors since your last review.`;
+  }
+
+  if (repeatedWeakPointCount > 0) {
+    return `${weakPointCount} weak point${weakPointCount === 1 ? '' : 's'} are still open, and ${repeatedWeakPointCount} already have repeated misses.`;
+  }
+
+  return `${weakPointCount} weak point${weakPointCount === 1 ? '' : 's'} are open and still fresh, so retry them before taking on something broader.`;
+}
+
+function buildStabilizeReason(topWeakPoint: WeakPoint | null) {
+  if (!topWeakPoint) {
+    return 'This mission is tied to your most urgent open weak point, so it is the best support slot after review.';
+  }
+
+  const repeatedMisses = topWeakPoint.missCount > 1
+    ? ` with ${topWeakPoint.missCount} recorded misses`
+    : '';
+
+  return `This mission owns your strongest open weak point${repeatedMisses}, so use one quick pass to stabilize it after review.`;
+}
+
+function resolveRecentlyReviewedMissionIds(
+  starterContent: StarterContent,
+  itemIds: string[],
+) {
+  return new Set(
+    itemIds
+      .map((itemId) => findMissionIdForReviewItem(starterContent, itemId))
+      .filter((missionId): missionId is string => Boolean(missionId)),
+  );
+}
+
+function findMissionIdForReviewItem(
+  starterContent: StarterContent,
+  itemId: string,
+) {
+  return (
+    starterContent.missions.find((mission) => missionContainsReviewItem(starterContent, mission, itemId))
+      ?.id ?? null
+  );
+}
+
+function missionContainsReviewItem(
+  starterContent: StarterContent,
+  mission: Mission,
+  itemId: string,
+) {
+  if (mission.contentRefs.listeningItemIds?.includes(itemId)) {
+    return true;
+  }
+
+  if (mission.outputTasks?.some((task) => task.id === itemId)) {
+    return true;
+  }
+
+  if (mission.readingChecks?.some((check) => check.id === itemId)) {
+    return true;
+  }
+
+  return (mission.contentRefs.grammarLessonIds ?? []).some((lessonId) => {
+    const lesson = starterContent.byId.grammarLessons[lessonId];
+    return lesson?.drills.some((drill) => drill.id === itemId);
+  });
 }

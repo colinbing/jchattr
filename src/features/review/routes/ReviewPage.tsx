@@ -7,6 +7,7 @@ import {
 } from '../../../lib/progress/reviewLoop';
 import {
   getWeakPointList,
+  readWeakPoints,
   resolveWeakPointSuccess,
   type WeakPoint,
   type WeakPointItemType,
@@ -28,6 +29,15 @@ const WEAK_POINT_GROUPS: WeakPointItemType[] = [
   'reading-check',
 ];
 
+type LastBatchSummary = {
+  attemptedCount: number;
+  clearedCount: number;
+  unresolvedCount: number;
+  remainingWeakPointCount: number;
+  repeatedWeakPointCount: number;
+  nextBatchSize: number;
+};
+
 export function ReviewPage() {
   const starterContent = getStarterContent();
   const weakPointStore = useWeakPoints();
@@ -39,6 +49,7 @@ export function ReviewPage() {
     [starterContent, weakPointStore],
   );
   const [activeBatch, setActiveBatch] = useState<ReviewBatchItem[] | null>(null);
+  const [lastBatchSummary, setLastBatchSummary] = useState<LastBatchSummary | null>(null);
 
   return (
     <PageShell
@@ -53,7 +64,7 @@ export function ReviewPage() {
     >
       <SurfaceCard
         title="Focused review loop"
-        description="Select the current top weak points and retry them in one compact pass. No clearance, recommendation, or scheduling logic is applied yet."
+        description="Select the current top weak points and retry them in one compact pass. After each batch, the page now tells you what cleared and whether another short retry batch is still worth taking."
       >
         <div className="review-launch-card">
           <div className="review-launch-card__summary">
@@ -74,15 +85,48 @@ export function ReviewPage() {
                 ? `Last review batch ${formatTimestamp(reviewLoopProgress.lastCompletedAt)}`
                 : 'No review batches completed yet'}
             </p>
+            {lastBatchSummary ? (
+              <ul className="simple-list">
+                <li>
+                  Last batch cleared {lastBatchSummary.clearedCount} of{' '}
+                  {lastBatchSummary.attemptedCount} item
+                  {lastBatchSummary.attemptedCount === 1 ? '' : 's'}
+                </li>
+                <li>
+                  {lastBatchSummary.unresolvedCount > 0
+                    ? `${lastBatchSummary.unresolvedCount} item${
+                        lastBatchSummary.unresolvedCount === 1 ? '' : 's'
+                      } still need another retry`
+                    : 'All items from the last batch were cleared'}
+                </li>
+                <li>
+                  {lastBatchSummary.remainingWeakPointCount > 0
+                    ? `${lastBatchSummary.remainingWeakPointCount} weak point${
+                        lastBatchSummary.remainingWeakPointCount === 1 ? '' : 's'
+                      } still remain in the queue`
+                    : 'No weak points remain after the last batch'}
+                </li>
+                {lastBatchSummary.repeatedWeakPointCount > 0 ? (
+                  <li>
+                    {lastBatchSummary.repeatedWeakPointCount} open weak point
+                    {lastBatchSummary.repeatedWeakPointCount === 1 ? '' : 's'} still
+                    have repeated misses
+                  </li>
+                ) : null}
+              </ul>
+            ) : null}
           </div>
 
           <button
             type="button"
             className="mission-button"
             disabled={batchItems.length === 0}
-            onClick={() => setActiveBatch(batchItems)}
+            onClick={() => {
+              setLastBatchSummary(null);
+              setActiveBatch(batchItems);
+            }}
           >
-            Start focused review
+            {lastBatchSummary && batchItems.length > 0 ? 'Continue with next batch' : 'Start focused review'}
           </button>
         </div>
       </SurfaceCard>
@@ -93,16 +137,64 @@ export function ReviewPage() {
           onSuccessfulRetry={(itemId) => {
             resolveWeakPointSuccess(itemId);
           }}
-          onComplete={(itemIds) => {
+          onComplete={(itemIds, resultsByItemId) => {
             markReviewBatchComplete(itemIds);
+            const latestWeakPointStore = readWeakPoints();
+            const remainingWeakPoints = getWeakPointList(latestWeakPointStore);
+            const nextBatch = selectReviewBatch(latestWeakPointStore, starterContent);
+            const clearedCount = itemIds.filter((itemId) => resultsByItemId[itemId] === 'correct')
+              .length;
+
+            setLastBatchSummary({
+              attemptedCount: itemIds.length,
+              clearedCount,
+              unresolvedCount: itemIds.length - clearedCount,
+              remainingWeakPointCount: remainingWeakPoints.length,
+              repeatedWeakPointCount: remainingWeakPoints.filter(
+                (weakPoint) => weakPoint.missCount > 1,
+              ).length,
+              nextBatchSize: nextBatch.length,
+            });
             setActiveBatch(null);
           }}
         />
       ) : null}
 
+      {lastBatchSummary ? (
+        <SurfaceCard
+          title="After your last batch"
+          description={
+            lastBatchSummary.nextBatchSize > 0
+              ? 'The next retry batch is already prepared from the remaining weak points.'
+              : 'The current review queue is empty, so there is no follow-up batch right now.'
+          }
+        >
+          <ul className="simple-list">
+            <li>
+              Cleared {lastBatchSummary.clearedCount} item
+              {lastBatchSummary.clearedCount === 1 ? '' : 's'} in the last batch
+            </li>
+            <li>
+              {lastBatchSummary.unresolvedCount > 0
+                ? `${lastBatchSummary.unresolvedCount} item${
+                    lastBatchSummary.unresolvedCount === 1 ? '' : 's'
+                  } from that batch are still unresolved`
+                : 'No unresolved items remain from the last batch'}
+            </li>
+            <li>
+              {lastBatchSummary.nextBatchSize > 0
+                ? `${lastBatchSummary.nextBatchSize} item${
+                    lastBatchSummary.nextBatchSize === 1 ? '' : 's'
+                  } are ready in the next deterministic retry batch`
+                : 'No next batch is queued right now'}
+            </li>
+          </ul>
+        </SurfaceCard>
+      ) : null}
+
       <SurfaceCard
         title="Weak-point summary"
-        description="This local summary still shows the underlying weak-point store even after a review batch finishes."
+        description="This local summary shows the underlying weak-point store before and after each review batch."
       >
         <ul className="simple-list">
           <li>{weakPoints.length} tracked weak point{weakPoints.length === 1 ? '' : 's'}</li>

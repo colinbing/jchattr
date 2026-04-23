@@ -63,7 +63,7 @@ export function TodayPage() {
 
       <SurfaceCard
         title="Recommended today"
-        description="This daily plan uses only local mission progress, weak points, and unlock rules. It stays small on purpose: review, next step, then reinforcement."
+        description="This daily plan uses only local mission progress, weak points, recent review activity, and unlock rules. It stays small on purpose: review, next step, then one support slot."
       >
         <div className="mission-list" role="list" aria-label="Recommended today">
           {recommendations.map((recommendation) => (
@@ -95,12 +95,12 @@ export function TodayPage() {
 
       <SurfaceCard
         title="Session shape"
-        description="Recommendations stay explicit: one review pass when needed, one unlocked next step, and one reinforcement slot before the full mission browser."
+        description="Recommendations stay explicit: one review pass when needed, one unlocked next step, and one support slot that becomes more review-aware when weak points are fresh or repeated."
       >
         <ul className="simple-list">
           <li>
             Up to {recommendations.length} recommended items built from local
-            progress, weak points, and unlock rules
+            progress, weak points, recent review history, and unlock rules
           </li>
           <li>
             {starterContent.summary.missionCount} total missions remain visible

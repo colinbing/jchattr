@@ -17,6 +17,7 @@
 - Typed content model with Zod validation and relation checks at load time
 - Starter content pack wired through a loader and `byId` indexes
 - Today screen with deterministic recommendations and continue-mission resume
+- Today recommendation heuristics updated to be more review-aware about fresh/repeated weak points and recent review completion
 - Missions page with real library state for recommended, unlocked, locked, completed, and weak-point pressure
 - Settings page with local study-data reset controls and listening-audio coverage status
 - Grammar mission player
@@ -30,6 +31,7 @@
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
+- Review page now summarizes the last completed batch and immediately surfaces the next deterministic retry batch when weak points remain
 - Progress page with simple skill-map tiers derived from completions and misses
 - Content expansion pack 3 around existence and room/object locations
 - Content expansion pack 4 around likes, dislikes, and simple preference questions
@@ -45,7 +47,7 @@
 - User can open Today and get up to 3 recommendations:
   - review first if weak points exist
   - next unlocked incomplete mission
-  - one reinforcement / light-pass mission
+  - one support slot that stabilizes urgent weak-point missions or falls back to reinforcement / light pass
 - User can open Missions and see all current missions with:
   - recommended-today membership
   - unlocked / locked state
@@ -85,6 +87,12 @@
   - caps batch size at 3
   - decrements or clears weak points on successful retry
   - supports grammar drills, listening checks, output tasks, and reading checks
+  - shows last-batch clearance vs unresolved items and whether another short retry batch is ready
+- Today heuristics currently:
+  - mark review as more urgent when weak points are fresh, repeated, or numerous
+  - keep the same small 3-slot plan: review, next step, then one support slot
+  - turn the third slot into a mission-level stabilize recommendation when unresolved weak points are urgent
+  - avoid immediately reusing just-reviewed missions for generic reinforcement when review pressure is low
 - Progress screen currently shows:
   - mission completion totals
   - weak-point totals
@@ -126,6 +134,8 @@
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
 - Current listening audio coverage is complete for the existing content set
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
+- Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
+- Today is now more review-aware, but recommendation logic is still intentionally simple and deterministic rather than adaptive or scheduled
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
 - Settings is intentionally small; there is still no broader preferences system beyond reset controls and audio status
@@ -134,10 +144,10 @@
 
 ## Next Recommended Slices
 
-1. Deepen the review loop with better retry coverage and review-aware Today recommendations, while keeping heuristics explicit.
-2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-4. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence beyond the current present/past polite slices.
+1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
+2. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+3. Extend verb-form coverage with one more narrow pack if Progress needs broader evidence beyond the current present/past polite slices.
+4. Keep refining review depth in thin, explicit slices only if a concrete bottleneck remains after more content is added.
 5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
