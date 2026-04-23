@@ -49,6 +49,7 @@
 - Local romaji-to-kana assist plus kana-equivalent answer normalization for typed Japanese entry across grammar and output flows
 - Content expansion pack 15 around simple directions and navigation basics with `みぎにまがります`, `まっすぐいきます`, and short place answers
 - Content expansion pack 16 around simple invitations and plan-making basics with `いっしょにいきますか`, `なんじにあいますか`, and short yes / no plan responses
+- Content expansion pack 17 around simple meeting-place coordination with `どこであいますか`, `えきであいます`, and `えきまえであいます`
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
@@ -68,10 +69,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 53 starter missions across 4 mission types:
-  - 16 grammar
-  - 16 listening
-  - 16 output
+- User can complete 56 starter missions across 4 mission types:
+  - 17 grammar
+  - 17 listening
+  - 17 output
   - 5 reading
 - Grammar missions currently include:
   - lesson intro
@@ -131,6 +132,7 @@
   - simple transport and movement lines like `バスでいきます`, `どこまでいきますか`, and `えきまであるきます`
   - simple navigation and direction lines like `みぎにまがります`, `まっすぐいきます`, and `えきはあそこです`
   - simple invitation and plan lines like `いっしょにいきますか`, `どようびにいきますか`, `なんじにあいますか`, `はい、いきます`, and `いいえ、いきません`
+  - simple meeting-place coordination lines like `どこであいますか`, `えきであいます`, `えきまえであいます`, and short landmark answers like `としょかんのまえであいます`
   - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
@@ -141,11 +143,11 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 32 grammar lessons
-  - 167 example sentences
-  - 178 vocab items
-  - 79 listening items
-  - 53 missions
+  - 34 grammar lessons
+  - 179 example sentences
+  - 188 vocab items
+  - 84 listening items
+  - 56 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -159,8 +161,9 @@
 - Transport and movement coverage now exists, but it is still a narrow beginner slice rather than broader travel-planning, directions, or comparison coverage
 - Direction and navigation coverage now exists, but it is still a narrow beginner slice rather than broader route-following, landmarks, or multi-step navigation coverage
 - Invitation and plan-making coverage now exists, but it is still a narrow beginner slice rather than broader suggestion, availability, or future-planning coverage
+- Meeting-place coordination coverage now exists, but it is still a narrow beginner slice rather than broader schedule negotiation, lateness handling, or route-specific meetup talk
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is now partial again because the new pack-16 listening refs are in content before a manual audio pass and manifest sync
+- Current listening audio coverage is complete again for the current worktree content set
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -173,12 +176,11 @@
 
 ## Next Recommended Slices
 
-1. Add the missing pack-16 listening audio files and resync the manifest so Settings returns to full listening-audio coverage.
-2. Implement the next narrow content pack in the current schema before adding new systems, especially another grammar/listening/output pack for repeated daily use.
-3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-4. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
-5. Improve the current kana assist only if it stays dependency-light and explicit rather than turning into a broad IME system.
-6. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
+1. Implement the next narrow content pack in the current schema before adding new systems, especially another grammar/listening/output pack for repeated daily use.
+2. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+3. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
+4. Improve the current kana assist only if it stays dependency-light and explicit rather than turning into a broad IME system.
+5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -225,6 +227,7 @@
   - simple transport and movement patterns with transport `で`, destination `まで`, and questions like `どこまでいきますか`
   - simple direction and navigation patterns with `みぎにまがります`, `ひだりにまがります`, `まっすぐいきます`, and place answers like `えきはあそこです`
   - simple invitation and plan-making patterns with `いっしょにいきますか`, `Xようびにいきますか`, `なんじにあいますか`, and short yes / no plan responses
+  - simple meeting-place coordination patterns with `どこであいますか`, `Xであいます`, `えきまえであいます`, and short landmark meetup lines
   - simple adjective predicates like `ほんはおもしろいです` and `へやはしずかです`
   - adjective plus noun phrases like `あたらしいカメラ` and `しずかなへや`
   - preferences with `が すきです / きらいです`
@@ -236,10 +239,10 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 79 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 74 of the 79 listening items
-- Manifest-backed listening-audio coverage is intentionally partial until the 5 new pack-16 files are added and synced
-- Settings currently reports partial listening-audio coverage until the new pack-16 audio is generated and the manifest is resynced
+- Listening items may include `audioRef`; all 84 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for all 84 listening items
+- Manifest-backed listening-audio coverage is fully aligned with the current worktree content set
+- Settings currently reports full listening-audio coverage for the existing content set
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

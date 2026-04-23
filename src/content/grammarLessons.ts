@@ -1227,4 +1227,83 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-meeting-place-de-questions',
+    title: 'Ask and answer where to meet with で',
+    objective:
+      'Ask where to meet and answer with a simple place + で + あいます pattern.',
+    explanation:
+      'Use どこであいますか to ask where to meet, and answer with a place plus で and あいます, like えきであいます or ひろばであいます. This keeps meeting-place coordination short, practical, and beginner-safe.',
+    prerequisites: ['grammar-plan-responses-yes-no'],
+    tags: ['meeting', 'particles', 'question', 'n5'],
+    exampleIds: [
+      'ex-doko-de-aimasu-ka',
+      'ex-eki-de-aimasu',
+      'ex-basutei-de-aimasu',
+      'ex-hiroba-de-aimasu',
+    ],
+    commonMistakes: [
+      'Using に instead of で after the meeting place when the line is showing where you meet.',
+      'Dropping で completely and leaving only the place noun before あいます.',
+      'Keeping the question word order but forgetting to end the sentence with あいますか.',
+    ],
+    drills: [
+      {
+        id: 'drill-meeting-place-de-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Where shall we meet?"',
+        answer: 'どこであいますか。',
+        choices: ['どこにあいますか。', 'どこであいますか。', 'あいますかどこで。'],
+      },
+      {
+        id: 'drill-meeting-place-de-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: えき___あいます。',
+        answer: 'で',
+        support: 'Use で after the meeting place before あいます.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-meeting-place-landmark-lines',
+    title: 'Give more precise meeting-place lines',
+    objective:
+      'Confirm a meeting place with short landmark lines like えきまえであいます and としょかんのまえであいます.',
+    explanation:
+      'Once the basic place + で pattern is clear, make the place more precise with short landmarks like えきまえ, のまえ, のそば, いりぐち, and でぐち. This helps you coordinate exactly where to meet without broadening into advanced planning grammar.',
+    prerequisites: ['grammar-meeting-place-de-questions'],
+    tags: ['meeting', 'particles', 'location', 'n5'],
+    exampleIds: [
+      'ex-ekimae-de-aimasu',
+      'ex-toshokan-no-mae-de-aimasu',
+      'ex-kouen-no-iriguchi-de-aimasu',
+      'ex-konbini-no-soba-de-aimasu',
+      'ex-biru-no-deguchi-de-aimasu',
+    ],
+    commonMistakes: [
+      'Dropping で after the final meeting-place phrase like えきまえ or いりぐち.',
+      'Using の in the wrong place and breaking the short landmark phrase order.',
+      'Switching back to a bare place noun when the goal is to give a more precise landmark answer.',
+    ],
+    drills: [
+      {
+        id: 'drill-meeting-place-landmark-lines-1',
+        type: 'reorder',
+        prompt: 'Reorder: えきまえで / あいます',
+        answer: 'えきまえであいます。',
+        support: 'Keep the precise meeting-place phrase together before あいます.',
+      },
+      {
+        id: 'drill-meeting-place-landmark-lines-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "We will meet in front of the library."',
+        answer: 'としょかんのまえであいます。',
+        choices: [
+          'としょかんでまえあいます。',
+          'としょかんのまえであいます。',
+          'まえとしょかんであいます。',
+        ],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
