@@ -2393,8 +2393,8 @@ export const grammarLessons = [
       'ex-heya-shizuka-deshita',
       'ex-mise-kirei-deshita',
       'ex-kafe-shizuka-deshita',
-      'ex-hito-yasashikatta-desu',
-      'ex-heya-hirokatta-desu',
+      'ex-heya-kirei-deshita',
+      'ex-toshokan-shizuka-deshita',
     ],
     commonMistakes: [
       'Using かったです with a な-adjective like しずか.',
@@ -2755,6 +2755,730 @@ export const grammarLessons = [
         prompt: 'Reorder: きょうはべんきょうしますから / えいがをみません',
         answer: 'きょうはべんきょうしますからえいがをみません。',
         support: 'Keep the reason clause first, then add the short negative result.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-desire-tai-places',
+    title: 'Use たいです to say where you want to go',
+    objective:
+      'Use short desire lines like えいがかんにいきたいです and レストランにいきたいです.',
+    explanation:
+      'Use the place + に + いきたいです pattern to say where you want to go. Keep the lines short and practical so the learner can talk about simple plans and preferences without needing more advanced future grammar.',
+    prerequisites: ['grammar-reasons-kara-refusals'],
+    tags: ['desire', 'movement', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-eigakan-ni-ikitai-desu',
+      'ex-toshokan-ni-ikitai-desu',
+      'ex-kafe-ni-ikitai-desu',
+      'ex-resutoran-ni-ikitai-desu',
+      'ex-doyoubi-ni-eigakan-ni-ikitai-desu',
+    ],
+    commonMistakes: [
+      'Using を instead of に before the place when the line means "want to go to".',
+      'Dropping たいです and turning the sentence back into a plain いきます statement.',
+      'Adding too much schedule detail before the learner is comfortable with the core pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-desire-tai-places-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I want to go to the cafe."',
+        answer: 'カフェにいきたいです。',
+        choices: ['カフェにいきたいです。', 'カフェをいきたいです。', 'カフェにいきますたいです。'],
+      },
+      {
+        id: 'drill-desire-tai-places-2',
+        type: 'reorder',
+        prompt: 'Reorder: どようびに / えいがかんにいきたいです',
+        answer: 'どようびにえいがかんにいきたいです。',
+        support: 'Keep the time first, then the destination with に, then いきたいです.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-desire-tai-actions',
+    title: 'Use たいです for things you want to do',
+    objective:
+      'Use short desire lines like パンをたべたいです and にほんごをべんきょうしたいです.',
+    explanation:
+      'The same たいです ending works with familiar actions. Keep the pattern concrete with eating, drinking, reading, watching, and studying so the learner can say what they want to do in daily life.',
+    prerequisites: ['grammar-desire-tai-places'],
+    tags: ['desire', 'actions', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-pan-o-tabetai-desu',
+      'ex-koohii-o-nomitai-desu',
+      'ex-hon-o-yomitai-desu',
+      'ex-eiga-o-mitai-desu',
+      'ex-nihongo-o-benkyoushitai-desu',
+    ],
+    commonMistakes: [
+      'Keeping the base polite verb like たべます instead of changing it to たべたいです.',
+      'Dropping the object marker を and making the sentence harder to parse.',
+      'Mixing たいです up with ほしいです even though this pack is for actions, not wanted objects.',
+    ],
+    drills: [
+      {
+        id: 'drill-desire-tai-actions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I want to watch a movie."',
+        answer: 'えいがをみたいです。',
+        choices: ['えいがをみたいです。', 'えいががみたいです。', 'えいがをみますたいです。'],
+      },
+      {
+        id: 'drill-desire-tai-actions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: コーヒーを___。',
+        answer: 'のみたいです',
+        support: 'Use the desire ending with the familiar verb so the line means "want to drink."',
+      },
+    ],
+  },
+  {
+    id: 'grammar-object-desire-hoshii',
+    title: 'Use ほしいです for things you want',
+    objective:
+      'Use short wanted-object lines like ほんがほしいです and みずがほしいです.',
+    explanation:
+      'Use noun + が + ほしいです to say what you want. Keep this separate from たいです: ほしいです is for wanted things, not for actions you want to do.',
+    prerequisites: ['grammar-desire-tai-actions'],
+    tags: ['desire-object', 'particle-ga', 'noun', 'n5'],
+    exampleIds: [
+      'ex-hon-ga-hoshii-desu',
+      'ex-kamera-ga-hoshii-desu',
+      'ex-jitensha-ga-hoshii-desu',
+      'ex-mizu-ga-hoshii-desu',
+      'ex-keeki-ga-hoshii-desu',
+    ],
+    commonMistakes: [
+      'Using を instead of が in the core ほしいです pattern taught in this repo.',
+      'Mixing ほしいです with action verbs when the sentence should use たいです instead.',
+      'Dropping the wanted thing and leaving only ほしいです with no clear object.',
+    ],
+    drills: [
+      {
+        id: 'drill-object-desire-hoshii-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I want water."',
+        answer: 'みずがほしいです。',
+        choices: ['みずがほしいです。', 'みずをほしいです。', 'みずがほしいます。'],
+      },
+      {
+        id: 'drill-object-desire-hoshii-2',
+        type: 'reorder',
+        prompt: 'Reorder: ケーキが / ほしいです',
+        answer: 'ケーキがほしいです。',
+        support: 'Put the wanted thing first with が, then finish with ほしいです.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-object-desire-hoshii-questions',
+    title: 'Ask and specify what you want with ほしいです',
+    objective:
+      'Use short question and detail lines like なにがほしいですか and このほんがほしいです.',
+    explanation:
+      'Once the learner knows the core ほしいです pattern, they can ask what someone wants and add small details like この or あたらしい. Keep the sentence shape the same and only change the noun phrase.',
+    prerequisites: ['grammar-object-desire-hoshii'],
+    tags: ['desire-object', 'question', 'noun-linking', 'n5'],
+    exampleIds: [
+      'ex-nani-ga-hoshii-desu-ka',
+      'ex-pan-ga-hoshii-desu',
+      'ex-koohii-ga-hoshii-desu',
+      'ex-kono-hon-ga-hoshii-desu',
+      'ex-atarashii-kamera-ga-hoshii-desu',
+    ],
+    commonMistakes: [
+      'Changing the sentence order instead of keeping the same がほしいです shape.',
+      'Dropping the question ending か when the prompt asks what someone wants.',
+      'Adding extra detail that breaks the beginner-safe noun phrase pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-object-desire-hoshii-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What do you want?"',
+        answer: 'なにがほしいですか。',
+        choices: ['なにがほしいですか。', 'なにをほしいですか。', 'ほしいですかなにが。'],
+      },
+      {
+        id: 'drill-object-desire-hoshii-questions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: このほんが___。',
+        answer: 'ほしいです',
+        support: 'Keep the same wanted-object pattern after the noun phrase.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-ability-kotoga-dekimasu-actions',
+    title: 'Use ことができます for things you can do',
+    objective:
+      'Use short ability lines like にほんごをよむことができます and じてんしゃにのることができます.',
+    explanation:
+      'For this repo, ability is introduced with dictionary-form verb + ことができます. Keep it narrow and concrete with reading, speaking, riding, walking, and buying so the learner sees the full chunk as one useful pattern.',
+    prerequisites: ['grammar-object-desire-hoshii-questions'],
+    tags: ['ability', 'verb-forms', 'dictionary-form', 'n5'],
+    exampleIds: [
+      'ex-nihongo-o-yomu-koto-ga-dekimasu',
+      'ex-eigo-o-hanasu-koto-ga-dekimasu',
+      'ex-jitensha-ni-noru-koto-ga-dekimasu',
+      'ex-kafe-made-aruku-koto-ga-dekimasu',
+      'ex-hon-o-kau-koto-ga-dekimasu',
+    ],
+    commonMistakes: [
+      'Using the polite ます form before ことができます instead of the dictionary form taught here.',
+      'Dropping こと and breaking the fixed beginner-safe ability chunk.',
+      'Confusing this pattern with たいです or ほしいです when the meaning is ability, not desire.',
+    ],
+    drills: [
+      {
+        id: 'drill-ability-kotoga-dekimasu-actions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I can speak English."',
+        answer: 'えいごをはなすことができます。',
+        choices: [
+          'えいごをはなすことができます。',
+          'えいごをはなしますことができます。',
+          'えいごがはなすことできます。',
+        ],
+      },
+      {
+        id: 'drill-ability-kotoga-dekimasu-actions-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: にほんごをよむ___できます。',
+        answer: 'ことが',
+        support: 'The fixed ability chunk is dictionary-form verb + ことができます.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-ability-kotoga-dekimasu-questions',
+    title: 'Ask and answer simple ability questions',
+    objective:
+      'Use short ability question lines like にほんごをよむことができますか and はい、にほんごをよむことができます.',
+    explanation:
+      'Once the learner knows the full ability chunk, they can use the same pattern in questions and short answers. Keep the full sentence intact and only add か or a short yes-response.',
+    prerequisites: ['grammar-ability-kotoga-dekimasu-actions'],
+    tags: ['ability', 'question', 'response', 'n5'],
+    exampleIds: [
+      'ex-eiga-o-miru-koto-ga-dekimasu',
+      'ex-ongaku-o-kiku-koto-ga-dekimasu',
+      'ex-densha-ni-noru-koto-ga-dekimasu',
+      'ex-nihongo-o-yomu-koto-ga-dekimasu-ka',
+      'ex-hai-nihongo-o-yomu-koto-ga-dekimasu',
+    ],
+    commonMistakes: [
+      'Dropping part of ことができます when turning the statement into a question.',
+      'Trying to answer with just はい when the task expects the full beginner-safe sentence.',
+      'Switching back to a plain verb sentence instead of keeping the ability pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-ability-kotoga-dekimasu-questions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Can you read Japanese?"',
+        answer: 'にほんごをよむことができますか。',
+        choices: [
+          'にほんごをよむことができますか。',
+          'にほんごをよみますことができますか。',
+          'にほんごがよむことできますか。',
+        ],
+      },
+      {
+        id: 'drill-ability-kotoga-dekimasu-questions-2',
+        type: 'reorder',
+        prompt: 'Reorder: はい、 / にほんごをよむことができます',
+        answer: 'はい、にほんごをよむことができます。',
+        support: 'Keep the full ability sentence after the short yes-response.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-experience-takotoga-arimasu-places',
+    title: 'Use たことがあります for places you have been',
+    objective:
+      'Use short experience lines like えいがかんにいったことがあります and とうきょうにいったことがあります.',
+    explanation:
+      'This repo introduces experience as a fixed past-action chunk plus ことがあります. For now, treat lines like いったことがあります as one useful pattern for saying you have been somewhere before, not as a full free-form past-tense lesson.',
+    prerequisites: ['grammar-ability-kotoga-dekimasu-questions'],
+    tags: ['experience', 'movement', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-eigakan-ni-itta-koto-ga-arimasu',
+      'ex-toukyou-ni-itta-koto-ga-arimasu',
+      'ex-kuukou-ni-itta-koto-ga-arimasu',
+      'ex-kono-kafe-ni-itta-koto-ga-arimasu',
+      'ex-eigakan-ni-itta-koto-ga-arimasu-ka',
+    ],
+    commonMistakes: [
+      'Replacing the fixed past chunk いった with the polite form いきました inside this pattern.',
+      'Dropping こと and breaking the beginner-safe experience chunk.',
+      'Treating the sentence like a plain past statement instead of an "have done before" experience line.',
+    ],
+    drills: [
+      {
+        id: 'drill-experience-takotoga-arimasu-places-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I have been to Tokyo before."',
+        answer: 'とうきょうにいったことがあります。',
+        choices: [
+          'とうきょうにいったことがあります。',
+          'とうきょうにいきましたことがあります。',
+          'とうきょうをいったことがあります。',
+        ],
+      },
+      {
+        id: 'drill-experience-takotoga-arimasu-places-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: えいがかんにいった___あります。',
+        answer: 'ことが',
+        support: 'Keep the fixed experience pattern together as いったことがあります.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-experience-takotoga-arimasu-activities',
+    title: 'Use たことがあります for things you have done',
+    objective:
+      'Use short experience lines like すしをたべたことがあります and えいがをみたことがあります.',
+    explanation:
+      'The same experience pattern works with familiar activities. Keep the set small and concrete so the learner can say they have tried a food or watched something before without needing a broad new verb system.',
+    prerequisites: ['grammar-experience-takotoga-arimasu-places'],
+    tags: ['experience', 'object', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-sushi-o-tabeta-koto-ga-arimasu',
+      'ex-raamen-o-tabeta-koto-ga-arimasu',
+      'ex-eiga-o-mita-koto-ga-arimasu',
+      'ex-anime-o-mita-koto-ga-arimasu',
+      'ex-sushi-o-tabeta-koto-ga-arimasu-ka',
+    ],
+    commonMistakes: [
+      'Changing the fixed past chunk into a plain present verb like たべます or みます.',
+      'Leaving out the object marker を in a pattern that still needs it.',
+      'Thinking this means a single past event instead of prior experience in general.',
+    ],
+    drills: [
+      {
+        id: 'drill-experience-takotoga-arimasu-activities-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I have eaten sushi before."',
+        answer: 'すしをたべたことがあります。',
+        choices: [
+          'すしをたべたことがあります。',
+          'すしをたべますことがあります。',
+          'すしがたべたことがあります。',
+        ],
+      },
+      {
+        id: 'drill-experience-takotoga-arimasu-activities-2',
+        type: 'reorder',
+        prompt: 'Reorder: えいがを / みたことがあります',
+        answer: 'えいがをみたことがあります。',
+        support: 'Keep the object first, then use the fixed experience chunk after it.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-companions-dare-to',
+    title: 'Ask and answer who you go with',
+    objective:
+      'Use short follow-up lines like だれとえいがかんにいきますか and ともだちとえいがかんにいきます.',
+    explanation:
+      'This slice keeps companion language narrow: ask with だれと and answer with a known person + と. That gives the learner a practical follow-up question without broadening into more complex relationship language.',
+    prerequisites: ['grammar-experience-takotoga-arimasu-activities'],
+    tags: ['companions', 'question', 'movement', 'n5'],
+    exampleIds: [
+      'ex-dare-to-eigakan-ni-ikimasu-ka',
+      'ex-tomodachi-to-eigakan-ni-ikimasu',
+      'ex-kazoku-to-resutoran-ni-ikimasu',
+      'ex-sensei-to-toshokan-ni-ikimasu',
+      'ex-ane-to-kafe-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Using に instead of と after the companion when the sentence means "with someone."',
+      'Dropping だれ in the question and leaving only an incomplete と phrase.',
+      'Mixing the companion phrase with the destination phrase so the sentence becomes hard to read.',
+    ],
+    drills: [
+      {
+        id: 'drill-companions-dare-to-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Who do you go to the movie theater with?"',
+        answer: 'だれとえいがかんにいきますか。',
+        choices: [
+          'だれとえいがかんにいきますか。',
+          'だれにえいがかんにいきますか。',
+          'えいがかんにだれといきますですか。',
+        ],
+      },
+      {
+        id: 'drill-companions-dare-to-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: ともだち___えいがかんにいきます。',
+        answer: 'と',
+        support: 'Use と after the companion to mean "with."',
+      },
+    ],
+  },
+  {
+    id: 'grammar-methods-douyatte-transport',
+    title: 'Ask and answer how you get somewhere',
+    objective:
+      'Use short method lines like どうやってえきにいきますか and バスでえきにいきます.',
+    explanation:
+      'This lesson recombines a new question word with familiar transport language. Ask with どうやって, then answer with transport + で + destination + いきます. The grammar stays narrow and practical.',
+    prerequisites: ['grammar-companions-dare-to'],
+    tags: ['methods', 'question', 'transport', 'n5'],
+    exampleIds: [
+      'ex-douyatte-eki-ni-ikimasu-ka',
+      'ex-basu-de-eki-ni-ikimasu',
+      'ex-densha-de-toukyou-ni-ikimasu',
+      'ex-jitensha-de-kafe-ni-ikimasu',
+      'ex-takushii-de-resutoran-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Forgetting で after the transport and losing the method meaning.',
+      'Answering a どうやって question with only a destination and no transport method.',
+      'Mixing に and で so the transport and destination roles are reversed.',
+    ],
+    drills: [
+      {
+        id: 'drill-methods-douyatte-transport-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "How do you get to the station?"',
+        answer: 'どうやってえきにいきますか。',
+        choices: [
+          'どうやってえきにいきますか。',
+          'どうやってえきでいきますか。',
+          'えきにどうやってですか。',
+        ],
+      },
+      {
+        id: 'drill-methods-douyatte-transport-2',
+        type: 'reorder',
+        prompt: 'Reorder: バスで / えきにいきます',
+        answer: 'バスでえきにいきます。',
+        support: 'Put the transport + で chunk first, then keep the destination and verb together.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-choice-dore-dono-items',
+    title: 'Use どれ and どの for simple item choices',
+    objective:
+      'Use short choice questions like どれがいいですか and どのほんがいいですか.',
+    explanation:
+      'Use どれ when the item is already understood and どの before a noun when you want to name the category. This keeps choice language beginner-safe while reusing familiar nouns like books, cakes, movies, and cafes.',
+    prerequisites: ['grammar-methods-douyatte-transport'],
+    tags: ['choice', 'question', 'noun-linking', 'n5'],
+    exampleIds: [
+      'ex-dore-ga-ii-desu-ka',
+      'ex-dono-hon-ga-ii-desu-ka',
+      'ex-dono-keeki-ga-hoshii-desu-ka',
+      'ex-dono-eiga-o-mitai-desu-ka',
+      'ex-dono-kafe-ni-ikitai-desu-ka',
+    ],
+    commonMistakes: [
+      'Using どれ right before a noun instead of switching to どの.',
+      'Dropping the noun after どの and leaving the question unfinished.',
+      'Forgetting that these are choice questions and turning them into plain statements.',
+    ],
+    drills: [
+      {
+        id: 'drill-choice-dore-dono-items-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Which book is good?"',
+        answer: 'どのほんがいいですか。',
+        choices: [
+          'どのほんがいいですか。',
+          'どれほんがいいですか。',
+          'どのほんをいいですか。',
+        ],
+      },
+      {
+        id: 'drill-choice-dore-dono-items-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: ___ケーキがほしいですか。',
+        answer: 'どの',
+        support: 'Use どの before a noun when asking which specific item in a category.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-choice-dochira-decisions',
+    title: 'Use どちら for simple two-choice decisions',
+    objective:
+      'Use short two-option choice lines like パンとケーキとどちらがいいですか and パンがいいです.',
+    explanation:
+      'Use どちら when there are two options. Keep the answer equally short with Xがいいです. This gives the learner a clean beginner pattern for choosing between food, transport, and simple plans.',
+    prerequisites: ['grammar-choice-dore-dono-items'],
+    tags: ['choice', 'question', 'decision', 'n5'],
+    exampleIds: [
+      'ex-pan-to-keeki-to-dochira-ga-ii-desu-ka',
+      'ex-pan-ga-ii-desu',
+      'ex-basu-to-densha-to-dochira-ga-ii-desu-ka',
+      'ex-densha-ga-ii-desu',
+      'ex-koohii-to-ocha-to-dochira-ga-suki-desu-ka',
+    ],
+    commonMistakes: [
+      'Using どちら without clearly giving two options first.',
+      'Answering with only the noun and forgetting the short response pattern がいいです.',
+      'Mixing this choice pattern up with broader comparisons from より / のほうが.',
+    ],
+    drills: [
+      {
+        id: 'drill-choice-dochira-decisions-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Which is better, the bus or the train?"',
+        answer: 'バスとでんしゃとどちらがいいですか。',
+        choices: [
+          'バスとでんしゃとどちらがいいですか。',
+          'どちらバスとでんしゃがいいですか。',
+          'バスとでんしゃがどちらいいですか。',
+        ],
+      },
+      {
+        id: 'drill-choice-dochira-decisions-2',
+        type: 'reorder',
+        prompt: 'Reorder: でんしゃが / いいです',
+        answer: 'でんしゃがいいです。',
+        support: 'Keep the chosen option first, then answer with the short fixed response pattern.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-health-condition-basics',
+    title: 'Use simple condition checks and answers',
+    objective:
+      'Use short health lines like だいじょうぶですか, げんきです, and あたまがいたいです.',
+    explanation:
+      'This pack introduces very short condition language first. Keep the lines compact and practical so the learner can check on someone, say they are okay, or mention one simple physical problem without needing a broad medical vocabulary.',
+    prerequisites: ['grammar-choice-dochira-decisions'],
+    tags: ['health', 'condition', 'copula', 'n5'],
+    exampleIds: [
+      'ex-daijoubu-desu',
+      'ex-daijoubu-desu-ka',
+      'ex-genki-desu',
+      'ex-genki-desu-ka',
+      'ex-atama-ga-itai-desu',
+    ],
+    commonMistakes: [
+      'Dropping か in a short check like だいじょうぶですか and turning it into a statement.',
+      'Trying to force a topic marker into the short condition line when the repo treats these as compact fixed expressions.',
+      'Replacing が in あたまがいたいです with は and making the line less natural for this beginner pattern.',
+    ],
+    drills: [
+      {
+        id: 'drill-health-condition-basics-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Are you okay?"',
+        answer: 'だいじょうぶですか。',
+        choices: ['だいじょうぶですか。', 'だいじょうぶかです。', 'だいじょうぶをですか。'],
+      },
+      {
+        id: 'drill-health-condition-basics-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: あたま___いたいです。',
+        answer: 'が',
+        support: 'Use が in this short body-part condition line.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-health-simple-response-and-action',
+    title: 'Add one simple response or next action for health',
+    objective:
+      'Use short follow-up lines like きょうはびょういんにいきます and くすりをのみます.',
+    explanation:
+      'After a short condition line, the learner often needs one small next step. This lesson keeps that next step practical and narrow: go to the hospital, take medicine, or say you are not well today.',
+    prerequisites: ['grammar-health-condition-basics'],
+    tags: ['health', 'negative', 'destination-ni', 'n5'],
+    exampleIds: [
+      'ex-kyou-wa-atama-ga-itai-desu',
+      'ex-byouin-ni-ikimasu',
+      'ex-kusuri-o-nomimasu',
+      'ex-kyou-wa-byouin-ni-ikimasu',
+      'ex-kyou-wa-genki-janai-desu',
+    ],
+    commonMistakes: [
+      'Turning the follow-up into a broad explanation instead of one short practical next step.',
+      'Dropping に in びょういんにいきます even though the line needs a destination.',
+      'Forgetting the negative part of げんきじゃないです when the intended meaning is not being well.',
+    ],
+    drills: [
+      {
+        id: 'drill-health-simple-response-and-action-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I am going to the hospital today."',
+        answer: 'きょうはびょういんにいきます。',
+        choices: [
+          'きょうはびょういんにいきます。',
+          'きょうはびょういんでいきます。',
+          'きょうはびょういんにいきますか。',
+        ],
+      },
+      {
+        id: 'drill-health-simple-response-and-action-2',
+        type: 'reorder',
+        prompt: 'Reorder: くすりを / のみます',
+        answer: 'くすりをのみます。',
+        support: 'Keep the object first, then finish with the familiar polite verb.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-weather-comfort-basics',
+    title: 'Use simple weather and comfort lines',
+    objective:
+      'Use short lines like きょうはあついです, きょうはさむいです, and きょうはあめです.',
+    explanation:
+      'This lesson adds a small everyday weather/comfort set. Keep the lines short and observation-based so the learner can describe how it feels without widening into a broad weather unit.',
+    prerequisites: ['grammar-health-simple-response-and-action'],
+    tags: ['weather', 'comfort', 'copula', 'n5'],
+    exampleIds: [
+      'ex-kyou-wa-atsui-desu',
+      'ex-kyou-wa-samui-desu',
+      'ex-kyou-wa-ame-desu',
+      'ex-samui-desu-ka',
+      'ex-atsui-desu-ka',
+    ],
+    commonMistakes: [
+      'Dropping きょうは when the prompt is specifically about today’s condition.',
+      'Mixing weather adjectives up with object-description use cases from earlier adjective packs.',
+      'Forgetting か in a short weather question.',
+    ],
+    drills: [
+      {
+        id: 'drill-weather-comfort-basics-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "It is cold today."',
+        answer: 'きょうはさむいです。',
+        choices: ['きょうはさむいです。', 'きょうはさむいをです。', 'きょうにさむいです。'],
+      },
+      {
+        id: 'drill-weather-comfort-basics-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: きょうはあめ___。',
+        answer: 'です',
+        support: 'Keep this weather observation as a short copula line.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-weather-practical-choices',
+    title: 'Connect weather to one practical choice',
+    objective:
+      'Use short practical lines like さむいですからコートをきます and あめですからかさをもちます.',
+    explanation:
+      'The learner already has beginner-safe から lines, so this lesson reuses them for weather. Keep the pattern narrow: one short condition first, then one small practical response like wearing a coat or carrying an umbrella.',
+    prerequisites: ['grammar-weather-comfort-basics'],
+    tags: ['weather', 'reason', 'verb-forms', 'n5'],
+    exampleIds: [
+      'ex-kooto-o-kimasu',
+      'ex-samui-desukara-kooto-o-kimasu',
+      'ex-ame-desukara-kasa-o-mochimasu',
+      'ex-kyou-wa-atsui-desukara-mizu-o-nomimasu',
+      'ex-kyou-wa-kooto-o-kimasen',
+    ],
+    commonMistakes: [
+      'Leaving out から and turning the condition and action into two unrelated statements.',
+      'Mixing the practical action up with a broad explanation instead of one short response.',
+      'Forgetting the negative ending in きません when the prompt is about not wearing a coat.',
+    ],
+    drills: [
+      {
+        id: 'drill-weather-practical-choices-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Because it is cold, I wear a coat."',
+        answer: 'さむいですからコートをきます。',
+        choices: [
+          'さむいですからコートをきます。',
+          'さむいですコートをきますから。',
+          'コートをさむいですからきます。',
+        ],
+      },
+      {
+        id: 'drill-weather-practical-choices-2',
+        type: 'reorder',
+        prompt: 'Reorder: あめですから / かさをもちます',
+        answer: 'あめですからかさをもちます。',
+        support: 'Keep the weather reason first, then the practical action.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-travel-steps-getting-on-and-off',
+    title: 'Use simple getting on and getting off lines',
+    objective:
+      'Use short travel-step lines like でんしゃにのります and バスをおります.',
+    explanation:
+      'This lesson deepens movement language with two tightly scoped travel steps: getting on and getting off. Keep the patterns concrete and transport-focused so the learner can talk about movement changes without a full transit unit.',
+    prerequisites: ['grammar-weather-practical-choices'],
+    tags: ['travel-steps', 'movement', 'transport', 'n5'],
+    exampleIds: [
+      'ex-densha-ni-norimasu',
+      'ex-basu-ni-norimasu',
+      'ex-densha-o-orimasu',
+      'ex-basu-o-orimasu',
+      'ex-kuukou-de-takushii-ni-norimasu',
+    ],
+    commonMistakes: [
+      'Using を after the transport when the sentence means getting on rather than getting off.',
+      'Using に after the transport when the sentence means getting off.',
+      'Losing the transport word and leaving only a bare movement verb.',
+    ],
+    drills: [
+      {
+        id: 'drill-travel-steps-getting-on-and-off-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I get off the train."',
+        answer: 'でんしゃをおります。',
+        choices: ['でんしゃをおります。', 'でんしゃにおります。', 'でんしゃをのります。'],
+      },
+      {
+        id: 'drill-travel-steps-getting-on-and-off-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: バス___のります。',
+        answer: 'に',
+        support: 'Use に when the sentence means getting on a bus.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-travel-steps-changing-and-arrival',
+    title: 'Use simple change, exit, and arrival lines',
+    objective:
+      'Use short travel-step lines like えきでのりかえます, くうこうをでます, and もうくうこうにつきました.',
+    explanation:
+      'Once the learner can get on and off transport, they can add one more compact layer: change at a station, leave a place, or say they have already arrived. This keeps travel Japanese practical without widening into full travel-problem language yet.',
+    prerequisites: ['grammar-travel-steps-getting-on-and-off'],
+    tags: ['travel-steps', 'status', 'transport', 'n5'],
+    exampleIds: [
+      'ex-eki-de-norikaemasu',
+      'ex-kuukou-o-demasu',
+      'ex-eki-o-demasu',
+      'ex-kuukou-ni-tsukimashita',
+      'ex-mou-kuukou-ni-tsukimashita',
+    ],
+    commonMistakes: [
+      'Dropping で in えきでのりかえます even though the station is the place where the change happens.',
+      'Using に instead of を in short leave/exit lines like くうこうをでます.',
+      'Forgetting もう when the prompt is specifically about already having arrived.',
+    ],
+    drills: [
+      {
+        id: 'drill-travel-steps-changing-and-arrival-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I change trains at the station."',
+        answer: 'えきでのりかえます。',
+        choices: ['えきでのりかえます。', 'えきにのりかえます。', 'えきをのりかえます。'],
+      },
+      {
+        id: 'drill-travel-steps-changing-and-arrival-2',
+        type: 'reorder',
+        prompt: 'Reorder: もう / くうこうにつきました',
+        answer: 'もうくうこうにつきました。',
+        support: 'Put もう first when the meaning is "already arrived."',
       },
     ],
   },

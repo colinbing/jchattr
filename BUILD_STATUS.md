@@ -40,6 +40,12 @@
 - Reading slice v15 with a fifteenth beginner reading mission for comparison and stronger preference lines from packs 4, 8, and 32
 - Reading slice v16 with a sixteenth beginner reading mission for adjective shifts, comparison recall, and new `いちばん` superlatives from packs 30 to 33
 - Reading slice v17 with a seventeenth beginner reading mission for preference contrast, frequency variation, and simple `から` reasons from packs 32 to 35
+- Reading slice v18 with an eighteenth beginner reading mission for `たいです`, `ほしいです`, and first ability contrast from packs 36 to 38
+- Reading slice v19 with a nineteenth beginner reading mission for detailed wants and short `ことができます` response lines from packs 36 to 38
+- Reading slice v20 with a twentieth beginner reading mission for wants, ability, and prior experience across packs 36 to 39
+- Reading slice v21 with a twenty-first beginner reading mission for companions, transport method, and choice questions across packs 36 and 40 to 41
+- Reading slice v22 with a twenty-second beginner reading mission for condition checks, weather actions, and simple travel steps across packs 42 to 44
+- Reading slice v23 with a twenty-third beginner reading mission for comfort language, earlier choice review, and movement-change lines across packs 41 and 43 to 44
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
@@ -80,11 +86,24 @@
 - Content expansion pack 33 around strongest-preference and strongest-description lines with `いちばん`
 - Content expansion pack 34 around routine variation with `いつも`, `よく`, `ときどき`, and beginner-safe `あまり ... ません`
 - Content expansion pack 35 around short polite reason lines with `から` for choices, routines, and refusals
+- Content expansion pack 36 around place/action desire with `たいです`
+- Content expansion pack 37 around wanted objects with `ほしいです`
+- Content expansion pack 38 around simple ability with `ことができます`
+- Content expansion pack 39 around prior experience with `たことがあります`
+- Content expansion pack 40 around simple companion and transport-method follow-ups with `だれと` and `どうやって`
+- Content expansion pack 41 around choosing lines with `どれ / どの / どちら`
+- Content expansion pack 42 around health and condition basics with `だいじょうぶです`, `げんきです`, and `あたまがいたいです`
+- Content expansion pack 43 around weather, clothing, and comfort with `あついです`, `さむいです`, `あめです`, and simple practical responses
+- Content expansion pack 44 around travel steps and movement changes with getting on and off, transferring, leaving, and arriving
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 - Dev-only shipped-pack registry for shipped content packs to support curriculum QA and planning integrity
 - Local QA report scripts for content coverage, reading reuse, and BUILD_STATUS summary verification
 - Local QA report scripts for progression gaps and content-overlap/template-drift checks
 - Reading mission QA cleanup to reduce single-pack concentration in two early reading slices and align pack-registry reinforcement tags with repo-native grammar metadata
+- Five-pack curriculum audit pass for packs 31 to 35 with a fix for incorrect `な`-adjective past lesson examples, a small reading-reuse rebalance toward packs 31 and 35, and repo-reality sync after the pack 33 to 35 audio generation pass
+- Batch 7 content pass for packs 36 to 38 with repo-verified `たいです`, `ほしいです`, and `ことができます` separation, plus an ahead-of-plan reading follow-up added at user request
+- Batch 8 content pass for packs 39 to 41 with fixed `たことがあります` experience chunks, simple `だれと / どうやって` follow-ups, the planned post-Batch-8 reading recombination, and repo-reality sync after the pack 36 to 38 audio generation pass
+- Batch 9 content pass for packs 42 to 44 with health/condition basics, weather/clothing/comfort, simple travel-step language, a narrow reading follow-up added at user request, and repo-reality sync after the pack 39 to 41 audio generation pass
 
 ## Current App Capabilities
 
@@ -103,11 +122,11 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 122 starter missions across 4 mission types:
-  - 35 grammar
-  - 35 listening
-  - 35 output
-  - 17 reading
+- User can complete 155 starter missions across 4 mission types:
+  - 44 grammar
+  - 44 listening
+  - 44 output
+  - 23 reading
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -183,6 +202,15 @@
   - adjective negative lines like `ほんはおもしろくないです`, `へやはしずかじゃないです`, and `このみせはやすくないです`
   - adjective past lines like `ほんはおもしろかったです`, `パンはおいしかったです`, and `へやはしずかでした`
   - simple comparison lines with `より / のほうが` like `コーヒーよりおちゃのほうがすきです`, `えきよりとしょかんのほうがしずかです`, and `バスよりでんしゃのほうがはやいです`
+  - simple desire lines with `たいです` like `えいがかんにいきたいです` and `えいがをみたいです`
+  - wanted-object lines with `がほしいです` like `ほんがほしいです` and `あたらしいカメラがほしいです`
+  - simple ability lines with `ことができます` like `にほんごをよむことができます` and `えいごをはなすことができます`
+  - fixed prior-experience lines with `たことがあります` like `えいがかんにいったことがあります` and `すしをたべたことがあります`
+  - simple companion and method follow-ups like `だれとえいがかんにいきますか` and `どうやってえきにいきますか`
+  - short choice lines with `どれ / どの / どちら` like `どのほんがいいですか` and `パンとケーキとどちらがいいですか`
+  - short health and condition lines like `だいじょうぶですか`, `あたまがいたいです`, `びょういんにいきます`, and `くすりをのみます`
+  - short weather and comfort lines like `きょうはあついです`, `さむいですからコートをきます`, and `あめですからかさをもちます`
+  - simple travel-step lines like `でんしゃをおります`, `えきでのりかえます`, `くうこうをでます`, and `くうこうにつきました`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
   - location-focused reading prompts like `かぎはどこですか`, `トイレはあそこです`, and `せんせいはじむしょにいます`
@@ -198,16 +226,16 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 70 grammar lessons
-  - 361 example sentences
-  - 275 vocab items
-  - 174 listening items
-  - 122 missions
+  - 88 grammar lessons
+  - 453 example sentences
+  - 315 vocab items
+  - 219 listening items
+  - 155 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
-- Reading slice is still intentionally small: 17 reading missions with 85 total multiple-choice checks, all built from existing example sentences
+- Reading slice is still intentionally small: 23 reading missions with 115 total multiple-choice checks, all built from existing example sentences
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Shopping coverage now includes quantities, prices, availability checks, and short choice lines, but it is still a narrow beginner slice rather than broader payment, returns, or service-interaction coverage
@@ -225,7 +253,7 @@
 - Adjective coverage now includes negatives, past descriptions, beginner comparison, and simple `いちばん` superlatives, but it is still a narrow descriptive slice rather than full adjective tense/degree nuance or open-ended opinion language
 - Comparison and ranking coverage now exists, but it is still limited to short `より / のほうが` and `いちばん` lines rather than broader ranking nuance, contrastive justification, or multi-clause opinions
 - Frequency and reason coverage now exists, but it is still intentionally limited to a small adverb set and short polite `から` clauses rather than broader discourse-level explanation
-- Current listening audio coverage is partial again for the expanded worktree content set until a manual audio pass lands for packs 33 to 35
+- Current listening audio coverage is manifest-complete through pack 41, but the newly shipped pack 42 to 44 listening items still need generated audio files and a manifest sync
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -238,11 +266,9 @@
 
 ## Next Recommended Slices
 
-1. Generate and sync listening audio for the 15 new listening items from packs 33 to 35 when doing the next manual audio pass.
-2. Run the planned five-pack curriculum audit now that packs 31 to 35 are shipped, with special attention to adjective/superlative naturalness and beginner-safe `から` phrasing.
-3. Implement Batch 7 from `N5_CURRICULUM_PLAN.md`: desires with `ほしい`, ability with `できます`, and experience / completed action with `ことがあります`.
-4. Keep expanding output content through the current token-pattern evaluation path rather than broadening into AI grading.
-5. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
+1. Implement Batch 10 from `N5_CURRICULUM_PLAN.md`: travel problems and contacting others, `まえに / あとで`, and plain-style recognition I, then add the planned reading follow-up and update `BUILD_STATUS.md` in the same pass.
+2. Keep expanding output content through the current token-pattern evaluation path rather than broadening into AI grading.
+3. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
 
@@ -308,14 +334,14 @@
   - where-questions like `トイレはどこですか`
   - location answers like `トイレはあそこです` and `かぎはつくえのうえにあります`
   - family/object ownership like `これはちちのカメラです` and `それはははのかさです`
-  - seventeen reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
+  - twenty-three reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 174 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 159 of the 174 listening items
-- Manifest-backed listening-audio coverage is currently partial for the expanded worktree content set
-- Settings currently reports partial listening-audio coverage until the new pack 33 to 35 files are generated and synced
+- Listening items may include `audioRef`; all 219 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 204 of the 219 listening items
+- Manifest-backed listening-audio coverage is currently complete through the pack 41 asset set, but not yet for newly shipped packs 42 to 44
+- Settings currently reports partial listening-audio coverage for the shipped packs until those new assets are generated and synced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
