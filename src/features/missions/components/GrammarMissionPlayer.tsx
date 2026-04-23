@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
   ExampleSentence,
@@ -12,6 +13,7 @@ import {
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
+import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 
@@ -336,20 +338,13 @@ function DrillCard({ missionId, lessonId, drill, index }: DrillCardProps) {
         ) : null}
 
         {drill.type === 'fill-in' ? (
-          <label className="mission-input-group">
-            <span className="mission-input-group__label">Your answer</span>
-            <input
-              type="text"
-              className="mission-input"
-              value={typedAnswer}
-              onChange={(event) => {
-                setTypedAnswer(event.target.value);
-                setFeedback(null);
-              }}
-              placeholder="Type the missing Japanese"
-              autoComplete="off"
-            />
-          </label>
+          <KanaAssistInput
+            label="Your answer"
+            value={typedAnswer}
+            onChange={setTypedAnswer}
+            onInteraction={() => setFeedback(null)}
+            placeholder="Type the missing Japanese"
+          />
         ) : null}
 
         {drill.type === 'reorder' ? (
@@ -394,20 +389,13 @@ function DrillCard({ missionId, lessonId, drill, index }: DrillCardProps) {
               </div>
             </div>
           ) : (
-            <label className="mission-input-group">
-              <span className="mission-input-group__label">Ordered sentence</span>
-              <input
-                type="text"
-                className="mission-input"
-                value={typedAnswer}
-                onChange={(event) => {
-                  setTypedAnswer(event.target.value);
-                  setFeedback(null);
-                }}
-                placeholder="Type the sentence in order"
-                autoComplete="off"
-              />
-            </label>
+            <KanaAssistInput
+              label="Ordered sentence"
+              value={typedAnswer}
+              onChange={setTypedAnswer}
+              onInteraction={() => setFeedback(null)}
+              placeholder="Type the sentence in order"
+            />
           )
         ) : null}
 
@@ -491,7 +479,7 @@ function getReorderTokens(drill: GrammarDrill) {
 }
 
 function normalizeAnswer(value: string) {
-  return value.normalize('NFKC').replace(/\s+/g, '').replace(/[。.!?！？]/g, '');
+  return normalizeJapaneseText(value);
 }
 
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {

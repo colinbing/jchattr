@@ -45,6 +45,7 @@ export function TodayPage() {
     >
       <SessionSummary
         missionCount={starterContent.summary.missionCount}
+        recommendedCount={recommendations.length}
         totalMinutes={starterContent.summary.totalMissionMinutes}
       />
 

@@ -999,4 +999,156 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-transport-de',
+    title: 'Use で for transport and travel method',
+    objective:
+      'Say how you go somewhere with short beginner lines like バスでいきます and でんしゃでかいしゃにいきます.',
+    explanation:
+      'Use a transport word plus で before the movement verb to show your method, as in バスでいきます or でんしゃでかいしゃにいきます. This extends the existing place-of-action で pattern into a new practical use for movement and travel.',
+    prerequisites: ['grammar-weekday-plan-questions'],
+    tags: ['transport', 'particles', 'movement', 'n5'],
+    exampleIds: [
+      'ex-basu-de-ikimasu',
+      'ex-densha-de-kaisha-ni-ikimasu',
+      'ex-takushii-de-kuukou-ni-ikimasu',
+      'ex-toshokan-made-jitensha-de-ikimasu',
+    ],
+    commonMistakes: [
+      'Using に after the transport word instead of で when the line is showing how you travel.',
+      'Dropping で and listing the transport noun directly before the verb.',
+      'Mixing up the transport method phrase and the destination phrase order in a way that makes the sentence hard to follow.',
+    ],
+    drills: [
+      {
+        id: 'drill-transport-de-1',
+        type: 'reorder',
+        prompt: 'Reorder: バスで / いきます',
+        answer: 'バスでいきます。',
+        support: 'Put the transport method first, then finish with the movement verb.',
+      },
+      {
+        id: 'drill-transport-de-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I go to the office by train."',
+        answer: 'でんしゃでかいしゃにいきます。',
+        choices: [
+          'でんしゃにかいしゃでいきます。',
+          'でんしゃでかいしゃにいきます。',
+          'かいしゃにでんしゃいきます。',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'grammar-destination-made-questions',
+    title: 'Use まで for simple destination questions',
+    objective:
+      'Ask and answer how far or up to where someone goes with short movement lines.',
+    explanation:
+      'Use a destination plus まで to mark the end point, as in えきまであるきます or くうこうまでいきます. To ask about that end point, use どこまでいきますか. This gives you a compact beginner pattern for transport and movement talk.',
+    prerequisites: ['grammar-transport-de'],
+    tags: ['transport', 'particles', 'question', 'n5'],
+    exampleIds: [
+      'ex-doko-made-ikimasu-ka',
+      'ex-eki-made-arukimasu',
+      'ex-machi-made-basu-de-ikimasu',
+      'ex-kuukou-made-ikimasu',
+    ],
+    commonMistakes: [
+      'Replacing まで with に when the lesson is teaching the end point of a route.',
+      'Dropping まで in a question like どこまでいきますか.',
+      'Using を after the destination instead of attaching まで directly to it.',
+    ],
+    drills: [
+      {
+        id: 'drill-destination-made-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "How far are you going?"',
+        answer: 'どこまでいきますか。',
+        choices: ['どこにまでいきますか。', 'どこまでいきますか。', 'どこまでですかいきます。'],
+      },
+      {
+        id: 'drill-destination-made-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: えき___あるきます。',
+        answer: 'まで',
+        support: 'Use まで to mark the end point of the walk.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-navigation-migi-hidari',
+    title: 'Use simple direction lines with みぎ, ひだり, and まっすぐ',
+    objective:
+      'Give very short beginner navigation lines like みぎにまがります, ひだりにまがります, and まっすぐいきます.',
+    explanation:
+      'Use a direction phrase before the movement verb, as in みぎにまがります or ひだりにまがります. For a straight route, use まっすぐいきます. This gives you a compact beginner pattern for basic directions and movement guidance.',
+    prerequisites: ['grammar-destination-made-questions'],
+    tags: ['navigation', 'direction', 'movement', 'n5'],
+    exampleIds: [
+      'ex-migi-ni-magarimasu',
+      'ex-hidari-ni-magarimasu',
+      'ex-massugu-ikimasu',
+      'ex-kado-o-migi-ni-magarimasu',
+    ],
+    commonMistakes: [
+      'Leaving out に after みぎ or ひだり before まがります.',
+      'Using で after the direction word instead of に.',
+      'Mixing up まがります and いきます when the line is meant to say go straight.',
+    ],
+    drills: [
+      {
+        id: 'drill-navigation-migi-hidari-1',
+        type: 'reorder',
+        prompt: 'Reorder: みぎに / まがります',
+        answer: 'みぎにまがります。',
+        support: 'Put the direction phrase first, then finish with まがります.',
+      },
+      {
+        id: 'drill-navigation-migi-hidari-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Go straight."',
+        answer: 'まっすぐいきます。',
+        choices: ['まっすぐにまがります。', 'まっすぐいきます。', 'いきますまっすぐ。'],
+      },
+    ],
+  },
+  {
+    id: 'grammar-navigation-place-answers',
+    title: 'Ask where a place is and give a short answer',
+    objective:
+      'Ask where a place is and answer with simple navigation-friendly lines like えきはどこですか and えきはあそこです.',
+    explanation:
+      'Use a place as the topic, then ask どこですか or answer with ここ, そこ, or あそこ. You can also give a tiny landmark relation like えきのとなりです. This keeps navigation talk short, practical, and beginner-safe.',
+    prerequisites: ['grammar-navigation-migi-hidari'],
+    tags: ['navigation', 'question', 'location', 'n5'],
+    exampleIds: [
+      'ex-eki-wa-doko-desu-ka',
+      'ex-eki-wa-asoko-desu',
+      'ex-konbini-wa-eki-no-tonari-desu',
+      'ex-kouen-wa-koko-no-chikaku-desu',
+    ],
+    commonMistakes: [
+      'Dropping は after the place when the lesson is teaching the topic pattern.',
+      'Using にあります when the lesson target is the shorter location-answer pattern.',
+      'Mixing up ここ, そこ, and あそこ without matching the intended answer.',
+    ],
+    drills: [
+      {
+        id: 'drill-navigation-place-answers-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Where is the station?"',
+        answer: 'えきはどこですか。',
+        choices: ['えきどこですか。', 'えきはどこですか。', 'どこはえきですか。'],
+      },
+      {
+        id: 'drill-navigation-place-answers-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: えきは___です。',
+        answer: 'あそこ',
+        support: 'Use a short place-answer word like あそこ before です.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

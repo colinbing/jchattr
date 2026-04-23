@@ -8,6 +8,7 @@ type PageShellProps = PropsWithChildren<{
 }>;
 
 type SurfaceCardProps = PropsWithChildren<{
+  className?: string;
   title: string;
   description: string;
 }>;
@@ -36,12 +37,13 @@ export function PageShell({
 }
 
 export function SurfaceCard({
+  className,
   title,
   description,
   children,
 }: SurfaceCardProps) {
   return (
-    <section className="surface-card">
+    <section className={className ? `surface-card ${className}` : 'surface-card'}>
       <div className="surface-card__header">
         <h2 className="surface-card__title">{title}</h2>
         <p className="surface-card__description">{description}</p>

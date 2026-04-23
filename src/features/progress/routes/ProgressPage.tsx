@@ -22,10 +22,11 @@ export function ProgressPage() {
       aside={<span className="status-chip">Local progress</span>}
     >
       <SurfaceCard
+        className="progress-page__skill-map-card"
         title="Skill map v1"
         description="These tiers are derived from mission completions and recorded weak points only. They are meant to be useful, not precise."
       >
-        <div className="skill-map-list">
+        <div className="skill-map-list progress-page__skill-map-list">
           {overview.skillAreas.map((skillArea) => (
             <SkillCard key={skillArea.id} skillArea={skillArea} />
           ))}
@@ -33,6 +34,7 @@ export function ProgressPage() {
       </SurfaceCard>
 
       <SurfaceCard
+        className="progress-page__summary-card"
         title="Mission completion"
         description="Manual mission completion is the current source of momentum and coverage data."
       >
@@ -52,6 +54,7 @@ export function ProgressPage() {
       </SurfaceCard>
 
       <SurfaceCard
+        className="progress-page__summary-card"
         title="Weak-point pressure"
         description="Weak points come only from explicit incorrect checks in current mission players."
       >
@@ -81,7 +84,7 @@ function SkillCard({ skillArea }: SkillCardProps) {
   return (
     <article className={`skill-card skill-card--${skillArea.tier}`}>
       <div className="skill-card__header">
-        <div>
+        <div className="skill-card__header-content">
           <p className="skill-card__eyebrow">Skill area</p>
           <h3 className="skill-card__title">{skillArea.label}</h3>
         </div>

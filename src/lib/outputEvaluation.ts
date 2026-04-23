@@ -1,4 +1,5 @@
 import type { OutputTask } from './content/types';
+import { normalizeJapaneseText } from './normalizeJapaneseText';
 
 const PARTICLE_TOKENS = new Set(['は', 'が', 'を', 'に', 'で', 'の', 'か']);
 const ENDING_TOKENS = new Set(['です', 'ます', 'います', 'あります', 'すき', 'きらい']);
@@ -142,7 +143,7 @@ export function evaluateOutputResponse(
 }
 
 export function normalizeOutputAnswer(value: string) {
-  return value.normalize('NFKC').replace(/\s+/g, '').replace(/[。.!?！？]/g, '');
+  return normalizeJapaneseText(value);
 }
 
 function tokenizeOutputResponse(response: string, vocabulary: string[]) {

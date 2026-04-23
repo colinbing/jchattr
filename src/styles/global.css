@@ -252,7 +252,7 @@ button {
 
 .session-summary__stats {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--space-3);
   margin: 0;
 }
@@ -799,6 +799,28 @@ button {
   gap: var(--space-2);
 }
 
+.kana-assist__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.kana-assist__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-muted);
+  font-size: 0.88rem;
+}
+
+.kana-assist__note {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.88rem;
+}
+
 .mission-input {
   min-height: 3.25rem;
   width: 100%;
@@ -1144,6 +1166,7 @@ button {
 .skill-card {
   display: grid;
   gap: var(--space-4);
+  min-width: 0;
   padding: var(--space-4);
   border-radius: var(--radius-md);
   border: 1px solid rgba(36, 84, 70, 0.08);
@@ -1173,6 +1196,11 @@ button {
   align-items: start;
   justify-content: space-between;
   gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.skill-card__header-content {
+  min-width: 0;
 }
 
 .skill-card__eyebrow,
@@ -1193,6 +1221,7 @@ button {
 .skill-card__title {
   margin: var(--space-1) 0 0;
   font-size: 1.1rem;
+  overflow-wrap: anywhere;
 }
 
 .skill-card__tier {
@@ -1228,16 +1257,18 @@ button {
 
 .skill-card__note {
   color: var(--color-ink-muted);
+  overflow-wrap: anywhere;
 }
 
 .skill-card__stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   gap: var(--space-3);
   margin: 0;
 }
 
 .skill-card__stat {
+  min-width: 0;
   padding: var(--space-3);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.6);
@@ -1247,12 +1278,21 @@ button {
 .skill-card__stat dt {
   color: var(--color-ink-muted);
   font-size: 0.76rem;
+  overflow-wrap: anywhere;
 }
 
 .skill-card__stat dd {
   margin-top: var(--space-1);
   font-size: 1.05rem;
   font-weight: 700;
+}
+
+.progress-page__skill-map-card {
+  grid-column: 1 / -1;
+}
+
+.progress-page__skill-map-list {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 @media (hover: hover) {
@@ -1414,7 +1454,13 @@ button {
     align-items: center;
   }
 
-  .skill-map-list {
+  .progress-page__skill-map-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1120px) {
+  .progress-page__skill-map-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

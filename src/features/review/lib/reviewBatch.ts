@@ -10,6 +10,7 @@ import type {
 } from '../../../lib/content/types';
 import type { WeakPoint, WeakPointStore } from '../../../lib/progress/weakPoints';
 import { getWeakPointList } from '../../../lib/progress/weakPoints';
+import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
 
 export const REVIEW_BATCH_SIZE = 3;
 
@@ -114,7 +115,7 @@ export function getListeningReviewChoices(item: ListeningItem, choicePool: Liste
 }
 
 export function normalizeReviewAnswer(value: string) {
-  return value.normalize('NFKC').replace(/\s+/g, '').replace(/[。.!?！？]/g, '');
+  return normalizeJapaneseText(value);
 }
 
 function resolveBatchItem(

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
   ExampleSentence,
@@ -234,19 +235,14 @@ function OutputTaskCard({ missionId, task }: OutputTaskCardProps) {
         </div>
       ) : null}
 
-      <label className="mission-input-group">
-        <span className="mission-input-group__label">Your Japanese line</span>
-        <textarea
-          className="mission-textarea"
-          value={response}
-          onChange={(event) => {
-            setResponse(event.target.value);
-            setFeedback(null);
-          }}
-          rows={3}
-          placeholder="Type your line in Japanese"
-        />
-      </label>
+      <KanaAssistTextarea
+        label="Your Japanese line"
+        value={response}
+        onChange={setResponse}
+        onInteraction={() => setFeedback(null)}
+        rows={3}
+        placeholder="Type your line in Japanese"
+      />
 
       <div className="mission-drill-card__actions">
         <button

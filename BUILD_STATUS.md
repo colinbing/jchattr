@@ -44,6 +44,11 @@
 - Content expansion pack 11 around simple shopping and buying basics with `をください` and `をかいます`
 - Content expansion pack 12 around time and schedule basics with `なんじですか` and time + `に`
 - Content expansion pack 13 around weekdays and simple plans with `Xようびに` and `なにをしますか`
+- Content expansion pack 14 around transport and movement basics with transport `で` and destination `まで`
+- UX polish slice to tighten the Today session summary and give the Progress skill map a page-specific, non-overflowing layout
+- Local romaji-to-kana assist plus kana-equivalent answer normalization for typed Japanese entry across grammar and output flows
+- Content expansion pack 15 around simple directions and navigation basics with `みぎにまがります`, `まっすぐいきます`, and short place answers
+- Content expansion pack 16 around simple invitations and plan-making basics with `いっしょにいきますか`, `なんじにあいますか`, and short yes / no plan responses
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
@@ -63,10 +68,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 44 starter missions across 4 mission types:
-  - 13 grammar
-  - 13 listening
-  - 13 output
+- User can complete 53 starter missions across 4 mission types:
+  - 16 grammar
+  - 16 listening
+  - 16 output
   - 5 reading
 - Grammar missions currently include:
   - lesson intro
@@ -81,7 +86,12 @@
   - short prompt
   - optional hint
   - textarea response
+  - optional local romaji-to-hiragana assist for Latin-keyboard entry
   - local evaluation with normalization, explicit accepted answers, and token-pattern diagnostics for close answers
+- Typed Japanese entry currently used in grammar and output flows:
+  - supports optional local romaji-to-hiragana assist
+  - accepts hiragana and katakana as equivalent for answer checking
+  - still preserves canonical spellings from content in prompts, examples, and expected-answer feedback
 - Reading missions currently include:
   - Japanese text shown first
   - one local multiple-choice comprehension decision per line before reveal
@@ -118,6 +128,9 @@
   - simple shopping lines like `これをください`, `みずをかいます`, and `コンビニでおかしをかいます`
   - simple time and schedule lines like `なんじですか`, `しちじです`, and `はちじにがっこうにいきます`
   - simple weekday plan lines like `げつようびにがっこうにいきます`, `どようびになにをしますか`, and `にちようびはうちでやすみます`
+  - simple transport and movement lines like `バスでいきます`, `どこまでいきますか`, and `えきまであるきます`
+  - simple navigation and direction lines like `みぎにまがります`, `まっすぐいきます`, and `えきはあそこです`
+  - simple invitation and plan lines like `いっしょにいきますか`, `どようびにいきますか`, `なんじにあいますか`, and `はい、いきます`
   - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
@@ -128,11 +141,11 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 26 grammar lessons
-  - 135 example sentences
-  - 148 vocab items
-  - 64 listening items
-  - 44 missions
+  - 32 grammar lessons
+  - 166 example sentences
+  - 179 vocab items
+  - 79 listening items
+  - 53 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -143,8 +156,12 @@
 - Shopping coverage now exists, but it is still a narrow beginner slice rather than broader money, quantity, price, or transaction coverage
 - Time and schedule coverage now exists, but it is still a narrow beginner slice rather than broader calendar, day-of-week, or time-range coverage
 - Weekday plan coverage now exists, but it is still a narrow beginner slice rather than broader future-planning or calendar expression coverage
+- Transport and movement coverage now exists, but it is still a narrow beginner slice rather than broader travel-planning, directions, or comparison coverage
+- Direction and navigation coverage now exists, but it is still a narrow beginner slice rather than broader route-following, landmarks, or multi-step navigation coverage
+- Invitation and plan-making coverage now exists, but it is still a narrow beginner slice rather than broader suggestion, availability, or future-planning coverage
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is complete through pack 12, but pack 13 listening items are audio-ready in content and not generated yet
+- Current listening audio coverage is complete through the previously checked-in generated set, but each new pack still requires a manual audio pass and manifest sync after new listening items are added
+- Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
 - Today is now more review-aware, but recommendation logic is still intentionally simple and deterministic rather than adaptive or scheduled
@@ -156,10 +173,10 @@
 
 ## Next Recommended Slices
 
-1. Generate MP3 files for the 5 new pack-13 listening items so Settings regains full audio coverage for current content.
-2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
-3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
-4. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
+1. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
+2. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
+3. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
+4. Improve the current kana assist only if it stays dependency-light and explicit rather than turning into a broad IME system.
 5. Keep BUILD_STATUS and the listening-audio manifest updated whenever content or generated assets change.
 
 ## Important Architecture Constraints
@@ -204,6 +221,9 @@
   - simple shopping request and buying patterns with `これをください`, `このほんをください`, and `X をかいます`
   - simple time-question and schedule patterns with `なんじですか`, `Xじです`, and `Xじに ...`
   - simple weekday plan patterns with `Xようびに ...` and `Xようびになにをしますか`
+  - simple transport and movement patterns with transport `で`, destination `まで`, and questions like `どこまでいきますか`
+  - simple direction and navigation patterns with `みぎにまがります`, `ひだりにまがります`, `まっすぐいきます`, and place answers like `えきはあそこです`
+  - simple invitation and plan-making patterns with `いっしょにいきますか`, `Xようびにいきますか`, `なんじにあいますか`, and short yes / no plan responses
   - simple adjective predicates like `ほんはおもしろいです` and `へやはしずかです`
   - adjective plus noun phrases like `あたらしいカメラ` and `しずかなへや`
   - preferences with `が すきです / きらいです`
@@ -215,11 +235,10 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 64 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 59 listening items
-- Pack 12 listening audio is still generated and the manifest-backed coverage is aligned through that content set
-- Pack 13 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
-- Settings will report pack-13 listening audio as missing until those files are generated and the manifest is synced
+- Listening items may include `audioRef`; all 79 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 74 of the 79 listening items
+- Manifest-backed listening-audio coverage is fully aligned for the checked-in generated set, with 5 new pack-16 files still missing
+- Settings currently reports partial listening-audio coverage until the new pack-16 audio is generated and the manifest is resynced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

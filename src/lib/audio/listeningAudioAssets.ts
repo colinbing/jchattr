@@ -67,6 +67,16 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-doyoubi-ni-nani-o-shimasu-ka.mp3',
   '/audio/listening/listening-nichiyoubi-wa-uchi-de-yasumimasu.mp3',
   '/audio/listening/listening-raishuu-doyoubi-ni-toshokan-ni-ikimasu.mp3',
+  '/audio/listening/listening-basu-de-ikimasu.mp3',
+  '/audio/listening/listening-densha-de-kaisha-ni-ikimasu.mp3',
+  '/audio/listening/listening-doko-made-ikimasu-ka.mp3',
+  '/audio/listening/listening-eki-made-arukimasu.mp3',
+  '/audio/listening/listening-takushii-de-kuukou-ni-ikimasu.mp3',
+  '/audio/listening/listening-migi-ni-magarimasu.mp3',
+  '/audio/listening/listening-massugu-ikimasu.mp3',
+  '/audio/listening/listening-eki-wa-doko-desu-ka.mp3',
+  '/audio/listening/listening-eki-wa-asoko-desu.mp3',
+  '/audio/listening/listening-shingou-de-hidari-ni-magarimasu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

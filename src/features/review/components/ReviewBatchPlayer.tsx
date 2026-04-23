@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { KanaAssistInput } from '../../../components/KanaAssistInput';
+import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { GrammarDrill } from '../../../lib/content/types';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
@@ -254,20 +256,13 @@ function GrammarReviewCard({
       ) : null}
 
       {item.drill.type === 'fill-in' ? (
-        <label className="mission-input-group">
-          <span className="mission-input-group__label">Your answer</span>
-          <input
-            type="text"
-            className="mission-input"
-            value={typedAnswer}
-            onChange={(event) => {
-              setTypedAnswer(event.target.value);
-              setFeedback(null);
-            }}
-            placeholder="Type the missing Japanese"
-            autoComplete="off"
-          />
-        </label>
+        <KanaAssistInput
+          label="Your answer"
+          value={typedAnswer}
+          onChange={setTypedAnswer}
+          onInteraction={() => setFeedback(null)}
+          placeholder="Type the missing Japanese"
+        />
       ) : null}
 
       {item.drill.type === 'reorder' ? (
@@ -445,19 +440,14 @@ function OutputReviewCard({
         </div>
       ) : null}
 
-      <label className="mission-input-group">
-        <span className="mission-input-group__label">Your Japanese line</span>
-        <textarea
-          className="mission-textarea"
-          value={response}
-          onChange={(event) => {
-            setResponse(event.target.value);
-            setFeedback(null);
-          }}
-          rows={3}
-          placeholder="Type your line in Japanese"
-        />
-      </label>
+      <KanaAssistTextarea
+        label="Your Japanese line"
+        value={response}
+        onChange={setResponse}
+        onInteraction={() => setFeedback(null)}
+        rows={3}
+        placeholder="Type your line in Japanese"
+      />
 
       <div className="mission-drill-card__actions">
         <button
