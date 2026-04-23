@@ -3482,4 +3482,226 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-problems-okuremasu',
+    title: 'Use short delay lines',
+    objective: 'Use short real-life friction lines like ちょっとおくれます and でんしゃがおくれます.',
+    explanation:
+      'This pack keeps problem language narrow and practical. First learn a few short delay lines the learner can actually use when plans slip or transport is delayed. The goal is not broad apology language yet, just a clean way to signal a problem.',
+    prerequisites: ['grammar-travel-steps-changing-and-arrival'],
+    tags: ['problems', 'status', 'transport', 'n5'],
+    exampleIds: [
+      'ex-chotto-okuremasu',
+      'ex-kyou-wa-chotto-okuremasu',
+      'ex-densha-ga-okuremasu',
+      'ex-basu-ga-okuremasu',
+    ],
+    commonMistakes: [
+      'Forgetting that the delayed thing can be the subject, as in でんしゃがおくれます.',
+      'Dropping ちょっと in lines that are meant to sound softer and more beginner-natural.',
+      'Trying to widen into longer apology sentences before the core delay pattern is stable.',
+    ],
+    drills: [
+      {
+        id: 'drill-problems-okuremasu-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The train is delayed."',
+        answer: 'でんしゃがおくれます。',
+        choices: ['でんしゃがおくれます。', 'でんしゃをおくれます。', 'でんしゃにおくれます。'],
+      },
+      {
+        id: 'drill-problems-okuremasu-2',
+        type: 'reorder',
+        prompt: 'Reorder: きょうは / ちょっと / おくれます',
+        answer: 'きょうはちょっとおくれます。',
+        support: 'Put the topic first, then the softener ちょっと, then the delay verb.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-problems-muzukashii-renraku',
+    title: 'Say something is difficult and contact someone',
+    objective:
+      'Use short problem and response lines like ちょっとむずかしいです and ともだちにれんらくします.',
+    explanation:
+      'After the learner can signal delay, add one more small layer: say something is difficult, then say they will contact someone. This keeps the slice realistic without widening into long explanations or problem-solving dialogue.',
+    prerequisites: ['grammar-problems-okuremasu'],
+    tags: ['problems', 'communication', 'n5'],
+    exampleIds: [
+      'ex-chotto-muzukashii-desu',
+      'ex-kyou-wa-chotto-muzukashii-desu',
+      'ex-tomodachi-ni-renrakushimasu',
+      'ex-sensei-ni-renrakushimasu',
+      'ex-ima-renrakushimasu',
+      'ex-sugu-renrakushimasu',
+    ],
+    commonMistakes: [
+      'Using a longer English-shaped explanation when the pack goal is a short line like ちょっとむずかしいです.',
+      'Dropping に before the person in lines like ともだちにれんらくします.',
+      'Forgetting that すぐ or いま can come before the contact verb to keep the response practical.',
+    ],
+    drills: [
+      {
+        id: 'drill-problems-muzukashii-renraku-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural line for "I will contact a friend."',
+        answer: 'ともだちにれんらくします。',
+        choices: ['ともだちにれんらくします。', 'ともだちをれんらくします。', 'ともだちでれんらくします。'],
+      },
+      {
+        id: 'drill-problems-muzukashii-renraku-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: すぐ___。',
+        answer: 'れんらくします',
+        support: 'Use the short response line すぐれんらくします.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-before-after-maeni',
+    title: 'Use noun + のまえに for simple ordering',
+    objective: 'Use short ordering lines like しごとのまえにコーヒーをのみます.',
+    explanation:
+      'This pack keeps before/after language beginner-safe by starting with noun + のまえに. That lets the learner coordinate order and timing without needing verb-short-form grammar yet.',
+    prerequisites: ['grammar-problems-muzukashii-renraku'],
+    tags: ['before-after', 'ordering', 'time', 'n5'],
+    exampleIds: [
+      'ex-shigoto-no-mae-ni-koohii-o-nomimasu',
+      'ex-gakkou-no-mae-ni-pan-o-tabemasu',
+      'ex-jugyou-no-mae-ni-hon-o-yomimasu',
+      'ex-eiga-no-mae-ni-tomodachi-ni-renrakushimasu',
+    ],
+    commonMistakes: [
+      'Dropping の before まえに in noun-based ordering lines.',
+      'Trying to use verb-short-form before introducing that grammar later in the curriculum.',
+      'Forgetting that the action comes after the full Xのまえに chunk.',
+    ],
+    drills: [
+      {
+        id: 'drill-before-after-maeni-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I drink coffee before work."',
+        answer: 'しごとのまえにコーヒーをのみます。',
+        choices: ['しごとのまえにコーヒーをのみます。', 'しごとまえにコーヒーをのみます。', 'しごとのあとでコーヒーをのみます。'],
+      },
+      {
+        id: 'drill-before-after-maeni-2',
+        type: 'reorder',
+        prompt: 'Reorder: がっこうのまえに / パンをたべます',
+        answer: 'がっこうのまえにパンをたべます。',
+        support: 'Keep the full ordering chunk first, then add the action.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-before-after-atode',
+    title: 'Use noun + のあとで for simple follow-up actions',
+    objective: 'Use short after-lines like しごとのあとでえいがをみます.',
+    explanation:
+      'After the learner is comfortable with まえに, add noun + のあとで. It works the same way and keeps planning language short, practical, and easy to recombine with familiar actions.',
+    prerequisites: ['grammar-before-after-maeni'],
+    tags: ['before-after', 'ordering', 'time', 'n5'],
+    exampleIds: [
+      'ex-shigoto-no-ato-de-eiga-o-mimasu',
+      'ex-gakkou-no-ato-de-kafe-ni-ikimasu',
+      'ex-eiga-no-ato-de-koohii-o-nomimasu',
+      'ex-byouin-no-ato-de-uchi-de-yasumimasu',
+      'ex-jugyou-no-ato-de-tomodachi-ni-renrakushimasu',
+    ],
+    commonMistakes: [
+      'Forgetting that あとで also stays attached to a noun with の in this pack.',
+      'Mixing up まえに and あとで when the English prompt clearly means after.',
+      'Breaking the ordering chunk apart instead of keeping Xのあとで together.',
+    ],
+    drills: [
+      {
+        id: 'drill-before-after-atode-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I watch a movie after work."',
+        answer: 'しごとのあとでえいがをみます。',
+        choices: ['しごとのあとでえいがをみます。', 'しごとのまえにえいがをみます。', 'しごとあとでえいがをみます。'],
+      },
+      {
+        id: 'drill-before-after-atode-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: えいがの___コーヒーをのみます。',
+        answer: 'あとで',
+        support: 'Use あとで when the coffee comes after the movie.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-plain-style-recognition-copula-and-na',
+    title: 'Recognize short plain noun and な-adjective endings',
+    objective: 'Recognize short plain lines like ともだちはがくせいだ and へやはしずかじゃない.',
+    explanation:
+      'This is a recognition-first slice. The learner is not being asked to master plain-style production yet. The goal is simply to reduce shock when familiar beginner content appears without です in short reading and listening lines.',
+    prerequisites: ['grammar-before-after-atode'],
+    tags: ['plain-style', 'recognition', 'copula', 'n5'],
+    exampleIds: [
+      'ex-tomodachi-wa-gakusei-da',
+      'ex-heya-wa-shizuka-da',
+      'ex-kono-mise-wa-kirei-da',
+      'ex-kyou-wa-genki-janai',
+      'ex-heya-wa-shizuka-janai',
+    ],
+    commonMistakes: [
+      'Assuming だ or じゃない creates a totally new meaning instead of a familiar plain-style form.',
+      'Trying to produce broad plain-style output before the learner has seen enough recognition examples.',
+      'Missing that familiar nouns and な-adjectives are still doing the same basic sentence job as in polite forms.',
+    ],
+    drills: [
+      {
+        id: 'drill-plain-style-recognition-copula-and-na-1',
+        type: 'multiple-choice',
+        prompt: 'Which sentence is the short plain-style line for "The room is quiet"?',
+        answer: 'へやはしずかだ。',
+        choices: ['へやはしずかだ。', 'へやはしずかですか。', 'へやはしずかをだ。'],
+      },
+      {
+        id: 'drill-plain-style-recognition-copula-and-na-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the plain negative line.',
+        answer: 'きょうはげんきじゃない。',
+        choices: ['きょうはげんきじゃない。', 'きょうはげんきです。', 'きょうはげんきをじゃない。'],
+      },
+    ],
+  },
+  {
+    id: 'grammar-plain-style-recognition-i-adjectives',
+    title: 'Recognize short plain い-adjective lines',
+    objective: 'Recognize short plain adjective lines like きょうはさむい and このほんはおもしろくない.',
+    explanation:
+      'This second plain-style lesson stays narrow: the learner only needs to recognize that familiar い-adjectives may appear without です, and that plain negatives end with くない. It is still a recognition layer, not broad plain-style grammar production.',
+    prerequisites: ['grammar-plain-style-recognition-copula-and-na'],
+    tags: ['plain-style', 'recognition', 'adjectives', 'n5'],
+    exampleIds: [
+      'ex-kyou-wa-samui',
+      'ex-kyou-wa-atsukunai',
+      'ex-kono-hon-wa-omoshiroi',
+      'ex-kono-hon-wa-omoshirokunai',
+      'ex-kafe-wa-yasui',
+    ],
+    commonMistakes: [
+      'Waiting for です at the end even when the sentence is already complete in plain style.',
+      'Missing くない as the plain negative counterpart of familiar polite negative adjective lines.',
+      'Overproducing plain style instead of treating this pack mainly as a reading and listening recognition step.',
+    ],
+    drills: [
+      {
+        id: 'drill-plain-style-recognition-i-adjectives-1',
+        type: 'multiple-choice',
+        prompt: 'Which line means "This book is not interesting"?',
+        answer: 'このほんはおもしろくない。',
+        choices: ['このほんはおもしろくない。', 'このほんはおもしろい。', 'このほんはおもしろくです。'],
+      },
+      {
+        id: 'drill-plain-style-recognition-i-adjectives-2',
+        type: 'reorder',
+        prompt: 'Reorder: きょうは / さむい',
+        answer: 'きょうはさむい。',
+        support: 'The plain adjective line is already complete without adding です.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
