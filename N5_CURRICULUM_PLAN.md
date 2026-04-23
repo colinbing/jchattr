@@ -573,6 +573,218 @@ Final claim gate after Pack 50:
 
 ---
 
+## Post-Claim-Gap Expansion Plan
+
+The final claim gate can fail cleanly without invalidating the curriculum.
+That is the current repo state.
+
+The repo is now broad, coherent, and structurally sound, but it still misses the repo-defined `N5-comprehensive` claim threshold in two concrete ways:
+
+- vocab breadth is too low
+- reading reuse density is still too light relative to total content volume
+
+This section defines a narrow follow-on plan for closing that gap without changing the app architecture or widening beyond N5.
+
+### Verified Gap Snapshot
+
+As of the post-Pack-50 audit:
+
+- `334` vocab items are shipped
+- `512` example sentences are shipped
+- `249` listening items are shipped
+- `27` reading missions are shipped
+- `123 / 512` example sentences are currently reused in reading
+
+The minimum shortfall to the repo's own vocab floor is:
+
+- `+216` vocab items to reach `550`
+
+The biggest reading-density weaknesses are not the newest packs.
+They are the under-reused earlier and mid-curriculum packs, especially:
+
+- zero-reuse packs: `6`, `7`, `9`, `10`
+- very light reuse packs: `13`, `15`, `19`, `20`
+
+### Non-Goals
+
+This follow-on plan is intentionally narrow.
+It should not be used as permission to quietly expand scope.
+
+Do not use this phase to:
+
+- add new grammar families beyond the existing Pack `1-50` scope
+- add new mission types
+- add runtime features, backend work, sync, analytics, or AI grading
+- broaden into N4 grammar
+- rewrite the pack architecture
+- dump large vocab lists without sentence-level integration
+
+### Success Threshold For This Phase
+
+This follow-on phase is complete when all of the following are true:
+
+- vocab reaches at least `550`
+- reading missions reach roughly `33-37`
+- reading checks reach roughly `165-185`
+- reading reuse rises to at least `170` reused example sentences overall
+- no shipped pack from `1-50` remains at `0%` reading reuse
+- the currently weak early packs have visible recovery:
+  - packs `6`, `7`, `9`, and `10` should each reach at least `2` reused linked examples
+  - packs `13`, `15`, `19`, and `20` should each rise above their current thin baseline
+- new reading slices still obey the existing concentration rule:
+  - no single source pack should exceed `40%` of one reading mission
+- new listening additions remain manifest-synced as they ship
+
+### Execution Shape
+
+Do not start a new large grammar roadmap.
+Use the existing Pack `1-50` structure and densify it in controlled reinforcement blocks.
+
+Recommended shape:
+
+- `5` post-claim-gap reinforcement blocks
+- each block covers `10` existing packs
+- each block adds vocab breadth, example breadth, light listening reinforcement, and reading recombination
+
+Per block targets:
+
+- add `44-46` new vocab items
+- add `25-35` new example sentences using only already-taught grammar moves
+- add `10-15` new listening items using the same grammar families
+- add `2` new reading missions that recombine the target block with nearby review material
+
+Why this shape:
+
+- `5` blocks at `44-46` vocab each adds `220-230` vocab items total
+- that moves the repo from `334` to roughly `554-564` vocab items
+- the reading lane grows without requiring a new runtime surface
+- the work stays auditable and pack-native instead of turning into an uncontrolled appendix
+
+### Block Plan
+
+#### Block A: Packs 1-10
+
+Purpose:
+
+- close the earliest reading-reuse holes
+- add more classroom, home, family, daily-verb, and adjective-support vocab
+- strengthen the foundation before later densification
+
+High-priority packs:
+
+- `6`, `7`, `9`, `10`
+
+Required reading emphasis:
+
+- one reading mission should recombine identity, location, possession, and daily routine
+- one reading mission should recombine recent action, request/permission, and simple descriptions
+
+#### Block B: Packs 11-20
+
+Purpose:
+
+- deepen shopping, time, transport, directions, invitations, and meetup language
+- add more practical plan and status vocabulary without introducing new grammar families
+
+High-priority packs:
+
+- `13`, `15`, `19`, `20`
+
+Required reading emphasis:
+
+- one reading mission should center practical errands and movement
+- one reading mission should center invitations, proposals, and meetup status updates
+
+#### Block C: Packs 21-30
+
+Purpose:
+
+- densify calendar, transaction, te-form, sequencing, ongoing-state, and adjective-negative coverage
+- add more reusable daily-life nouns and verbs inside already taught patterns
+
+Required reading emphasis:
+
+- one reading mission should center dates, times, and transactions
+- one reading mission should center te-form, sequence, current state, and honest description
+
+#### Block D: Packs 31-40
+
+Purpose:
+
+- deepen comparison, frequency, reasons, wants, ability, experience, companions, and methods
+- make the middle N5 lane feel less like one-line pattern exposure and more like everyday recombination
+
+Required reading emphasis:
+
+- one reading mission should center description, comparison, and reasons
+- one reading mission should center wants, ability, experience, and simple follow-up questions
+
+#### Block E: Packs 41-50
+
+Purpose:
+
+- strengthen the newest daily-friction and plain-style lane without adding harder grammar
+- add more practical choice, condition, weather, communication, and connected-speech vocabulary
+
+Required reading emphasis:
+
+- one reading mission should center realistic daily friction and response language
+- one reading mission should center polite/plain recognition, connected flow, and list-based choice language
+
+### Content Rules For This Phase
+
+Every new vocab item added in this phase must:
+
+- belong to an already-shipped pack or a clearly adjacent pack theme
+- appear in at least `1` new example sentence
+- avoid introducing a new untaught grammar move
+- prefer practical daily-use nouns, verbs, expressions, and question words over abstract filler
+
+Every new example sentence added in this phase must:
+
+- reuse existing grammar families from Pack `1-50`
+- stay beginner-natural rather than textbook-stiff
+- improve domain breadth or contrastive reinforcement, not just pad counts
+
+Every new reading mission added in this phase must:
+
+- reuse only already-shipped example sentences
+- intentionally pull from weak-reuse packs, not only the latest block
+- stay within the `40%` single-pack concentration cap
+- include at least one real confusion-pair distractor
+
+### QA Gates For Each Block
+
+After each reinforcement block lands:
+
+- run `npm run typecheck`
+- run `npm run build`
+- run `npm run report:build-status-summary`
+- run `npm run report:content-coverage`
+- run `npm run report:reading-reuse`
+- run `npm run report:progression-gaps`
+- run `npm run report:content-overlap`
+
+Each block should be treated as incomplete if any of the following are true:
+
+- a targeted weak-reuse pack did not materially improve
+- a new reading mission exceeds the `40%` concentration cap
+- new vocab was added without sentence-level integration
+- new content silently assumes untaught grammar
+- BUILD_STATUS no longer matches repo reality
+
+### Clean Stop Points
+
+This phase should remain pausable.
+
+Useful stop points are:
+
+- after Blocks A-B: the earliest reading-reuse holes are closed and foundational vocab breadth is materially better
+- after Blocks C-D: the mid-curriculum becomes denser and more durable without new grammar families
+- after Block E: rerun the final claim gate and decide whether the repo can now honestly claim `N5-comprehensive`
+
+---
+
 ## Reading Expansion Policy
 
 Reading cannot remain seven missions while the rest of the app keeps growing.
@@ -1022,6 +1234,62 @@ Output:
 - Summarize files changed.
 - State exactly what drift or integrity problem this refactor addressed.
 - List any follow-up issues that should be handled before the next content batch.
+```
+
+### 4. Post-Claim-Gap Expansion Prompt
+
+Use this for one reinforcement block from the post-claim-gap plan.
+
+```md
+Context:
+This repo is Japanese OS. Follow:
+- `constitution.md`
+- `PRODUCT_SPEC.md`
+- `ROADMAP.md`
+- `BUILD_STATUS.md`
+- `N5_CURRICULUM_PLAN.md`
+- `PROMPTS/README.md`
+
+Inspect the repo first and treat repo reality as the source of truth.
+Preserve the existing local-first architecture and avoid unrelated edits.
+
+Task:
+Implement one post-claim-gap reinforcement block from `N5_CURRICULUM_PLAN.md`.
+
+Scope for this pass:
+- target packs: `[choose one 10-pack block]`
+- goal: increase vocab breadth inside already-shipped grammar families and raise reading reuse for the target packs
+
+Hard constraints:
+- TypeScript only.
+- No new dependencies.
+- No backend, sync, analytics, AI grading, or new runtime features.
+- Do not introduce new grammar families beyond the existing Pack `1-50` scope.
+- Every new vocab item must be integrated into at least one new example sentence.
+- Reading missions must reuse only already-shipped example sentences.
+- No reading mission may exceed `40%` concentration from a single source pack.
+
+Required work:
+- add pack-native vocab breadth across the target block
+- add supporting example sentences and light listening reinforcement
+- add `2` reading missions that intentionally improve weak reading reuse in the target block
+- update `BUILD_STATUS.md` in the same pass
+
+Verification:
+- Run `npm run typecheck`
+- Run `npm run build`
+- Run `npm run report:build-status-summary`
+- Run `npm run report:content-coverage`
+- Run `npm run report:reading-reuse`
+- Run `npm run report:progression-gaps`
+- Run `npm run report:content-overlap`
+
+Output:
+- Summarize files changed.
+- List the new vocab ids, example sentence ids, listening item ids, reading mission ids, and any mission ids added.
+- State which weak-reuse packs improved and by how much.
+- Summarize exactly what changed in `BUILD_STATUS.md`.
+- State validation results from all required scripts.
 ```
 
 ---

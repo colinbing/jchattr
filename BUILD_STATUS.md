@@ -117,6 +117,7 @@
 - Targeted QA pass for packs 18 to 20, 27, and 30 to rebalance reading reuse around arrival/status, `ませんか` vs `ましょう`, te-form core, and adjective negatives without changing curriculum totals
 - Batch 10 content pass for packs 45 to 47 with realistic friction language, noun-based `まえに / あとで`, plain-style recognition I, the planned post-Batch-10 reading follow-up, and overlap-safe gloss cleanup for new polite/plain meaning pairs
 - Batch 11 content pass for packs 48 to 50 with recognition-first plain verb exposure, sentence-level connected speech, noun-list flexibility with `と / や`, the planned post-Batch-11 reading recombination, and an audit-gate check confirming plain-form work stayed recognition-first while connected speech avoided hidden N4 complexity
+- Final claim-gate audit pass with full coverage review, reading/listening balance review, and BUILD_STATUS accuracy verification; repo structure is now broad and coherent, but the repo-defined `N5-comprehensive` claim threshold is still not met because vocab breadth remains far below plan target and reading is still intentionally compact relative to total content volume
 
 ## Current App Capabilities
 
@@ -272,7 +273,8 @@
 - Adjective coverage now includes negatives, past descriptions, beginner comparison, and simple `いちばん` superlatives, but it is still a narrow descriptive slice rather than full adjective tense/degree nuance or open-ended opinion language
 - Comparison and ranking coverage now exists, but it is still limited to short `より / のほうが` and `いちばん` lines rather than broader ranking nuance, contrastive justification, or multi-clause opinions
 - Frequency and reason coverage now exists, but it is still intentionally limited to a small adverb set and short polite `から` clauses rather than broader discourse-level explanation
-- Current listening audio coverage is manifest-complete through pack 47; the new pack 48 to 50 listening refs are present in content but still missing from the checked-in manifest
+- Current listening audio coverage is manifest-complete through pack 50 with all shipped listening refs represented in the checked-in manifest
+- The repo is not yet ready to claim `N5-comprehensive` by its own plan threshold: vocab breadth is still 334 against the plan's rough 550 to 650 target range, and reading remains a compact reinforcement lane rather than a fully dense parallel study lane
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -285,7 +287,7 @@
 
 ## Next Recommended Slices
 
-1. Run the final claim gate from `N5_CURRICULUM_PLAN.md`: full coverage audit, reading/listening balance audit, BUILD_STATUS accuracy pass, and a concrete decision on whether the repo can honestly claim `N5-comprehensive`.
+1. Execute the post-claim-gap expansion plan in `N5_CURRICULUM_PLAN.md`, starting with Block A for packs `1-10`, to raise vocab breadth and close the earliest reading-reuse holes before adding new platform features.
 2. Keep expanding output content through the current token-pattern evaluation path rather than broadening into AI grading.
 3. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
 
@@ -364,9 +366,9 @@
 ## Audio / TTS Notes
 
 - Listening items may include `audioRef`; all 249 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 234 of the 249 listening items
-- Manifest-backed listening-audio coverage is currently complete through the pack 47 asset set, with 15 new pack 48 to 50 listening refs still unsynced in the checked-in manifest
-- Settings currently reports partial listening-audio coverage for the shipped packs until the pack 48 to 50 manifest entries are updated
+- Matching MP3 files currently exist for all 249 of the 249 listening items
+- Manifest-backed listening-audio coverage is currently complete through the pack 50 asset set, with 0 missing shipped listening refs
+- Settings currently reports full listening-audio coverage for the shipped packs
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
