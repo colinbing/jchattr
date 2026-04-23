@@ -43,6 +43,7 @@
 - Content expansion pack 10 around simple permission and request lines with `てもいいですか` and `てください`
 - Content expansion pack 11 around simple shopping and buying basics with `をください` and `をかいます`
 - Content expansion pack 12 around time and schedule basics with `なんじですか` and time + `に`
+- Content expansion pack 13 around weekdays and simple plans with `Xようびに` and `なにをしますか`
 - Listening-audio manifest workflow with checked-in asset coverage and sync script support
 
 ## Current App Capabilities
@@ -62,10 +63,10 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 41 starter missions across 4 mission types:
-  - 12 grammar
-  - 12 listening
-  - 12 output
+- User can complete 44 starter missions across 4 mission types:
+  - 13 grammar
+  - 13 listening
+  - 13 output
   - 5 reading
 - Grammar missions currently include:
   - lesson intro
@@ -116,6 +117,7 @@
   - simple permission and request lines like `みずをのんでもいいですか` and `ちょっとまってください`
   - simple shopping lines like `これをください`, `みずをかいます`, and `コンビニでおかしをかいます`
   - simple time and schedule lines like `なんじですか`, `しちじです`, and `はちじにがっこうにいきます`
+  - simple weekday plan lines like `げつようびにがっこうにいきます`, `どようびになにをしますか`, and `にちようびはうちでやすみます`
   - simple adjective lines like `ほんはおもしろいです`, `へやはしずかです`, and `あたらしいカメラです`
   - short location answers with `ここ / そこ / あそこ` and existing location phrases
   - simple reading questions and answers like `これはなんですか`, `これはほんです`, and `たべものはなにがすきですか`
@@ -126,11 +128,11 @@
 ## Known Limitations / Gaps
 
 - Content is still small starter content only:
-  - 24 grammar lessons
-  - 124 example sentences
-  - 137 vocab items
-  - 59 listening items
-  - 41 missions
+  - 26 grammar lessons
+  - 135 example sentences
+  - 148 vocab items
+  - 64 listening items
+  - 44 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -140,8 +142,9 @@
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Shopping coverage now exists, but it is still a narrow beginner slice rather than broader money, quantity, price, or transaction coverage
 - Time and schedule coverage now exists, but it is still a narrow beginner slice rather than broader calendar, day-of-week, or time-range coverage
+- Weekday plan coverage now exists, but it is still a narrow beginner slice rather than broader future-planning or calendar expression coverage
 - Adjective coverage is now present, but it is still one narrow beginner pack rather than broad adjective contrast or tense coverage
-- Current listening audio coverage is complete through pack 11, but pack 12 listening items are audio-ready in content and not generated yet
+- Current listening audio coverage is complete through pack 12, but pack 13 listening items are audio-ready in content and not generated yet
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
 - Today is now more review-aware, but recommendation logic is still intentionally simple and deterministic rather than adaptive or scheduled
@@ -153,7 +156,7 @@
 
 ## Next Recommended Slices
 
-1. Generate MP3 files for the 5 new pack-12 listening items so Settings regains full audio coverage for current content.
+1. Generate MP3 files for the 5 new pack-13 listening items so Settings regains full audio coverage for current content.
 2. Expand starter content in the current schema before adding new systems, especially more grammar/listening/output packs for repeated daily use.
 3. Expand output content using the current token-pattern evaluation path rather than broadening into AI grading.
 4. Deepen review usefulness with more deterministic retry/recommendation refinements only if they stay explicit and local-first.
@@ -200,6 +203,7 @@
   - simple permission and request patterns with `てもいいですか` and `てください`
   - simple shopping request and buying patterns with `これをください`, `このほんをください`, and `X をかいます`
   - simple time-question and schedule patterns with `なんじですか`, `Xじです`, and `Xじに ...`
+  - simple weekday plan patterns with `Xようびに ...` and `Xようびになにをしますか`
   - simple adjective predicates like `ほんはおもしろいです` and `へやはしずかです`
   - adjective plus noun phrases like `あたらしいカメラ` and `しずかなへや`
   - preferences with `が すきです / きらいです`
@@ -211,11 +215,11 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 59 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 54 listening items
-- Pack 11 listening audio is still generated and the manifest-backed coverage is aligned through that content set
-- Pack 12 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
-- Settings will report pack-12 listening audio as missing until those files are generated and the manifest is synced
+- Listening items may include `audioRef`; all 64 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 59 listening items
+- Pack 12 listening audio is still generated and the manifest-backed coverage is aligned through that content set
+- Pack 13 listening items are audio-ready in content but their matching MP3 files are not yet present in `public/audio/listening`
+- Settings will report pack-13 listening audio as missing until those files are generated and the manifest is synced
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

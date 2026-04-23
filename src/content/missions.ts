@@ -1636,4 +1636,118 @@ export const missions = [
       },
     ],
   },
+  {
+    id: 'mission-grammar-weekday-plans',
+    type: 'grammar',
+    title: 'Talk about weekday plans',
+    targetSkill: 'particles',
+    contentRefs: {
+      grammarLessonIds: ['grammar-weekdays-ni', 'grammar-weekday-plan-questions'],
+      vocabIds: [
+        'vocab-getsuyoubi',
+        'vocab-kayoubi',
+        'vocab-suiyoubi',
+        'vocab-mokuyoubi',
+        'vocab-kinyoubi',
+        'vocab-doyoubi',
+        'vocab-nichiyoubi',
+        'vocab-shimasu',
+        'vocab-yasumimasu',
+        'vocab-maishuu',
+        'vocab-raishuu',
+        'vocab-gakkou',
+        'vocab-nihongo',
+        'vocab-benkyoushimasu',
+      ],
+      exampleIds: [
+        'ex-getsuyoubi-ni-gakkou-ikimasu',
+        'ex-kayoubi-ni-hon-o-yomimasu',
+        'ex-mokuyoubi-ni-nihongo-o-benkyoushimasu',
+        'ex-kinyoubi-ni-ongaku-o-kikimasu',
+        'ex-doyoubi-ni-nani-o-shimasu-ka',
+        'ex-nichiyoubi-wa-uchi-de-yasumimasu',
+        'ex-raishuu-doyoubi-ni-toshokan-ni-ikimasu',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-time-schedule-basics'],
+    },
+  },
+  {
+    id: 'mission-listening-weekday-plans',
+    type: 'listening',
+    title: 'Hear short weekday plan lines',
+    targetSkill: 'listening-comprehension',
+    contentRefs: {
+      grammarLessonIds: ['grammar-weekdays-ni', 'grammar-weekday-plan-questions'],
+      listeningItemIds: [
+        'listening-getsuyoubi-ni-gakkou-ikimasu',
+        'listening-mokuyoubi-ni-nihongo-o-benkyoushimasu',
+        'listening-doyoubi-ni-nani-o-shimasu-ka',
+        'listening-nichiyoubi-wa-uchi-de-yasumimasu',
+        'listening-raishuu-doyoubi-ni-toshokan-ni-ikimasu',
+      ],
+      exampleIds: [
+        'ex-getsuyoubi-ni-gakkou-ikimasu',
+        'ex-mokuyoubi-ni-nihongo-o-benkyoushimasu',
+        'ex-doyoubi-ni-nani-o-shimasu-ka',
+        'ex-nichiyoubi-wa-uchi-de-yasumimasu',
+        'ex-raishuu-doyoubi-ni-toshokan-ni-ikimasu',
+      ],
+    },
+    estimatedMinutes: 7,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-weekday-plans'],
+    },
+  },
+  {
+    id: 'mission-output-weekday-plans',
+    type: 'output',
+    title: 'Ask one weekday question and write one plan',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-weekdays-ni', 'grammar-weekday-plan-questions'],
+      vocabIds: [
+        'vocab-doyoubi',
+        'vocab-nan',
+        'vocab-shimasu',
+        'vocab-getsuyoubi',
+        'vocab-gakkou',
+        'vocab-ikimasu',
+      ],
+      exampleIds: [
+        'ex-doyoubi-ni-nani-o-shimasu-ka',
+        'ex-getsuyoubi-ni-gakkou-ikimasu',
+        'ex-getsuyoubi-ni-nani-o-shimasu-ka',
+      ],
+    },
+    estimatedMinutes: 8,
+    unlockRules: {
+      requiredMissionIds: ['mission-grammar-weekday-plans'],
+    },
+    outputTasks: [
+      {
+        id: 'output-doyoubi-ni-nani-o-shimasu-ka',
+        prompt: 'Type a polite question that says: "What do you do on Saturday?"',
+        acceptableAnswers: ['どようびになにをしますか。', 'どようびになにをしますか'],
+        hint: 'Use the weekday with に, then ask なにをしますか.',
+        evaluation: {
+          tokenPatterns: [['どようび', 'に', 'なに', 'を', 'します', 'か']],
+        },
+      },
+      {
+        id: 'output-getsuyoubi-ni-gakkou-ikimasu',
+        prompt: 'Type a line that says: "I go to school on Monday."',
+        acceptableAnswers: [
+          'げつようびにがっこうにいきます。',
+          'げつようびにがっこうにいきます',
+        ],
+        hint: 'Put the weekday with に first, then the destination phrase with に, then the verb.',
+        evaluation: {
+          tokenPatterns: [['げつようび', 'に', 'がっこう', 'に', 'いきます']],
+        },
+      },
+    ],
+  },
 ] satisfies Mission[];

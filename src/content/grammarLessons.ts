@@ -917,4 +917,86 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-weekdays-ni',
+    title: 'Use weekdays with に in schedule lines',
+    objective:
+      'Say what you do on different days of the week in short beginner schedule lines.',
+    explanation:
+      'Put the weekday before に, then add the action, as in げつようびにがっこうにいきます or きんようびににほんごをべんきょうします. This extends the existing time-with-に pattern into simple weekly plans.',
+    prerequisites: ['grammar-time-ni-schedule'],
+    tags: ['time', 'particles', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-getsuyoubi-ni-gakkou-ikimasu',
+      'ex-kayoubi-ni-hon-o-yomimasu',
+      'ex-mokuyoubi-ni-nihongo-o-benkyoushimasu',
+      'ex-kinyoubi-ni-ongaku-o-kikimasu',
+    ],
+    commonMistakes: [
+      'Leaving out に after the weekday in a schedule sentence.',
+      'Using で after the weekday instead of に.',
+      'Moving the weekday after the verb instead of keeping it earlier in the line.',
+    ],
+    drills: [
+      {
+        id: 'drill-weekdays-ni-1',
+        type: 'reorder',
+        prompt: 'Reorder: げつようびに / がっこうに / いきます',
+        answer: 'げつようびにがっこうにいきます。',
+        support: 'Put the weekday first, then the destination phrase, then the verb.',
+      },
+      {
+        id: 'drill-weekdays-ni-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I study Japanese on Friday."',
+        answer: 'きんようびににほんごをべんきょうします。',
+        choices: [
+          'きんようびでにほんごをべんきょうします。',
+          'きんようびににほんごをべんきょうします。',
+          'にほんごをきんようびべんきょうします。',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'grammar-weekday-plan-questions',
+    title: 'Ask simple plan questions with weekdays',
+    objective:
+      'Ask and answer very simple weekday plan questions in polite beginner Japanese.',
+    explanation:
+      'Use a weekday with に, then ask なにをしますか, as in どようびになにをしますか. You can answer with a short routine line or use は to set a day as the topic, like にちようびはうちでやすみます.',
+    prerequisites: ['grammar-weekdays-ni'],
+    tags: ['time', 'question', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-doyoubi-ni-nani-o-shimasu-ka',
+      'ex-getsuyoubi-ni-nani-o-shimasu-ka',
+      'ex-nichiyoubi-wa-uchi-de-yasumimasu',
+      'ex-raishuu-doyoubi-ni-toshokan-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Dropping を before しますか when asking what someone does.',
+      'Using に after the whole sentence instead of attaching it to the weekday.',
+      'Forgetting は in a topic-style answer like にちようびはうちでやすみます.',
+    ],
+    drills: [
+      {
+        id: 'drill-weekday-plan-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What do you do on Saturday?"',
+        answer: 'どようびになにをしますか。',
+        choices: [
+          'どようびなにをしますか。',
+          'どようびになにをしますか。',
+          'なにをどようびにしますかです。',
+        ],
+      },
+      {
+        id: 'drill-weekday-plan-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: にちようび___うちでやすみます。',
+        answer: 'は',
+        support: 'Use は when the day is the topic of the sentence.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];

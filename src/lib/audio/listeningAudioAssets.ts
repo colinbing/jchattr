@@ -62,6 +62,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-hachiji-ni-gakkou-ikimasu.mp3',
   '/audio/listening/listening-kuji-ni-nihongo-benkyoushimasu.mp3',
   '/audio/listening/listening-yoru-juuji-ni-nemasu.mp3',
+  '/audio/listening/listening-getsuyoubi-ni-gakkou-ikimasu.mp3',
+  '/audio/listening/listening-mokuyoubi-ni-nihongo-o-benkyoushimasu.mp3',
+  '/audio/listening/listening-doyoubi-ni-nani-o-shimasu-ka.mp3',
+  '/audio/listening/listening-nichiyoubi-wa-uchi-de-yasumimasu.mp3',
+  '/audio/listening/listening-raishuu-doyoubi-ni-toshokan-ni-ikimasu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

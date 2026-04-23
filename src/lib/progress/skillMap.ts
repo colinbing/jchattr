@@ -61,6 +61,8 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
       'grammar-possession-no',
       'grammar-family-possession-lines',
       'grammar-time-ni-schedule',
+      'grammar-weekdays-ni',
+      'grammar-weekday-plan-questions',
     ],
     itemTypes: ['grammar-drill', 'listening-check', 'output-task'],
     available: true,
