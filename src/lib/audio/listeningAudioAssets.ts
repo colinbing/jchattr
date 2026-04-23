@@ -132,6 +132,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-hai-arimasu.mp3',
   '/audio/listening/listening-sore-o-kudasai.mp3',
   '/audio/listening/listening-korede-ii-desu.mp3',
+  '/audio/listening/listening-pan-o-tabete-kudasai.mp3',
+  '/audio/listening/listening-kono-eiga-o-mite-kudasai.mp3',
+  '/audio/listening/listening-uchi-de-benkyoushite-kudasai.mp3',
+  '/audio/listening/listening-eki-ni-itte-mo-ii-desu-ka.mp3',
+  '/audio/listening/listening-kore-o-katte-kudasai.mp3',
+  '/audio/listening/listening-asa-pan-o-tabete-sorekara-gakkou-ni-ikimasu.mp3',
+  '/audio/listening/listening-kafe-de-koohii-o-nonde-sorekara-benkyoushimasu.mp3',
+  '/audio/listening/listening-eki-ni-itte-sorekara-densha-ni-norimasu.mp3',
+  '/audio/listening/listening-asa-pan-o-tabete-kara-gakkou-ni-ikimasu.mp3',
+  '/audio/listening/listening-hon-o-yonde-kara-nemasu.mp3',
+  '/audio/listening/listening-ima-hon-o-yondeimasu.mp3',
+  '/audio/listening/listening-ima-koohii-o-nondeimasu.mp3',
+  '/audio/listening/listening-ima-nihongo-o-benkyoushiteimasu.mp3',
+  '/audio/listening/listening-ima-eki-de-matteimasu.mp3',
+  '/audio/listening/listening-toukyou-ni-sundeimasu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

@@ -2002,4 +2002,256 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-te-form-core-familiar-verbs',
+    title: 'Use て-form on a tiny familiar verb set',
+    objective:
+      'Use a small beginner-safe set of て-form verbs inside familiar request and permission lines.',
+    explanation:
+      'This pack keeps て-form intentionally narrow. Start with easy familiar verbs like たべて, みて, and べんきょうして, then use them in patterns you already know well: てください and てもいいですか. The goal is not full conjugation coverage yet. It is to make て-form feel readable and usable on a small, practical verb set.',
+    prerequisites: ['grammar-permission-temo-ii-desu-ka', 'grammar-request-te-kudasai'],
+    tags: ['verb-forms', 'te-form', 'request', 'permission', 'n5'],
+    exampleIds: [
+      'ex-pan-o-tabete-kudasai',
+      'ex-kono-eiga-o-mite-kudasai',
+      'ex-uchi-de-benkyoushite-kudasai',
+      'ex-pan-o-tabete-mo-ii-desu-ka',
+      'ex-eiga-o-mite-mo-ii-desu-ka',
+    ],
+    commonMistakes: [
+      'Leaving the verb in ます-form and writing パンをたべますください instead of パンをたべてください.',
+      'Mixing the two familiar patterns and ending a request line with てもいいですか by mistake.',
+      'Dropping the object marker を in short lines like このえいがをみてください.',
+    ],
+    drills: [
+      {
+        id: 'drill-te-form-core-familiar-verbs-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Please eat the bread."',
+        answer: 'パンをたべてください。',
+        choices: [
+          'パンをたべてください。',
+          'パンをたべますください。',
+          'パンはたべてです。',
+        ],
+      },
+      {
+        id: 'drill-te-form-core-familiar-verbs-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: このえいがを___ください。',
+        answer: 'みて',
+        support: 'Use the て-form みて before ください.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-te-form-core-sound-change-basics',
+    title: 'Recognize the first て-form sound changes',
+    objective:
+      'Recognize common beginner て-form changes like のみます→のんで and いきます→いって.',
+    explanation:
+      'Some て-forms change sound instead of simply swapping the ending. Keep this set small and high-value: のんで, よんで, いって, かって, and まって. For now, treat them as practical chunks inside short beginner lines instead of trying to generalize every verb family at once.',
+    prerequisites: ['grammar-te-form-core-familiar-verbs'],
+    tags: ['verb-forms', 'te-form', 'request', 'permission', 'n5'],
+    exampleIds: [
+      'ex-koohii-o-nonde-kudasai',
+      'ex-kono-hon-o-yonde-kudasai',
+      'ex-eki-ni-itte-mo-ii-desu-ka',
+      'ex-kore-o-katte-kudasai',
+      'ex-koko-de-matte-kudasai',
+    ],
+    commonMistakes: [
+      'Writing のみて or よみて instead of the actual て-form chunks のんで and よんで.',
+      'Changing いきます to いきて instead of いって.',
+      'Dropping で after ここ in a line like ここでまってください.',
+    ],
+    drills: [
+      {
+        id: 'drill-te-form-core-sound-change-basics-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "May I go to the station?"',
+        answer: 'えきにいってもいいですか。',
+        choices: [
+          'えきにいってもいいですか。',
+          'えきにいきてもいいですか。',
+          'えきをいってもいいですか。',
+        ],
+      },
+      {
+        id: 'drill-te-form-core-sound-change-basics-2',
+        type: 'reorder',
+        prompt: 'Reorder: これを / かってください',
+        answer: 'これをかってください。',
+        support: 'Keep the object first, then use the て-form request chunk かってください.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-action-sequence-te-sorekara',
+    title: 'Link short actions with て and それから',
+    objective:
+      'Describe a simple two-step action chain with a て-form verb followed by それから.',
+    explanation:
+      'Use a first action in て-form, then add それから before the next sentence part. This gives the learner a clear, beginner-safe way to describe short action chains without jumping into long, dense sequencing grammar.',
+    prerequisites: ['grammar-te-form-core-sound-change-basics'],
+    tags: ['verb-forms', 'sequence', 'daily-routine', 'n5'],
+    exampleIds: [
+      'ex-asa-pan-o-tabete-sorekara-gakkou-ni-ikimasu',
+      'ex-kafe-de-koohii-o-nonde-sorekara-benkyoushimasu',
+      'ex-hon-o-yonde-sorekara-nemasu',
+      'ex-eki-ni-itte-sorekara-densha-ni-norimasu',
+      'ex-ringo-o-katte-sorekara-uchi-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Leaving the first verb in ます-form instead of switching it to て-form before それから.',
+      'Dropping それから and turning the line into a single unfinished action chunk.',
+      'Mixing the order of the two actions so the sentence does not reflect the intended sequence.',
+    ],
+    drills: [
+      {
+        id: 'drill-action-sequence-te-sorekara-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I eat bread, then go to school."',
+        answer: 'あさパンをたべて、それからがっこうにいきます。',
+        choices: [
+          'あさパンをたべて、それからがっこうにいきます。',
+          'あさパンをたべます、それからがっこうにいきます。',
+          'あさパンをたべて、がっこうそれからにいきます。',
+        ],
+      },
+      {
+        id: 'drill-action-sequence-te-sorekara-2',
+        type: 'reorder',
+        prompt: 'Reorder: えきにいって、 / それからでんしゃにのります',
+        answer: 'えきにいって、それからでんしゃにのります。',
+        support: 'Put the first action in て-form, then add それから before the second action.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-action-sequence-tekara',
+    title: 'Use てから for after-that order',
+    objective:
+      'Use てから to say that one action happens after another, as in たべてからいきます.',
+    explanation:
+      'Use てから when the order is important: first action, then second action. This stays close to familiar daily actions so the learner can feel the sequencing difference between a simple chain with それから and a tighter after-that pattern with てから.',
+    prerequisites: ['grammar-action-sequence-te-sorekara'],
+    tags: ['verb-forms', 'sequence', 'daily-routine', 'n5'],
+    exampleIds: [
+      'ex-asa-pan-o-tabete-kara-gakkou-ni-ikimasu',
+      'ex-koohii-o-nonde-kara-benkyoushimasu',
+      'ex-hon-o-yonde-kara-nemasu',
+      'ex-toshokan-ni-itte-kara-hon-o-yomimasu',
+      'ex-ringo-o-katte-kara-kafe-ni-ikimasu',
+    ],
+    commonMistakes: [
+      'Using から without first changing the verb to て-form.',
+      'Placing から at the very end of the sentence instead of right after the first action.',
+      'Dropping the second verb and leaving the line incomplete after てから.',
+    ],
+    drills: [
+      {
+        id: 'drill-action-sequence-tekara-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I drink coffee and then study."',
+        answer: 'コーヒーをのんでからべんきょうします。',
+        choices: [
+          'コーヒーをのんでからべんきょうします。',
+          'コーヒーをのみますからべんきょうします。',
+          'コーヒーをのんでべんきょうしてからです。',
+        ],
+      },
+      {
+        id: 'drill-action-sequence-tekara-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: ほんをよんで___ねます。',
+        answer: 'から',
+        support: 'Use てから to show that sleeping happens after reading.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-progressive-actions-teimasu',
+    title: 'Describe what is happening now with ています',
+    objective:
+      'Use ています for a small set of current-action lines like いまほんをよんでいます.',
+    explanation:
+      'After learning a small て-form core, move into a very limited set of ています lines for actions happening now. Keep the verb set familiar and practical: reading, drinking, studying, buying, and waiting.',
+    prerequisites: ['grammar-action-sequence-tekara'],
+    tags: ['verb-forms', 'progressive', 'current-state', 'n5'],
+    exampleIds: [
+      'ex-ima-hon-o-yondeimasu',
+      'ex-ima-koohii-o-nondeimasu',
+      'ex-ima-nihongo-o-benkyoushiteimasu',
+      'ex-ima-pan-o-katteimasu',
+      'ex-ima-eki-de-matteimasu',
+    ],
+    commonMistakes: [
+      'Stopping at the て-form chunk and forgetting to add います.',
+      'Dropping いま when the lesson prompt is specifically about what is happening now.',
+      'Using a plain ます line like よみます instead of the ongoing-action line よんでいます.',
+    ],
+    drills: [
+      {
+        id: 'drill-progressive-actions-teimasu-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I am reading a book now."',
+        answer: 'いまほんをよんでいます。',
+        choices: [
+          'いまほんをよんでいます。',
+          'いまほんをよんでです。',
+          'いまほんをよみますいます。',
+        ],
+      },
+      {
+        id: 'drill-progressive-actions-teimasu-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: いまにほんごを___います。',
+        answer: 'べんきょうして',
+        support: 'Use the て-form chunk べんきょうして before います.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-progressive-states-teimasu',
+    title: 'Use ています for status and stable present lines',
+    objective:
+      'Use carefully limited ています lines for waiting status, living somewhere, and ongoing study habits.',
+    explanation:
+      'This lesson keeps ています narrow but useful. Some lines describe a current status like いまえきでまっています. Others describe a stable present situation like とうきょうにすんでいます or まいにちにほんごをべんきょうしています. The pattern is the same, but the meaning can be current or ongoing depending on the verb and context.',
+    prerequisites: ['grammar-progressive-actions-teimasu'],
+    tags: ['verb-forms', 'progressive', 'status', 'n5'],
+    exampleIds: [
+      'ex-toukyou-ni-sundeimasu',
+      'ex-ima-kaisatsu-no-mae-de-matteimasu',
+      'ex-ima-toshokan-de-hon-o-yondeimasu',
+      'ex-ima-kafe-de-koohii-o-nondeimasu',
+      'ex-mainichi-nihongo-o-benkyoushiteimasu',
+    ],
+    commonMistakes: [
+      'Using に incorrectly after a waiting place when the pattern needs で, as in えきでまっています.',
+      'Dropping ています and falling back to a plain present-tense line when the prompt is about an ongoing state.',
+      'Treating every ています line as only happening right now, even in a stable-present line like とうきょうにすんでいます.',
+    ],
+    drills: [
+      {
+        id: 'drill-progressive-states-teimasu-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I live in Tokyo."',
+        answer: 'とうきょうにすんでいます。',
+        choices: [
+          'とうきょうにすんでいます。',
+          'とうきょうですんでいます。',
+          'とうきょうにすみますいます。',
+        ],
+      },
+      {
+        id: 'drill-progressive-states-teimasu-2',
+        type: 'reorder',
+        prompt: 'Reorder: いまえきで / まっています',
+        answer: 'いまえきでまっています。',
+        support: 'Keep the time word first, then the waiting place with で, then まっています.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
