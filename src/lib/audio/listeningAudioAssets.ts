@@ -52,6 +52,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-chotto-matte-kudasai.mp3',
   '/audio/listening/listening-koko-suwatte-kudasai.mp3',
   '/audio/listening/listening-yukkuri-yonde-kudasai.mp3',
+  '/audio/listening/listening-kore-o-kudasai.mp3',
+  '/audio/listening/listening-kono-hon-o-kudasai.mp3',
+  '/audio/listening/listening-mizu-o-kaimasu.mp3',
+  '/audio/listening/listening-nani-o-kaimasu.mp3',
+  '/audio/listening/listening-konbini-de-okashi-o-kaimasu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

@@ -770,4 +770,73 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-shopping-o-kudasai',
+    title: 'Ask for an item with をください',
+    objective:
+      'Use short, practical shopping lines to ask for an item politely.',
+    explanation:
+      'Put the item before を, then finish with ください: for example, これをください or このほんをください. This gives you a very compact beginner pattern for selecting and requesting something in a shop.',
+    prerequisites: ['grammar-request-te-kudasai'],
+    tags: ['shopping', 'request', 'object', 'n5'],
+    exampleIds: ['ex-kore-o-kudasai', 'ex-kono-hon-o-kudasai', 'ex-pan-o-kudasai'],
+    commonMistakes: [
+      'Dropping を before ください when the lesson is teaching a clear item-request pattern.',
+      'Using English-style order like くださいこれを.',
+      'Mixing これ and このほん in the same line when only one item phrase is needed.',
+    ],
+    drills: [
+      {
+        id: 'drill-shopping-kudasai-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "Please give me this."',
+        answer: 'これをください。',
+        choices: ['これください。', 'これをください。', 'くださいこれを。'],
+      },
+      {
+        id: 'drill-shopping-kudasai-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: このほん___ください。',
+        answer: 'を',
+        support: 'Use を before ください when asking for the item directly.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-shopping-kaimasu',
+    title: 'Say what you buy with をかいます',
+    objective:
+      'Say what you buy and ask simple shopping questions with かいます.',
+    explanation:
+      'Put the item before を, then finish with かいます: for example, みずをかいます or りんごをかいます. You can also ask simple questions like なにをかいますか or どれをかいますか.',
+    prerequisites: ['grammar-shopping-o-kudasai'],
+    tags: ['shopping', 'verb-forms', 'object', 'n5'],
+    exampleIds: [
+      'ex-mizu-o-kaimasu',
+      'ex-nani-o-kaimasu',
+      'ex-dore-o-kaimasu',
+      'ex-konbini-de-okashi-o-kaimasu',
+    ],
+    commonMistakes: [
+      'Dropping を before かいます when the lesson is teaching a direct object pattern.',
+      'Using です instead of the verb かいます.',
+      'Changing the question word order instead of keeping なにを or どれを before かいますか.',
+    ],
+    drills: [
+      {
+        id: 'drill-shopping-kaimasu-1',
+        type: 'reorder',
+        prompt: 'Reorder: りんごを / かいます',
+        answer: 'りんごをかいます。',
+        support: 'Keep the item phrase first, then finish with かいます.',
+      },
+      {
+        id: 'drill-shopping-kaimasu-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What do you buy?"',
+        answer: 'なにをかいますか。',
+        choices: ['なにかいますをか。', 'なにをかいますか。', 'なにはかいますか。'],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
