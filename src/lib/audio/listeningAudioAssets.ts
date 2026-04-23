@@ -222,6 +222,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-kuukou-o-demasu.mp3',
   '/audio/listening/listening-kuukou-ni-tsukimashita.mp3',
   '/audio/listening/listening-mou-kuukou-ni-tsukimashita.mp3',
+  '/audio/listening/listening-chotto-okuremasu.mp3',
+  '/audio/listening/listening-densha-ga-okuremasu.mp3',
+  '/audio/listening/listening-chotto-muzukashii-desu.mp3',
+  '/audio/listening/listening-tomodachi-ni-renrakushimasu.mp3',
+  '/audio/listening/listening-sugu-renrakushimasu.mp3',
+  '/audio/listening/listening-shigoto-no-mae-ni-koohii-o-nomimasu.mp3',
+  '/audio/listening/listening-gakkou-no-mae-ni-pan-o-tabemasu.mp3',
+  '/audio/listening/listening-shigoto-no-ato-de-eiga-o-mimasu.mp3',
+  '/audio/listening/listening-eiga-no-ato-de-koohii-o-nomimasu.mp3',
+  '/audio/listening/listening-jugyou-no-ato-de-tomodachi-ni-renrakushimasu.mp3',
+  '/audio/listening/listening-tomodachi-wa-gakusei-da.mp3',
+  '/audio/listening/listening-heya-wa-shizuka-da.mp3',
+  '/audio/listening/listening-kyou-wa-genki-janai.mp3',
+  '/audio/listening/listening-kyou-wa-samui.mp3',
+  '/audio/listening/listening-kono-hon-wa-omoshirokunai.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
