@@ -28,6 +28,8 @@
 - Reading slice v3 with a third beginner reading mission for location questions and answers
 - Reading slice v4 with a fourth beginner reading mission for preferences and simple opinion questions
 - Reading slice v5 with a fifth beginner reading mission for identity and daily routine lines
+- Reading slice v6 with a sixth beginner reading mission for time, weekday-plan, and transport lines from packs 12 to 14
+- Reading slice v7 with a seventh beginner reading mission for navigation, invitation, and meetup lines from packs 15 to 17
 - Local mission completion persistence
 - Weak-point tracking from incorrect answers
 - Review page with focused retry batches
@@ -69,11 +71,11 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 56 starter missions across 4 mission types:
+- User can complete 58 starter missions across 4 mission types:
   - 17 grammar
   - 17 listening
   - 17 output
-  - 5 reading
+  - 7 reading
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -139,6 +141,8 @@
   - location-focused reading prompts like `かぎはどこですか`, `トイレはあそこです`, and `せんせいはじむしょにいます`
   - preference-focused reading prompts like `えいががすきですか`, `アニメがすきです`, and `わたしはコーヒーがきらいです`
   - identity and daily-routine reading prompts like `わたしはがくせいです`, `うちでにほんごをべんきょうします`, and `まいにちがっこうにいきます`
+  - time, weekday-plan, and travel reading prompts like `なんじですか`, `どようびになにをしますか`, and `どこまでいきますか`
+  - directions, invitation, and meetup reading prompts like `まっすぐいきます`, `いっしょにいきますか`, and `どこであいますか`
 
 ## Known Limitations / Gaps
 
@@ -147,12 +151,12 @@
   - 179 example sentences
   - 188 vocab items
   - 84 listening items
-  - 56 missions
+  - 58 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
-- Reading slice is still intentionally small: 5 reading missions with 25 total multiple-choice checks, all built from existing example sentences
+- Reading slice is still intentionally small: 7 reading missions with 35 total multiple-choice checks, all built from existing example sentences
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Shopping coverage now exists, but it is still a narrow beginner slice rather than broader money, quantity, price, or transaction coverage

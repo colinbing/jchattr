@@ -67,6 +67,8 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
       'grammar-destination-made-questions',
       'grammar-navigation-migi-hidari',
       'grammar-navigation-place-answers',
+      'grammar-invitation-plan-questions',
+      'grammar-plan-responses-yes-no',
       'grammar-meeting-place-de-questions',
       'grammar-meeting-place-landmark-lines',
     ],

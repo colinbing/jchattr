@@ -11,9 +11,10 @@ Codex should be used as a constrained repo-aware engineer, not as an open-ended 
 ## Core Rules
 
 1. Always point Codex back to:
-   - `CONSTITUTION.md`
+   - `constitution.md`
    - `PRODUCT_SPEC.md`
    - `ROADMAP.md`
+   - `N5_CURRICULUM_PLAN.md` for Phase 3 curriculum work
 
 2. Prompts should request:
    - one slice at a time
@@ -48,7 +49,7 @@ Use this structure:
 
 ### Context
 - This repo is for Japanese OS, a local-first Japanese learning MVP.
-- Follow `CONSTITUTION.md`, `PRODUCT_SPEC.md`, and `ROADMAP.md`.
+- Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, and `N5_CURRICULUM_PLAN.md` when working on Phase 3 curriculum expansion.
 - Preserve the current architecture unless the request explicitly says otherwise.
 
 ### Task

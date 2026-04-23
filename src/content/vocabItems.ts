@@ -1249,9 +1249,9 @@ export const vocabItems = [
   },
   {
     id: 'vocab-hiru',
-    kana: 'ひる',
-    kanji: '昼',
-    meaning: 'lunch; noon',
+    kana: 'ひるごはん',
+    kanji: '昼ご飯',
+    meaning: 'lunch',
     partOfSpeech: 'noun',
     tags: ['time', 'food', 'n5'],
     exampleIds: ['ex-ichiji-ni-hiru-o-tabemasu'],
