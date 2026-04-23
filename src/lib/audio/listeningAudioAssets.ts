@@ -147,6 +147,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-ima-nihongo-o-benkyoushiteimasu.mp3',
   '/audio/listening/listening-ima-eki-de-matteimasu.mp3',
   '/audio/listening/listening-toukyou-ni-sundeimasu.mp3',
+  '/audio/listening/listening-hon-omoshirokunai-desu.mp3',
+  '/audio/listening/listening-kamera-atarashikunai-desu.mp3',
+  '/audio/listening/listening-heya-shizuka-janai-desu.mp3',
+  '/audio/listening/listening-kono-mise-yasukunai-desu.mp3',
+  '/audio/listening/listening-cha-oishikunai-desu.mp3',
+  '/audio/listening/listening-hon-omoshirokatta-desu.mp3',
+  '/audio/listening/listening-pan-oishikatta-desu.mp3',
+  '/audio/listening/listening-resutoran-takakatta-desu.mp3',
+  '/audio/listening/listening-heya-shizuka-deshita.mp3',
+  '/audio/listening/listening-mise-kirei-deshita.mp3',
+  '/audio/listening/listening-hon-yori-eiga-no-hou-ga-omoshiroi-desu.mp3',
+  '/audio/listening/listening-koohii-yori-cha-no-hou-ga-suki-desu.mp3',
+  '/audio/listening/listening-resutoran-yori-kafe-no-hou-ga-yasui-desu.mp3',
+  '/audio/listening/listening-basu-yori-densha-no-hou-ga-hayai-desu.mp3',
+  '/audio/listening/listening-eki-yori-toshokan-no-hou-ga-shizuka-desu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

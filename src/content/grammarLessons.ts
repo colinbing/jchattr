@@ -2254,4 +2254,256 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-adjective-negatives-i',
+    title: 'Make い-adjectives negative with くないです',
+    objective:
+      'Use short negative い-adjective lines like おもしろくないです and たかくないです.',
+    explanation:
+      'For a small beginner-safe set of い-adjectives, change the ending to くないです to make the description negative. Keep the pattern practical and concrete with familiar things like books, cameras, bags, restaurants, and tea.',
+    prerequisites: ['grammar-adjectives-predicates'],
+    tags: ['adjectives', 'negative', 'description', 'n5'],
+    exampleIds: [
+      'ex-hon-omoshirokunai-desu',
+      'ex-kaban-ookikunai-desu',
+      'ex-kamera-atarashikunai-desu',
+      'ex-heya-hirokunai-desu',
+      'ex-resutoran-takakunai-desu',
+    ],
+    commonMistakes: [
+      'Leaving the adjective in its positive form and only adding ない at the end of the sentence.',
+      'Using じゃないです with an い-adjective instead of changing it to くないです.',
+      'Dropping です when the lesson target is still polite beginner Japanese.',
+    ],
+    drills: [
+      {
+        id: 'drill-adjective-negatives-i-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The book is not interesting."',
+        answer: 'ほんはおもしろくないです。',
+        choices: [
+          'ほんはおもしろくないです。',
+          'ほんはおもしろいじゃないです。',
+          'ほんはおもしろいないです。',
+        ],
+      },
+      {
+        id: 'drill-adjective-negatives-i-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: レストランはたか___です。',
+        answer: 'くない',
+        support: 'For an い-adjective negative, change い to くない before です.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-adjective-negatives-na',
+    title: 'Make な-adjectives negative with じゃないです',
+    objective:
+      'Use short negative な-adjective lines like しずかじゃないです and きれいじゃないです.',
+    explanation:
+      'For a small beginner-safe set of な-adjectives, use じゃないです to make the description negative. This gives the learner a practical contrast with い-adjective negatives without widening into broader plain-style adjective work.',
+    prerequisites: ['grammar-adjective-negatives-i'],
+    tags: ['adjectives', 'negative', 'description', 'n5'],
+    exampleIds: [
+      'ex-heya-shizuka-janai-desu',
+      'ex-mise-kirei-janai-desu',
+      'ex-kafe-shizuka-janai-desu',
+      'ex-resutoran-kirei-janai-desu',
+      'ex-hito-shizuka-janai-desu',
+    ],
+    commonMistakes: [
+      'Using くないです on a な-adjective like しずか.',
+      'Leaving out じゃ and writing しずかないです instead of しずかじゃないです.',
+      'Mixing a noun-description pattern with a predicate pattern and inserting な before じゃないです.',
+    ],
+    drills: [
+      {
+        id: 'drill-adjective-negatives-na-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The room is not quiet."',
+        answer: 'へやはしずかじゃないです。',
+        choices: [
+          'へやはしずかじゃないです。',
+          'へやはしずかくないです。',
+          'へやはしずかなじゃないです。',
+        ],
+      },
+      {
+        id: 'drill-adjective-negatives-na-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: みせはきれい___です。',
+        answer: 'じゃない',
+        support: 'For a な-adjective negative, use じゃない before です.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-adjective-past-i',
+    title: 'Use い-adjective past lines with かったです',
+    objective:
+      'Use short past い-adjective lines like おもしろかったです and おいしかったです.',
+    explanation:
+      'To talk about a past impression or condition with an い-adjective, change the ending to かったです. Keep the situations concrete and easy to picture: books, bags, cameras, bread, and restaurants.',
+    prerequisites: ['grammar-adjective-negatives-na'],
+    tags: ['adjectives', 'past-description', 'description', 'n5'],
+    exampleIds: [
+      'ex-hon-omoshirokatta-desu',
+      'ex-kaban-ookikatta-desu',
+      'ex-kamera-atarashikatta-desu',
+      'ex-pan-oishikatta-desu',
+      'ex-resutoran-takakatta-desu',
+    ],
+    commonMistakes: [
+      'Keeping the adjective in present form and only adding でした at the end.',
+      'Using じゃなかったです on an い-adjective instead of changing it to かったです.',
+      'Dropping the topic marker は in a sentence that is still a simple adjective predicate.',
+    ],
+    drills: [
+      {
+        id: 'drill-adjective-past-i-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The bread was tasty."',
+        answer: 'パンはおいしかったです。',
+        choices: [
+          'パンはおいしかったです。',
+          'パンはおいしいでした。',
+          'パンはおいしかです。',
+        ],
+      },
+      {
+        id: 'drill-adjective-past-i-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: ほんはおもしろ___です。',
+        answer: 'かった',
+        support: 'Change the い-adjective ending to かった before です.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-adjective-past-na',
+    title: 'Use な-adjective past lines with でした',
+    objective:
+      'Use short past な-adjective lines like しずかでした and きれいでした.',
+    explanation:
+      'For a past description with a な-adjective, keep the adjective and finish with でした. This lets the learner talk about past rooms, shops, cafes, and people without jumping into longer recall language.',
+    prerequisites: ['grammar-adjective-past-i'],
+    tags: ['adjectives', 'past-description', 'description', 'n5'],
+    exampleIds: [
+      'ex-heya-shizuka-deshita',
+      'ex-mise-kirei-deshita',
+      'ex-kafe-shizuka-deshita',
+      'ex-hito-yasashikatta-desu',
+      'ex-heya-hirokatta-desu',
+    ],
+    commonMistakes: [
+      'Using かったです with a な-adjective like しずか.',
+      'Dropping で and writing しずかした instead of しずかでした.',
+      'Confusing a past description with a present one and leaving the sentence as しずかです.',
+    ],
+    drills: [
+      {
+        id: 'drill-adjective-past-na-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The shop was pretty."',
+        answer: 'みせはきれいでした。',
+        choices: [
+          'みせはきれいでした。',
+          'みせはきれいかったです。',
+          'みせはきれいですた。',
+        ],
+      },
+      {
+        id: 'drill-adjective-past-na-2',
+        type: 'reorder',
+        prompt: 'Reorder: へやは / しずかでした',
+        answer: 'へやはしずかでした。',
+        support: 'Keep the topic first, then the short past description.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-comparison-yori-houga-adjectives',
+    title: 'Compare things with より and のほうが',
+    objective:
+      'Use short adjective comparisons like AよりBのほうがしずかです and AよりBのほうがやすいです.',
+    explanation:
+      'To compare two things, put A first with より, then Bのほうが, then the description. Keep the pairings practical and easy to imagine: library versus station, cafe versus restaurant, bus versus train.',
+    prerequisites: ['grammar-adjective-past-na'],
+    tags: ['comparison', 'particles', 'adjectives', 'n5'],
+    exampleIds: [
+      'ex-hon-yori-eiga-no-hou-ga-omoshiroi-desu',
+      'ex-eki-yori-toshokan-no-hou-ga-shizuka-desu',
+      'ex-resutoran-yori-kafe-no-hou-ga-yasui-desu',
+      'ex-basu-yori-densha-no-hou-ga-hayai-desu',
+      'ex-mizu-yori-koohii-no-hou-ga-takai-desu',
+    ],
+    commonMistakes: [
+      'Reversing the order and changing which item is actually stronger in the comparison.',
+      'Dropping の before ほうが and breaking the fixed comparison chunk.',
+      'Using the adjective without finishing the comparison pattern first.',
+    ],
+    drills: [
+      {
+        id: 'drill-comparison-yori-houga-adjectives-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "The library is quieter than the station."',
+        answer: 'えきよりとしょかんのほうがしずかです。',
+        choices: [
+          'えきよりとしょかんのほうがしずかです。',
+          'としょかんよりえきのほうがしずかです。',
+          'えきよりとしょかんほうがしずかです。',
+        ],
+      },
+      {
+        id: 'drill-comparison-yori-houga-adjectives-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: バスよりでんしゃの___はやいです。',
+        answer: 'ほうが',
+        support: 'Use のほうが as the fixed comparison chunk after the second item.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-comparison-yori-houga-preferences',
+    title: 'Compare preferences with より and のほうが',
+    objective:
+      'Use short preference comparisons like コーヒーよりおちゃのほうがすきです.',
+    explanation:
+      'The same comparison frame works well with beginner preference language. Keep the comparisons practical and familiar so the learner can say what they like more without adding broader opinion grammar.',
+    prerequisites: ['grammar-comparison-yori-houga-adjectives'],
+    tags: ['comparison', 'preference', 'particles', 'n5'],
+    exampleIds: [
+      'ex-koohii-yori-cha-no-hou-ga-suki-desu',
+      'ex-eiga-yori-hon-no-hou-ga-suki-desu',
+      'ex-pan-yori-keeki-no-hou-ga-oishii-desu',
+      'ex-kafe-yori-resutoran-no-hou-ga-suki-desu',
+      'ex-kamera-yori-hon-no-hou-ga-yasui-desu',
+    ],
+    commonMistakes: [
+      'Using plain すき instead of the beginner polite line すきです.',
+      'Putting the more-liked item before より instead of after it.',
+      'Treating より like a destination or location particle instead of part of a comparison frame.',
+    ],
+    drills: [
+      {
+        id: 'drill-comparison-yori-houga-preferences-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I like tea more than coffee."',
+        answer: 'コーヒーよりおちゃのほうがすきです。',
+        choices: [
+          'コーヒーよりおちゃのほうがすきです。',
+          'おちゃよりコーヒーのほうがすきです。',
+          'コーヒーよりおちゃほうがすきです。',
+        ],
+      },
+      {
+        id: 'drill-comparison-yori-houga-preferences-2',
+        type: 'reorder',
+        prompt: 'Reorder: えいがより / ほんのほうがすきです',
+        answer: 'えいがよりほんのほうがすきです。',
+        support: 'Put the first item with より, then the preferred item with のほうが.',
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
