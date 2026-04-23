@@ -57,6 +57,11 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-mizu-o-kaimasu.mp3',
   '/audio/listening/listening-nani-o-kaimasu.mp3',
   '/audio/listening/listening-konbini-de-okashi-o-kaimasu.mp3',
+  '/audio/listening/listening-nanji-desu-ka.mp3',
+  '/audio/listening/listening-gozen-hachiji-desu.mp3',
+  '/audio/listening/listening-hachiji-ni-gakkou-ikimasu.mp3',
+  '/audio/listening/listening-kuji-ni-nihongo-benkyoushimasu.mp3',
+  '/audio/listening/listening-yoru-juuji-ni-nemasu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {

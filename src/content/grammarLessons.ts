@@ -839,4 +839,82 @@ export const grammarLessons = [
       },
     ],
   },
+  {
+    id: 'grammar-time-nanji-desu',
+    title: 'Ask and tell time with なんじですか',
+    objective:
+      'Ask and answer simple clock-time questions in short, practical beginner lines.',
+    explanation:
+      'Use なんじですか to ask the time, and answer with a time expression plus です, like しちじです or ごぜんはちじです. This gives you a compact beginner pattern for daily routines, class times, and schedule talk.',
+    prerequisites: ['grammar-shopping-kaimasu'],
+    tags: ['time', 'schedule', 'copula', 'n5'],
+    exampleIds: [
+      'ex-nanji-desu-ka',
+      'ex-shichiji-desu',
+      'ex-gozen-hachiji-desu',
+      'ex-gogo-kuji-desu',
+    ],
+    commonMistakes: [
+      'Dropping です in a polite time answer when the lesson is teaching the basic pattern.',
+      'Using a schedule sentence with に when the line is only asking or telling the current time.',
+      'Treating なんじ as a noun and moving it into unnatural English-style order.',
+    ],
+    drills: [
+      {
+        id: 'drill-time-nanji-1',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "What time is it?"',
+        answer: 'なんじですか。',
+        choices: ['なんじにですか。', 'なんじですか。', 'ですかなんじ。'],
+      },
+      {
+        id: 'drill-time-nanji-2',
+        type: 'fill-in',
+        prompt: 'Complete the sentence: しちじ___。',
+        answer: 'です',
+        support: 'Use the polite copula to finish a simple time answer.',
+      },
+    ],
+  },
+  {
+    id: 'grammar-time-ni-schedule',
+    title: 'Use time with に in simple schedule lines',
+    objective:
+      'Say what time you do something in short daily routine and schedule lines.',
+    explanation:
+      'Put the time before に, then finish with the action, as in はちじにがっこうにいきます or くじににほんごをべんきょうします. This is a high-value beginner pattern for routines, plans, and class schedules.',
+    prerequisites: ['grammar-time-nanji-desu'],
+    tags: ['time', 'particles', 'schedule', 'n5'],
+    exampleIds: [
+      'ex-hachiji-ni-gakkou-ikimasu',
+      'ex-kuji-ni-nihongo-benkyoushimasu',
+      'ex-asa-shichiji-ni-okimasu',
+      'ex-yoru-juuji-ni-nemasu',
+    ],
+    commonMistakes: [
+      'Leaving out に after the time expression in a schedule sentence.',
+      'Using で after the time instead of に.',
+      'Putting the action before the time phrase instead of keeping the time phrase earlier in the line.',
+    ],
+    drills: [
+      {
+        id: 'drill-time-schedule-1',
+        type: 'reorder',
+        prompt: 'Reorder: はちじに / がっこうに / いきます',
+        answer: 'はちじにがっこうにいきます。',
+        support: 'Put the time phrase first, then the destination phrase, then the verb.',
+      },
+      {
+        id: 'drill-time-schedule-2',
+        type: 'multiple-choice',
+        prompt: 'Choose the natural sentence for "I study Japanese at nine o’clock."',
+        answer: 'くじににほんごをべんきょうします。',
+        choices: [
+          'くじでにほんごをべんきょうします。',
+          'くじににほんごをべんきょうします。',
+          'にほんごをくじべんきょうします。',
+        ],
+      },
+    ],
+  },
 ] satisfies GrammarLesson[];
