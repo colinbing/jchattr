@@ -237,6 +237,21 @@ export const GENERATED_LISTENING_AUDIO_REFS = [
   '/audio/listening/listening-kyou-wa-genki-janai.mp3',
   '/audio/listening/listening-kyou-wa-samui.mp3',
   '/audio/listening/listening-kono-hon-wa-omoshirokunai.mp3',
+  '/audio/listening/listening-kyou-eiga-o-miru.mp3',
+  '/audio/listening/listening-ashita-kafe-ni-iku.mp3',
+  '/audio/listening/listening-kyou-koohii-o-nomanai.mp3',
+  '/audio/listening/listening-kinou-eiga-o-mita.mp3',
+  '/audio/listening/listening-ashita-kafe-ni-iku-ka.mp3',
+  '/audio/listening/listening-asa-pan-o-tabemasu-soshite-koohii-o-nomimasu.mp3',
+  '/audio/listening/listening-byouin-ni-ikimasu-sorekara-uchi-de-yasumimasu.mp3',
+  '/audio/listening/listening-ame-desu-demo-ikimasu.mp3',
+  '/audio/listening/listening-kyou-wa-atama-ga-itai-desu-dakara-uchi-de-yasumimasu.mp3',
+  '/audio/listening/listening-densha-ga-okuremasu-dakara-sugu-renrakushimasu.mp3',
+  '/audio/listening/listening-pan-to-koohii-o-kaimasu.mp3',
+  '/audio/listening/listening-koohii-to-ocha-ga-suki-desu.mp3',
+  '/audio/listening/listening-pan-ya-keeki-o-tabemasu.mp3',
+  '/audio/listening/listening-kamera-ya-hon-o-kaimasu.mp3',
+  '/audio/listening/listening-pan-to-keeki-to-koohii-o-kaimasu.mp3',
 ] as const;
 
 export function getListeningAudioStatus() {
