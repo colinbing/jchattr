@@ -8,6 +8,7 @@ type KanaAssistTextareaProps = {
   value: string;
   onChange: (value: string) => void;
   onInteraction?: () => void;
+  onSubmitShortcut?: () => void;
 };
 
 export function KanaAssistTextarea({
@@ -17,6 +18,7 @@ export function KanaAssistTextarea({
   value,
   onChange,
   onInteraction,
+  onSubmitShortcut,
 }: KanaAssistTextareaProps) {
   const [assistEnabled, setAssistEnabled] = useState(true);
 
@@ -43,6 +45,12 @@ export function KanaAssistTextarea({
               ? convertRomajiToKana(event.target.value)
               : event.target.value,
           );
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && !event.shiftKey && onSubmitShortcut) {
+            event.preventDefault();
+            onSubmitShortcut();
+          }
         }}
         rows={rows}
         placeholder={placeholder}

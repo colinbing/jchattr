@@ -70,7 +70,7 @@ export function ListeningMissionPlayer({
     <div className="mission-player-shell">
       <SurfaceCard
         title="Mission overview"
-        description="Work through one listening item at a time with staged reveal. Progress stays local to this page for now."
+        description="Work through one listening item at a time with a guess-first flow and progressive hints. Progress stays local to this page for now."
       >
         <div className="mission-overview">
           <div className="mission-overview__lesson">
@@ -177,7 +177,7 @@ export function ListeningMissionPlayer({
       {(primaryLesson || relatedExamples.length > 0) ? (
         <SurfaceCard
           title="Pattern support"
-          description="Use the linked grammar and examples as a compact reference after the reveal pass."
+          description="Use the linked grammar and examples as a compact reference after you have already taken your first guess."
         >
           <div className="listening-support">
             {primaryLesson ? (
@@ -229,9 +229,10 @@ function ListeningItemPanel({
   choicePool,
   onCleared,
 }: ListeningItemPanelProps) {
+  const readingMatchesTranscript = item.reading.trim() === item.transcript.trim();
   const [revealed, setRevealed] = useState<Record<RevealKey, boolean>>({
     transcript: false,
-    reading: false,
+    reading: readingMatchesTranscript,
     translation: false,
     focus: false,
   });
@@ -268,53 +269,142 @@ function ListeningItemPanel({
       <ListeningAudioCard item={item} />
 
       <div className="listening-prompt-card">
-        <p className="mission-copy-block__eyebrow">First pass</p>
+        <p className="mission-copy-block__eyebrow">Answer first</p>
         <p className="mission-copy-block__body">
-          Starter content is transcript-first, so keep the flow strict: reveal one layer,
-          pause, and then move to the next.
+          Try the quick check before you reveal the meaning. If you need help, open hints one layer
+          at a time instead of exposing everything at once.
         </p>
       </div>
 
-      <div className="listening-reveal-controls">
-        <button
-          type="button"
-          className={`listening-reveal-button${
-            revealed.transcript ? ' listening-reveal-button--complete' : ''
-          }`}
-          onClick={() => reveal('transcript')}
-        >
-          Reveal transcript
-        </button>
-        <button
-          type="button"
-          className={`listening-reveal-button${
-            revealed.reading ? ' listening-reveal-button--complete' : ''
-          }`}
-          onClick={() => reveal('reading')}
-          disabled={!revealed.transcript}
-        >
-          Reveal reading
-        </button>
-        <button
-          type="button"
-          className={`listening-reveal-button${
-            revealed.translation ? ' listening-reveal-button--complete' : ''
-          }`}
-          onClick={() => reveal('translation')}
-          disabled={!revealed.reading}
-        >
-          Reveal translation
-        </button>
-        <button
-          type="button"
-          className={`listening-reveal-button${
-            revealed.focus ? ' listening-reveal-button--complete' : ''
-          }`}
-          onClick={() => reveal('focus')}
-          disabled={!revealed.translation}
-        >
-          Reveal focus point
-        </button>
+      <div className="mission-drill-card">
+        <div className="mission-drill-card__header">
+          <p className="mission-drill-card__eyebrow">Quick check</p>
+          <h3 className="mission-drill-card__prompt">
+            Which English meaning matches this line?
+          </h3>
+          <p className="mission-drill-card__support">
+            Audio first if you want it, then guess. Use the hint controls below only when you need
+            them.
+          </p>
+        </div>
+
+        <div className="mission-drill-card__body">
+          <div className="mission-choice-grid">
+            {translationChoices.map((choice) => {
+              const isSelected = selectedChoice === choice;
+
+              return (
+                <button
+                  key={choice}
+                  type="button"
+                  className={`mission-choice${
+                    isSelected ? ' mission-choice--selected' : ''
+                  }`}
+                  onClick={() => {
+                    setSelectedChoice(choice);
+                    setFeedback(null);
+                  }}
+                >
+                  {choice}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mission-drill-card__actions">
+            <button
+              type="button"
+              className="mission-button"
+              onClick={submitCheck}
+              disabled={!selectedChoice}
+            >
+              Check answer
+            </button>
+            <button
+              type="button"
+              className="mission-button mission-button--secondary"
+              onClick={() => {
+                setSelectedChoice('');
+                setFeedback(null);
+              }}
+            >
+              Reset
+            </button>
+          </div>
+
+          {feedback ? (
+            <div
+              className={`mission-feedback mission-feedback--${feedback}`}
+              role="status"
+              aria-live="polite"
+            >
+              <p className="mission-feedback__title">
+                {feedback === 'correct' ? 'Correct.' : 'Not quite.'}
+              </p>
+              <p className="mission-feedback__body">
+                {feedback === 'correct'
+                  ? revealed.translation || revealed.focus || revealed.transcript
+                    ? 'The meaning matches the line. You got there after using hints.'
+                    : 'The meaning matches the line. Nice first-pass recognition.'
+                  : `Correct answer: ${item.translation}`}
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="listening-hint-panel">
+        <div className="listening-hint-panel__copy">
+          <p className="mission-copy-block__eyebrow">Need a hint?</p>
+          <p className="mission-copy-block__body">
+            Reveal only the next layer you need. Meaning and focus stay last so the answer does not
+            sit in front of the check by default.
+          </p>
+        </div>
+
+        <div className="listening-reveal-controls">
+          <button
+            type="button"
+            className={`listening-reveal-button${
+              revealed.transcript ? ' listening-reveal-button--complete' : ''
+            }`}
+            onClick={() => reveal('transcript')}
+          >
+            Reveal transcript hint
+          </button>
+          {!readingMatchesTranscript ? (
+            <button
+              type="button"
+              className={`listening-reveal-button${
+                revealed.reading ? ' listening-reveal-button--complete' : ''
+              }`}
+              onClick={() => reveal('reading')}
+              disabled={!revealed.transcript}
+            >
+              Reveal reading hint
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className={`listening-reveal-button${
+              revealed.translation ? ' listening-reveal-button--complete' : ''
+            }`}
+            onClick={() => reveal('translation')}
+            disabled={!revealed.transcript}
+          >
+            Reveal meaning hint
+          </button>
+          <button
+            type="button"
+            className={`listening-reveal-button${
+              revealed.focus ? ' listening-reveal-button--complete' : ''
+            }`}
+            onClick={() => reveal('focus')}
+            disabled={!revealed.translation}
+          >
+            Reveal pattern hint
+          </button>
+        </div>
       </div>
 
       <div className="listening-reveal-stack">
@@ -323,95 +413,24 @@ function ListeningItemPanel({
           isVisible={revealed.transcript}
           value={item.transcript}
         />
+        {!readingMatchesTranscript ? (
+          <RevealBlock
+            label="Reading"
+            isVisible={revealed.reading}
+            value={item.reading}
+          />
+        ) : null}
         <RevealBlock
-          label="Reading"
-          isVisible={revealed.reading}
-          value={item.reading}
-        />
-        <RevealBlock
-          label="Translation"
+          label="Meaning hint"
           isVisible={revealed.translation}
           value={item.translation}
         />
         <RevealBlock
-          label="Focus point"
+          label="Pattern hint"
           isVisible={revealed.focus}
           value={item.focusPoint}
         />
       </div>
-
-      {revealed.focus ? (
-        <div className="mission-drill-card">
-          <div className="mission-drill-card__header">
-            <p className="mission-drill-card__eyebrow">Quick check</p>
-            <h3 className="mission-drill-card__prompt">
-              Which English meaning matches this line?
-            </h3>
-          </div>
-
-          <div className="mission-drill-card__body">
-            <div className="mission-choice-grid">
-              {translationChoices.map((choice) => {
-                const isSelected = selectedChoice === choice;
-
-                return (
-                  <button
-                    key={choice}
-                    type="button"
-                    className={`mission-choice${
-                      isSelected ? ' mission-choice--selected' : ''
-                    }`}
-                    onClick={() => {
-                      setSelectedChoice(choice);
-                      setFeedback(null);
-                    }}
-                  >
-                    {choice}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mission-drill-card__actions">
-              <button
-                type="button"
-                className="mission-button"
-                onClick={submitCheck}
-                disabled={!selectedChoice}
-              >
-                Check answer
-              </button>
-              <button
-                type="button"
-                className="mission-button mission-button--secondary"
-                onClick={() => {
-                  setSelectedChoice('');
-                  setFeedback(null);
-                }}
-              >
-                Reset
-              </button>
-            </div>
-
-            {feedback ? (
-              <div
-                className={`mission-feedback mission-feedback--${feedback}`}
-                role="status"
-                aria-live="polite"
-              >
-                <p className="mission-feedback__title">
-                  {feedback === 'correct' ? 'Correct.' : 'Not quite.'}
-                </p>
-                <p className="mission-feedback__body">
-                  {feedback === 'correct'
-                    ? 'The meaning matches the line you revealed.'
-                    : `Correct answer: ${item.translation}`}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

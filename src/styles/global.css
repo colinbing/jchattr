@@ -1065,7 +1065,9 @@ button {
 
 .listening-item-panel,
 .listening-support,
-.listening-reveal-stack {
+.listening-reveal-stack,
+.listening-hint-panel,
+.listening-hint-panel__copy {
   display: grid;
   gap: var(--space-4);
 }

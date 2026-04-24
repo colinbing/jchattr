@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -34,7 +34,12 @@ export function OutputMissionPlayer({
   relatedExamples,
   relatedVocab,
 }: OutputMissionPlayerProps) {
+  const navigate = useNavigate();
   const [clearedTaskIds, setClearedTaskIds] = useState<string[]>([]);
+  const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
+  const [feedbackByTaskId, setFeedbackByTaskId] = useState<
+    Record<string, OutputEvaluationResult | null>
+  >({});
   const [currentTaskIndex, setCurrentTaskIndex] = useState(() => {
     return (
       resolveContinueStepIndex(readContinueState(), mission.id, mission.type, tasks.length - 1) ??
@@ -42,6 +47,8 @@ export function OutputMissionPlayer({
     );
   });
   const currentTask = tasks[currentTaskIndex];
+  const currentResponse = responsesByTaskId[currentTask.id] ?? '';
+  const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / tasks.length) * 100;
 
   useEffect(() => {
@@ -64,11 +71,39 @@ export function OutputMissionPlayer({
     );
   }
 
+  function updateTaskResponse(taskId: string, response: string) {
+    setResponsesByTaskId((current) => ({
+      ...current,
+      [taskId]: response,
+    }));
+  }
+
+  function updateTaskFeedback(taskId: string, feedback: OutputEvaluationResult | null) {
+    setFeedbackByTaskId((current) => ({
+      ...current,
+      [taskId]: feedback,
+    }));
+  }
+
+  function resetTask(taskId: string) {
+    updateTaskResponse(taskId, '');
+    updateTaskFeedback(taskId, null);
+  }
+
+  function goToNextTask() {
+    if (currentTaskIndex < tasks.length - 1) {
+      setCurrentTaskIndex((index) => Math.min(tasks.length - 1, index + 1));
+      return;
+    }
+
+    navigate('/');
+  }
+
   return (
     <div className="mission-player-shell">
       <SurfaceCard
         title="Mission overview"
-        description="Write short lines with linked grammar support nearby. Progress stays local to this page for now."
+        description="Write short lines with linked grammar support nearby. Drafts now stay task-local, and Enter can submit the current answer. Progress stays local to this page for now."
       >
         <div className="mission-overview">
           <div className="mission-overview__lesson">
@@ -124,13 +159,20 @@ export function OutputMissionPlayer({
 
       <SurfaceCard
         title={`Output task ${currentTaskIndex + 1}`}
-        description="Keep the answer short and clean. Evaluation stays local and rule-based, with light pattern feedback when you are close."
+        description="Keep the answer short and clean. Evaluation stays local and rule-based, with task-local drafts and a direct check-to-next flow."
       >
         <div className="mission-step-panel">
           <OutputTaskCard
             missionId={mission.id}
             task={currentTask}
+            response={currentResponse}
+            feedback={currentFeedback}
+            onResponseChange={updateTaskResponse}
+            onFeedbackChange={updateTaskFeedback}
             onCleared={handleTaskCleared}
+            onReset={resetTask}
+            onAdvance={goToNextTask}
+            hasNextTask={currentTaskIndex < tasks.length - 1}
           />
           <p className="list-meta">
             Cleared {clearedTaskIds.length} of {tasks.length} output tasks in this pass.
@@ -145,19 +187,21 @@ export function OutputMissionPlayer({
             >
               Previous task
             </button>
-            {currentTaskIndex < tasks.length - 1 ? (
-              <button
-                type="button"
-                className="mission-button"
-                onClick={() => setCurrentTaskIndex((index) => Math.min(tasks.length - 1, index + 1))}
-              >
-                Next task
-              </button>
-            ) : (
-              <Link to="/" className="mission-button mission-button--link">
-                Back to today
-              </Link>
-            )}
+            {!currentFeedback ? (
+              currentTaskIndex < tasks.length - 1 ? (
+                <button
+                  type="button"
+                  className="mission-button"
+                  onClick={() => setCurrentTaskIndex((index) => Math.min(tasks.length - 1, index + 1))}
+                >
+                  Skip for now
+                </button>
+              ) : (
+                <Link to="/" className="mission-button mission-button--link">
+                  Back to today
+                </Link>
+              )
+            ) : null}
           </div>
         </div>
       </SurfaceCard>
@@ -217,13 +261,28 @@ export function OutputMissionPlayer({
 type OutputTaskCardProps = {
   missionId: string;
   task: OutputTask;
+  response: string;
+  feedback: OutputEvaluationResult | null;
+  onResponseChange: (taskId: string, response: string) => void;
+  onFeedbackChange: (taskId: string, feedback: OutputEvaluationResult | null) => void;
   onCleared: (taskId: string) => void;
+  onReset: (taskId: string) => void;
+  onAdvance: () => void;
+  hasNextTask: boolean;
 };
 
-function OutputTaskCard({ missionId, task, onCleared }: OutputTaskCardProps) {
-  const [response, setResponse] = useState('');
-  const [feedback, setFeedback] = useState<OutputEvaluationResult | null>(null);
-
+function OutputTaskCard({
+  missionId,
+  task,
+  response,
+  feedback,
+  onResponseChange,
+  onFeedbackChange,
+  onCleared,
+  onReset,
+  onAdvance,
+  hasNextTask,
+}: OutputTaskCardProps) {
   function submitAnswer() {
     if (!response.trim()) {
       return;
@@ -240,13 +299,8 @@ function OutputTaskCard({ missionId, task, onCleared }: OutputTaskCardProps) {
       });
     }
 
-    setFeedback(nextFeedback);
+    onFeedbackChange(task.id, nextFeedback);
     onCleared(task.id);
-  }
-
-  function resetAnswer() {
-    setResponse('');
-    setFeedback(null);
   }
 
   return (
@@ -266,28 +320,50 @@ function OutputTaskCard({ missionId, task, onCleared }: OutputTaskCardProps) {
       <KanaAssistTextarea
         label="Your Japanese line"
         value={response}
-        onChange={setResponse}
-        onInteraction={() => setFeedback(null)}
+        onChange={(value) => onResponseChange(task.id, value)}
+        onInteraction={() => onFeedbackChange(task.id, null)}
+        onSubmitShortcut={feedback ? onAdvance : submitAnswer}
         rows={3}
-        placeholder="Type your line in Japanese"
+        placeholder="Type your line in Japanese. Press Enter to check, Shift+Enter for a new line."
       />
 
       <div className="mission-drill-card__actions">
-        <button
-          type="button"
-          className="mission-button"
-          onClick={submitAnswer}
-          disabled={!response.trim()}
-        >
-          Check answer
-        </button>
-        <button
-          type="button"
-          className="mission-button mission-button--secondary"
-          onClick={resetAnswer}
-        >
-          Reset
-        </button>
+        {feedback ? (
+          <>
+            <button
+              type="button"
+              className="mission-button"
+              onClick={onAdvance}
+            >
+              {hasNextTask ? 'Next task' : 'Back to today'}
+            </button>
+            <button
+              type="button"
+              className="mission-button mission-button--secondary"
+              onClick={() => onFeedbackChange(task.id, null)}
+            >
+              Edit answer
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="mission-button"
+              onClick={submitAnswer}
+              disabled={!response.trim()}
+            >
+              Check answer
+            </button>
+            <button
+              type="button"
+              className="mission-button mission-button--secondary"
+              onClick={() => onReset(task.id)}
+            >
+              Reset
+            </button>
+          </>
+        )}
       </div>
 
       {feedback ? (
@@ -299,7 +375,7 @@ function OutputTaskCard({ missionId, task, onCleared }: OutputTaskCardProps) {
           <p className="mission-feedback__title">{feedback.title}</p>
           <p className="mission-feedback__body">
             {feedback.isAccepted
-              ? feedback.message
+              ? `${feedback.message} ${hasNextTask ? 'Use the main button to move straight to the next task.' : 'Use the main button to finish the mission.'}`
               : `${feedback.message} Expected pattern: ${feedback.expectedAnswer}`}
           </p>
         </div>

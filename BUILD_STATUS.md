@@ -8,12 +8,12 @@
 ## Current Phase / Status
 
 - Phase: Phase 4 started
-- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, and the first three post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, and mission-library presentation
-- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, less ambiguous completion behavior, and a cleaner mission-library browsing model; the next material work is mission-flow polish and then deeper personalization rather than missing core N5 study surfaces
+- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, and the first four post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, and the first drill-flow polish on listening plus output
+- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, less ambiguous completion behavior, a cleaner mission-library browsing model, and less friction in two of the highest-frequency mission types; the next material work is extending drill-flow polish across the remaining mission types and then deeper personalization rather than missing core N5 study surfaces
 
 ## Current Objective
 
-- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, mission auto-complete, and single-active-chapter Missions view as the Phase 4 baseline, then iterate on mission-flow friction before deeper adaptive recommendation work.
+- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, and the new listening/output drill flow as the Phase 4 baseline, then extend mission-flow polish across the remaining mission types before deeper adaptive recommendation work.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -153,6 +153,7 @@
 - Phase 4 entry slice that reorganizes the mission library into five-pack progression chapters plus a separate reading lane, reframes Today into a core daily plan versus optional bonus practice, and removes the duplicate shell-level page header so one navigation/context system owns the page structure
 - Phase 4 follow-up slice that auto-completes grammar, listening, output, and reading missions once all drills or checks in the current pass are cleared, clears continue-state on auto-complete, and makes that saved completion rule visible inside mission players plus the Today and Missions surfaces
 - Phase 4 presentation slice that replaces the provisional all-open grouped Missions stack with a single-active-chapter library format, uses a horizontal chapter switcher plus one visible chapter at a time, and keeps the reading lane inside the same navigation model without forcing the user through a long two-column archive view
+- Phase 4 drill-flow slice for listening and output that moves listening checks ahead of full meaning reveal, turns reveals into progressive hints, removes redundant reading-hint exposure when transcript and reading are identical, gives output tasks task-local draft persistence, adds Enter-to-check support, and turns the post-check primary action into direct advance rather than a separate disconnected next step
 
 ## Current App Capabilities
 
@@ -191,14 +192,17 @@
   - interactive drills
 - Listening missions currently include:
   - optional audio player if static file exists
-  - staged reveal for transcript, reading, translation, focus point
-  - one multiple-choice meaning check per listening item
+  - a guess-first multiple-choice meaning check that is available before full reveal
+  - progressive hints for transcript, reading when distinct, meaning, and focus support
+  - one local multiple-choice meaning check per listening item
 - Output missions currently include:
   - short prompt
   - optional hint
-  - textarea response
+  - task-local textarea response state that now persists per task while you move through the mission
   - optional local romaji-to-hiragana assist for Latin-keyboard entry
+  - Enter-to-check support inside the task input
   - local evaluation with normalization, explicit accepted answers, and token-pattern diagnostics for close answers
+  - a post-check primary action that advances directly to the next task instead of forcing the learner through a second unrelated next-step click
 - Typed Japanese entry currently used in grammar and output flows:
   - supports optional local romaji-to-hiragana assist
   - accepts hiragana and katakana as equivalent for answer checking
@@ -331,7 +335,7 @@
 - Mission auto-complete now works, but it is still pass-local: completion triggers when each drill or check has been cleared once in the current pass, and there is still no finer-grained saved per-item progress model inside a mission
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
-- Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
+- Listening checks are now available before full meaning reveal, but they are still translation-choice only and do not yet score audio-only comprehension separately from hint-assisted recognition
 - Reading slice is still intentionally small: 49 reading missions with 245 total multiple-choice checks, all built from existing example sentences
 - Reading reuse is lighter than the total example inventory but no longer a blocking claim-gate weakness: 232 of 731 example sentences are currently reused in reading, with the new weakest pocket now at pack `31` (`24%`) and the next cluster at `25%` across packs `9`, `11`, `13`, and `17`
 - Mission-library presentation is now stronger and explicitly chosen as a single-active-chapter sequence, but recommendation weighting and adaptive personalization logic are still intentionally simple and deterministic
@@ -367,9 +371,9 @@
 
 ## Next Recommended Slices
 
-1. Run a drill-type UX pass across grammar, listening, output, and reading so each mission player has cleaner step transitions, clearer feedback, and less ambiguity about what to do next after auto-complete.
-2. Use that pass to address the first documented mission-flow friction points already identified in listening and output, especially reveal/check ordering, hint leakage, Enter-to-check behavior, task-local input state, and check-to-next transitions.
-3. After the core drill flow is tighter, begin deeper Phase 4 personalization work such as confusion-pair tracking, preferred-mode weighting, and stronger mission selection relevance.
+1. Extend the drill-type UX pass across grammar and reading so the remaining mission players catch up to the cleaner flow now present in listening and output.
+2. Revisit the new listening and output flow with a smaller polish pass once the rest of the mission types are aligned, especially around audio-first scoring, hint timing, and whether the same check-to-advance pattern should propagate into review mode.
+3. After the core drill flow is tighter across every mission type, begin deeper Phase 4 personalization work such as confusion-pair tracking, preferred-mode weighting, and stronger mission selection relevance.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
@@ -378,8 +382,8 @@
 - Mission completion behavior: completed in this slice via automatic mission completion once all drills/checks in a mission pass are cleared, with that saved status now visible in Today and Missions.
 - Mission-library presentation iteration: completed for the first major pass via a single-active-chapter format with a horizontal chapter switcher replacing the earlier grouped two-column stack.
 - Drill-type UX pass: grammar, listening, output, and reading drill flows should each get a focused interaction audit once the content footprint is stable.
-- Listening flow follow-up: staged reveal currently exposes transcript, reading, translation, and focus support above the quick check; we should evaluate earlier answer timing, progressive hints, transcript/reading redundancy, and whether support text should stay hidden until after the learner commits.
-- Output flow follow-up: output tasks should be reviewed for Enter-to-check behavior, per-task input persistence, and a cleaner post-check transition where the main action becomes the next step instead of forcing a second unrelated click.
+- Listening flow follow-up: the first pass is now guess-first with progressive hints, but we should still evaluate deeper audio-first scoring, whether meaning hints should unlock only after an answer attempt, and how much post-check support should surface automatically.
+- Output flow follow-up: task-local drafts, Enter-to-check, and check-to-next are now in place, but we should still evaluate whether the same flow should propagate into review mode and whether grammar/output should share more keyboard-forward affordances.
 - Navigation consolidation: completed in the Phase 4 entry slice by removing the duplicate shell-level page header so one navigation/context system owns the page structure.
 - End-to-end mission-flow audit: simulate each mission type as a learner, identify friction points, and tighten what the user sees, clicks, and expects at each step.
 
