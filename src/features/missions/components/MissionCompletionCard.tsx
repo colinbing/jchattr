@@ -1,30 +1,43 @@
 import { SurfaceCard } from '../../../components/layout/PageShell';
-import { clearContinueState } from '../../../lib/progress/continueState';
 import {
   getMissionProgressEntry,
-  markMissionComplete,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
 
 type MissionCompletionCardProps = {
   missionId: string;
+  clearedCount: number;
+  totalCount: number;
+  unitLabel: string;
 };
 
 export function MissionCompletionCard({
   missionId,
+  clearedCount,
+  totalCount,
+  unitLabel,
 }: MissionCompletionCardProps) {
   const progress = useMissionProgress();
   const completion = getMissionProgressEntry(progress, missionId);
+  const isAutoCompleteReady = totalCount > 0 && clearedCount >= totalCount;
 
   return (
     <SurfaceCard
       title="Completion"
-      description="Completion is manual for now. Mark the mission complete when you decide the pass is finished."
+      description="This mission now completes automatically when you clear every drill or check in the current pass."
     >
       <div className="mission-completion-card">
         <div className="mission-completion-card__summary">
           <p className="mission-completion-card__status">
-            {completion.isCompleted ? 'Completed on this device' : 'Not completed yet'}
+            {completion.isCompleted
+              ? isAutoCompleteReady
+                ? 'Completed automatically in this pass'
+                : 'Completed on this device'
+              : 'In progress'}
+          </p>
+          <p className="mission-completion-card__meta">
+            Cleared {Math.min(clearedCount, totalCount)} of {totalCount} {unitLabel}
+            {totalCount === 1 ? '' : 's'} in this pass
           </p>
           <p className="mission-completion-card__meta">
             {completion.completionCount > 0
@@ -39,17 +52,6 @@ export function MissionCompletionCard({
             </p>
           ) : null}
         </div>
-
-        <button
-          type="button"
-          className="mission-button"
-          onClick={() => {
-            markMissionComplete(missionId);
-            clearContinueState(missionId);
-          }}
-        >
-          {completion.isCompleted ? 'Mark complete again' : 'Mark complete'}
-        </button>
       </div>
     </SurfaceCard>
   );

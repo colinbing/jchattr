@@ -17,6 +17,7 @@ import {
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type OutputMissionPlayerProps = {
   mission: Mission;
@@ -33,6 +34,7 @@ export function OutputMissionPlayer({
   relatedExamples,
   relatedVocab,
 }: OutputMissionPlayerProps) {
+  const [clearedTaskIds, setClearedTaskIds] = useState<string[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(() => {
     return (
       resolveContinueStepIndex(readContinueState(), mission.id, mission.type, tasks.length - 1) ??
@@ -49,6 +51,18 @@ export function OutputMissionPlayer({
       stepIndex: currentTaskIndex,
     });
   }, [currentTaskIndex, mission.id, mission.type]);
+
+  useMissionAutoComplete({
+    missionId: mission.id,
+    clearedCount: clearedTaskIds.length,
+    totalCount: tasks.length,
+  });
+
+  function handleTaskCleared(taskId: string) {
+    setClearedTaskIds((currentIds) =>
+      currentIds.includes(taskId) ? currentIds : [...currentIds, taskId],
+    );
+  }
 
   return (
     <div className="mission-player-shell">
@@ -113,7 +127,14 @@ export function OutputMissionPlayer({
         description="Keep the answer short and clean. Evaluation stays local and rule-based, with light pattern feedback when you are close."
       >
         <div className="mission-step-panel">
-          <OutputTaskCard missionId={mission.id} task={currentTask} />
+          <OutputTaskCard
+            missionId={mission.id}
+            task={currentTask}
+            onCleared={handleTaskCleared}
+          />
+          <p className="list-meta">
+            Cleared {clearedTaskIds.length} of {tasks.length} output tasks in this pass.
+          </p>
 
           <div className="mission-step-actions">
             <button
@@ -183,7 +204,12 @@ export function OutputMissionPlayer({
         ) : null}
       </SurfaceCard>
 
-      <MissionCompletionCard missionId={mission.id} />
+      <MissionCompletionCard
+        missionId={mission.id}
+        clearedCount={clearedTaskIds.length}
+        totalCount={tasks.length}
+        unitLabel="output task"
+      />
     </div>
   );
 }
@@ -191,9 +217,10 @@ export function OutputMissionPlayer({
 type OutputTaskCardProps = {
   missionId: string;
   task: OutputTask;
+  onCleared: (taskId: string) => void;
 };
 
-function OutputTaskCard({ missionId, task }: OutputTaskCardProps) {
+function OutputTaskCard({ missionId, task, onCleared }: OutputTaskCardProps) {
   const [response, setResponse] = useState('');
   const [feedback, setFeedback] = useState<OutputEvaluationResult | null>(null);
 
@@ -214,6 +241,7 @@ function OutputTaskCard({ missionId, task }: OutputTaskCardProps) {
     }
 
     setFeedback(nextFeedback);
+    onCleared(task.id);
   }
 
   function resetAnswer() {

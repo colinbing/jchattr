@@ -14,6 +14,7 @@ import {
 } from '../../../lib/progress/continueState';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type ListeningMissionPlayerProps = {
   mission: Mission;
@@ -30,6 +31,7 @@ export function ListeningMissionPlayer({
   relatedExamples,
   choicePool,
 }: ListeningMissionPlayerProps) {
+  const [clearedItemIds, setClearedItemIds] = useState<string[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(() => {
     return (
       resolveContinueStepIndex(
@@ -51,6 +53,18 @@ export function ListeningMissionPlayer({
       stepIndex: currentItemIndex,
     });
   }, [currentItemIndex, mission.id, mission.type]);
+
+  useMissionAutoComplete({
+    missionId: mission.id,
+    clearedCount: clearedItemIds.length,
+    totalCount: listeningItems.length,
+  });
+
+  function handleItemCleared(itemId: string) {
+    setClearedItemIds((currentIds) =>
+      currentIds.includes(itemId) ? currentIds : [...currentIds, itemId],
+    );
+  }
 
   return (
     <div className="mission-player-shell">
@@ -124,7 +138,11 @@ export function ListeningMissionPlayer({
             missionId={mission.id}
             item={currentItem}
             choicePool={choicePool}
+            onCleared={handleItemCleared}
           />
+          <p className="list-meta">
+            Cleared {clearedItemIds.length} of {listeningItems.length} listening checks in this pass.
+          </p>
 
           <div className="mission-step-actions">
             <button
@@ -185,7 +203,12 @@ export function ListeningMissionPlayer({
         </SurfaceCard>
       ) : null}
 
-      <MissionCompletionCard missionId={mission.id} />
+      <MissionCompletionCard
+        missionId={mission.id}
+        clearedCount={clearedItemIds.length}
+        totalCount={listeningItems.length}
+        unitLabel="listening check"
+      />
     </div>
   );
 }
@@ -194,6 +217,7 @@ type ListeningItemPanelProps = {
   missionId: string;
   item: ListeningItem;
   choicePool: ListeningItem[];
+  onCleared: (itemId: string) => void;
 };
 
 type ListeningFeedback = 'correct' | 'incorrect' | null;
@@ -203,6 +227,7 @@ function ListeningItemPanel({
   missionId,
   item,
   choicePool,
+  onCleared,
 }: ListeningItemPanelProps) {
   const [revealed, setRevealed] = useState<Record<RevealKey, boolean>>({
     transcript: false,
@@ -235,6 +260,7 @@ function ListeningItemPanel({
     }
 
     setFeedback(nextFeedback);
+    onCleared(item.id);
   }
 
   return (

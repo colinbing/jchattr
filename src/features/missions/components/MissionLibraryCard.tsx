@@ -91,7 +91,7 @@ export function MissionLibraryCard({
               ? `Completed ${progress.completionCount} time${
                   progress.completionCount === 1 ? '' : 's'
                 }`
-              : 'No saved completions yet'}
+              : 'No saved completions yet. Completion saves automatically after you clear every drill or check.'}
           </li>
           <li>
             {weakPointCount > 0

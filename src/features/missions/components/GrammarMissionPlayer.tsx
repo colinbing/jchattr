@@ -16,6 +16,7 @@ import {
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 const missionSteps = [
   {
@@ -58,6 +59,7 @@ export function GrammarMissionPlayer({
   lesson,
   examples,
 }: GrammarMissionPlayerProps) {
+  const [clearedDrillIds, setClearedDrillIds] = useState<string[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(() => {
     return (
       resolveContinueStepIndex(
@@ -78,6 +80,18 @@ export function GrammarMissionPlayer({
       stepIndex: currentStepIndex,
     });
   }, [currentStepIndex, mission.id, mission.type]);
+
+  useMissionAutoComplete({
+    missionId: mission.id,
+    clearedCount: clearedDrillIds.length,
+    totalCount: lesson.drills.length,
+  });
+
+  function handleDrillCleared(drillId: string) {
+    setClearedDrillIds((currentIds) =>
+      currentIds.includes(drillId) ? currentIds : [...currentIds, drillId],
+    );
+  }
 
   return (
     <div className="mission-player-shell">
@@ -156,7 +170,18 @@ export function GrammarMissionPlayer({
 
       <SurfaceCard title={currentStep.title} description={currentStep.description}>
         <div className="mission-step-panel">
-          {renderStepContent(currentStep.id, mission, lesson, examples)}
+          {renderStepContent(
+            currentStep.id,
+            mission,
+            lesson,
+            examples,
+            handleDrillCleared,
+          )}
+          {currentStep.id === 'drills' ? (
+            <p className="list-meta">
+              Cleared {clearedDrillIds.length} of {lesson.drills.length} drills in this pass.
+            </p>
+          ) : null}
           <div className="mission-step-actions">
             <button
               type="button"
@@ -187,7 +212,12 @@ export function GrammarMissionPlayer({
         </div>
       </SurfaceCard>
 
-      <MissionCompletionCard missionId={mission.id} />
+      <MissionCompletionCard
+        missionId={mission.id}
+        clearedCount={clearedDrillIds.length}
+        totalCount={lesson.drills.length}
+        unitLabel="drill"
+      />
     </div>
   );
 }
@@ -197,6 +227,7 @@ function renderStepContent(
   mission: Mission,
   lesson: GrammarLesson,
   examples: ExampleSentence[],
+  onDrillCleared: (drillId: string) => void,
 ) {
   switch (stepId) {
     case 'intro':
@@ -244,6 +275,7 @@ function renderStepContent(
               lessonId={lesson.id}
               drill={drill}
               index={index}
+              onCleared={onDrillCleared}
             />
           ))}
         </div>
@@ -256,9 +288,10 @@ type DrillCardProps = {
   lessonId: string;
   drill: GrammarDrill;
   index: number;
+  onCleared: (drillId: string) => void;
 };
 
-function DrillCard({ missionId, lessonId, drill, index }: DrillCardProps) {
+function DrillCard({ missionId, lessonId, drill, index, onCleared }: DrillCardProps) {
   const reorderTokens = getReorderTokens(drill);
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -294,6 +327,7 @@ function DrillCard({ missionId, lessonId, drill, index }: DrillCardProps) {
     }
 
     setFeedback(nextFeedback);
+    onCleared(drill.id);
   }
 
   function resetAnswer() {

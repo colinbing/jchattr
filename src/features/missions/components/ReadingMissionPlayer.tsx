@@ -9,6 +9,7 @@ import {
 } from '../../../lib/progress/continueState';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type ReadingMissionPlayerProps = {
   mission: Mission;
@@ -23,6 +24,7 @@ export function ReadingMissionPlayer({
   checks,
   examplesById,
 }: ReadingMissionPlayerProps) {
+  const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
       resolveContinueStepIndex(
@@ -44,6 +46,18 @@ export function ReadingMissionPlayer({
       stepIndex: currentCheckIndex,
     });
   }, [currentCheckIndex, mission.id, mission.type]);
+
+  useMissionAutoComplete({
+    missionId: mission.id,
+    clearedCount: clearedCheckIds.length,
+    totalCount: checks.length,
+  });
+
+  function handleCheckCleared(checkId: string) {
+    setClearedCheckIds((currentIds) =>
+      currentIds.includes(checkId) ? currentIds : [...currentIds, checkId],
+    );
+  }
 
   return (
     <div className="mission-player-shell">
@@ -113,7 +127,11 @@ export function ReadingMissionPlayer({
             missionId={mission.id}
             check={currentCheck}
             example={currentExample}
+            onCleared={handleCheckCleared}
           />
+          <p className="list-meta">
+            Cleared {clearedCheckIds.length} of {checks.length} reading checks in this pass.
+          </p>
 
           <div className="mission-step-actions">
             <button
@@ -141,7 +159,12 @@ export function ReadingMissionPlayer({
         </div>
       </SurfaceCard>
 
-      <MissionCompletionCard missionId={mission.id} />
+      <MissionCompletionCard
+        missionId={mission.id}
+        clearedCount={clearedCheckIds.length}
+        totalCount={checks.length}
+        unitLabel="reading check"
+      />
     </div>
   );
 }
@@ -150,12 +173,14 @@ type ReadingCheckCardProps = {
   missionId: string;
   check: ReadingCheck;
   example: ExampleSentence;
+  onCleared: (checkId: string) => void;
 };
 
 function ReadingCheckCard({
   missionId,
   check,
   example,
+  onCleared,
 }: ReadingCheckCardProps) {
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReadingCheckFeedback>(null);
@@ -178,6 +203,7 @@ function ReadingCheckCard({
     }
 
     setFeedback(nextFeedback);
+    onCleared(check.id);
   }
 
   return (

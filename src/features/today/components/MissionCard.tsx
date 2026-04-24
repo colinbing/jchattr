@@ -43,7 +43,7 @@ export function MissionCard({ mission, progress }: MissionCardProps) {
             ? `Completed ${progress.completionCount} time${
                 progress.completionCount === 1 ? '' : 's'
               }`
-            : 'Not completed yet'}
+            : 'Not completed yet. Completion saves automatically after you clear every drill or check.'}
         </p>
         {progress.lastCompletedAt ? (
           <p className="list-meta">

@@ -44,7 +44,7 @@ export function TodayRecommendationCard({
               ? `Completed ${progress.completionCount} time${
                   progress.completionCount === 1 ? '' : 's'
                 }`
-              : 'Unlocked and ready to start'}
+              : 'Unlocked and ready to start. Completion saves automatically after you clear every drill or check.'}
           </p>
         ) : null}
         {recommendation.kind === 'review' ? (
