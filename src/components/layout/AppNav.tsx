@@ -15,13 +15,18 @@ export function AppNav({ mode }: AppNavProps) {
         <NavLink
           key={item.to}
           to={item.to}
+          aria-label={item.label}
           className={({ isActive }) =>
             `app-nav__link${isActive ? ' app-nav__link--active' : ''}`
           }
           end={item.to === '/'}
         >
-          <span className="app-nav__label">{item.label}</span>
-          <span className="app-nav__caption">{item.caption}</span>
+          <span className="app-nav__label">
+            {mode === 'mobile' ? item.mobileLabel ?? item.label : item.label}
+          </span>
+          {mode === 'desktop' ? (
+            <span className="app-nav__caption">{item.caption}</span>
+          ) : null}
         </NavLink>
       ))}
     </nav>

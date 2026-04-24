@@ -10,6 +10,7 @@ import type {
 } from '../../../lib/content/types';
 import type { WeakPoint, WeakPointStore } from '../../../lib/progress/weakPoints';
 import { getWeakPointList } from '../../../lib/progress/weakPoints';
+import { getListeningTranslationChoices } from '../../../lib/listeningChoices';
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
 
 export const REVIEW_BATCH_SIZE = 3;
@@ -101,17 +102,14 @@ export function getReviewBatchSummary(item: ReviewBatchItem) {
   }
 }
 
-export function getListeningReviewChoices(item: ListeningItem, choicePool: ListeningItem[]) {
-  const distractors = choicePool
-    .filter((candidate) => candidate.id !== item.id && candidate.translation !== item.translation)
-    .map((candidate) => candidate.translation)
-    .filter((translation, index, array) => array.indexOf(translation) === index)
-    .slice(0, 2);
-
-  const options = [...distractors];
-  const insertIndex = getChoiceInsertIndex(item.id, options.length + 1);
-  options.splice(insertIndex, 0, item.translation);
-  return options;
+export function getListeningReviewChoices(
+  item: ListeningItem,
+  choicePool: ListeningItem[],
+  avoidTranslations: string[] = [],
+) {
+  return getListeningTranslationChoices(item, choicePool, {
+    avoidTranslations,
+  });
 }
 
 export function normalizeReviewAnswer(value: string) {
@@ -196,9 +194,4 @@ function resolveBatchItem(
     mission,
     task,
   };
-}
-
-function getChoiceInsertIndex(seed: string, optionCount: number) {
-  const total = Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return total % optionCount;
 }

@@ -1,9 +1,24 @@
-import { Outlet } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AppNav } from './AppNav';
 
 export function AppShell() {
+  const location = useLocation();
+  const isMissionDetailRoute = location.pathname.startsWith('/mission/');
+  const preserveScroll = Boolean(
+    (location.state as { preserveScroll?: boolean } | null)?.preserveScroll,
+  );
+
+  useLayoutEffect(() => {
+    if (preserveScroll) {
+      return;
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.hash, location.pathname, preserveScroll]);
+
   return (
-    <div className="app-frame">
+    <div className={`app-frame${isMissionDetailRoute ? ' app-frame--mission-detail' : ''}`}>
       <div className="app-shell">
         <aside className="app-shell__sidebar">
           <div className="brand-mark">
@@ -24,7 +39,7 @@ export function AppShell() {
         </div>
       </div>
 
-      <div className="app-mobile-nav">
+      <div className={`app-mobile-nav${isMissionDetailRoute ? ' app-mobile-nav--hidden' : ''}`}>
         <AppNav mode="mobile" />
       </div>
     </div>

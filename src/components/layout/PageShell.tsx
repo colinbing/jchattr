@@ -5,6 +5,7 @@ type PageShellProps = PropsWithChildren<{
   title: string;
   description: string;
   aside?: ReactNode;
+  variant?: 'default' | 'compact';
 }>;
 
 type SurfaceCardProps = PropsWithChildren<{
@@ -18,10 +19,15 @@ export function PageShell({
   title,
   description,
   aside,
+  variant = 'default',
   children,
 }: PageShellProps) {
   return (
-    <section className="page-shell">
+    <section
+      className={
+        variant === 'compact' ? 'page-shell page-shell--compact' : 'page-shell'
+      }
+    >
       <div className="page-shell__hero">
         <div>
           <p className="page-shell__eyebrow">{eyebrow}</p>

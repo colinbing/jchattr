@@ -7,6 +7,7 @@ import {
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
+import { hasDistinctReading } from '../../../lib/japaneseText';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
@@ -185,6 +186,7 @@ function ReadingCheckCard({
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReadingCheckFeedback>(null);
   const hasSubmitted = feedback !== null;
+  const showReading = hasDistinctReading(example.japanese, example.reading);
 
   function submitCheck() {
     if (!selectedChoice) {
@@ -276,10 +278,12 @@ function ReadingCheckCard({
 
       {hasSubmitted ? (
         <div className="reading-reveal-card">
-          <div className="reading-reveal-card__section">
-            <p className="mission-copy-block__eyebrow">Reading</p>
-            <p className="mission-copy-block__body">{example.reading}</p>
-          </div>
+          {showReading ? (
+            <div className="reading-reveal-card__section">
+              <p className="mission-copy-block__eyebrow">Reading</p>
+              <p className="mission-copy-block__body">{example.reading}</p>
+            </div>
+          ) : null}
           <div className="reading-reveal-card__section">
             <p className="mission-copy-block__eyebrow">Meaning</p>
             <p className="mission-copy-block__body">{example.english}</p>

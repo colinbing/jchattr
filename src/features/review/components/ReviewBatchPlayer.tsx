@@ -3,6 +3,7 @@ import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { GrammarDrill } from '../../../lib/content/types';
+import { hasDistinctReading } from '../../../lib/japaneseText';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import type { ReviewBatchItem } from '../lib/reviewBatch';
 import {
@@ -32,6 +33,16 @@ export function ReviewBatchPlayer({
   const allItemsAttempted = items.every((item) => resultsByItemId[item.weakPoint.itemId]);
   const progressValue = ((currentIndex + 1) / items.length) * 100;
   const summary = getReviewBatchSummary(currentItem);
+  const recentListeningTranslations = items
+    .slice(0, currentIndex)
+    .filter(
+      (
+        item,
+      ): item is Extract<ReviewBatchItem, { type: 'listening-check' }> =>
+        item.type === 'listening-check',
+    )
+    .slice(-2)
+    .map((item) => item.listeningItem.translation);
 
   const completedCount = useMemo(
     () => items.filter((item) => resultsByItemId[item.weakPoint.itemId]).length,
@@ -82,6 +93,7 @@ export function ReviewBatchPlayer({
 
           {currentItem.type === 'grammar-drill' ? (
             <GrammarReviewCard
+              key={currentItem.weakPoint.itemId}
               item={currentItem}
               onReviewed={(result) => {
                 if (
@@ -100,7 +112,9 @@ export function ReviewBatchPlayer({
 
           {currentItem.type === 'listening-check' ? (
             <ListeningReviewCard
+              key={currentItem.weakPoint.itemId}
               item={currentItem}
+              avoidTranslations={recentListeningTranslations}
               onReviewed={(result) => {
                 if (
                   result === 'correct' &&
@@ -118,6 +132,7 @@ export function ReviewBatchPlayer({
 
           {currentItem.type === 'output-task' ? (
             <OutputReviewCard
+              key={currentItem.weakPoint.itemId}
               item={currentItem}
               onReviewed={(result) => {
                 if (
@@ -136,6 +151,7 @@ export function ReviewBatchPlayer({
 
           {currentItem.type === 'reading-check' ? (
             <ReadingReviewCard
+              key={currentItem.weakPoint.itemId}
               item={currentItem}
               onReviewed={(result) => {
                 if (
@@ -331,15 +347,18 @@ function GrammarReviewCard({
 
 function ListeningReviewCard({
   item,
+  avoidTranslations,
   onReviewed,
 }: ReviewCardProps & {
   item: Extract<ReviewBatchItem, { type: 'listening-check' }>;
+  avoidTranslations: string[];
 }) {
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReviewResult | null>(null);
   const translationChoices = getListeningReviewChoices(
     item.listeningItem,
     item.choicePool,
+    avoidTranslations,
   );
 
   function submitAnswer() {
@@ -504,6 +523,7 @@ function ReadingReviewCard({
 }) {
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReviewResult | null>(null);
+  const showReading = hasDistinctReading(item.example.japanese, item.example.reading);
 
   function submitAnswer() {
     if (!selectedChoice) {
@@ -571,10 +591,12 @@ function ReadingReviewCard({
 
       {feedback ? (
         <div className="reading-reveal-card">
-          <div className="reading-reveal-card__section">
-            <p className="mission-copy-block__eyebrow">Reading</p>
-            <p className="mission-copy-block__body">{item.example.reading}</p>
-          </div>
+          {showReading ? (
+            <div className="reading-reveal-card__section">
+              <p className="mission-copy-block__eyebrow">Reading</p>
+              <p className="mission-copy-block__body">{item.example.reading}</p>
+            </div>
+          ) : null}
           <div className="reading-reveal-card__section">
             <p className="mission-copy-block__eyebrow">Meaning</p>
             <p className="mission-copy-block__body">{item.example.english}</p>

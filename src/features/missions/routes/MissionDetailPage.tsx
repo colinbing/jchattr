@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
 import type {
@@ -16,6 +16,7 @@ import { ReadingMissionPlayer } from '../components/ReadingMissionPlayer';
 
 export function MissionDetailPage() {
   const { missionId } = useParams<{ missionId: string }>();
+  const navigate = useNavigate();
   const starterContent = getStarterContent();
 
   if (!missionId) {
@@ -59,11 +60,13 @@ export function MissionDetailPage() {
 
     return (
       <PageShell
-        eyebrow="Mission Player"
+        eyebrow="Mission"
         title={mission.title}
-        description="A focused grammar mission flow built from starter content. Move from lesson context into examples, mistakes, and drills in one mobile-friendly pass."
-        aside={<span className="status-chip">Grammar mission</span>}
+        description="Focus on one grammar pass without the full mobile nav in the way."
+        aside={<span className="status-chip">Grammar</span>}
+        variant="compact"
       >
+        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
         <GrammarMissionPlayer mission={mission} lesson={lesson} examples={examples} />
       </PageShell>
     );
@@ -95,11 +98,13 @@ export function MissionDetailPage() {
 
     return (
       <PageShell
-        eyebrow="Mission Player"
+        eyebrow="Mission"
         title={mission.title}
-        description="A staged listening flow built from starter content. Reveal one layer at a time, then use a small check to confirm the line."
-        aside={<span className="status-chip">Listening mission</span>}
+        description="Stay with one listening line at a time and keep the space for the task."
+        aside={<span className="status-chip">Listening</span>}
+        variant="compact"
       >
+        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
         <ListeningMissionPlayer
           mission={mission}
           listeningItems={listeningItems}
@@ -138,11 +143,13 @@ export function MissionDetailPage() {
 
     return (
       <PageShell
-        eyebrow="Mission Player"
+        eyebrow="Mission"
         title={mission.title}
-        description="A first-pass output flow built from starter content. Use the prompt, check the support patterns, then type one short line at a time."
-        aside={<span className="status-chip">Output mission</span>}
+        description="Keep the mission route focused on the current prompt and answer."
+        aside={<span className="status-chip">Output</span>}
+        variant="compact"
       >
+        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
         <OutputMissionPlayer
           mission={mission}
           tasks={outputTasks}
@@ -177,11 +184,13 @@ export function MissionDetailPage() {
 
     return (
       <PageShell
-        eyebrow="Mission Player"
+        eyebrow="Mission"
         title={mission.title}
-        description="A first-pass reading flow built from existing example sentences. Read the Japanese first, choose the best interpretation, then reveal compact support."
-        aside={<span className="status-chip">Reading mission</span>}
+        description="Read first, answer, then reveal support without extra chrome."
+        aside={<span className="status-chip">Reading</span>}
+        variant="compact"
       >
+        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
         <ReadingMissionPlayer
           mission={mission}
           checks={readingChecks}
@@ -197,6 +206,44 @@ export function MissionDetailPage() {
       description="This route currently supports grammar, listening, output, and reading starter missions."
     />
   );
+}
+
+type MissionRouteBarProps = {
+  onGoBack: () => void;
+};
+
+function MissionRouteBar({ onGoBack }: MissionRouteBarProps) {
+  return (
+    <div className="mission-route-bar">
+      <button
+        type="button"
+        className="mission-route-bar__button"
+        onClick={onGoBack}
+      >
+        Back
+      </button>
+      <div className="mission-route-bar__links">
+        <Link to="/" className="mission-route-bar__link">
+          Today
+        </Link>
+        <Link
+          to="/missions"
+          className="mission-route-bar__link mission-route-bar__link--secondary"
+        >
+          Missions
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function handleGoBack(navigate: ReturnType<typeof useNavigate>) {
+  if (window.history.length > 1) {
+    navigate(-1);
+    return;
+  }
+
+  navigate('/');
 }
 
 function resolveExamples(

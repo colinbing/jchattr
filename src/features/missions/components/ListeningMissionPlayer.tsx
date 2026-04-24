@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
   ExampleSentence,
@@ -12,6 +13,8 @@ import {
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
+import { hasDistinctReading } from '../../../lib/japaneseText';
+import { getListeningTranslationChoices } from '../../../lib/listeningChoices';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
@@ -138,6 +141,9 @@ export function ListeningMissionPlayer({
             missionId={mission.id}
             item={currentItem}
             choicePool={choicePool}
+            avoidTranslations={listeningItems
+              .slice(Math.max(0, currentItemIndex - 2), currentItemIndex)
+              .map((listeningItem) => listeningItem.translation)}
             onCleared={handleItemCleared}
           />
           <p className="list-meta">
@@ -192,8 +198,7 @@ export function ListeningMissionPlayer({
               <div className="mission-example-list">
                 {relatedExamples.map((example) => (
                   <article key={example.id} className="mission-example-card">
-                    <p className="mission-example-card__japanese">{example.japanese}</p>
-                    <p className="mission-example-card__reading">{example.reading}</p>
+                    <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
                     <p className="mission-example-card__english">{example.english}</p>
                   </article>
                 ))}
@@ -217,6 +222,7 @@ type ListeningItemPanelProps = {
   missionId: string;
   item: ListeningItem;
   choicePool: ListeningItem[];
+  avoidTranslations: string[];
   onCleared: (itemId: string) => void;
 };
 
@@ -227,9 +233,10 @@ function ListeningItemPanel({
   missionId,
   item,
   choicePool,
+  avoidTranslations,
   onCleared,
 }: ListeningItemPanelProps) {
-  const readingMatchesTranscript = item.reading.trim() === item.transcript.trim();
+  const readingMatchesTranscript = !hasDistinctReading(item.transcript, item.reading);
   const [revealed, setRevealed] = useState<Record<RevealKey, boolean>>({
     transcript: false,
     reading: readingMatchesTranscript,
@@ -238,7 +245,9 @@ function ListeningItemPanel({
   });
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ListeningFeedback>(null);
-  const translationChoices = getTranslationChoices(item, choicePool);
+  const translationChoices = getListeningTranslationChoices(item, choicePool, {
+    avoidTranslations,
+  });
 
   function reveal(step: RevealKey) {
     setRevealed((current) => ({ ...current, [step]: true }));
@@ -494,19 +503,6 @@ function RevealBlock({ label, isVisible, value }: RevealBlockProps) {
   );
 }
 
-function getTranslationChoices(item: ListeningItem, choicePool: ListeningItem[]) {
-  const distractors = choicePool
-    .filter((candidate) => candidate.id !== item.id && candidate.translation !== item.translation)
-    .map((candidate) => candidate.translation)
-    .filter((translation, index, array) => array.indexOf(translation) === index)
-    .slice(0, 2);
-
-  const options = [...distractors];
-  const insertIndex = getChoiceInsertIndex(item.id, options.length + 1);
-  options.splice(insertIndex, 0, item.translation);
-  return options;
-}
-
 function getAudioMimeType(audioRef: string) {
   if (audioRef.endsWith('.wav')) {
     return 'audio/wav';
@@ -526,12 +522,6 @@ function getAudioMimeType(audioRef: string) {
 
   return 'audio/mpeg';
 }
-
-function getChoiceInsertIndex(seed: string, optionCount: number) {
-  const total = Array.from(seed).reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return total % optionCount;
-}
-
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {
   return targetSkill.replace(/-/g, ' ');
 }

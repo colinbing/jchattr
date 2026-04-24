@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -248,8 +249,7 @@ function renderStepContent(
         <div className="mission-example-list">
           {examples.map((example) => (
             <article key={example.id} className="mission-example-card">
-              <p className="mission-example-card__japanese">{example.japanese}</p>
-              <p className="mission-example-card__reading">{example.reading}</p>
+              <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
               <p className="mission-example-card__english">{example.english}</p>
             </article>
           ))}

@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
+import type { Mission } from '../../../lib/content/types';
 import {
   getMissionProgressEntry,
   type MissionProgressRecord,
 } from '../../../lib/progress/missionProgress';
+import { missionLibraryChapters } from '../../missions/lib/missionLibraryStructure';
 import { type TodayRecommendation } from '../lib/todayRecommendations';
 
 type TodayRecommendationCardProps = {
@@ -35,22 +37,30 @@ export function TodayRecommendationCard({
 
       <div className="mission-card__details">
         <p className="mission-card__skill-label">
-          {recommendation.kind === 'review' ? 'Why now' : 'Recommended because'}
+          {recommendation.kind === 'review' ? 'Why now' : 'Path focus'}
         </p>
-        <p className="mission-card__skill-value">{recommendation.reason}</p>
+        <p className="mission-card__skill-value">
+          {recommendation.kind === 'review'
+            ? recommendation.reason
+            : formatMissionPathContext(recommendation.mission)}
+        </p>
         {recommendation.kind === 'mission' && progress ? (
-          <p className="mission-card__progress">
-            {progress.isCompleted
-              ? `Completed ${progress.completionCount} time${
-                  progress.completionCount === 1 ? '' : 's'
-                }`
-              : 'Unlocked and ready to start. Completion saves automatically after you clear every drill or check.'}
-          </p>
+          <p className="mission-card__progress">{recommendation.reason}</p>
         ) : null}
         {recommendation.kind === 'review' ? (
           <p className="mission-card__progress">
             {recommendation.weakPointCount} tracked weak point
             {recommendation.weakPointCount === 1 ? '' : 's'}
+          </p>
+        ) : null}
+        {recommendation.kind === 'mission' ? (
+          <p className="list-meta">
+            {progress?.isCompleted
+              ? `Completed ${progress.completionCount} time${
+                  progress.completionCount === 1 ? '' : 's'
+                } on this device. `
+              : ''}
+            Target skill: {formatTargetSkill(recommendation.mission.targetSkill)}
           </p>
         ) : null}
       </div>
@@ -64,4 +74,32 @@ export function TodayRecommendationCard({
       </Link>
     </article>
   );
+}
+
+function formatTargetSkill(targetSkill: Mission['targetSkill']) {
+  return targetSkill.replace(/-/g, ' ');
+}
+
+function formatMissionType(type: Mission['type']) {
+  switch (type) {
+    case 'grammar':
+      return 'Grammar';
+    case 'listening':
+      return 'Listening';
+    case 'output':
+      return 'Output';
+    case 'reading':
+      return 'Reading';
+  }
+}
+
+function formatMissionPathContext(mission: Mission) {
+  const chapter = missionLibraryChapters.find((entry) => entry.missionIds.includes(mission.id));
+
+  if (!chapter) {
+    return formatMissionType(mission.type);
+  }
+
+  const missionIndex = chapter.missionIds.indexOf(mission.id) + 1;
+  return `${formatMissionType(mission.type)} · ${chapter.label} · ${missionIndex} of ${chapter.missionIds.length}`;
 }

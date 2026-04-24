@@ -8,12 +8,12 @@
 ## Current Phase / Status
 
 - Phase: Phase 4 started
-- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, the first four post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, and the first drill-flow polish on listening plus output, plus static-host deployment readiness for Vercel and Netlify without changing the local-first runtime model
-- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, less ambiguous completion behavior, a cleaner mission-library browsing model, less friction in two of the highest-frequency mission types, and a straightforward path to public static hosting; the next material work is extending drill-flow polish across the remaining mission types and then deeper personalization rather than missing core N5 study surfaces
+- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, the first five post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, listening/output drill flow, and the new mobile core-loop friction cleanup v1 across navigation, mission-route chrome, duplicate reading/support rendering, listening choice variation, retry-state reset, route scroll positioning, and Today recommendation copy, plus static-host deployment readiness for Vercel and Netlify without changing the local-first runtime model
+- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, cleaner mobile chrome, less answer-pattern leakage in listening, a less error-prone review retry loop, and a straightforward path to public static hosting; the next material work is extending the same mission-flow polish across grammar and reading before deeper personalization rather than reopening core content coverage
 
 ## Current Objective
 
-- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, new listening/output drill flow, and static-host-ready SPA routing setup as the Phase 4 baseline, then extend mission-flow polish across the remaining mission types before deeper adaptive recommendation work.
+- Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, and static-host-ready SPA routing setup as the Phase 4 baseline, then extend mission-flow polish across grammar and reading before deeper adaptive recommendation work.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -154,6 +154,7 @@
 - Phase 4 follow-up slice that auto-completes grammar, listening, output, and reading missions once all drills or checks in the current pass are cleared, clears continue-state on auto-complete, and makes that saved completion rule visible inside mission players plus the Today and Missions surfaces
 - Phase 4 presentation slice that replaces the provisional all-open grouped Missions stack with a single-active-chapter library format, uses a horizontal chapter switcher plus one visible chapter at a time, and keeps the reading lane inside the same navigation model without forcing the user through a long two-column archive view
 - Phase 4 drill-flow slice for listening and output that moves listening checks ahead of full meaning reveal, turns reveals into progressive hints, removes redundant reading-hint exposure when transcript and reading are identical, gives output tasks task-local draft persistence, adds Enter-to-check support, and turns the post-check primary action into direct advance rather than a separate disconnected next step
+- Phase 4 mobile core-loop friction cleanup v1 that shortens mobile bottom-nav labels and removes mobile nav subtitles, hides the global bottom nav on mission detail routes while adding mission-local back links, suppresses duplicate support text when `reading === japanese`, randomizes listening meaning-choice order while reducing immediate distractor repetition, resets review retry input state per item, scrolls Today/Missions/Review/mission routes to the top unless resuming an active mission, and replaces implementation-facing Today mission copy with learner-facing path and skill context
 - Phase 4 deployment-readiness slice that adds minimal SPA rewrite configuration for Vercel and Netlify so `createBrowserRouter` works on static hosting without moving away from the current local-first `localStorage` architecture
 
 ## Current App Capabilities
@@ -166,6 +167,7 @@
   - "Do this today" for the core daily plan
   - "Bonus if you want more" for the optional support slot
   - a compact mission-path summary instead of a second full mission backlog
+  - learner-facing path position and target-skill context instead of internal unlock/save wording on Today mission cards
 - User can open Missions and see all current missions with:
   - a horizontal chapter switcher that selects one active chapter at a time
   - five-pack progression chapters for the core path in a single-column sequence
@@ -184,7 +186,9 @@
   - Netlify via [netlify.toml](/Users/colinbingham/Documents/GitHub/jchattr-1/netlify.toml)
   - local-first runtime behavior is unchanged because progress still lives only in browser `localStorage`
 - User can resume the last active mission from local continue state
+- Mission detail routes now hide the global mobile bottom nav and replace it with mission-local back links to the previous surface, Today, or Missions
 - Mission players now mark grammar, listening, output, and reading missions complete automatically once every drill or check in that pass has been cleared, then clear continue-state for that mission on save
+- Route changes into Today, Missions, Review, and mission detail now scroll to the top by default, while explicit continue-state resume preserves the learner's existing scroll position
 - User can complete 199 starter missions across 4 mission types:
   - 50 grammar
   - 50 listening
@@ -199,7 +203,7 @@
   - optional audio player if static file exists
   - a guess-first multiple-choice meaning check that is available before full reveal
   - progressive hints for transcript, reading when distinct, meaning, and focus support
-  - one local multiple-choice meaning check per listening item
+  - one local multiple-choice meaning check per listening item with deterministic per-item shuffling and reduced immediate distractor repetition
 - Output missions currently include:
   - short prompt
   - optional hint
@@ -215,13 +219,14 @@
 - Reading missions currently include:
   - Japanese text shown first
   - one local multiple-choice comprehension decision per line before reveal
-  - compact reveal of reading, meaning, and a short support note after submission
+  - compact reveal of reading, meaning, and a short support note after submission, with reading hidden when it would duplicate the Japanese line exactly
 - Review loop currently:
   - selects top weak points by miss count, then recency
   - caps batch size at 3
   - decrements or clears weak points on successful retry
   - supports grammar drills, listening checks, output tasks, and reading checks
   - shows last-batch clearance vs unresolved items and whether another short retry batch is ready
+  - resets local selected and typed retry state when the active retry item changes
 - Today heuristics currently:
   - mark review as more urgent when weak points are fresh, repeated, or numerous
   - keep the same small 3-slot plan: review, next step, then one support slot

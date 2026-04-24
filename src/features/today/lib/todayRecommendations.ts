@@ -84,10 +84,10 @@ export function deriveTodayRecommendations(
       slotLabel: 'Next up',
       title: nextMission.title,
       reason: reviewRecommendation
-        ? 'After your retry pass, this unlocked mission is still the cleanest next step.'
+        ? 'This is the cleanest next step once the retry pass is done.'
         : reviewAwareness.hasRecentReview
-          ? 'You cleared review recently, so keep momentum with the next unlocked mission.'
-          : 'This unlocked mission is still incomplete, so it is the cleanest next step.',
+          ? 'You just cleared review, so this keeps the path moving without extra noise.'
+          : 'This keeps the core path moving with one fresh mission.',
       ctaLabel: 'Open mission',
       to: `/mission/${nextMission.id}`,
       mission: nextMission,
@@ -169,8 +169,8 @@ export function deriveTodayRecommendations(
       title: mission.title,
       reason:
         progress.completionCount === 0
-          ? 'It is unlocked and still waiting, so it keeps the daily plan moving.'
-          : 'It has less repetition than your other completed missions.',
+          ? 'This is another open step if you want to keep the path moving.'
+          : 'This has had lighter practice than your other completed missions.',
       ctaLabel: 'Open mission',
       to: `/mission/${mission.id}`,
       mission,
@@ -329,14 +329,14 @@ function buildReinforcementReason(
   const progress = getMissionProgressEntry(missionProgress, mission.id);
 
   if (reviewAwareness.hasRecentReview && !reviewAwareness.isUrgent) {
-    return 'You reviewed recently, so this keeps practice moving without sending you straight back into the same retry lane.';
+    return 'You reviewed recently, so this gives you a steadier follow-up instead of another retry pass.';
   }
 
   if (progress.completionCount <= 1) {
-    return 'You have only cleared this once, so one more pass will make it less brittle.';
+    return 'You have only cleared this once, so one more pass should make it stick better.';
   }
 
-  return 'This mission is already in rotation, but it still has a lighter practice count than the rest.';
+  return 'This is already in rotation, but it still has a lighter practice count than the rest.';
 }
 
 function deriveReviewAwareness(

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -227,8 +228,7 @@ export function OutputMissionPlayer({
             <div className="mission-example-list">
               {relatedExamples.map((example) => (
                 <article key={example.id} className="mission-example-card">
-                  <p className="mission-example-card__japanese">{example.japanese}</p>
-                  <p className="mission-example-card__reading">{example.reading}</p>
+                  <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
                   <p className="mission-example-card__english">{example.english}</p>
                 </article>
               ))}

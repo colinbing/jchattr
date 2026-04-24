@@ -34,6 +34,7 @@ export function ContinueMissionCard({
 
       <Link
         to={`/mission/${mission.id}`}
+        state={{ preserveScroll: true }}
         className="mission-card__cta"
         aria-label={`Continue ${mission.title}`}
       >
