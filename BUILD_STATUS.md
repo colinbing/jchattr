@@ -8,12 +8,12 @@
 ## Current Phase / Status
 
 - Phase: Phase 4 started
-- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, and the first four post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, and the first drill-flow polish on listening plus output
-- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, less ambiguous completion behavior, a cleaner mission-library browsing model, and less friction in two of the highest-frequency mission types; the next material work is extending drill-flow polish across the remaining mission types and then deeper personalization rather than missing core N5 study surfaces
+- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, the first four post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, and the first drill-flow polish on listening plus output, plus static-host deployment readiness for Vercel and Netlify without changing the local-first runtime model
+- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, less ambiguous completion behavior, a cleaner mission-library browsing model, less friction in two of the highest-frequency mission types, and a straightforward path to public static hosting; the next material work is extending drill-flow polish across the remaining mission types and then deeper personalization rather than missing core N5 study surfaces
 
 ## Current Objective
 
-- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, and the new listening/output drill flow as the Phase 4 baseline, then extend mission-flow polish across the remaining mission types before deeper adaptive recommendation work.
+- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, new listening/output drill flow, and static-host-ready SPA routing setup as the Phase 4 baseline, then extend mission-flow polish across the remaining mission types before deeper adaptive recommendation work.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -154,6 +154,7 @@
 - Phase 4 follow-up slice that auto-completes grammar, listening, output, and reading missions once all drills or checks in the current pass are cleared, clears continue-state on auto-complete, and makes that saved completion rule visible inside mission players plus the Today and Missions surfaces
 - Phase 4 presentation slice that replaces the provisional all-open grouped Missions stack with a single-active-chapter library format, uses a horizontal chapter switcher plus one visible chapter at a time, and keeps the reading lane inside the same navigation model without forcing the user through a long two-column archive view
 - Phase 4 drill-flow slice for listening and output that moves listening checks ahead of full meaning reveal, turns reveals into progressive hints, removes redundant reading-hint exposure when transcript and reading are identical, gives output tasks task-local draft persistence, adds Enter-to-check support, and turns the post-check primary action into direct advance rather than a separate disconnected next step
+- Phase 4 deployment-readiness slice that adds minimal SPA rewrite configuration for Vercel and Netlify so `createBrowserRouter` works on static hosting without moving away from the current local-first `localStorage` architecture
 
 ## Current App Capabilities
 
@@ -178,6 +179,10 @@
   - reset mission progress, weak points, review loop, or continue state independently
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
+- Repo can now be deployed to static hosts with first-party SPA rewrites:
+  - Vercel via [vercel.json](/Users/colinbingham/Documents/GitHub/jchattr-1/vercel.json)
+  - Netlify via [netlify.toml](/Users/colinbingham/Documents/GitHub/jchattr-1/netlify.toml)
+  - local-first runtime behavior is unchanged because progress still lives only in browser `localStorage`
 - User can resume the last active mission from local continue state
 - Mission players now mark grammar, listening, output, and reading missions complete automatically once every drill or check in that pass has been cleared, then clear continue-state for that mission on save
 - User can complete 199 starter missions across 4 mission types:
