@@ -1,0 +1,432 @@
+# Japanese OS — Voice Feedback Triage and Implementation Plan
+
+## Source
+
+This plan is distilled from a ~50-minute mobile user-testing narration of Japanese OS used as an iPhone home-screen web app.
+
+Primary goal: preserve the existing local-first React + TypeScript architecture while turning the current Phase 4 app from “functionally complete but noisy” into a cleaner daily-use learning loop.
+
+---
+
+## Executive Summary
+
+The app is not fundamentally broken. The content coverage, mission types, persistence, review, progress, and recommendation surfaces already exist. The main problem is UX density and flow friction on mobile.
+
+The highest-value next move is a narrow mobile-first polish slice:
+
+1. Fix obvious bugs and bad answer patterns.
+2. Reduce persistent chrome and repeated explanatory text.
+3. Make Today feel like a simple daily plan, not a dashboard dump.
+4. Make mission drills feel like one focused task at a time.
+5. Delay bigger strategy changes, like true SRS reinforcement logic and richer skill-map explanations, until after the core loop feels good.
+
+---
+
+## 1. Confirmed Bugs / Likely Bugs
+
+### B1 — Bottom navigation labels truncate badly on mobile
+
+Observed: bottom nav shows shortened labels like `TOD...`, `MIS...`, and sublabels also truncate.
+
+Impact: high. It makes the app look unfinished immediately on phone.
+
+Fix direction:
+- Simplify mobile nav labels.
+- Remove secondary subtitles from bottom nav on small screens.
+- Use icon + short label, or label-only with no subtitle.
+- Ensure each item fits at iPhone width.
+
+Priority: P0.
+
+---
+
+### B2 — Example/support Japanese appears duplicated
+
+Observed in grammar/listening support examples: the Japanese line appears twice, once bold and once not bold, with the English below.
+
+Possible intended behavior: second line may have been meant to be reading/furigana/kana support.
+
+Fix direction:
+- If `japanese === reading`, do not render both.
+- If reading differs, label it subtly as reading/kana support.
+- Apply consistently to grammar examples, listening support, output support, and reading reveals.
+
+Priority: P0.
+
+---
+
+### B3 — Listening multiple-choice options repeat and correct answer appears consistently last
+
+Observed: options like “I am Colin” and “Are you a teacher?” repeat across listening items, and the correct answer appears as option 3 repeatedly.
+
+Impact: high. This breaks the learning value because the user can answer by pattern instead of comprehension.
+
+Fix direction:
+- Shuffle choices per item deterministically or per render.
+- Ensure the correct answer is not always in the same position.
+- Avoid repeating the exact same distractors across consecutive items when possible.
+- Prefer close distractors where available.
+
+Priority: P0.
+
+---
+
+### B4 — Review retry carries previous selected answer into the next item
+
+Observed: after clicking “Next retry,” the next retry appeared with the previous answer still selected.
+
+Impact: high. It corrupts the retry experience.
+
+Fix direction:
+- Reset selected choice / typed answer state when review item changes.
+- Key local state by review item id + attempt index, not only by mission/type.
+
+Priority: P0.
+
+---
+
+### B5 — Some buttons start the user scrolled near the bottom
+
+Observed: opening review/reinforce sometimes starts at the bottom of the destination page/mission.
+
+Impact: medium-high. It makes the flow feel broken on mobile.
+
+Fix direction:
+- Scroll to top on route changes into Today, Mission, Review, and Missions chapter views.
+- Consider a small `ScrollToTopOnRouteChange` component if one does not already exist.
+- Avoid scroll restoration from prior mission state unless explicitly resuming an unfinished active mission.
+
+Priority: P0/P1.
+
+---
+
+### B6 — Reorder drill may render in already-correct order
+
+Observed: reorder chunks appeared already in the right order.
+
+Impact: medium. It weakens the exercise.
+
+Fix direction:
+- Ensure reorder chunks are shuffled and not identical to correct order.
+- If random shuffle returns the correct order, rotate or reshuffle.
+
+Priority: P1.
+
+---
+
+## 2. UX Friction
+
+### U1 — Today page is too dense and repetitive on mobile
+
+Observed themes:
+- The user repeatedly described Today as too much text and “bleh.”
+- The main action starts too far down.
+- “How the loop works” feels like help content, not primary page content.
+- “Recommended because unlocked and incomplete” feels internal and unhelpful.
+
+Fix direction:
+- Put the first actionable mission above the fold.
+- Collapse or remove instructional copy.
+- Replace internal reasoning with learner-facing context: chapter, mission number, skill, why it matters.
+- Move “How the loop works” into a small help affordance or collapsed details block.
+
+Priority: P0/P1.
+
+---
+
+### U2 — Bottom nav stays visible inside missions and consumes precious space
+
+Observed: while doing missions, the persistent bottom nav takes up screen height and distracts from the task.
+
+Fix direction:
+- Hide the main bottom nav on mission detail routes, or make it much smaller.
+- Provide mission-local navigation instead: back to Today, progress indicator, maybe exit.
+- Keep one clear escape route.
+
+Priority: P1.
+
+---
+
+### U3 — Mission overview/header remains too large throughout missions
+
+Observed: estimated time, target skill, examples/drills metadata, mission overview, and step controls consume too much vertical space.
+
+Fix direction:
+- Keep a compact sticky or top header with title + progress only.
+- Move metadata into collapsed details.
+- On active drill/check screens, dedicate most space to the task.
+
+Priority: P1.
+
+---
+
+### U4 — Grammar mission flow feels more like a long page than an app task
+
+Observed:
+- Intro, examples, mistakes, drills are separate sections.
+- Drills appear on the same long page.
+- Correct feedback appears below the answer, forcing scrolling.
+- Completion is not satisfying.
+
+Fix direction:
+- Move toward one active step/task at a time.
+- After checking an answer, primary button should become “Next.”
+- Feedback should appear close to the answer.
+- Consider making common mistakes contextual: wrong example → corrected example → short explanation.
+
+Priority: P1/P2.
+
+---
+
+### U5 — Listening reveal area is too tall and out of order
+
+Observed:
+- Transcript hint, meaning hint, pattern hint occupy too much space.
+- Meaning hint is effectively the answer and should not be shown too early.
+- User has to scroll too much after checking.
+
+Fix direction:
+- Use a staged reveal order: transcript → pattern/focus → meaning.
+- After answer check, show compact feedback and a primary “Next line” action.
+- Keep hints collapsed unless requested.
+
+Priority: P1.
+
+---
+
+### U6 — Review completion should probably return to Today
+
+Observed: finishing review batch returns to Review page, which then shows a lot of zeros.
+
+Fix direction:
+- After completing a review batch from Today, return to Today or show a compact completion state with “Back to Today.”
+- Avoid dumping the user onto an empty stats page.
+
+Priority: P1.
+
+---
+
+### U7 — Completion/status copy feels too implementation-facing
+
+Observed phrases like:
+- “Completion saves automatically after you clear every drill or check.”
+- “Cleared 0 of 2 drills in this pass.”
+- “Completed one time.”
+
+Fix direction:
+- Keep save mechanics implicit unless necessary.
+- Replace with learner-facing progress: `2/5 checks`, `Mission complete`, `Added to review`, `Nice — next line`.
+
+Priority: P1.
+
+---
+
+## 3. Feature Ideas / Product Improvements
+
+### F1 — Today should feel like “daily missions,” not just “next up”
+
+Current tension: “Next up” is not the same as “Do this today.”
+
+Potential model:
+- Core today: 2–3 planned missions.
+- Review: appears first only when weak points exist.
+- Bonus: optional reinforce/stabilize/reading.
+- Mission library: browsing and power-user continuation.
+
+Do not overbuild yet. For the next slice, only improve presentation language and layout. Deeper scheduling logic can wait.
+
+Priority: P2.
+
+---
+
+### F2 — Reinforce should not immediately repeat the exact same mission
+
+Observed: reinforcing a mission on the same day repeated the same lesson and same drills.
+
+Possible future model:
+- First exposure: full lesson + examples + mistakes + drills.
+- Same-day reinforce: short alternate examples/checks only.
+- Later review: SRS-like resurfacing after time delay.
+- Related future missions can reinforce old grammar naturally.
+
+Priority: P2/P3. Important, but not first slice unless the current logic is actively annoying every session.
+
+---
+
+### F3 — Reading lane timing needs clearer logic
+
+Question raised: when should reading missions enter the daily loop?
+
+Likely answer:
+- Reading missions should unlock after the user has encountered the underlying grammar/examples.
+- Today can occasionally include reading as bonus or reinforcement once relevant prerequisites are met.
+- Avoid asking the user to read content that depends on knowledge not yet introduced.
+
+Priority: P2.
+
+---
+
+### F4 — Listening recognition lane could mirror reading recognition
+
+Idea: if reading recognition exists, listening recognition may deserve a similar lane: hear a line, choose close interpretation, then reveal transcript/support.
+
+Priority: P3. Valuable, but not before existing listening flow is fixed.
+
+---
+
+### F5 — Skill map needs more explainable detail
+
+Observed questions:
+- Why am I solid on sentence structure?
+- What particles am I shaky on?
+- Does one correct completion make me solid?
+
+Possible improvement:
+- Show per-skill “why this rating” in compact terms.
+- For particles, identify specific particles studied/missed: は, で, に, が, を, の, etc.
+- Avoid fake precision; keep tiering simple but inspectable.
+
+Priority: P3.
+
+---
+
+## 4. Questions / Uncertainties
+
+1. Does the app currently distinguish first exposure, retry, reinforce, stabilize, and review modes internally, or are they all rendering the same mission player?
+2. Are multiple-choice distractors stored in content, generated from nearby content, or hardcoded/fallback-generated?
+3. Is the duplicate Japanese line a rendering issue or a data issue where `reading` duplicates `japanese`?
+4. Should mission detail routes hide global bottom navigation entirely, or only on small screens?
+5. Should review completion always return to Today, or only when launched from Today?
+6. Should Today’s time estimate decrement after completed core missions, or is it intended to show the original plan estimate?
+7. Is reading lane intended to be parallel enrichment, delayed reinforcement, or part of the core daily path?
+
+---
+
+## 5. Priority Order
+
+### P0 — Fix broken-feeling mobile issues
+
+1. Bottom nav truncation.
+2. Duplicate Japanese/support lines.
+3. Listening choice order/distractor repetition.
+4. Review selection state not resetting.
+5. Scroll position starting at the bottom on new flows.
+
+### P1 — Make the core loop feel better on phone
+
+6. Simplify Today above the fold.
+7. Hide/reduce global nav during missions.
+8. Compact mission header/overview.
+9. Reduce drill/check scrolling.
+10. Improve review completion route.
+
+### P2 — Clarify learning system logic
+
+11. Better Today vs Bonus vs Library model.
+12. Smarter reinforce behavior.
+13. Reading lane placement in recommendations.
+14. Mission mode distinctions: first-run vs reinforce vs review.
+
+### P3 — Deeper progress/personalization
+
+15. Skill-map detail by sub-skill.
+16. Particle-specific tracking.
+17. Listening recognition lane.
+18. SRS-like scheduling.
+
+---
+
+## 6. Recommended Next Slice
+
+### Slice name
+
+Mobile core-loop friction cleanup v1
+
+### Why this slice first
+
+This targets issues that make the product feel broken or noisy before changing recommendation logic or adding features. It should improve the daily experience without altering the content model or architecture.
+
+### Scope
+
+Include:
+- Mobile bottom nav label fix.
+- Hide or compact global nav on mission routes.
+- Suppress duplicate Japanese/reading lines when identical.
+- Shuffle listening choices so answer is not always last.
+- Reset review answer state between retry items.
+- Scroll to top on route changes into mission/review flows.
+- Light Today copy cleanup for the first mission card.
+
+Exclude:
+- Full Today redesign.
+- New SRS scheduling.
+- New mission types.
+- AI features.
+- Backend/cloud sync.
+- Broad content rewrite.
+- Large visual redesign.
+
+---
+
+## 7. Codex Prompt
+
+Context:
+This repo is Japanese OS, a local-first Japanese learning MVP. Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, and `BUILD_STATUS.md`. Preserve the current architecture. The repo is already in Phase 4 with a working local-first mission loop, content library, review loop, progress screen, and recommendation logic. This task is a narrow mobile UX/friction cleanup based on a real iPhone home-screen user test.
+
+Task:
+Implement a focused “mobile core-loop friction cleanup v1” pass. Fix the obvious broken-feeling mobile issues without redesigning the whole app or changing the learning architecture.
+
+Specific fixes:
+1. Fix the mobile bottom navigation so labels do not truncate into `TOD...`, `MIS...`, etc. On small screens, remove/hide secondary nav subtitles if needed and keep labels short/readable.
+2. On mission detail routes, hide or significantly compact the global bottom nav so the mission task gets more vertical space. Keep a clear mission-local way back to Today or the previous surface.
+3. Suppress duplicate Japanese/support rendering when a sentence’s `reading` is identical to `japanese`. If they differ, render both with clear lightweight labels.
+4. Fix listening multiple-choice checks so the correct answer is not consistently last. Shuffle choices per check, and avoid repeating the same static distractors across consecutive checks when practical using existing content/data.
+5. Fix review retry state so selected choices or typed answers from the previous retry do not carry into the next retry item.
+6. Ensure opening review, reinforce, and mission routes starts at the top of the relevant screen unless intentionally resuming an active in-progress task.
+7. Lightly reduce implementation-facing copy on Today mission cards. Replace text like “recommended because this unlocked mission is still incomplete” with learner-facing context such as mission type, chapter/path position, target skill, or why it helps.
+
+Constraints:
+- TypeScript only.
+- Local-first only.
+- Do not add dependencies unless there is a strong reason.
+- Do not change schemas unless required for one of the fixes.
+- Do not rewrite recommendation logic beyond copy/presentation needed for item 7.
+- Do not introduce backend, auth, sync, analytics, or AI behavior.
+- Keep changes small and file-local where possible.
+- Preserve existing mission/content architecture.
+- Mobile-first: verify at narrow phone widths.
+
+Acceptance criteria:
+- Bottom nav labels are readable on iPhone-width screens.
+- Mission screens no longer permanently lose major vertical space to the full global nav.
+- Identical `japanese` and `reading` values are not shown as duplicate lines.
+- Listening answer choices vary position; the correct answer is not always option 3.
+- Review retry items start clean with no prior selected answer/typed draft accidentally carried over.
+- Review/reinforce/mission entry does not land the user at the bottom of the page.
+- Today mission cards use clearer learner-facing context and less internal implementation wording.
+- `npm run typecheck` passes.
+- `npm run build` passes.
+- Update `BUILD_STATUS.md` with a concise note if this slice lands successfully.
+
+Output:
+Summarize changed files, explain any tradeoffs, list verification commands run, and call out one recommended follow-up slice.
+
+---
+
+## 8. Recommended Follow-Up Slice After This
+
+After the cleanup slice, the next best slice should probably be:
+
+Mission task-flow compacting v2
+
+Goal:
+- Make grammar, listening, and reading missions feel more like one focused app task at a time.
+
+Likely work:
+- Compact mission overview into a smaller header.
+- Convert grammar drills to one-at-a-time flow.
+- Make post-check primary button become “Next.”
+- Move common mistakes into contextual examples.
+- Reduce tall hint/reveal blocks in listening.
+
+Do this only after the P0 cleanup lands, because the current bugs/friction will distort feedback on any deeper redesign.
