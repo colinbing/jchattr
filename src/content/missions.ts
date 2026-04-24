@@ -2055,6 +2055,7 @@ export const missions = [
       grammarLessonIds: ['grammar-time-nanji-desu', 'grammar-time-ni-schedule'],
       vocabIds: [
         'vocab-nanji',
+        'vocab-ji',
         'vocab-ichiji',
         'vocab-shichiji',
         'vocab-hachiji',
@@ -2134,6 +2135,7 @@ export const missions = [
       grammarLessonIds: ['grammar-time-nanji-desu', 'grammar-time-ni-schedule'],
       vocabIds: [
         'vocab-nanji',
+        'vocab-ji',
         'vocab-hachiji',
         'vocab-gakkou',
         'vocab-ikimasu',
@@ -2717,6 +2719,8 @@ export const missions = [
       grammarLessonIds: ['grammar-invitation-plan-questions', 'grammar-plan-responses-yes-no'],
       vocabIds: [
         'vocab-issho-ni',
+        'vocab-ikimasuka',
+        'vocab-aimasuka',
         'vocab-aimasu',
         'vocab-hai',
         'vocab-iie',
@@ -2797,6 +2801,8 @@ export const missions = [
       grammarLessonIds: ['grammar-invitation-plan-questions', 'grammar-plan-responses-yes-no'],
       vocabIds: [
         'vocab-issho-ni',
+        'vocab-ikimasuka',
+        'vocab-aimasuka',
         'vocab-aimasu',
         'vocab-hai',
         'vocab-iie',
@@ -2867,6 +2873,7 @@ export const missions = [
     contentRefs: {
       grammarLessonIds: ['grammar-meeting-place-de-questions', 'grammar-meeting-place-landmark-lines'],
       vocabIds: [
+        'vocab-dokode',
         'vocab-aimasu',
         'vocab-mae',
         'vocab-soba',
@@ -2952,6 +2959,7 @@ export const missions = [
     contentRefs: {
       grammarLessonIds: ['grammar-meeting-place-de-questions', 'grammar-meeting-place-landmark-lines'],
       vocabIds: [
+        'vocab-dokode',
         'vocab-aimasu',
         'vocab-doko',
         'vocab-eki',
@@ -5759,6 +5767,17 @@ export const missions = [
       vocabIds: [
         'vocab-omoshirokatta-desu',
         'vocab-shizuka-deshita',
+        'vocab-oishikatta-desu',
+        'vocab-takakatta-desu',
+        'vocab-kirei-deshita',
+        'vocab-yasashikatta-desu',
+        'vocab-hirokatta-desu',
+        'vocab-ookikatta-desu',
+        'vocab-atarashikatta-desu',
+        'vocab-nagakatta-desu',
+        'vocab-mijikakatta-desu',
+        'vocab-benri-deshita',
+        'vocab-tanoshikatta-desu',
         'vocab-takai',
         'vocab-oishii',
         'vocab-nagai',
@@ -6681,6 +6700,7 @@ export const missions = [
         'vocab-yoku',
         'vocab-tokidoki',
         'vocab-amari',
+        'vocab-tabemasen',
         'vocab-nikki',
         'vocab-kakimasu',
         'vocab-tegami',
@@ -6769,6 +6789,7 @@ export const missions = [
         'vocab-yoku',
         'vocab-tokidoki',
         'vocab-amari',
+        'vocab-tabemasen',
         'vocab-kakimasu',
         'vocab-tegami',
         'vocab-mimasen',
@@ -6851,6 +6872,7 @@ export const missions = [
       grammarLessonIds: ['grammar-reasons-kara-choices', 'grammar-reasons-kara-refusals'],
       vocabIds: [
         'vocab-kara',
+        'vocab-desukara',
         'vocab-yoku',
         'vocab-kono',
         'vocab-kafe',
@@ -6947,6 +6969,7 @@ export const missions = [
       grammarLessonIds: ['grammar-reasons-kara-choices', 'grammar-reasons-kara-refusals'],
       vocabIds: [
         'vocab-kara',
+        'vocab-desukara',
         'vocab-yoku',
         'vocab-kono',
         'vocab-kafe',
@@ -8670,6 +8693,7 @@ export const missions = [
       vocabIds: [
         'vocab-daijoubu',
         'vocab-genki',
+        'vocab-genki-janai-desu',
         'vocab-atama',
         'vocab-itai',
         'vocab-byouin',
@@ -8824,6 +8848,7 @@ export const missions = [
       vocabIds: [
         'vocab-atsui',
         'vocab-samui',
+        'vocab-kimasen',
         'vocab-ame',
         'vocab-kooto',
         'vocab-kimasu-wear',
@@ -9257,6 +9282,7 @@ export const missions = [
       grammarLessonIds: ['grammar-problems-okuremasu', 'grammar-problems-muzukashii-renraku'],
       vocabIds: [
         'vocab-okuremasu',
+        'vocab-chotto-okuremasu',
         'vocab-muzukashii',
         'vocab-renrakushimasu',
         'vocab-densha',
@@ -9335,6 +9361,7 @@ export const missions = [
       grammarLessonIds: ['grammar-problems-okuremasu', 'grammar-problems-muzukashii-renraku'],
       vocabIds: [
         'vocab-okuremasu',
+        'vocab-chotto-okuremasu',
         'vocab-muzukashii',
         'vocab-renrakushimasu',
         'vocab-densha',
@@ -9410,7 +9437,9 @@ export const missions = [
       grammarLessonIds: ['grammar-before-after-maeni', 'grammar-before-after-atode'],
       vocabIds: [
         'vocab-mae',
+        'vocab-maeni',
         'vocab-ato',
+        'vocab-atode',
         'vocab-shigoto',
         'vocab-gakkou',
         'vocab-jugyou',
@@ -9493,7 +9522,9 @@ export const missions = [
       grammarLessonIds: ['grammar-before-after-maeni', 'grammar-before-after-atode'],
       vocabIds: [
         'vocab-mae',
+        'vocab-maeni',
         'vocab-ato',
+        'vocab-atode',
         'vocab-shigoto',
         'vocab-gakkou',
         'vocab-koohii',
@@ -9574,7 +9605,13 @@ export const missions = [
       grammarLessonIds: ['grammar-plain-style-recognition-copula-and-na', 'grammar-plain-style-recognition-i-adjectives'],
       vocabIds: [
         'vocab-da-plain',
+        'vocab-daijoubu-da',
+        'vocab-shizuka-da',
+        'vocab-kirei-da',
+        'vocab-benri-da',
         'vocab-janai-plain',
+        'vocab-genki-janai',
+        'vocab-shizuka-janai',
         'vocab-atsukunai',
         'vocab-omoshirokunai',
         'vocab-takakunai',
@@ -9650,7 +9687,10 @@ export const missions = [
       grammarLessonIds: ['grammar-plain-style-recognition-copula-and-na', 'grammar-plain-style-recognition-i-adjectives'],
       vocabIds: [
         'vocab-da-plain',
+        'vocab-daijoubu-da',
+        'vocab-shizuka-da',
         'vocab-janai-plain',
+        'vocab-genki-janai',
         'vocab-omoshirokunai',
         'vocab-takakunai',
         'vocab-gakusei',

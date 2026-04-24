@@ -13,8 +13,8 @@
 
 ## Current Objective
 
-- Immediate objective: finish the Phase 3 claim-gate cleanup by closing the vocab-floor gap and then rerunning the claim gate with the new reading-reuse floor already lifted out of the danger zone.
-- Current claim-gate blockers: vocab breadth is `522`, which is still `28` items short of the repo-defined `550` floor, and reading density is stronger but still lighter than the broader grammar/listening surface even after the last low-density cleanup pass.
+- Immediate objective: rerun the Phase 3 claim gate now that the vocab floor is closed and the earlier reading-reuse floor has already been lifted out of the danger zone.
+- Current claim-gate blockers: the repo-defined vocab floor is now met at `550`, so the remaining open question is whether reading density is now strong enough for the repo's `N5-comprehensive` standard or whether one last mid-density polish pass is still justified.
 - Roadmap position: the repo is no longer trying to discover major new beginner grammar lanes; the near-term work is reinforcement, reuse balance, and claim-gate verification.
 - Longer-term direction: once the Phase 3 claim gate is credibly cleared, the roadmap still points to Phase 4 personalization work rather than backend, sync, or broad AI expansion.
 
@@ -148,6 +148,7 @@
 - Global Reading-Reuse Cleanup Pass 4 for packs 48 to 50 using only existing example sentences plus balanced support from packs 46 to 47, extending the late reading chain with two final late-tail review missions, lifting the former `20%` late-tail pockets to `33%`, and keeping both new reading missions at `20%` source-pack concentration while the support packs land exactly at the `40%` cap
 - Global Reading-Reuse Cleanup Pass 5 for packs 21 and 25 using only existing example sentences plus balanced support from packs 14 to 15 and 26 to 27, inserting two mid-block review missions into the packs 21 to 30 reading chain, lifting the former `20%` floor to `33%`, and keeping both new reading missions at `20%` source-pack concentration
 - Global Reading-Reuse Cleanup Pass 6 for pack 8 and packs 33 to 35 using only existing example sentences plus balanced support from nearby adjective/comparison material, inserting two adjective-lane review missions before the wants block, lifting the former `21%` floor to `36%`, and keeping both new reading missions at `20%` source-pack concentration
+- Narrow vocab-floor closure pass using only already-shipped surfaces and existing mission lanes, raising total vocab from `522` to the repo-defined floor of `550` without widening the local-first architecture or adding new content types
 
 ## Current App Capabilities
 
@@ -312,7 +313,7 @@
 - Content is still compact relative to the repo's full N5 plan:
   - 100 grammar lessons
   - 731 example sentences
-  - 522 vocab items
+  - 550 vocab items
   - 349 listening items
   - 199 missions
 - Mission completion is manual; there is no auto-complete logic
@@ -339,7 +340,7 @@
 - Comparison and ranking coverage now exists, but it is still limited to short `より / のほうが` and `いちばん` lines rather than broader ranking nuance, contrastive justification, or multi-clause opinions
 - Frequency and reason coverage now exists, but it is still intentionally limited to a small adverb set and short polite `から` clauses rather than broader discourse-level explanation
 - Current listening audio coverage is manifest-complete through the shipped pack 50 set plus Blocks A1, A2, B1, B2, C1, C2, D1, D2, E1, and E2
-- The repo is still not ready to claim `N5-comprehensive` by its own plan threshold: vocab breadth is `522`, which is still `28` items short of the repo's floor of `550`, and reading density remains visibly lighter than the broader content/listening set at `232 / 731` reused examples across `49` reading missions
+- The repo should still rerun its explicit claim gate before claiming `N5-comprehensive`: the vocab floor is now met at `550`, but reading density remains visibly lighter than the broader content/listening set at `232 / 731` reused examples across `49` reading missions, so the remaining question is whether that lighter reading layer is still acceptable to the repo's own threshold
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -352,9 +353,9 @@
 
 ## Next Recommended Slices
 
-1. Start a narrow vocab-floor closure pass that raises total vocab from `522` to at least the repo-defined `550` floor without widening scope beyond the current local-first content architecture.
-2. Rerun the claim gate immediately after vocab closure and decide whether the remaining mid-density reading pockets, led by pack `31`, need any further polish or whether Phase 3 can be considered complete enough to close.
-3. Once the Phase 3 claim gate is either cleared or narrowed to small polish work, schedule the documented post-Phase-3 product/UX backlog before or alongside the Phase 4 personalization lane in `ROADMAP.md`.
+1. Rerun the final Phase 3 claim gate now that vocab has reached the repo-defined `550` floor and decide whether the current `232 / 731` reading-reuse layer is sufficient for the repo's `N5-comprehensive` threshold.
+2. If the claim gate still wants more reading density, target the current weakest mid-density pocket led by pack `31` and the `25%` cluster across packs `9`, `11`, `13`, and `17` with one more narrow reuse-only polish pass.
+3. If the claim gate clears or narrows to non-blocking polish, treat Phase 3 as effectively complete and schedule the documented post-Phase-3 product/UX backlog before or alongside the Phase 4 personalization lane in `ROADMAP.md`.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
