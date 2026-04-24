@@ -3380,6 +3380,8 @@ export const grammarLessons = [
       'ex-dono-keeki-ga-hoshii-desu-ka',
       'ex-dono-eiga-o-mitai-desu-ka',
       'ex-dono-kafe-ni-ikitai-desu-ka',
+      'ex-dono-shatsu-ga-ii-desu-ka',
+      'ex-dono-kutsu-ga-ii-desu-ka',
     ],
     commonMistakes: [
       'Using どれ right before a noun instead of switching to どの.',
@@ -3422,6 +3424,9 @@ export const grammarLessons = [
       'ex-basu-to-densha-to-dochira-ga-ii-desu-ka',
       'ex-densha-ga-ii-desu',
       'ex-koohii-to-ocha-to-dochira-ga-suki-desu-ka',
+      'ex-akai-shatsu-ga-ii-desu',
+      'ex-shiroi-kutsu-ga-ii-desu',
+      'ex-aoi-shatsu-to-akai-shatsu-to-dochira-ga-ii-desu-ka',
     ],
     commonMistakes: [
       'Using どちら without clearly giving two options first.',
@@ -3464,6 +3469,9 @@ export const grammarLessons = [
       'ex-genki-desu',
       'ex-genki-desu-ka',
       'ex-atama-ga-itai-desu',
+      'ex-onaka-ga-itai-desu',
+      'ex-nodo-ga-itai-desu',
+      'ex-netsu-ga-arimasu',
     ],
     commonMistakes: [
       'Dropping か in a short check like だいじょうぶですか and turning it into a statement.',
@@ -3502,6 +3510,8 @@ export const grammarLessons = [
       'ex-kusuri-o-nomimasu',
       'ex-kyou-wa-byouin-ni-ikimasu',
       'ex-kyou-wa-genki-janai-desu',
+      'ex-chotto-kyuukei-shimasu',
+      'ex-kyou-wa-uchi-de-yasumimasu',
     ],
     commonMistakes: [
       'Turning the follow-up into a broad explanation instead of one short practical next step.',
@@ -3544,6 +3554,9 @@ export const grammarLessons = [
       'ex-kyou-wa-ame-desu',
       'ex-samui-desu-ka',
       'ex-atsui-desu-ka',
+      'ex-kyou-wa-hare-desu',
+      'ex-kyou-wa-kumori-desu',
+      'ex-tenki-ga-ii-desu',
     ],
     commonMistakes: [
       'Dropping きょうは when the prompt is specifically about today’s condition.',
@@ -3582,6 +3595,8 @@ export const grammarLessons = [
       'ex-ame-desukara-kasa-o-mochimasu',
       'ex-kyou-wa-atsui-desukara-mizu-o-nomimasu',
       'ex-kyou-wa-kooto-o-kimasen',
+      'ex-samui-desukara-mafuraa-o-shimasu',
+      'ex-atsui-desukara-mado-o-akemasu',
     ],
     commonMistakes: [
       'Leaving out から and turning the condition and action into two unrelated statements.',
@@ -3624,6 +3639,8 @@ export const grammarLessons = [
       'ex-densha-o-orimasu',
       'ex-basu-o-orimasu',
       'ex-kuukou-de-takushii-ni-norimasu',
+      'ex-hoomu-de-densha-ni-norimasu',
+      'ex-basutei-de-basu-ni-norimasu',
     ],
     commonMistakes: [
       'Using を after the transport when the sentence means getting on rather than getting off.',
@@ -3662,6 +3679,9 @@ export const grammarLessons = [
       'ex-eki-o-demasu',
       'ex-kuukou-ni-tsukimashita',
       'ex-mou-kuukou-ni-tsukimashita',
+      'ex-kaisatsu-o-demasu',
+      'ex-hoteru-ni-tsukimashita',
+      'ex-shuuten-ni-tsukimashita',
     ],
     commonMistakes: [
       'Dropping で in えきでのりかえます even though the station is the place where the change happens.',
@@ -3698,6 +3718,9 @@ export const grammarLessons = [
       'ex-kyou-wa-chotto-okuremasu',
       'ex-densha-ga-okuremasu',
       'ex-basu-ga-okuremasu',
+      'ex-sumimasen-chotto-okuremasu',
+      'ex-yakusoku-ni-chotto-okuremasu',
+      'ex-jugyou-ni-chotto-okuremasu',
     ],
     commonMistakes: [
       'Forgetting that the delayed thing can be the subject, as in でんしゃがおくれます.',
@@ -3737,6 +3760,8 @@ export const grammarLessons = [
       'ex-sensei-ni-renrakushimasu',
       'ex-ima-renrakushimasu',
       'ex-sugu-renrakushimasu',
+      'ex-denwa-de-renrakushimasu',
+      'ex-messeeji-de-renrakushimasu',
     ],
     commonMistakes: [
       'Using a longer English-shaped explanation when the pack goal is a short line like ちょっとむずかしいです.',
@@ -3773,6 +3798,9 @@ export const grammarLessons = [
       'ex-gakkou-no-mae-ni-pan-o-tabemasu',
       'ex-jugyou-no-mae-ni-hon-o-yomimasu',
       'ex-eiga-no-mae-ni-tomodachi-ni-renrakushimasu',
+      'ex-yakusoku-no-mae-ni-meeru-o-yomimasu',
+      'ex-kaigi-no-mae-ni-toire-ni-ikimasu',
+      'ex-asagohan-no-mae-ni-koohii-o-nomimasu',
     ],
     commonMistakes: [
       'Dropping の before まえに in noun-based ordering lines.',
@@ -3810,6 +3838,9 @@ export const grammarLessons = [
       'ex-eiga-no-ato-de-koohii-o-nomimasu',
       'ex-byouin-no-ato-de-uchi-de-yasumimasu',
       'ex-jugyou-no-ato-de-tomodachi-ni-renrakushimasu',
+      'ex-shawaa-no-ato-de-asagohan-o-tabemasu',
+      'ex-kaigi-no-ato-de-denwa-de-renrakushimasu',
+      'ex-hiruyasumi-no-ato-de-benkyoushimasu',
     ],
     commonMistakes: [
       'Forgetting that あとで also stays attached to a noun with の in this pack.',
@@ -3843,8 +3874,11 @@ export const grammarLessons = [
     tags: ['plain-style', 'recognition', 'copula', 'n5'],
     exampleIds: [
       'ex-tomodachi-wa-gakusei-da',
+      'ex-kyou-wa-daijoubu-da',
       'ex-heya-wa-shizuka-da',
+      'ex-kono-kafe-wa-shizuka-da',
       'ex-kono-mise-wa-kirei-da',
+      'ex-kono-mise-wa-benri-da',
       'ex-kyou-wa-genki-janai',
       'ex-heya-wa-shizuka-janai',
     ],
@@ -3883,7 +3917,9 @@ export const grammarLessons = [
       'ex-kyou-wa-atsukunai',
       'ex-kono-hon-wa-omoshiroi',
       'ex-kono-hon-wa-omoshirokunai',
+      'ex-kono-hon-wa-takakunai',
       'ex-kafe-wa-yasui',
+      'ex-kono-kafe-wa-yasukunai',
     ],
     commonMistakes: [
       'Waiting for です at the end even when the sentence is already complete in plain style.',
@@ -3917,10 +3953,13 @@ export const grammarLessons = [
     tags: ['plain-style', 'recognition', 'verbs', 'n5'],
     exampleIds: [
       'ex-kyou-eiga-o-miru',
+      'ex-yoru-meeru-o-yomu',
       'ex-uchi-de-hon-o-yomu',
       'ex-ashita-kafe-ni-iku',
       'ex-kyou-pan-o-taberu',
       'ex-kyou-koohii-o-nomanai',
+      'ex-kyou-meeru-o-yomanai',
+      'ex-kyou-ongaku-o-kiku',
       'ex-ashita-pan-o-tabenai',
     ],
     commonMistakes: [
@@ -3956,7 +3995,9 @@ export const grammarLessons = [
     exampleIds: [
       'ex-kinou-eiga-o-mita',
       'ex-kinou-hon-o-yonda',
+      'ex-kinou-koohii-o-nonda',
       'ex-ashita-kafe-ni-iku-ka',
+      'ex-ashita-eki-ni-iku-ka',
       'ex-kyou-eiga-o-miru-ka',
     ],
     commonMistakes: [
@@ -3994,6 +4035,9 @@ export const grammarLessons = [
       'ex-kafe-ni-ikimasu-soshite-benkyoushimasu',
       'ex-byouin-ni-ikimasu-sorekara-uchi-de-yasumimasu',
       'ex-shigoto-no-ato-de-kafe-ni-ikimasu-sorekara-hon-o-yomimasu',
+      'ex-kyou-wa-hare-desu-soshite-kouen-ni-ikimasu',
+      'ex-jugyou-no-ato-de-kafe-ni-ikimasu-sorekara-benkyoushimasu',
+      'ex-hoteru-ni-tsukimashita-soshite-yasumimasu',
     ],
     commonMistakes: [
       'Collapsing the two short sentences into one more complex clause before that grammar has been taught.',
@@ -4036,6 +4080,8 @@ export const grammarLessons = [
       'ex-densha-ga-okuremasu-dakara-sugu-renrakushimasu',
       'ex-kyou-wa-samui-desu-dakara-kooto-o-kimasu',
       'ex-kono-hon-wa-omoshiroi-demo-chotto-takai-desu',
+      'ex-tenki-ga-ii-desu-demo-uchi-de-benkyoushimasu',
+      'ex-yakusoku-ni-chotto-okuremasu-dakara-sugu-denwa-de-renrakushimasu',
     ],
     commonMistakes: [
       'Confusing だから with the earlier narrow `から` grammar even though this pack uses it as a sentence connector between two complete short lines.',
@@ -4077,6 +4123,9 @@ export const grammarLessons = [
       'ex-eiga-to-anime-ga-suki-desu',
       'ex-pan-to-keeki-o-tabemasu',
       'ex-kamera-to-hon-ga-hoshii-desu',
+      'ex-kippu-to-pasupooto-o-mochimasu',
+      'ex-masku-to-kusuri-o-mochimasu',
+      'ex-pan-to-onigiri-o-kaimasu',
       'ex-pan-to-keeki-to-koohii-o-kaimasu',
     ],
     commonMistakes: [
@@ -4111,6 +4160,8 @@ export const grammarLessons = [
     tags: ['listing', 'choice', 'n5'],
     exampleIds: [
       'ex-pan-ya-keeki-o-tabemasu',
+      'ex-kusuri-ya-mizu-o-kaimasu',
+      'ex-taoru-ya-mizu-o-mochimasu',
       'ex-koohii-ya-ocha-o-nomimasu',
       'ex-kamera-ya-hon-o-kaimasu',
       'ex-eiga-ya-anime-o-mimasu',
