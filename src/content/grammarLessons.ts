@@ -1663,6 +1663,11 @@ export const grammarLessons = [
       'ex-jugyou-wa-kuji-kara-juuji-made-desu',
       'ex-gogo-rokuji-kara-eiga-o-mimasu',
       'ex-kyou-wa-shichiji-made-benkyoushimasu',
+      'ex-kaigi-wa-kujihan-kara-desu',
+      'ex-arubaito-wa-yojihan-made-desu',
+      'ex-hiruyasumi-wa-juuniji-kara-ichiji-made-desu',
+      'ex-kaigi-wa-gogo-yojihan-made-desu',
+      'ex-kujihan-kara-benkyoushimasu',
     ],
     commonMistakes: [
       'Mixing up から and まで so the start and end times are reversed.',
@@ -1739,6 +1744,8 @@ export const grammarLessons = [
       'ex-shigatsu-ni-aimasu',
       'ex-gogatsu-ni-toshokan-ni-ikimasu',
       'ex-raigetsu-ni-yasumimasu',
+      'ex-shichigatsu-ni-eiga-o-mimasu',
+      'ex-hachigatsu-ni-toshokan-ni-ikimasu',
     ],
     commonMistakes: [
       'Using なんじ when the question is about the day or month, not the clock time.',
@@ -1777,6 +1784,8 @@ export const grammarLessons = [
       'ex-gogatsu-youka-ni-toshokan-ni-ikimasu',
       'ex-rokugatsu-tooka-ni-eiga-o-mimasu',
       'ex-raigetsu-futsuka-ni-kafe-ni-ikimasu',
+      'ex-shichigatsu-kokonoka-ni-aimasu',
+      'ex-hachigatsu-hatsuka-ni-kafe-ni-ikimasu',
     ],
     commonMistakes: [
       'Dropping に after the date phrase when the date is marking when the action happens.',
@@ -1815,6 +1824,10 @@ export const grammarLessons = [
       'ex-gogatsu-youka-no-kuji-kara-benkyoushimasu',
       'ex-shigatsu-mikka-no-rokuji-kara-eiga-o-mimasu',
       'ex-rokugatsu-tooka-no-gogo-rokuji-made-eki-de-matteimasu',
+      'ex-shichigatsu-kokonoka-no-gogo-rokuji-ni-konsaato-o-mimasu',
+      'ex-hachigatsu-hatsuka-no-gogo-shichiji-ni-paatii-ni-ikimasu',
+      'ex-yakusoku-wa-shichigatsu-kokonoka-no-gozen-kuji-desu',
+      'ex-raigetsu-futsuka-no-gozen-kuji-ni-shiyakusho-ni-ikimasu',
     ],
     commonMistakes: [
       'Dropping の between the date phrase and the time phrase.',
@@ -1853,6 +1866,8 @@ export const grammarLessons = [
       'ex-gogatsu-youka-ni-toshokan-ni-ikimashou-ka',
       'ex-raigetsu-futsuka-no-gogo-shichiji-ni-eiga-o-mimasen-ka',
       'ex-rokugatsu-tooka-no-kuji-kara-benkyoushimashou',
+      'ex-shichigatsu-kokonoka-no-gogo-rokuji-ni-konsaato-o-mimasu',
+      'ex-raigetsu-futsuka-no-gozen-kuji-ni-shiyakusho-ni-ikimasu',
     ],
     commonMistakes: [
       'Forgetting the invitation or proposal ending after building a longer date-and-time phrase.',
@@ -1895,6 +1910,9 @@ export const grammarLessons = [
       'ex-ringo-o-hitotsu-kaimasu',
       'ex-ringo-o-futatsu-kaimasu',
       'ex-ringo-o-itsutsu-kaimasu',
+      'ex-banana-o-hitotsu-kaimasu',
+      'ex-mikan-o-futatsu-kaimasu',
+      'ex-tomato-o-mittsu-kaimasu',
     ],
     commonMistakes: [
       'Dropping いくつ and turning the line into a plain buying statement instead of a quantity question.',
@@ -1937,6 +1955,8 @@ export const grammarLessons = [
       'ex-mittsu-kudasai',
       'ex-pan-o-mittsu-kudasai',
       'ex-okashi-o-yottsu-kudasai',
+      'ex-sandoicchi-o-hitotsu-kudasai',
+      'ex-suupu-o-futatsu-kudasai',
     ],
     commonMistakes: [
       'Leaving out ください when the lesson target is a request line rather than a plain statement.',
@@ -1975,6 +1995,8 @@ export const grammarLessons = [
       'ex-kono-hon-wa-ikura-desu-ka',
       'ex-kore-wa-hyaku-en-desu',
       'ex-pan-wa-nihyaku-en-desu',
+      'ex-boushi-wa-ikura-desu-ka',
+      'ex-boushi-wa-sanbyaku-en-desu',
     ],
     commonMistakes: [
       'Dropping は in a line like これはいくらですか when the item is the topic of the price question.',
@@ -2013,6 +2035,10 @@ export const grammarLessons = [
       'ex-ringo-wa-sanbyaku-en-desu',
       'ex-kono-hon-wa-gohyaku-en-desu',
       'ex-kono-kaban-wa-sen-en-desu',
+      'ex-boushi-wa-sanbyaku-en-desu',
+      'ex-seetaa-wa-sen-en-desu',
+      'ex-shatsu-wa-gohyaku-en-desu',
+      'ex-taoru-wa-nihyaku-en-desu',
     ],
     commonMistakes: [
       'Dropping えん from a price answer and leaving only the number.',
@@ -2051,6 +2077,9 @@ export const grammarLessons = [
       'ex-kono-hon-wa-arimasu-ka',
       'ex-ringo-wa-arimasu-ka',
       'ex-hai-arimasu',
+      'ex-yoguruto-wa-arimasu-ka',
+      'ex-chiizu-wa-arimasu-ka',
+      'ex-shanpuu-wa-arimasu-ka',
     ],
     commonMistakes: [
       'Using を instead of は when the item is the topic of the availability question.',
@@ -2089,6 +2118,7 @@ export const grammarLessons = [
       'ex-mou-hitotsu-kudasai',
       'ex-ringo-o-hitotsu-kudasai',
       'ex-pan-o-futatsu-kudasai',
+      'ex-koppu-o-hitotsu-kudasai',
     ],
     commonMistakes: [
       'Using これをいいです instead of the fixed expression これでいいです.',
@@ -2127,6 +2157,7 @@ export const grammarLessons = [
       'ex-uchi-de-benkyoushite-kudasai',
       'ex-pan-o-tabete-mo-ii-desu-ka',
       'ex-eiga-o-mite-mo-ii-desu-ka',
+      'ex-nihongo-de-hanashite-kudasai',
     ],
     commonMistakes: [
       'Leaving the verb in ます-form and writing パンをたべますください instead of パンをたべてください.',
@@ -2169,6 +2200,9 @@ export const grammarLessons = [
       'ex-eki-ni-itte-mo-ii-desu-ka',
       'ex-kore-o-katte-kudasai',
       'ex-koko-de-matte-kudasai',
+      'ex-ongaku-o-kiite-kudasai',
+      'ex-kouen-o-aruite-mo-ii-desu-ka',
+      'ex-namae-o-kaite-kudasai',
     ],
     commonMistakes: [
       'Writing のみて or よみて instead of the actual て-form chunks のんで and よんで.',
@@ -2211,6 +2245,8 @@ export const grammarLessons = [
       'ex-hon-o-yonde-sorekara-nemasu',
       'ex-eki-ni-itte-sorekara-densha-ni-norimasu',
       'ex-ringo-o-katte-sorekara-uchi-ni-ikimasu',
+      'ex-uchi-ni-kaette-sorekara-hon-o-yomimasu',
+      'ex-mado-o-akete-sorekara-benkyoushimasu',
     ],
     commonMistakes: [
       'Leaving the first verb in ます-form instead of switching it to て-form before それから.',
@@ -2253,6 +2289,8 @@ export const grammarLessons = [
       'ex-hon-o-yonde-kara-nemasu',
       'ex-toshokan-ni-itte-kara-hon-o-yomimasu',
       'ex-ringo-o-katte-kara-kafe-ni-ikimasu',
+      'ex-asa-okite-kara-koohii-o-nomimasu',
+      'ex-denki-o-keshite-kara-nemasu',
     ],
     commonMistakes: [
       'Using から without first changing the verb to て-form.',
@@ -2295,6 +2333,8 @@ export const grammarLessons = [
       'ex-ima-nihongo-o-benkyoushiteimasu',
       'ex-ima-pan-o-katteimasu',
       'ex-ima-eki-de-matteimasu',
+      'ex-ima-eiga-o-miteimasu',
+      'ex-ima-tomodachi-to-hanashiteimasu',
     ],
     commonMistakes: [
       'Stopping at the て-form chunk and forgetting to add います.',
@@ -2337,6 +2377,8 @@ export const grammarLessons = [
       'ex-ima-toshokan-de-hon-o-yondeimasu',
       'ex-ima-kafe-de-koohii-o-nondeimasu',
       'ex-mainichi-nihongo-o-benkyoushiteimasu',
+      'ex-mainichi-ongaku-o-kiiteimasu',
+      'ex-ima-kouen-o-aruiteimasu',
     ],
     commonMistakes: [
       'Using に incorrectly after a waiting place when the pattern needs で, as in えきでまっています.',
@@ -2379,6 +2421,10 @@ export const grammarLessons = [
       'ex-kamera-atarashikunai-desu',
       'ex-heya-hirokunai-desu',
       'ex-resutoran-takakunai-desu',
+      'ex-kono-kaban-atarashikunai-desu',
+      'ex-kono-pan-oishikunai-desu',
+      'ex-kono-kaban-ookikunai-desu',
+      'ex-kono-heya-hirokunai-desu',
     ],
     commonMistakes: [
       'Leaving the adjective in its positive form and only adding ない at the end of the sentence.',
@@ -2421,6 +2467,7 @@ export const grammarLessons = [
       'ex-kafe-shizuka-janai-desu',
       'ex-resutoran-kirei-janai-desu',
       'ex-hito-shizuka-janai-desu',
+      'ex-kono-kafe-kirei-janai-desu',
     ],
     commonMistakes: [
       'Using くないです on a な-adjective like しずか.',
