@@ -30,14 +30,18 @@ export function MissionCompletionCard({
   const completion = getMissionProgressEntry(progress, missionId);
   const isAutoCompleteReady = totalCount > 0 && clearedCount >= totalCount;
   const showReturnActions = isAutoCompleteReady || completion.isCompleted;
+  const completedCount = Math.min(clearedCount, totalCount);
+  const progressLabel = `${completedCount}/${totalCount} ${unitLabel}${totalCount === 1 ? '' : 's'}`;
 
   return (
     <SurfaceCard
-      title={sessionMode === 'reinforce' ? 'Short pass status' : 'Mission status'}
+      title={showReturnActions ? 'Ready for Today' : 'Keep this pass moving'}
       description={
-        sessionMode === 'reinforce'
-          ? 'Short reinforce passes stay local and count as quick follow-up practice.'
-          : 'Clear every drill or check in this pass to finish the mission.'
+        showReturnActions
+          ? sessionMode === 'reinforce'
+            ? 'This short pass is done. Use Today for the next best move.'
+            : 'This mission pass is done. Head back into Today for the next step.'
+          : 'Clear the remaining items in this pass, then return to Today.'
       }
     >
       <div className="mission-completion-card">
@@ -51,34 +55,39 @@ export function MissionCompletionCard({
                 : 'Completed earlier on this device'
               : 'Keep going'}
           </p>
-          <p className="mission-completion-card__meta">
-            {Math.min(clearedCount, totalCount)}/{totalCount} {unitLabel}
-            {totalCount === 1 ? '' : 's'} done
-          </p>
-          <p className="mission-completion-card__meta">
-            {completion.completionCount > 0
-              ? `Completed ${completion.completionCount} time${
-                  completion.completionCount === 1 ? '' : 's'
-                }`
-              : 'Not completed yet'}
-          </p>
+          <div className="review-chip-row review-chip-row--active" aria-label="Mission pass summary">
+            <span className="review-chip">{progressLabel}</span>
+            {showReturnActions ? (
+              <span className="review-chip">
+                {sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Core mission pass'}
+              </span>
+            ) : (
+              <span className="review-chip">Still in progress</span>
+            )}
+          </div>
           {completion.lastCompletedAt ? (
-            <p className="mission-completion-card__meta">
-              Last completed {formatCompletedAt(completion.lastCompletedAt)}
-            </p>
+            <details className="mission-completion-card__details">
+              <summary className="mission-completion-card__summary-toggle">Earlier on this device</summary>
+              <p className="mission-completion-card__meta">
+                Completed {completion.completionCount} time{completion.completionCount === 1 ? '' : 's'}.
+              </p>
+              <p className="mission-completion-card__meta">
+                Last completed {formatCompletedAt(completion.lastCompletedAt)}
+              </p>
+            </details>
           ) : null}
         </div>
 
         {showReturnActions ? (
           <div className="mission-step-actions mission-completion-card__actions">
             <Link to="/" state={returnState} className="mission-button mission-button--link">
-              Back to Today plan
+              Open Today plan
             </Link>
             <Link
               to="/missions"
               className="mission-button mission-button--secondary mission-button--link"
             >
-              Open mission path
+              Mission path
             </Link>
           </div>
         ) : null}

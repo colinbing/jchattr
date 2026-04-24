@@ -53,6 +53,7 @@ export function TodayPage() {
     recommendations.length > 2 ? recommendations.slice(0, 2) : recommendations;
   const bonusRecommendations =
     recommendations.length > 2 ? recommendations.slice(2) : [];
+  const primaryReturnAction = getPrimaryReturnAction(requiredRecommendations);
   const currentCoreChapter =
     missionLibraryChapters
       .filter((chapter) => chapter.kind === 'core')
@@ -137,8 +138,8 @@ export function TodayPage() {
           title="Mission finished"
           description={
             missionCompletion.sessionMode === 'reinforce'
-              ? 'Short follow-up pass done. Return to the Today plan for the next best move.'
-              : 'That mission pass is done. Today now points you at the next best move.'
+              ? 'Short follow-up pass done. Keep the loop moving with the next Today step.'
+              : 'That mission pass is done. Keep moving with the next Today step.'
           }
         >
           <div className="review-return-card mission-return-card">
@@ -157,6 +158,24 @@ export function TodayPage() {
               </span>
               <span className="review-chip">Today is ready with the next step</span>
             </div>
+
+            {primaryReturnAction ? (
+              <div className="mission-step-actions review-card-actions">
+                <Link
+                  to={primaryReturnAction.to}
+                  state={primaryReturnAction.state}
+                  className="mission-button mission-button--link"
+                >
+                  {primaryReturnAction.label}
+                </Link>
+                <Link
+                  to="/missions"
+                  className="mission-button mission-button--secondary mission-button--link"
+                >
+                  Mission path
+                </Link>
+              </div>
+            ) : null}
           </div>
         </SurfaceCard>
       ) : null}
@@ -167,7 +186,7 @@ export function TodayPage() {
           title="Review finished"
           description={
             reviewCompletion.nextBatchSize > 0
-              ? 'The queue is lighter. Keep moving with Today, or come back later for one more short batch.'
+              ? 'The queue is lighter. Keep moving with Today first.'
               : 'The review queue is clear. Move straight into Today.'
           }
         >
@@ -199,6 +218,33 @@ export function TodayPage() {
                   : 'Queue clear for now'}
               </span>
             </div>
+
+            {primaryReturnAction ? (
+              <div className="mission-step-actions review-card-actions">
+                <Link
+                  to={primaryReturnAction.to}
+                  state={primaryReturnAction.state}
+                  className="mission-button mission-button--link"
+                >
+                  {primaryReturnAction.label}
+                </Link>
+                {reviewCompletion.nextBatchSize > 0 ? (
+                  <Link
+                    to="/review"
+                    className="mission-button mission-button--secondary mission-button--link"
+                  >
+                    Review again later
+                  </Link>
+                ) : (
+                  <Link
+                    to="/missions"
+                    className="mission-button mission-button--secondary mission-button--link"
+                  >
+                    Mission path
+                  </Link>
+                )}
+              </div>
+            ) : null}
           </div>
         </SurfaceCard>
       ) : null}
@@ -353,14 +399,39 @@ type TodayLocationState = {
   reviewCompletion?: TodayReviewCompletion;
 };
 
+type TodayReturnAction = {
+  to: string;
+  state?: unknown;
+  label: string;
+};
+
 function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
   return recommendations.reduce((total, recommendation) => {
     if (recommendation.kind === 'review') {
       return total + Math.max(4, recommendation.batchSize * 2);
     }
 
-    return total + recommendation.mission.estimatedMinutes;
+  return total + recommendation.mission.estimatedMinutes;
   }, 0);
+}
+
+function getPrimaryReturnAction(recommendations: TodayRecommendation[]): TodayReturnAction | null {
+  const recommendation = recommendations[0];
+
+  if (!recommendation) {
+    return null;
+  }
+
+  return {
+    to: recommendation.to,
+    state:
+      recommendation.kind === 'review'
+        ? { returnTo: 'today' as const }
+        : recommendation.sessionMode === 'reinforce'
+          ? { sessionMode: 'reinforce' as const }
+          : undefined,
+    label: recommendation.ctaLabel,
+  };
 }
 
 function resolveContinueMission(

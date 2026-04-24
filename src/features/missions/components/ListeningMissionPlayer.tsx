@@ -219,10 +219,10 @@ export function ListeningMissionPlayer({
                     ),
                   })
                 }
-              >
-                Finish to Today
-              </button>
-            )}
+                >
+                  Finish to Today
+                </button>
+              )}
           </div>
         </div>
       </SurfaceCard>

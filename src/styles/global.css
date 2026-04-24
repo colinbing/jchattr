@@ -1507,6 +1507,17 @@ button {
   gap: var(--space-2);
 }
 
+.mission-completion-card__details {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.mission-completion-card__summary-toggle {
+  cursor: pointer;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 .mission-completion-card__status,
 .mission-completion-card__meta {
   margin: 0;
@@ -1601,6 +1612,10 @@ button {
 .review-launch-card__title {
   font-size: 1.05rem;
   font-weight: 700;
+}
+
+.review-post-batch-card {
+  gap: var(--space-3);
 }
 
 .review-launch-card__body,

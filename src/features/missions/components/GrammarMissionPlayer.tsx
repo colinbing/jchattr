@@ -15,6 +15,7 @@ import {
   updateContinueState,
 } from '../../../lib/progress/continueState';
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
+import { getReorderTokens } from '../../../lib/reorderDrill';
 import {
   getMissionProgressEntry,
   useMissionProgress,
@@ -404,7 +405,7 @@ export function GrammarMissionPlayer({
                   })
                 }
               >
-                Back to Today
+                Finish to Today
               </button>
             )}
           </div>
@@ -449,7 +450,7 @@ function DrillCard({
   onAdvance,
   onCleared,
 }: DrillCardProps) {
-  const reorderTokens = getReorderTokens(drill);
+  const reorderTokens = getReorderTokens(drill.prompt, drill.id);
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
   const [assembledTokenIndexes, setAssembledTokenIndexes] = useState<number[]>([]);
@@ -776,20 +777,6 @@ function getCurrentResponse({
   }
 
   return typedAnswer;
-}
-
-function getReorderTokens(drill: GrammarDrill) {
-  if (drill.type !== 'reorder') {
-    return [];
-  }
-
-  const promptParts = drill.prompt.split(/[:：]/);
-  const chunkSource = promptParts.length > 1 ? promptParts.slice(1).join(':') : drill.prompt;
-
-  return chunkSource
-    .split('/')
-    .map((token) => token.trim())
-    .filter(Boolean);
 }
 
 function normalizeAnswer(value: string) {

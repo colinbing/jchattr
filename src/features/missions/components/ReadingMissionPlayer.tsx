@@ -299,7 +299,7 @@ function ReadingCheckCard({
               className="mission-button"
               onClick={onAdvance}
             >
-              {hasNextCheck ? 'Next check' : 'Back to today'}
+              {hasNextCheck ? 'Next check' : 'Finish to Today'}
             </button>
             <button
               type="button"

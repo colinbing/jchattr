@@ -48,7 +48,7 @@ export type TodayRecommendation =
 // 2. Mark review as urgent when weak points are fresh, repeated, or numerous.
 // 3. Recommend the next unlocked incomplete mission in starter order.
 // 4. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
-// 5. Otherwise recommend one reinforcement mission, but avoid immediately repeating missions that were just reviewed.
+// 5. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
 // 6. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
 export function deriveTodayRecommendations(
   starterContent: StarterContent,
@@ -58,6 +58,7 @@ export function deriveTodayRecommendations(
   limit = TODAY_RECOMMENDATION_LIMIT,
 ): TodayRecommendation[] {
   const recommendations: TodayRecommendation[] = [];
+  const missionContextById = createMissionRecommendationContextById(starterContent);
   const selectedMissionIds = new Set<string>();
   const unlockedMissions = starterContent.missions.filter((mission) =>
     isMissionUnlocked(mission, missionProgress),
@@ -105,6 +106,14 @@ export function deriveTodayRecommendations(
     missionProgress,
     selectedMissionIds,
     reviewAwareness,
+    missionContextById,
+    nextMission
+      ? { mission: nextMission, source: 'next-step' }
+      : getFallbackReinforcementAnchor(
+          unlockedMissions,
+          selectedMissionIds,
+          reviewAwareness.topWeakPoint,
+        ),
   );
 
   if (supportMission) {
@@ -254,11 +263,23 @@ type SupportMissionSelection = {
   sessionMode: MissionSessionMode;
 };
 
+type ReinforcementAnchor = {
+  mission: Mission;
+  source: 'next-step' | 'weak-point';
+};
+
+type MissionRecommendationContext = {
+  targetSkill: Mission['targetSkill'];
+  grammarTags: Set<string>;
+};
+
 function selectSupportMission(
   unlockedMissions: Mission[],
   missionProgress: MissionProgressRecord,
   selectedMissionIds: Set<string>,
   reviewAwareness: ReviewAwareness,
+  missionContextById: Record<string, MissionRecommendationContext>,
+  anchor: ReinforcementAnchor | null,
 ): SupportMissionSelection | null {
   if (reviewAwareness.isUrgent) {
     const stabilizeMission = selectTopWeakPointMission(
@@ -299,6 +320,14 @@ function selectSupportMission(
 
   if (reinforceCandidates.length > 0) {
     const mission = reinforceCandidates.sort((left, right) => {
+      const relatednessDelta =
+        getMissionReinforcementScore(right, anchor, missionContextById) -
+        getMissionReinforcementScore(left, anchor, missionContextById);
+
+      if (relatednessDelta !== 0) {
+        return relatednessDelta;
+      }
+
       const leftProgress = getMissionProgressEntry(missionProgress, left.id);
       const rightProgress = getMissionProgressEntry(missionProgress, right.id);
 
@@ -319,7 +348,13 @@ function selectSupportMission(
     return {
       mission,
       slotLabel: 'Reinforce',
-      reason: buildReinforcementReason(mission, missionProgress, reviewAwareness),
+      reason: buildReinforcementReason(
+        mission,
+        missionProgress,
+        reviewAwareness,
+        missionContextById,
+        anchor,
+      ),
       ctaLabel: 'Open short pass',
       sessionMode: 'reinforce',
     };
@@ -334,7 +369,13 @@ function selectSupportMission(
   return {
     mission,
     slotLabel: 'Light pass',
-    reason: buildReinforcementReason(mission, missionProgress, reviewAwareness),
+    reason: buildReinforcementReason(
+      mission,
+      missionProgress,
+      reviewAwareness,
+      missionContextById,
+      anchor,
+    ),
     ctaLabel:
       getMissionProgressEntry(missionProgress, mission.id).completionCount > 0
         ? 'Open short pass'
@@ -350,8 +391,31 @@ function buildReinforcementReason(
   mission: Mission,
   missionProgress: MissionProgressRecord,
   reviewAwareness: ReviewAwareness,
+  missionContextById: Record<string, MissionRecommendationContext>,
+  anchor: ReinforcementAnchor | null,
 ) {
   const progress = getMissionProgressEntry(missionProgress, mission.id);
+  const relationSummary = anchor
+    ? getMissionRelationSummary(mission, anchor, missionContextById)
+    : null;
+
+  if (relationSummary) {
+    const relationAnchor = anchor;
+
+    if (relationAnchor?.source === 'next-step') {
+      return relationSummary.targetSkillMatches && relationSummary.sharedTags.length > 0
+        ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it warms up the same lane as your next mission.`
+        : relationSummary.targetSkillMatches
+          ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)}, so it reinforces the same skill lane as your next mission without replaying it.`
+          : `This short pass overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same grammar lane as your next mission without replaying it.`;
+    }
+
+    return relationSummary.targetSkillMatches && relationSummary.sharedTags.length > 0
+      ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same weak-point lane without replaying the mission that created it.`
+      : relationSummary.targetSkillMatches
+        ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)}, so it reinforces the same weak-point lane without replaying the original mission.`
+        : `This short pass overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same weak-point grammar lane without replaying the original mission.`;
+  }
 
   if (reviewAwareness.hasRecentReview && !reviewAwareness.isUrgent) {
     return 'You reviewed recently, so this uses a shorter follow-up pass instead of another full retry loop.';
@@ -474,6 +538,113 @@ function resolveRecentlyCompletedMissionIds(missionProgress: MissionProgressReco
       .filter(([, timestamp]) => now - Date.parse(timestamp) <= RECENT_MISSION_COMPLETION_WINDOW_MS)
       .map(([missionId]) => missionId),
   );
+}
+
+function getFallbackReinforcementAnchor(
+  unlockedMissions: Mission[],
+  selectedMissionIds: Set<string>,
+  topWeakPoint: WeakPoint | null,
+): ReinforcementAnchor | null {
+  const mission = selectTopWeakPointMission(unlockedMissions, selectedMissionIds, topWeakPoint);
+
+  return mission ? { mission, source: 'weak-point' } : null;
+}
+
+function createMissionRecommendationContextById(starterContent: StarterContent) {
+  return starterContent.missions.reduce<Record<string, MissionRecommendationContext>>(
+    (record, mission) => {
+      const grammarTags = new Set<string>();
+      const exampleIds = new Set<string>(mission.contentRefs.exampleIds ?? []);
+
+      (mission.contentRefs.grammarLessonIds ?? []).forEach((lessonId) => {
+        const lesson = starterContent.byId.grammarLessons[lessonId];
+
+        lesson?.tags
+          .filter((tag) => tag !== 'n5')
+          .forEach((tag) => grammarTags.add(tag));
+
+        lesson?.exampleIds.forEach((exampleId) => {
+          exampleIds.add(exampleId);
+        });
+      });
+
+      mission.readingChecks?.forEach((check) => {
+        exampleIds.add(check.exampleId);
+      });
+
+      exampleIds.forEach((exampleId) => {
+        starterContent.byId.exampleSentences[exampleId]?.grammarTags.forEach((tag) =>
+          grammarTags.add(tag),
+        );
+      });
+
+      record[mission.id] = {
+        targetSkill: mission.targetSkill,
+        grammarTags,
+      };
+
+      return record;
+    },
+    {},
+  );
+}
+
+function getMissionReinforcementScore(
+  mission: Mission,
+  anchor: ReinforcementAnchor | null,
+  missionContextById: Record<string, MissionRecommendationContext>,
+) {
+  if (!anchor) {
+    return 0;
+  }
+
+  const relationSummary = getMissionRelationSummary(mission, anchor, missionContextById);
+
+  if (!relationSummary) {
+    return 0;
+  }
+
+  return (relationSummary.targetSkillMatches ? 6 : 0) + relationSummary.sharedTags.length * 2;
+}
+
+function getMissionRelationSummary(
+  mission: Mission,
+  anchor: ReinforcementAnchor,
+  missionContextById: Record<string, MissionRecommendationContext>,
+) {
+  const missionContext = missionContextById[mission.id];
+  const anchorContext = missionContextById[anchor.mission.id];
+
+  if (!missionContext || !anchorContext) {
+    return null;
+  }
+
+  const sharedTags = [...missionContext.grammarTags]
+    .filter((tag) => anchorContext.grammarTags.has(tag))
+    .filter((tag) => !isLowSignalGrammarTag(tag))
+    .slice(0, 2);
+  const targetSkillMatches = missionContext.targetSkill === anchorContext.targetSkill;
+
+  if (!targetSkillMatches && sharedTags.length === 0) {
+    return null;
+  }
+
+  return {
+    targetSkillMatches,
+    sharedTags,
+  };
+}
+
+function isLowSignalGrammarTag(tag: string) {
+  return tag === 'daily-conversation' || tag === 'daily-routine';
+}
+
+function formatTargetSkill(targetSkill: Mission['targetSkill']) {
+  return targetSkill.replace(/-/g, ' ');
+}
+
+function formatTagList(tags: string[]) {
+  return tags.map((tag) => tag.replace(/-/g, ' ')).join(' and ');
 }
 
 function resolveRecentlyReviewedMissionIds(

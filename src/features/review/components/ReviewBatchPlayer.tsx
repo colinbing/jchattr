@@ -5,6 +5,7 @@ import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { GrammarDrill } from '../../../lib/content/types';
 import { hasDistinctReading } from '../../../lib/japaneseText';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
+import { getReorderTokens } from '../../../lib/reorderDrill';
 import type { ReviewBatchItem } from '../lib/reviewBatch';
 import {
   getListeningReviewChoices,
@@ -244,7 +245,7 @@ function GrammarReviewCard({
 }: ReviewCardProps & {
   item: Extract<ReviewBatchItem, { type: 'grammar-drill' }>;
 }) {
-  const reorderTokens = getReorderTokens(item.drill);
+  const reorderTokens = getReorderTokens(item.drill.prompt, item.drill.id);
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
   const [assembledTokenIndexes, setAssembledTokenIndexes] = useState<number[]>([]);
@@ -712,18 +713,4 @@ function getCurrentGrammarResponse({
   }
 
   return typedAnswer;
-}
-
-function getReorderTokens(drill: Extract<ReviewBatchItem, { type: 'grammar-drill' }>['drill']) {
-  if (drill.type !== 'reorder') {
-    return [];
-  }
-
-  const promptParts = drill.prompt.split(/[:：]/);
-  const chunkSource = promptParts.length > 1 ? promptParts.slice(1).join(':') : drill.prompt;
-
-  return chunkSource
-    .split('/')
-    .map((token) => token.trim())
-    .filter(Boolean);
 }

@@ -262,7 +262,7 @@ export function OutputMissionPlayer({
                     })
                   }
                 >
-                  Back to Today
+                  Finish to Today
                 </button>
               )
             ) : null}

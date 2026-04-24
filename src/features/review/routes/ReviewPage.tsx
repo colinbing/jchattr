@@ -133,11 +133,11 @@ export function ReviewPage() {
 
       {lastBatchSummary ? (
         <SurfaceCard
-          title="Batch finished"
+          title="Back to Today"
           description={
             lastBatchSummary.nextBatchSize > 0
-              ? 'Good. The queue is lighter. Return to Today first, then come back only if you want one more short batch.'
-              : 'Good. This batch is done. Return to Today and keep the loop moving.'
+              ? 'This batch is done. Return to Today first, then come back later only if you want one more short batch.'
+              : 'This batch is done. Return to Today and keep the loop moving.'
           }
         >
           <div className="review-post-batch-card">
@@ -173,7 +173,7 @@ export function ReviewPage() {
 
             <div className="mission-step-actions review-card-actions">
               <Link to="/" className="mission-button mission-button--link">
-                Back to Today
+                Open Today plan
               </Link>
 
               {lastBatchSummary.nextBatchSize > 0 ? (
@@ -185,7 +185,7 @@ export function ReviewPage() {
                     setActiveBatch(batchItems);
                   }}
                 >
-                  Start next batch
+                  One more batch
                 </button>
               ) : null}
             </div>
