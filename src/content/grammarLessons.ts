@@ -845,7 +845,12 @@ export const grammarLessons = [
       'Put the item before を, then finish with ください: for example, これをください or このほんをください. This gives you a very compact beginner pattern for selecting and requesting something in a shop.',
     prerequisites: ['grammar-request-te-kudasai'],
     tags: ['shopping', 'request', 'object', 'n5'],
-    exampleIds: ['ex-kore-o-kudasai', 'ex-kono-hon-o-kudasai', 'ex-pan-o-kudasai'],
+    exampleIds: [
+      'ex-kore-o-kudasai',
+      'ex-kono-hon-o-kudasai',
+      'ex-pan-o-kudasai',
+      'ex-onigiri-o-kudasai',
+    ],
     commonMistakes: [
       'Dropping を before ください when the lesson is teaching a clear item-request pattern.',
       'Using English-style order like くださいこれを.',
@@ -882,6 +887,9 @@ export const grammarLessons = [
       'ex-nani-o-kaimasu',
       'ex-dore-o-kaimasu',
       'ex-konbini-de-okashi-o-kaimasu',
+      'ex-bentou-o-kaimasu',
+      'ex-gyuunyuu-o-kaimasu',
+      'ex-tamago-o-kaimasu',
     ],
     commonMistakes: [
       'Dropping を before かいます when the lesson is teaching a direct object pattern.',
@@ -919,6 +927,7 @@ export const grammarLessons = [
       'ex-shichiji-desu',
       'ex-gozen-hachiji-desu',
       'ex-gogo-kuji-desu',
+      'ex-sanji-ni-kafe-de-koohii-o-nomimasu',
     ],
     commonMistakes: [
       'Dropping です in a polite time answer when the lesson is teaching the basic pattern.',
@@ -956,6 +965,9 @@ export const grammarLessons = [
       'ex-kuji-ni-nihongo-benkyoushimasu',
       'ex-asa-shichiji-ni-okimasu',
       'ex-yoru-juuji-ni-nemasu',
+      'ex-yoji-ni-toshokan-ni-ikimasu',
+      'ex-juuichiji-ni-nemasu',
+      'ex-juuniji-ni-hiru-o-tabemasu',
     ],
     commonMistakes: [
       'Leaving out に after the time expression in a schedule sentence.',
@@ -997,6 +1009,8 @@ export const grammarLessons = [
       'ex-kayoubi-ni-hon-o-yomimasu',
       'ex-mokuyoubi-ni-nihongo-o-benkyoushimasu',
       'ex-kinyoubi-ni-ongaku-o-kikimasu',
+      'ex-kayoubi-ni-kaimono-o-shimasu',
+      'ex-suiyoubi-ni-souji-o-shimasu',
     ],
     commonMistakes: [
       'Leaving out に after the weekday in a schedule sentence.',
@@ -1038,6 +1052,8 @@ export const grammarLessons = [
       'ex-getsuyoubi-ni-nani-o-shimasu-ka',
       'ex-nichiyoubi-wa-uchi-de-yasumimasu',
       'ex-raishuu-doyoubi-ni-toshokan-ni-ikimasu',
+      'ex-nichiyoubi-ni-sentaku-o-shimasu',
+      'ex-doyoubi-ni-sanpo-o-shimasu',
     ],
     commonMistakes: [
       'Dropping を before しますか when asking what someone does.',
@@ -1079,6 +1095,8 @@ export const grammarLessons = [
       'ex-densha-de-kaisha-ni-ikimasu',
       'ex-takushii-de-kuukou-ni-ikimasu',
       'ex-toshokan-made-jitensha-de-ikimasu',
+      'ex-chikatetsu-de-hoteru-ni-ikimasu',
+      'ex-basu-de-yuubinkyoku-ni-ikimasu',
     ],
     commonMistakes: [
       'Using に after the transport word instead of で when the line is showing how you travel.',
@@ -1120,6 +1138,8 @@ export const grammarLessons = [
       'ex-eki-made-arukimasu',
       'ex-machi-made-basu-de-ikimasu',
       'ex-kuukou-made-ikimasu',
+      'ex-supaa-made-arukimasu',
+      'ex-hoteru-made-takushii-de-ikimasu',
     ],
     commonMistakes: [
       'Replacing まで with に when the lesson is teaching the end point of a route.',
@@ -1157,6 +1177,7 @@ export const grammarLessons = [
       'ex-hidari-ni-magarimasu',
       'ex-massugu-ikimasu',
       'ex-kado-o-migi-ni-magarimasu',
+      'ex-hashi-o-migi-ni-magarimasu',
     ],
     commonMistakes: [
       'Leaving out に after みぎ or ひだり before まがります.',
@@ -1194,6 +1215,9 @@ export const grammarLessons = [
       'ex-eki-wa-asoko-desu',
       'ex-konbini-wa-eki-no-tonari-desu',
       'ex-kouen-wa-koko-no-chikaku-desu',
+      'ex-kitaguchi-wa-asoko-desu',
+      'ex-minamiguchi-wa-koko-desu',
+      'ex-kouen-wa-kawa-no-chikaku-desu',
     ],
     commonMistakes: [
       'Dropping は after the place when the lesson is teaching the topic pattern.',
@@ -1232,6 +1256,8 @@ export const grammarLessons = [
       'ex-nanji-ni-aimasu-ka',
       'ex-issho-ni-eigakan-ni-ikimasu-ka',
       'ex-shuumatsu-ni-resutoran-ni-ikimasu-ka',
+      'ex-issho-ni-suizokukan-ni-ikimasu-ka',
+      'ex-shuumatsu-ni-hakubutsukan-ni-ikimasu-ka',
     ],
     commonMistakes: [
       'Dropping に from いっしょに and turning the invitation into an unnatural fragment.',
@@ -1270,6 +1296,8 @@ export const grammarLessons = [
       'ex-hai-doyoubi-ni-ikimasu',
       'ex-rokujihan-ni-ekimae-de-aimasu',
       'ex-shuumatsu-ni-eigakan-ni-ikimasu',
+      'ex-hai-nichiyoubi-ni-doubutsuen-ni-ikimasu',
+      'ex-hai-raishuu-matsuri-ni-ikimasu',
     ],
     commonMistakes: [
       'Keeping the question ending か in a response instead of switching to a plain polite answer.',
@@ -1307,6 +1335,7 @@ export const grammarLessons = [
       'ex-eki-de-aimasu',
       'ex-basutei-de-aimasu',
       'ex-hiroba-de-aimasu',
+      'ex-kissaten-de-aimasu',
     ],
     commonMistakes: [
       'Using に instead of で after the meeting place when the line is showing where you meet.',
@@ -1345,6 +1374,9 @@ export const grammarLessons = [
       'ex-kouen-no-iriguchi-de-aimasu',
       'ex-konbini-no-soba-de-aimasu',
       'ex-biru-no-deguchi-de-aimasu',
+      'ex-kippu-uriba-no-mae-de-aimasu',
+      'ex-annaijo-no-soba-de-aimasu',
+      'ex-chuushajou-no-iriguchi-de-aimasu',
     ],
     commonMistakes: [
       'Dropping で after the final meeting-place phrase like えきまえ or いりぐち.',
@@ -1387,6 +1419,8 @@ export const grammarLessons = [
       'ex-ima-eki-desu',
       'ex-ima-kaisatsu-no-mae-desu',
       'ex-ima-chuouguchi-desu',
+      'ex-ima-homu-desu',
+      'ex-ima-machiaishitsu-desu',
     ],
     commonMistakes: [
       'Using いきます even though the speaker already arrived and should say つきました.',
@@ -1425,6 +1459,8 @@ export const grammarLessons = [
       'ex-nishiguchi-de-matteimasu',
       'ex-kaisatsu-no-mae-de-matteimasu',
       'ex-sugu-ikimasu',
+      'ex-noriba-de-matteimasu',
+      'ex-madoguchi-no-mae-de-matteimasu',
     ],
     commonMistakes: [
       'Dropping で after the waiting place and leaving only a place noun before まっています.',
@@ -1463,6 +1499,8 @@ export const grammarLessons = [
       'ex-rokuji-ni-aimasen-ka',
       'ex-konya-resutoran-ni-ikimasen-ka',
       'ex-kondo-toshokan-ni-ikimasen-ka',
+      'ex-issho-ni-kouen-o-arukimasen-ka',
+      'ex-kono-hon-o-yomimasen-ka',
     ],
     commonMistakes: [
       'Replacing ませんか with a plain negative line and losing the invitation meaning.',
@@ -1501,6 +1539,8 @@ export const grammarLessons = [
       'ex-issho-ni-benkyoushimasen-ka',
       'ex-shuumatsu-ni-kouen-ni-ikimasen-ka',
       'ex-ashita-eigakan-ni-ikimasen-ka',
+      'ex-issho-ni-ongaku-o-kikimasen-ka',
+      'ex-kafe-de-hanashimasen-ka',
     ],
     commonMistakes: [
       'Changing the suggestion into a plain statement and losing the invite meaning.',
@@ -1543,6 +1583,8 @@ export const grammarLessons = [
       'ex-kafe-de-koohii-o-nomimashou',
       'ex-eki-de-aimashou',
       'ex-kondo-eiga-o-mimashou',
+      'ex-issho-ni-kouen-o-arukimashou',
+      'ex-kono-hon-o-yomimashou',
     ],
     commonMistakes: [
       'Keeping the softer ませんか pattern when the lesson target is a direct proposal with ましょう.',
@@ -1581,6 +1623,8 @@ export const grammarLessons = [
       'ex-ashita-toshokan-ni-ikimashou-ka',
       'ex-konya-uchi-de-benkyoushimashou',
       'ex-shuumatsu-ni-kouen-ni-ikimashou',
+      'ex-issho-ni-ongaku-o-kikimashou-ka',
+      'ex-kafe-de-hanashimashou-ka',
     ],
     commonMistakes: [
       'Mixing up ましょう and ましょうか when the line is asking for a decision rather than stating one.',
