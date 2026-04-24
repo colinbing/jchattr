@@ -1,13 +1,19 @@
 type SessionSummaryProps = {
   missionCount: number;
-  recommendedCount: number;
-  totalMinutes: number;
+  chapterCount: number;
+  requiredCount: number;
+  requiredMinutes: number;
+  bonusCount: number;
+  bonusMinutes: number;
 };
 
 export function SessionSummary({
   missionCount,
-  recommendedCount,
-  totalMinutes,
+  chapterCount,
+  requiredCount,
+  requiredMinutes,
+  bonusCount,
+  bonusMinutes,
 }: SessionSummaryProps) {
   return (
     <section className="session-summary" aria-label="Daily session summary">
@@ -15,24 +21,28 @@ export function SessionSummary({
         <p className="session-summary__eyebrow">Today&apos;s session</p>
         <h2 className="session-summary__title">Small, repeatable daily plan</h2>
         <p className="session-summary__body">
-          Start with up to {recommendedCount} recommended item
-          {recommendedCount === 1 ? '' : 's'} today. The full starter set stays
-          available below, but it is not meant to be completed in one sitting.
+          Start with {requiredCount} core item{requiredCount === 1 ? '' : 's'} today,
+          then use the bonus lane only if you want more. The full mission library is
+          organized as a progression path, not a single sitting.
         </p>
       </div>
 
       <dl className="session-summary__stats">
         <div className="session-summary__stat">
-          <dt>Recommended now</dt>
-          <dd>{recommendedCount}</dd>
+          <dt>Do today</dt>
+          <dd>{requiredMinutes} min</dd>
+        </div>
+        <div className="session-summary__stat">
+          <dt>Bonus lane</dt>
+          <dd>{bonusCount > 0 ? `+${bonusMinutes} min` : 'Optional'}</dd>
+        </div>
+        <div className="session-summary__stat">
+          <dt>Chapters</dt>
+          <dd>{chapterCount}</dd>
         </div>
         <div className="session-summary__stat">
           <dt>Full mission set</dt>
           <dd>{missionCount}</dd>
-        </div>
-        <div className="session-summary__stat">
-          <dt>Starter-set estimate</dt>
-          <dd>{totalMinutes} min</dd>
         </div>
       </dl>
     </section>

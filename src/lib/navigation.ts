@@ -17,9 +17,9 @@ export const NAV_ITEMS: NavigationItem[] = [
   {
     to: '/missions',
     label: 'Missions',
-    caption: 'Mission queue',
+    caption: 'Mission path',
     eyebrow: 'Mission Library',
-    description: 'Browse the mission stack and enter focused grammar, listening, or output work.',
+    description: 'Browse the progression path and enter focused grammar, listening, output, or reading work.',
   },
   {
     to: '/progress',

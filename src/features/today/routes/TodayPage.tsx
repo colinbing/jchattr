@@ -1,6 +1,6 @@
+import { Link } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import type { Mission, StarterContent } from '../../../lib/content/types';
-import { MissionCard } from '../components/MissionCard';
 import { ContinueMissionCard } from '../components/ContinueMissionCard';
 import { SessionSummary } from '../components/SessionSummary';
 import { TodayRecommendationCard } from '../components/TodayRecommendationCard';
@@ -15,11 +15,15 @@ import {
 } from '../../../lib/progress/missionProgress';
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import { useWeakPoints } from '../../../lib/progress/weakPoints';
-import { deriveTodayRecommendations } from '../lib/todayRecommendations';
+import {
+  deriveTodayRecommendations,
+  type TodayRecommendation,
+  isMissionUnlocked,
+} from '../lib/todayRecommendations';
+import { missionLibraryChapters } from '../../missions/lib/missionLibraryStructure';
 
 export function TodayPage() {
   const starterContent = getStarterContent();
-  const missions = starterContent.missions;
   const missionProgress = useMissionProgress();
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
@@ -35,18 +39,65 @@ export function TodayPage() {
     missionProgress,
     continueState,
   );
+  const requiredRecommendations =
+    recommendations.length > 2 ? recommendations.slice(0, 2) : recommendations;
+  const bonusRecommendations =
+    recommendations.length > 2 ? recommendations.slice(2) : [];
+  const currentCoreChapter =
+    missionLibraryChapters
+      .filter((chapter) => chapter.kind === 'core')
+      .map((chapter) => {
+        const chapterMissions = chapter.missionIds.map(
+          (missionId) => starterContent.byId.missions[missionId],
+        );
+        const completedCount = chapterMissions.filter((mission) =>
+          getMissionProgressEntry(missionProgress, mission.id).isCompleted,
+        ).length;
+        const nextMission =
+          chapterMissions.find((mission) => {
+            const progress = getMissionProgressEntry(missionProgress, mission.id);
+            return isMissionUnlocked(mission, missionProgress) && progress.completionCount === 0;
+          }) ?? null;
+
+        return {
+          chapter,
+          missionCount: chapterMissions.length,
+          completedCount,
+          nextMission,
+        };
+      })
+      .find((entry) => entry.nextMission) ??
+    null;
+  const readingChapter = missionLibraryChapters.find(
+    (chapter) => chapter.kind === 'reading',
+  );
+  const readingCounts = readingChapter
+    ? readingChapter.missionIds.reduce(
+        (summary, missionId) => {
+          const progress = getMissionProgressEntry(missionProgress, missionId);
+          return {
+            missionCount: summary.missionCount + 1,
+            completedCount: summary.completedCount + (progress.isCompleted ? 1 : 0),
+          };
+        },
+        { missionCount: 0, completedCount: 0 },
+      )
+    : null;
 
   return (
     <PageShell
       eyebrow="Daily Entry"
       title="Today"
-      description="Start from a small local-first daily plan, then browse the full mission stack below. Recommendations stay deterministic and easy to inspect."
-      aside={<span className="status-chip">Starter session</span>}
+      description="Start from a small local-first daily plan, then use the mission path only when you want more. Recommendations stay deterministic and the bonus lane stays explicit."
+      aside={<span className="status-chip">Daily loop</span>}
     >
       <SessionSummary
         missionCount={starterContent.summary.missionCount}
-        recommendedCount={recommendations.length}
-        totalMinutes={starterContent.summary.totalMissionMinutes}
+        chapterCount={missionLibraryChapters.length}
+        requiredCount={requiredRecommendations.length}
+        requiredMinutes={getRecommendationMinuteTotal(requiredRecommendations)}
+        bonusCount={bonusRecommendations.length}
+        bonusMinutes={getRecommendationMinuteTotal(bonusRecommendations)}
       />
 
       {continueMission ? (
@@ -63,11 +114,11 @@ export function TodayPage() {
       ) : null}
 
       <SurfaceCard
-        title="Recommended today"
-        description="This daily plan uses only local mission progress, weak points, recent review activity, and unlock rules. It stays small on purpose: review, next step, then one support slot."
+        title="Do this today"
+        description="This is the core daily loop. Keep it short on purpose: urgent review first when needed, then the cleanest next step in the path."
       >
-        <div className="mission-list" role="list" aria-label="Recommended today">
-          {recommendations.map((recommendation) => (
+        <div className="mission-list" role="list" aria-label="Do this today">
+          {requiredRecommendations.map((recommendation) => (
             <div key={recommendation.id} role="listitem">
               <TodayRecommendationCard
                 recommendation={recommendation}
@@ -79,42 +130,111 @@ export function TodayPage() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="All missions"
-        description="Browse the full starter set below. Grammar, listening, output, and reading missions all stay available as the secondary view."
+        title="Bonus if you want more"
+        description="Use this only after the main plan. The bonus lane is there for reinforcement, stabilization, or one extra mission while momentum is still good."
       >
-        <div className="mission-list" role="list" aria-label="All missions">
-          {missions.map((mission) => (
-            <div key={mission.id} role="listitem">
-              <MissionCard
-                mission={mission}
-                progress={getMissionProgressEntry(missionProgress, mission.id)}
-              />
+        {bonusRecommendations.length > 0 ? (
+          <div className="mission-list" role="list" aria-label="Bonus practice">
+            {bonusRecommendations.map((recommendation) => (
+              <div key={recommendation.id} role="listitem">
+                <TodayRecommendationCard
+                  recommendation={recommendation}
+                  missionProgress={missionProgress}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul className="simple-list">
+            <li>
+              No extra slot is needed right now. Clear the main plan, then come back later or
+              browse the mission path manually.
+            </li>
+          </ul>
+        )}
+      </SurfaceCard>
+
+      <SurfaceCard
+        title="Where you are in the path"
+        description="The full mission library now lives on the Missions screen as a progression path: ten core chapters plus one reading lane."
+      >
+        <div className="path-summary">
+          <div className="path-summary__card">
+            <p className="path-summary__label">Current core chapter</p>
+            <h3 className="path-summary__title">
+              {currentCoreChapter ? currentCoreChapter.chapter.title : 'Core path complete'}
+            </h3>
+            <p className="path-summary__body">
+              {currentCoreChapter
+                ? `${currentCoreChapter.completedCount} of ${currentCoreChapter.missionCount} missions cleared.`
+                : 'Every core chapter is cleared on this device.'}
+            </p>
+            {currentCoreChapter?.nextMission ? (
+              <p className="path-summary__meta">
+                Next mission: {currentCoreChapter.nextMission.title}
+              </p>
+            ) : null}
+            <Link
+              to={
+                currentCoreChapter
+                  ? `/missions#${currentCoreChapter.chapter.id}`
+                  : '/missions'
+              }
+              className="inline-link"
+            >
+              Open mission path
+            </Link>
+          </div>
+
+          {readingCounts ? (
+            <div className="path-summary__card">
+              <p className="path-summary__label">Reading lane</p>
+              <h3 className="path-summary__title">
+                {readingChapter?.title ?? 'Reading checkpoints'}
+              </h3>
+              <p className="path-summary__body">
+                {readingCounts.completedCount} of {readingCounts.missionCount} reading missions
+                cleared.
+              </p>
+              <p className="path-summary__meta">
+                Use this lane to recombine prior content after the core path keeps moving.
+              </p>
+              <Link to="/missions#chapter-reading-path" className="inline-link">
+                Open reading path
+              </Link>
             </div>
-          ))}
+          ) : null}
         </div>
       </SurfaceCard>
 
       <SurfaceCard
-        title="Session shape"
-        description="Recommendations stay explicit: one review pass when needed, one unlocked next step, and one support slot that becomes more review-aware when weak points are fresh or repeated."
+        title="How the loop works"
+        description="The daily loop is now explicit instead of mixing the mission backlog into the same screen."
       >
         <ul className="simple-list">
           <li>
-            Up to {recommendations.length} recommended items built from local
-            progress, weak points, recent review history, and unlock rules
+            Do the core plan first: urgent review when needed, then the cleanest next mission.
           </li>
           <li>
-            {starterContent.summary.missionCount} total missions remain visible
-            below as the full starter set
+            Use the bonus lane only if you want more practice while momentum is still high.
           </li>
           <li>
-            Starter content and Today heuristics both remain local, typed, and
-            hand-editable
+            Browse the full path on the Missions screen, where the library is grouped into progression chapters instead of one long flat list.
           </li>
         </ul>
       </SurfaceCard>
     </PageShell>
   );
+}
+
+function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
+  return recommendations.reduce((total, recommendation) => {
+    if (recommendation.kind === 'review') {
+      return total + Math.max(4, recommendation.batchSize * 2);
+    }
+
+    return total + recommendation.mission.estimatedMinutes;
+  }, 0);
 }
 
 function resolveContinueMission(

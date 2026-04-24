@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
 import {
@@ -7,13 +8,16 @@ import {
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import { getWeakPointList, useWeakPoints } from '../../../lib/progress/weakPoints';
 import { MissionLibraryCard, type MissionLibraryCardData } from '../components/MissionLibraryCard';
+import { MissionChapterCard } from '../components/MissionChapterCard';
 import { TodayRecommendationCard } from '../../today/components/TodayRecommendationCard';
 import {
   deriveTodayRecommendations,
   isMissionUnlocked,
 } from '../../today/lib/todayRecommendations';
+import { missionLibraryChapters } from '../lib/missionLibraryStructure';
 
 export function MissionsPage() {
+  const location = useLocation();
   const starterContent = getStarterContent();
   const missionProgress = useMissionProgress();
   const weakPoints = useWeakPoints();
@@ -67,30 +71,60 @@ export function MissionsPage() {
       unlockRequirement: buildUnlockRequirement(mission, starterContent),
     };
   });
-  const recommendedSection = missionLibrary.filter((item) => item.isRecommended);
-  const unlockedSection = missionLibrary.filter(
-    (item) => item.isUnlocked && !item.isRecommended,
+  const missionLibraryById = new Map(
+    missionLibrary.map((item) => [item.mission.id, item]),
   );
-  const lockedSection = missionLibrary.filter((item) => !item.isUnlocked);
+  const chapterSections = missionLibraryChapters.map((chapter) => {
+    const items = chapter.missionIds
+      .map((missionId) => missionLibraryById.get(missionId))
+      .filter((item): item is MissionLibraryCardData => Boolean(item));
+    const hashId = location.hash.replace(/^#/, '');
+    const nextMission = items.find(
+      (item) => item.isUnlocked && item.progress.completionCount === 0,
+    );
+
+    return {
+      chapter,
+      items,
+      isOpenByDefault:
+        hashId === chapter.id ||
+        items.some((item) => item.isRecommended) ||
+        Boolean(nextMission),
+    };
+  });
+  const recommendedSection = missionLibrary.filter((item) => item.isRecommended);
   const completedCount = missionLibrary.filter((item) => item.progress.isCompleted).length;
   const unlockedCount = missionLibrary.filter((item) => item.isUnlocked).length;
   const weakPointMissionCount = missionLibrary.filter((item) => item.weakPointCount > 0).length;
+  const coreChapterCount = chapterSections.filter(
+    (section) => section.chapter.kind === 'core',
+  ).length;
+  const readingMissionCount =
+    chapterSections.find((section) => section.chapter.kind === 'reading')?.items.length ?? 0;
 
   return (
     <PageShell
       eyebrow="Mission Library"
       title="Missions"
-      description="Browse the full mission stack with the same local recommendation, unlock, completion, and weak-point signals used elsewhere in the app."
-      aside={<span className="status-chip">Local mission library</span>}
+      description="Browse the mission path as progression chapters instead of one flat backlog. Core packs and reading checkpoints stay visible in the same local-first library."
+      aside={<span className="status-chip">Progression path</span>}
     >
       <SurfaceCard
         title="Library at a glance"
-        description="All mission state comes from current starter content plus local progress, unlock rules, and weak-point data."
+        description="All mission state still comes from local progress, unlock rules, and weak-point data, but the library is grouped into chapters so the path is easier to read."
       >
         <dl className="mission-library-summary">
           <div className="mission-library-summary__stat">
             <dt>Total missions</dt>
             <dd>{starterContent.summary.missionCount}</dd>
+          </div>
+          <div className="mission-library-summary__stat">
+            <dt>Core chapters</dt>
+            <dd>{coreChapterCount}</dd>
+          </div>
+          <div className="mission-library-summary__stat">
+            <dt>Reading missions</dt>
+            <dd>{readingMissionCount}</dd>
           </div>
           <div className="mission-library-summary__stat">
             <dt>Unlocked now</dt>
@@ -128,82 +162,45 @@ export function MissionsPage() {
           title="Recommended today"
           description="These missions come directly from the same Today recommendation helper used on the daily entry screen."
         >
-          <MissionSection
-            ariaLabel="Recommended missions"
-            items={recommendedSection}
-            starterContent={starterContent}
-          />
+          <div className="mission-list" role="list" aria-label="Recommended missions">
+            {recommendedSection.map((item) => (
+              <div key={item.mission.id} role="listitem">
+                <MissionLibraryCard item={item} starterContent={starterContent} />
+              </div>
+            ))}
+          </div>
         </SurfaceCard>
       ) : null}
 
       <SurfaceCard
-        title="Ready to open"
-        description="Unlocked missions stay available even after completion, so you can revisit them for a light pass or reinforcement."
+        title="Mission path"
+        description="Open the current chapter, keep the main path moving, and use the reading lane as a recombination track rather than a second backlog."
       >
-        <MissionSection
-          ariaLabel="Unlocked missions"
-          items={unlockedSection}
-          starterContent={starterContent}
-          emptyState="No additional unlocked missions right now."
-        />
+        <div className="mission-chapter-list">
+          {chapterSections.map((section) => (
+            <MissionChapterCard
+              key={section.chapter.id}
+              chapter={section.chapter}
+              items={section.items}
+              starterContent={starterContent}
+              isOpenByDefault={section.isOpenByDefault}
+            />
+          ))}
+        </div>
       </SurfaceCard>
 
       <SurfaceCard
-        title="Locked next"
-        description="Locked missions stay visible so the path is easy to inspect. Unlock text comes from current required-mission rules only."
-      >
-        <MissionSection
-          ariaLabel="Locked missions"
-          items={lockedSection}
-          starterContent={starterContent}
-          emptyState="All current starter missions are unlocked."
-        />
-      </SurfaceCard>
-
-      <SurfaceCard
-        title="How states work"
-        description="The mission library stays deliberately small and explicit."
+        title="How the path works"
+        description="The library still uses the same deterministic rules, but it now shows them as a sequence instead of three disconnected buckets."
       >
         <ul className="simple-list">
-          <li>Recommended missions come from the same deterministic Today recommendation helper used on the home screen.</li>
-          <li>Unlocked or locked state comes only from each mission&apos;s `requiredMissionIds` and local completion data.</li>
-          <li>Completed state comes from manual mission completion on this device.</li>
-          <li>Needs review appears only when the weak-point store has recorded misses for that mission.</li>
+          <li>Core chapters follow the shipped five-pack curriculum path so the mission stack feels like progression, not a dump.</li>
+          <li>Reading checkpoints stay in their own lane because they are reinforcement and recombination, not the main unlock spine.</li>
+          <li>Unlocked or locked state still comes only from `requiredMissionIds` and local completion data.</li>
+          <li>Recommended today and needs-review states still come from the same deterministic local helpers used elsewhere in the app.</li>
         </ul>
       </SurfaceCard>
     </PageShell>
-  );
-}
-
-type MissionSectionProps = {
-  ariaLabel: string;
-  items: MissionLibraryCardData[];
-  starterContent: ReturnType<typeof getStarterContent>;
-  emptyState?: string;
-};
-
-function MissionSection({
-  ariaLabel,
-  items,
-  starterContent,
-  emptyState = 'No missions in this section.',
-}: MissionSectionProps) {
-  if (items.length === 0) {
-    return (
-      <ul className="simple-list">
-        <li>{emptyState}</li>
-      </ul>
-    );
-  }
-
-  return (
-    <div className="mission-list" role="list" aria-label={ariaLabel}>
-      {items.map((item) => (
-        <div key={item.mission.id} role="listitem">
-          <MissionLibraryCard item={item} starterContent={starterContent} />
-        </div>
-      ))}
-    </div>
   );
 }
 

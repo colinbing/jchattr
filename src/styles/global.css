@@ -483,6 +483,107 @@ button {
   font-size: 0.9rem;
 }
 
+.path-summary,
+.mission-chapter-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.path-summary__card,
+.mission-chapter {
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  background: var(--color-surface-strong);
+}
+
+.path-summary__card {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+}
+
+.path-summary__label,
+.mission-chapter__eyebrow {
+  margin: 0;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.path-summary__title,
+.mission-chapter__title {
+  margin: 0;
+  line-height: 1.15;
+}
+
+.path-summary__body,
+.path-summary__meta,
+.mission-chapter__description,
+.mission-chapter__packs {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.mission-chapter {
+  overflow: clip;
+}
+
+.mission-chapter__summary {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  list-style: none;
+  cursor: pointer;
+}
+
+.mission-chapter__summary::-webkit-details-marker {
+  display: none;
+}
+
+.mission-chapter__copy {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.mission-chapter__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.mission-chapter__stats div {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 253, 247, 0.88);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+}
+
+.mission-chapter__stats dt {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.8rem;
+}
+
+.mission-chapter__stats dd {
+  margin: var(--space-2) 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.mission-chapter__body {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.mission-chapter__state-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 .settings-summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1422,6 +1523,15 @@ button {
   .mission-drill-card__actions,
   .mission-step-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .path-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-chapter__summary {
+    grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.9fr);
+    align-items: start;
   }
 
   .mission-choice-grid--tokens {

@@ -1,11 +1,7 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { AppNav } from './AppNav';
-import { getRouteMeta } from '../../lib/navigation';
 
 export function AppShell() {
-  const location = useLocation();
-  const routeMeta = getRouteMeta(location.pathname);
-
   return (
     <div className="app-frame">
       <div className="app-shell">
@@ -22,14 +18,6 @@ export function AppShell() {
         </aside>
 
         <div className="app-shell__main">
-          <header className="app-header">
-            <div>
-              <p className="app-header__eyebrow">{routeMeta.eyebrow}</p>
-              <h2 className="app-header__title">{routeMeta.label}</h2>
-            </div>
-            <p className="app-header__body">{routeMeta.description}</p>
-          </header>
-
           <main className="app-content">
             <Outlet />
           </main>
