@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { ExampleSentence, Mission, ReadingCheck } from '../../../lib/content/types';
 import {
@@ -25,6 +25,7 @@ export function ReadingMissionPlayer({
   checks,
   examplesById,
 }: ReadingMissionPlayerProps) {
+  const navigate = useNavigate();
   const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
@@ -60,22 +61,52 @@ export function ReadingMissionPlayer({
     );
   }
 
+  function goToNextCheck() {
+    if (currentCheckIndex < checks.length - 1) {
+      setCurrentCheckIndex((index) => Math.min(checks.length - 1, index + 1));
+      return;
+    }
+
+    navigate('/');
+  }
+
   return (
     <div className="mission-player-shell">
       <SurfaceCard
-        title="Mission overview"
-        description="Read the Japanese line first, commit to one interpretation, then reveal support. Progress stays local to this page for now."
+        className="mission-session-card"
+        title={mission.title}
+        description={`Reading check ${currentCheckIndex + 1} · ${formatTargetSkill(mission.targetSkill)}`}
       >
-        <div className="mission-overview">
-          <div className="mission-overview__lesson">
-            <p className="mission-overview__eyebrow">Reading mission</p>
-            <h2 className="mission-overview__lesson-title">{mission.title}</h2>
-            <p className="mission-overview__objective">
-              Build reading recognition with short beginner lines before the app reveals the reading and meaning.
-            </p>
-          </div>
+        <div className="mission-session-card__meta-row">
+          <p className="mission-session-card__meta">
+            Check {currentCheckIndex + 1} of {checks.length}
+          </p>
+          <p className="mission-session-card__meta">{mission.estimatedMinutes} min</p>
+        </div>
 
-          <dl className="mission-overview__stats">
+        <div className="mission-progress">
+          <div className="mission-progress__meta">
+            <p className="mission-progress__label">Current focus</p>
+            <p className="mission-progress__step">Read first, reveal second</p>
+          </div>
+          <div
+            className="mission-progress__track"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progressValue}
+          >
+            <span
+              className="mission-progress__fill"
+              style={{ width: `${progressValue}%` }}
+            />
+          </div>
+        </div>
+
+        <details className="mission-session-details">
+          <summary className="mission-session-details__summary">Mission details</summary>
+          <dl className="mission-overview__stats mission-overview__stats--compact">
             <div className="mission-overview__stat">
               <dt>Target skill</dt>
               <dd>{formatTargetSkill(mission.targetSkill)}</dd>
@@ -93,34 +124,16 @@ export function ReadingMissionPlayer({
               <dd>{checks.length}</dd>
             </div>
           </dl>
-
-          <div className="mission-progress">
-            <div className="mission-progress__meta">
-              <p className="mission-progress__label">
-                Check {currentCheckIndex + 1} of {checks.length}
-              </p>
-              <p className="mission-progress__step">Read first, reveal second</p>
-            </div>
-            <div
-              className="mission-progress__track"
-              role="progressbar"
-              aria-label="Mission progress"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={progressValue}
-            >
-              <span
-                className="mission-progress__fill"
-                style={{ width: `${progressValue}%` }}
-              />
-            </div>
-          </div>
-        </div>
+          <p className="mission-session-details__body">
+            Build reading recognition with short beginner lines before the app reveals the reading
+            and meaning.
+          </p>
+        </details>
       </SurfaceCard>
 
       <SurfaceCard
         title={`Reading check ${currentCheckIndex + 1}`}
-        description="Choose the closest interpretation before the app reveals the support line."
+        description="One active line at a time. Answer first, then reveal support."
       >
         <div className="mission-step-panel">
           <ReadingCheckCard
@@ -128,35 +141,25 @@ export function ReadingMissionPlayer({
             missionId={mission.id}
             check={currentCheck}
             example={currentExample}
+            hasNextCheck={currentCheckIndex < checks.length - 1}
+            onAdvance={goToNextCheck}
             onCleared={handleCheckCleared}
           />
           <p className="list-meta">
-            Cleared {clearedCheckIds.length} of {checks.length} reading checks in this pass.
+            {clearedCheckIds.length}/{checks.length} reading checks done.
           </p>
 
-          <div className="mission-step-actions">
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
-              onClick={() => setCurrentCheckIndex((index) => Math.max(0, index - 1))}
-              disabled={currentCheckIndex === 0}
-            >
-              Previous check
-            </button>
-            {currentCheckIndex < checks.length - 1 ? (
+          {currentCheckIndex > 0 ? (
+            <div className="mission-step-actions mission-step-actions--single">
               <button
                 type="button"
-                className="mission-button"
-                onClick={() => setCurrentCheckIndex((index) => Math.min(checks.length - 1, index + 1))}
+                className="mission-button mission-button--secondary"
+                onClick={() => setCurrentCheckIndex((index) => Math.max(0, index - 1))}
               >
-                Next check
+                Previous check
               </button>
-            ) : (
-              <Link to="/" className="mission-button mission-button--link">
-                Back to today
-              </Link>
-            )}
-          </div>
+            </div>
+          ) : null}
         </div>
       </SurfaceCard>
 
@@ -174,6 +177,8 @@ type ReadingCheckCardProps = {
   missionId: string;
   check: ReadingCheck;
   example: ExampleSentence;
+  hasNextCheck: boolean;
+  onAdvance: () => void;
   onCleared: (checkId: string) => void;
 };
 
@@ -181,6 +186,8 @@ function ReadingCheckCard({
   missionId,
   check,
   example,
+  hasNextCheck,
+  onAdvance,
   onCleared,
 }: ReadingCheckCardProps) {
   const [selectedChoice, setSelectedChoice] = useState('');
@@ -239,24 +246,45 @@ function ReadingCheckCard({
       </div>
 
       <div className="mission-drill-card__actions">
-        <button
-          type="button"
-          className="mission-button"
-          onClick={submitCheck}
-          disabled={!selectedChoice}
-        >
-          Check reading
-        </button>
-        <button
-          type="button"
-          className="mission-button mission-button--secondary"
-          onClick={() => {
-            setSelectedChoice('');
-            setFeedback(null);
-          }}
-        >
-          Reset
-        </button>
+        {hasSubmitted ? (
+          <>
+            <button
+              type="button"
+              className="mission-button"
+              onClick={onAdvance}
+            >
+              {hasNextCheck ? 'Next check' : 'Back to today'}
+            </button>
+            <button
+              type="button"
+              className="mission-button mission-button--secondary"
+              onClick={() => setFeedback(null)}
+            >
+              Edit answer
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="mission-button"
+              onClick={submitCheck}
+              disabled={!selectedChoice}
+            >
+              Check reading
+            </button>
+            <button
+              type="button"
+              className="mission-button mission-button--secondary"
+              onClick={() => {
+                setSelectedChoice('');
+                setFeedback(null);
+              }}
+            >
+              Reset
+            </button>
+          </>
+        )}
       </div>
 
       {feedback ? (

@@ -120,6 +120,18 @@ export function MissionsPage() {
   ).length;
   const readingMissionCount =
     chapterSections.find((section) => section.chapter.kind === 'reading')?.items.length ?? 0;
+  const activeChapterProgress = activeSection
+    ? `${activeSection.completedCount}/${activeSection.items.length} cleared`
+    : null;
+  const activeChapterSummary = activeSection
+    ? activeSection.chapter.kind === 'reading'
+      ? `${activeSection.items.length} reading checkpoint${
+          activeSection.items.length === 1 ? '' : 's'
+        } in the recombination lane`
+      : `${activeSection.unlockedCount} mission${
+          activeSection.unlockedCount === 1 ? '' : 's'
+        } unlocked in this five-pack block`
+    : null;
 
   function openChapter(chapterId: string) {
     navigate(`/missions#${chapterId}`, { replace: true });
@@ -127,49 +139,17 @@ export function MissionsPage() {
 
   return (
     <PageShell
+      variant="compact"
       eyebrow="Mission Library"
       title="Missions"
-      description="Browse the mission path as one active chapter at a time instead of a long stacked backlog. Core packs and reading checkpoints stay inside the same local-first library, but the page now reads like progression instead of archive management."
+      description="Stay inside one chapter and open the next required mission fast."
       aside={<span className="status-chip">Progression path</span>}
     >
-      <SurfaceCard
-        className="mission-library-page__section"
-        title="Library at a glance"
-        description="All mission state still comes from local progress, unlock rules, and weak-point data, but the library now uses a single-active-chapter format so desktop and mobile both stay readable."
-      >
-        <dl className="mission-library-summary">
-          <div className="mission-library-summary__stat">
-            <dt>Total missions</dt>
-            <dd>{starterContent.summary.missionCount}</dd>
-          </div>
-          <div className="mission-library-summary__stat">
-            <dt>Core chapters</dt>
-            <dd>{coreChapterCount}</dd>
-          </div>
-          <div className="mission-library-summary__stat">
-            <dt>Reading missions</dt>
-            <dd>{readingMissionCount}</dd>
-          </div>
-          <div className="mission-library-summary__stat">
-            <dt>Unlocked now</dt>
-            <dd>{unlockedCount}</dd>
-          </div>
-          <div className="mission-library-summary__stat">
-            <dt>Completed</dt>
-            <dd>{completedCount}</dd>
-          </div>
-          <div className="mission-library-summary__stat">
-            <dt>With weak points</dt>
-            <dd>{weakPointMissionCount}</dd>
-          </div>
-        </dl>
-      </SurfaceCard>
-
       {reviewRecommendation ? (
         <SurfaceCard
-          className="mission-library-page__section"
+          className="mission-library-page__section today-support-card"
           title="Review first"
-          description="Today recommends the review loop before more mission work because unresolved misses are still open."
+          description="Clear the retry queue before pushing farther into the path."
         >
           <div className="mission-list" role="list" aria-label="Review recommendation">
             <div role="listitem">
@@ -182,26 +162,10 @@ export function MissionsPage() {
         </SurfaceCard>
       ) : null}
 
-      {recommendedSection.length > 0 ? (
-        <SurfaceCard
-          className="mission-library-page__section"
-          title="Recommended today"
-          description="These missions come directly from the same Today recommendation helper used on the daily entry screen."
-        >
-          <div className="mission-list" role="list" aria-label="Recommended missions">
-            {recommendedSection.map((item) => (
-              <div key={item.mission.id} role="listitem">
-                <MissionLibraryCard item={item} starterContent={starterContent} />
-              </div>
-            ))}
-          </div>
-        </SurfaceCard>
-      ) : null}
-
       <SurfaceCard
         className="mission-library-page__section"
         title="Mission path"
-        description="This page now uses a single-column, single-active-chapter format. Pick a chapter from the switcher, work inside that chapter, then move forward without scanning the whole library at once."
+        description="Open the current chapter, start the next required mission, then move on."
       >
         <div className="mission-library-switcher">
           <div className="mission-library-switcher__track" role="tablist" aria-label="Mission chapters">
@@ -244,15 +208,24 @@ export function MissionsPage() {
             >
               <div className="mission-library-switcher__toolbar">
                 <div className="mission-library-switcher__toolbar-copy">
-                  <p className="mission-library-switcher__eyebrow">Active chapter</p>
+                  <p className="mission-library-switcher__eyebrow">
+                    {activeSection.chapter.packRangeLabel ?? activeSection.chapter.label}
+                  </p>
                   <h3 className="mission-library-switcher__title">
                     {activeSection.chapter.title}
                   </h3>
-                  <p className="mission-library-switcher__body">
-                    {activeSection.chapter.kind === 'reading'
-                      ? 'Use the reading lane as deliberate recombination once the core path is moving.'
-                      : 'Use the chapter switcher to stay inside one five-pack block at a time instead of scanning a full page of chapters.'}
-                  </p>
+                  <div className="mission-library-switcher__summary-row" aria-label="Active chapter summary">
+                    {activeChapterProgress ? (
+                      <span className="mission-library-switcher__summary-chip">
+                        {activeChapterProgress}
+                      </span>
+                    ) : null}
+                    {activeChapterSummary ? (
+                      <span className="mission-library-switcher__summary-chip">
+                        {activeChapterSummary}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="mission-library-switcher__actions">
@@ -285,18 +258,72 @@ export function MissionsPage() {
         </div>
       </SurfaceCard>
 
+      {recommendedSection.length > 0 ? (
+        <SurfaceCard
+          className="mission-library-page__section today-support-card"
+          title="Also recommended"
+          description="Open this only if you want the same Today picks while browsing Missions."
+        >
+          <details className="today-details">
+            <summary className="today-details__summary">
+              View {recommendedSection.length} recommended mission
+              {recommendedSection.length === 1 ? '' : 's'}
+            </summary>
+            <div className="mission-list" role="list" aria-label="Recommended missions">
+              {recommendedSection.map((item) => (
+                <div key={item.mission.id} role="listitem">
+                  <MissionLibraryCard item={item} starterContent={starterContent} />
+                </div>
+              ))}
+            </div>
+          </details>
+        </SurfaceCard>
+      ) : null}
+
       <SurfaceCard
-        className="mission-library-page__section"
-        title="How the path works"
-        description="The library still uses the same deterministic rules, but it now shows them as one chosen chapter at a time instead of an all-open stack."
+        className="mission-library-page__section today-support-card"
+        title="Path snapshot"
+        description="Open this only if you want totals and path rules."
       >
-        <ul className="simple-list">
-          <li>Core chapters follow the shipped five-pack curriculum path so the mission stack feels like progression, not a dump.</li>
-          <li>Reading checkpoints stay in their own lane because they are reinforcement and recombination, not the main unlock spine.</li>
-          <li>The current format choice is explicit: a single-active-chapter sequence instead of the earlier two-column grouped stack.</li>
-          <li>Unlocked or locked state still comes only from `requiredMissionIds` and local completion data.</li>
-          <li>Recommended today and needs-review states still come from the same deterministic local helpers used elsewhere in the app.</li>
-        </ul>
+        <details className="today-details">
+          <summary className="today-details__summary">View library totals</summary>
+          <dl className="mission-library-summary">
+            <div className="mission-library-summary__stat">
+              <dt>Total missions</dt>
+              <dd>{starterContent.summary.missionCount}</dd>
+            </div>
+            <div className="mission-library-summary__stat">
+              <dt>Core chapters</dt>
+              <dd>{coreChapterCount}</dd>
+            </div>
+            <div className="mission-library-summary__stat">
+              <dt>Reading missions</dt>
+              <dd>{readingMissionCount}</dd>
+            </div>
+            <div className="mission-library-summary__stat">
+              <dt>Unlocked now</dt>
+              <dd>{unlockedCount}</dd>
+            </div>
+            <div className="mission-library-summary__stat">
+              <dt>Completed</dt>
+              <dd>{completedCount}</dd>
+            </div>
+            <div className="mission-library-summary__stat">
+              <dt>With weak points</dt>
+              <dd>{weakPointMissionCount}</dd>
+            </div>
+          </dl>
+        </details>
+
+        <details className="today-details">
+          <summary className="today-details__summary">How this path works</summary>
+          <ul className="simple-list">
+            <li>Core chapters follow the shipped five-pack curriculum path so the mission stack feels like progression, not a dump.</li>
+            <li>Reading checkpoints stay in their own lane because they are reinforcement and recombination, not the main unlock spine.</li>
+            <li>Unlocked or locked state still comes only from `requiredMissionIds` and local completion data.</li>
+            <li>Recommended and needs-review states still come from the same deterministic local helpers used elsewhere in the app.</li>
+          </ul>
+        </details>
       </SurfaceCard>
     </PageShell>
   );

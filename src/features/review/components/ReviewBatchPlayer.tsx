@@ -52,17 +52,23 @@ export function ReviewBatchPlayer({
   return (
     <div className="review-batch-player">
       <SurfaceCard
-        title="Focused review batch"
-        description="Retry a small deterministic set of weak points. Successful retries reduce weak-point pressure immediately."
+        className="mission-session-card review-session-card"
+        title="Review batch"
+        description="One active retry at a time."
       >
+        <div className="mission-session-card__meta-row">
+          <p className="mission-session-card__meta">
+            Item {currentIndex + 1} of {items.length}
+          </p>
+          <p className="mission-session-card__meta">
+            {completedCount}/{items.length} attempted
+          </p>
+        </div>
+
         <div className="mission-progress">
           <div className="mission-progress__meta">
-            <p className="mission-progress__label">
-              Item {currentIndex + 1} of {items.length}
-            </p>
-            <p className="mission-progress__step">
-              {completedCount} attempted / {items.length}
-            </p>
+            <p className="mission-progress__label">Current focus</p>
+            <p className="mission-progress__step">{formatReviewFocusLabel(currentItem)}</p>
           </div>
           <div
             className="mission-progress__track"
@@ -81,15 +87,32 @@ export function ReviewBatchPlayer({
       </SurfaceCard>
 
       <SurfaceCard
+        className="review-task-card"
         title={summary.title}
-        description={`${summary.eyebrow} · ${summary.missionTitle}`}
+        description={getReviewTaskDescription(currentItem)}
       >
         <div className="review-current-item">
-          <p className="review-current-item__body">{summary.body}</p>
-          <p className="review-current-item__meta">
-            Missed {currentItem.weakPoint.missCount} time
-            {currentItem.weakPoint.missCount === 1 ? '' : 's'} before this retry
-          </p>
+          <div className="review-current-item__header">
+            <div className="review-chip-row review-chip-row--active" aria-label="Review item context">
+              <span className="review-chip">{summary.eyebrow}</span>
+              <span className="review-chip">
+                Missed {currentItem.weakPoint.missCount} time
+                {currentItem.weakPoint.missCount === 1 ? '' : 's'}
+              </span>
+            </div>
+
+            <details className="review-support-details">
+              <summary className="review-support-details__summary">Item context</summary>
+              <div className="review-support-note">
+                <p className="review-support-details__body">
+                  Mission: {summary.missionTitle}
+                </p>
+                <p className="review-support-details__body">
+                  Saved from earlier misses in this mission and ready for one focused retry.
+                </p>
+              </div>
+            </details>
+          </div>
 
           {currentItem.type === 'grammar-drill' ? (
             <GrammarReviewCard
@@ -380,11 +403,14 @@ function ListeningReviewCard({
           <p className="mission-copy-block__eyebrow">Transcript</p>
           <p className="listening-reveal-card__value">{item.listeningItem.transcript}</p>
         </section>
-        <section className="listening-reveal-card">
-          <p className="mission-copy-block__eyebrow">Focus point</p>
-          <p className="listening-reveal-card__value">{item.listeningItem.focusPoint}</p>
-        </section>
       </div>
+
+      <details className="review-support-details">
+        <summary className="review-support-details__summary">Focus note</summary>
+        <div className="review-support-note">
+          <p className="review-support-details__body">{item.listeningItem.focusPoint}</p>
+        </div>
+      </details>
 
       <div className="mission-choice-grid">
         {translationChoices.map((choice) => (
@@ -453,10 +479,12 @@ function OutputReviewCard({
   return (
     <div className="review-retry-card">
       {item.task.hint ? (
-        <div className="output-task-card__hint">
-          <p className="mission-copy-block__eyebrow">Hint</p>
-          <p className="mission-copy-block__body">{item.task.hint}</p>
-        </div>
+        <details className="review-support-details">
+          <summary className="review-support-details__summary">Hint</summary>
+          <div className="review-support-note">
+            <p className="review-support-details__body">{item.task.hint}</p>
+          </div>
+        </details>
       ) : null}
 
       <KanaAssistTextarea
@@ -634,6 +662,32 @@ function ReviewFeedback({
       </p>
     </div>
   );
+}
+
+function formatReviewFocusLabel(item: ReviewBatchItem) {
+  switch (item.type) {
+    case 'grammar-drill':
+      return 'Grammar retry';
+    case 'listening-check':
+      return 'Listening retry';
+    case 'output-task':
+      return 'Output retry';
+    case 'reading-check':
+      return 'Reading retry';
+  }
+}
+
+function getReviewTaskDescription(item: ReviewBatchItem) {
+  switch (item.type) {
+    case 'grammar-drill':
+      return 'Solve one grammar retry before moving on.';
+    case 'listening-check':
+      return 'Choose the best meaning before opening extra support.';
+    case 'output-task':
+      return 'Write one short line, then check it.';
+    case 'reading-check':
+      return 'Read first, answer once, then reveal support.';
+  }
 }
 
 function getCurrentGrammarResponse({

@@ -16,6 +16,7 @@ type ResetActionConfig = {
   title: string;
   description: string;
   summary: string;
+  kind: 'routine' | 'destructive';
 };
 
 export function SettingsPage() {
@@ -43,6 +44,7 @@ export function SettingsPage() {
         } and ${totalCompletionCount} total completion tap${
           totalCompletionCount === 1 ? '' : 's'
         } saved locally.`,
+        kind: 'routine',
       },
       {
         id: 'weak-points',
@@ -50,6 +52,7 @@ export function SettingsPage() {
         description:
           'Clear recorded misses and remove current weak-point pressure from review surfaces.',
         summary: `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} tracked locally.`,
+        kind: 'routine',
       },
       {
         id: 'review-loop',
@@ -59,6 +62,7 @@ export function SettingsPage() {
         summary: `${reviewLoopProgress.completedBatchCount} completed review batch${
           reviewLoopProgress.completedBatchCount === 1 ? '' : 'es'
         } saved locally.`,
+        kind: 'routine',
       },
       {
         id: 'continue-state',
@@ -68,6 +72,7 @@ export function SettingsPage() {
         summary: continueState.lastActiveMissionId
           ? `Resume state currently points to "${starterContent.byId.missions[continueState.lastActiveMissionId]?.title ?? continueState.lastActiveMissionId}".`
           : 'No saved resume state right now.',
+        kind: 'routine',
       },
       {
         id: 'all-study-data',
@@ -76,6 +81,7 @@ export function SettingsPage() {
           'Clear mission progress, weak points, review-loop history, and continue state on this device.',
         summary:
           'Use this only when you want a full local reset of the current MVP study state.',
+        kind: 'destructive',
       },
     ];
   }, [
@@ -86,17 +92,22 @@ export function SettingsPage() {
     totalCompletionCount,
     weakPointList.length,
   ]);
+  const routineResetActions = resetActions.filter((action) => action.kind === 'routine');
+  const destructiveResetAction =
+    resetActions.find((action) => action.kind === 'destructive') ?? null;
 
   return (
     <PageShell
+      variant="compact"
       eyebrow="Preferences"
       title="Settings"
-      description="A compact local control surface for study data and listening-audio coverage. Nothing here depends on an account or backend."
+      description="Local controls only. Quick resets first, heavier reset detail only when you ask for it."
       aside={<span className="status-chip">Local controls</span>}
     >
       <SurfaceCard
-        title="Local study data"
-        description="These summaries reflect only the current browser and device."
+        className="settings-page__snapshot-card"
+        title="Local snapshot"
+        description="Everything here applies only to this browser on this device."
       >
         <dl className="settings-summary-grid">
           <div className="settings-summary-grid__stat">
@@ -122,14 +133,32 @@ export function SettingsPage() {
             {lastResetMessage}
           </p>
         ) : null}
+
+        <details className="today-details">
+          <summary className="today-details__summary">Audio coverage snapshot</summary>
+          <div className="settings-page__detail-copy">
+            <p className="today-details__body">
+              {audioStatus.matchedAssetCount}/{audioStatus.itemsWithAudioRefCount} listening item
+              {audioStatus.itemsWithAudioRefCount === 1 ? '' : 's'} with `audioRef` currently match
+              generated audio files.
+            </p>
+            <p className="today-details__body">
+              {audioStatus.missingItemCount === 0
+                ? 'No listening items currently point to missing audio files.'
+                : `${audioStatus.missingItemCount} listening item${
+                    audioStatus.missingItemCount === 1 ? '' : 's'
+                  } still point to missing audio files.`}
+            </p>
+          </div>
+        </details>
       </SurfaceCard>
 
       <SurfaceCard
-        title="Reset local data"
-        description="Reset controls are explicit and local-only. Each action requires one extra confirmation step before it runs."
+        title="Quick resets"
+        description="Use these when one local surface is stale and you do not want a full reset."
       >
         <div className="settings-action-list">
-          {resetActions.map((action) => (
+          {routineResetActions.map((action) => (
             <ResetActionCard
               key={action.id}
               action={action}
@@ -150,54 +179,86 @@ export function SettingsPage() {
       </SurfaceCard>
 
       <SurfaceCard
-        title="Listening audio status"
-        description="Audio coverage is derived from listening content plus a tiny local manifest of generated asset paths already present in the repo."
+        className="today-support-card"
+        title="Full reset"
+        description="Open this only if you want to clear the entire local study state on this device."
       >
-        <dl className="settings-summary-grid">
-          <div className="settings-summary-grid__stat">
-            <dt>Listening items</dt>
-            <dd>{audioStatus.listeningItemCount}</dd>
-          </div>
-          <div className="settings-summary-grid__stat">
-            <dt>With `audioRef`</dt>
-            <dd>{audioStatus.itemsWithAudioRefCount}</dd>
-          </div>
-          <div className="settings-summary-grid__stat">
-            <dt>Matched assets</dt>
-            <dd>{audioStatus.matchedAssetCount}</dd>
-          </div>
-          <div className="settings-summary-grid__stat">
-            <dt>Missing files</dt>
-            <dd>{audioStatus.missingItemCount}</dd>
-          </div>
-        </dl>
+        <details className="today-details">
+          <summary className="today-details__summary">Open full reset controls</summary>
+          {destructiveResetAction ? (
+            <ResetActionCard
+              action={destructiveResetAction}
+              isPending={pendingResetId === destructiveResetAction.id}
+              onStartConfirm={() => {
+                setPendingResetId(destructiveResetAction.id);
+                setLastResetMessage(null);
+              }}
+              onCancel={() => setPendingResetId(null)}
+              onConfirm={() => {
+                resetStudyDataStore(destructiveResetAction.id);
+                setPendingResetId(null);
+                setLastResetMessage(
+                  `Reset complete: ${destructiveResetAction.title.toLowerCase()}.`,
+                );
+              }}
+            />
+          ) : null}
+        </details>
+      </SurfaceCard>
 
-        <ul className="simple-list">
-          <li>
-            {audioStatus.matchedAssetCount === audioStatus.itemsWithAudioRefCount
-              ? 'All current listening items with audio references have matching generated files.'
-              : `${audioStatus.missingItemCount} listening item${
-                  audioStatus.missingItemCount === 1 ? '' : 's'
-                } still point to missing audio files.`}
-          </li>
-          <li>
-            The current page uses a checked-in manifest rather than runtime filesystem inspection or backend calls.
-          </li>
-        </ul>
+      <SurfaceCard
+        className="today-support-card"
+        title="Listening audio status"
+        description="Open this only if you want the local audio coverage breakdown."
+      >
+        <details className="today-details">
+          <summary className="today-details__summary">View audio coverage</summary>
+          <dl className="settings-summary-grid">
+            <div className="settings-summary-grid__stat">
+              <dt>Listening items</dt>
+              <dd>{audioStatus.listeningItemCount}</dd>
+            </div>
+            <div className="settings-summary-grid__stat">
+              <dt>With `audioRef`</dt>
+              <dd>{audioStatus.itemsWithAudioRefCount}</dd>
+            </div>
+            <div className="settings-summary-grid__stat">
+              <dt>Matched assets</dt>
+              <dd>{audioStatus.matchedAssetCount}</dd>
+            </div>
+            <div className="settings-summary-grid__stat">
+              <dt>Missing files</dt>
+              <dd>{audioStatus.missingItemCount}</dd>
+            </div>
+          </dl>
 
-        {audioStatus.missingItems.length > 0 ? (
-          <div className="settings-audio-missing">
-            <p className="mission-card__skill-label">Missing audio items</p>
-            <ul className="simple-list">
-              {audioStatus.missingItems.map((item) => (
-                <li key={item.id}>
-                  <strong>{item.id}</strong>
-                  <span className="settings-audio-missing__copy">{item.transcript}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="settings-page__detail-copy">
+            <p className="today-details__body">
+              {audioStatus.matchedAssetCount === audioStatus.itemsWithAudioRefCount
+                ? 'All current listening items with audio references have matching generated files.'
+                : `${audioStatus.missingItemCount} listening item${
+                    audioStatus.missingItemCount === 1 ? '' : 's'
+                  } still point to missing audio files.`}
+            </p>
+            <p className="today-details__body">
+              This page uses a checked-in manifest rather than runtime filesystem inspection or backend calls.
+            </p>
           </div>
-        ) : null}
+
+          {audioStatus.missingItems.length > 0 ? (
+            <div className="settings-audio-missing">
+              <p className="mission-card__skill-label">Missing audio items</p>
+              <ul className="simple-list">
+                {audioStatus.missingItems.map((item) => (
+                  <li key={item.id}>
+                    <strong>{item.id}</strong>
+                    <span className="settings-audio-missing__copy">{item.transcript}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </details>
       </SurfaceCard>
     </PageShell>
   );
@@ -222,8 +283,11 @@ function ResetActionCard({
     <article className="settings-action-card">
       <div className="settings-action-card__copy">
         <h3 className="settings-action-card__title">{action.title}</h3>
-        <p className="settings-action-card__description">{action.description}</p>
         <p className="settings-action-card__summary">{action.summary}</p>
+        <details className="settings-action-card__details">
+          <summary className="settings-action-card__details-summary">What this clears</summary>
+          <p className="settings-action-card__description">{action.description}</p>
+        </details>
       </div>
 
       {!isPending ? (

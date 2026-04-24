@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { SurfaceCard } from '../../../components/layout/PageShell';
@@ -60,7 +60,11 @@ export function GrammarMissionPlayer({
   lesson,
   examples,
 }: GrammarMissionPlayerProps) {
+  const navigate = useNavigate();
   const [clearedDrillIds, setClearedDrillIds] = useState<string[]>([]);
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
+  const [currentMistakeIndex, setCurrentMistakeIndex] = useState(0);
+  const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(() => {
     return (
       resolveContinueStepIndex(
@@ -73,6 +77,9 @@ export function GrammarMissionPlayer({
   });
   const currentStep = missionSteps[currentStepIndex];
   const progressValue = ((currentStepIndex + 1) / missionSteps.length) * 100;
+  const currentExample = examples[currentExampleIndex] ?? null;
+  const currentMistake = lesson.commonMistakes[currentMistakeIndex] ?? null;
+  const currentDrill = lesson.drills[currentDrillIndex] ?? null;
 
   useEffect(() => {
     updateContinueState({
@@ -81,6 +88,20 @@ export function GrammarMissionPlayer({
       stepIndex: currentStepIndex,
     });
   }, [currentStepIndex, mission.id, mission.type]);
+
+  useEffect(() => {
+    setCurrentExampleIndex((index) => Math.min(index, Math.max(0, examples.length - 1)));
+  }, [examples.length]);
+
+  useEffect(() => {
+    setCurrentMistakeIndex((index) =>
+      Math.min(index, Math.max(0, lesson.commonMistakes.length - 1)),
+    );
+  }, [lesson.commonMistakes.length]);
+
+  useEffect(() => {
+    setCurrentDrillIndex((index) => Math.min(index, Math.max(0, lesson.drills.length - 1)));
+  }, [lesson.drills.length]);
 
   useMissionAutoComplete({
     missionId: mission.id,
@@ -94,20 +115,79 @@ export function GrammarMissionPlayer({
     );
   }
 
+  function goToNextStep() {
+    setCurrentStepIndex((index) => Math.min(missionSteps.length - 1, index + 1));
+  }
+
+  function goToPreviousStep() {
+    setCurrentStepIndex((index) => Math.max(0, index - 1));
+  }
+
+  function goToNextDrill() {
+    if (currentDrillIndex < lesson.drills.length - 1) {
+      setCurrentDrillIndex((index) => Math.min(lesson.drills.length - 1, index + 1));
+      return;
+    }
+
+    navigate('/');
+  }
+
   return (
     <div className="mission-player-shell">
       <SurfaceCard
-        title="Mission overview"
-        description="Move through the lesson in one focused pass. Progress stays local to this page for now."
+        className="mission-session-card"
+        title={lesson.title}
+        description={`${currentStep.title} · ${formatTargetSkill(mission.targetSkill)}`}
       >
-        <div className="mission-overview">
-          <div className="mission-overview__lesson">
-            <p className="mission-overview__eyebrow">Linked grammar lesson</p>
-            <h2 className="mission-overview__lesson-title">{lesson.title}</h2>
-            <p className="mission-overview__objective">{lesson.objective}</p>
-          </div>
+        <div className="mission-session-card__meta-row">
+          <p className="mission-session-card__meta">
+            Step {currentStepIndex + 1} of {missionSteps.length}
+          </p>
+          <p className="mission-session-card__meta">{mission.estimatedMinutes} min</p>
+        </div>
 
-          <dl className="mission-overview__stats">
+        <div className="mission-progress">
+          <div className="mission-progress__meta">
+            <p className="mission-progress__label">Current focus</p>
+            <p className="mission-progress__step">{currentStep.title}</p>
+          </div>
+          <div
+            className="mission-progress__track"
+            role="progressbar"
+            aria-label="Mission progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progressValue}
+          >
+            <span
+              className="mission-progress__fill"
+              style={{ width: `${progressValue}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="mission-step-tabs mission-step-tabs--compact" aria-label="Mission sections">
+          {missionSteps.map((step, index) => {
+            const isActive = index === currentStepIndex;
+
+            return (
+              <button
+                key={step.id}
+                type="button"
+                className={`mission-step-tab${isActive ? ' mission-step-tab--active' : ''}`}
+                aria-pressed={isActive}
+                onClick={() => setCurrentStepIndex(index)}
+              >
+                <span className="mission-step-tab__index">0{index + 1}</span>
+                <span className="mission-step-tab__label">{step.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <details className="mission-session-details">
+          <summary className="mission-session-details__summary">Mission details</summary>
+          <dl className="mission-overview__stats mission-overview__stats--compact">
             <div className="mission-overview__stat">
               <dt>Target skill</dt>
               <dd>{formatTargetSkill(mission.targetSkill)}</dd>
@@ -125,69 +205,149 @@ export function GrammarMissionPlayer({
               <dd>{lesson.drills.length}</dd>
             </div>
           </dl>
-
-          <div className="mission-progress">
-            <div className="mission-progress__meta">
-              <p className="mission-progress__label">
-                Step {currentStepIndex + 1} of {missionSteps.length}
-              </p>
-              <p className="mission-progress__step">{currentStep.title}</p>
-            </div>
-            <div
-              className="mission-progress__track"
-              role="progressbar"
-              aria-label="Mission progress"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={progressValue}
-            >
-              <span
-                className="mission-progress__fill"
-                style={{ width: `${progressValue}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="mission-step-tabs" aria-label="Mission sections">
-            {missionSteps.map((step, index) => {
-              const isActive = index === currentStepIndex;
-
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  className={`mission-step-tab${isActive ? ' mission-step-tab--active' : ''}`}
-                  aria-pressed={isActive}
-                  onClick={() => setCurrentStepIndex(index)}
-                >
-                  <span className="mission-step-tab__index">0{index + 1}</span>
-                  <span className="mission-step-tab__label">{step.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+          <p className="mission-session-details__body">{lesson.objective}</p>
+        </details>
       </SurfaceCard>
 
-      <SurfaceCard title={currentStep.title} description={currentStep.description}>
+      <SurfaceCard
+        title={currentStep.title}
+        description={getStepDescription(currentStep.id, {
+          exampleCount: examples.length,
+          currentExampleIndex,
+          mistakeCount: lesson.commonMistakes.length,
+          currentMistakeIndex,
+          drillCount: lesson.drills.length,
+          currentDrillIndex,
+        })}
+      >
         <div className="mission-step-panel">
-          {renderStepContent(
-            currentStep.id,
-            mission,
-            lesson,
-            examples,
-            handleDrillCleared,
-          )}
-          {currentStep.id === 'drills' ? (
-            <p className="list-meta">
-              Cleared {clearedDrillIds.length} of {lesson.drills.length} drills in this pass.
-            </p>
+          {currentStep.id === 'intro' ? (
+            <div className="mission-copy-stack">
+              <section className="mission-copy-block">
+                <p className="mission-copy-block__eyebrow">Objective</p>
+                <p className="mission-copy-block__body">{lesson.objective}</p>
+              </section>
+              <section className="mission-copy-block">
+                <p className="mission-copy-block__eyebrow">Explanation</p>
+                <p className="mission-copy-block__body">{lesson.explanation}</p>
+              </section>
+            </div>
           ) : null}
+
+          {currentStep.id === 'examples' ? (
+            currentExample ? (
+              <div className="mission-focus-card">
+                <p className="mission-focus-card__eyebrow">
+                  Example {currentExampleIndex + 1} of {examples.length}
+                </p>
+                <article className="mission-example-card">
+                  <JapaneseTextPair
+                    japanese={currentExample.japanese}
+                    reading={currentExample.reading}
+                  />
+                  <p className="mission-example-card__english">{currentExample.english}</p>
+                </article>
+                {examples.length > 1 ? (
+                  <div className="mission-inline-actions">
+                    <button
+                      type="button"
+                      className="mission-button mission-button--secondary"
+                      onClick={() =>
+                        setCurrentExampleIndex((index) => Math.max(0, index - 1))
+                      }
+                      disabled={currentExampleIndex === 0}
+                    >
+                      Previous example
+                    </button>
+                    <button
+                      type="button"
+                      className="mission-button"
+                      onClick={() =>
+                        setCurrentExampleIndex((index) =>
+                          Math.min(examples.length - 1, index + 1),
+                        )
+                      }
+                      disabled={currentExampleIndex >= examples.length - 1}
+                    >
+                      Next example
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mission-session-details__body">No examples are linked to this lesson yet.</p>
+            )
+          ) : null}
+
+          {currentStep.id === 'mistakes' ? (
+            currentMistake ? (
+              <div className="mission-focus-card">
+                <p className="mission-focus-card__eyebrow">
+                  Guardrail {currentMistakeIndex + 1} of {lesson.commonMistakes.length}
+                </p>
+                <article className="mission-mistake-card mission-mistake-card--focus">
+                  {currentMistake}
+                </article>
+                {lesson.commonMistakes.length > 1 ? (
+                  <div className="mission-inline-actions">
+                    <button
+                      type="button"
+                      className="mission-button mission-button--secondary"
+                      onClick={() =>
+                        setCurrentMistakeIndex((index) => Math.max(0, index - 1))
+                      }
+                      disabled={currentMistakeIndex === 0}
+                    >
+                      Previous note
+                    </button>
+                    <button
+                      type="button"
+                      className="mission-button"
+                      onClick={() =>
+                        setCurrentMistakeIndex((index) =>
+                          Math.min(lesson.commonMistakes.length - 1, index + 1),
+                        )
+                      }
+                      disabled={currentMistakeIndex >= lesson.commonMistakes.length - 1}
+                    >
+                      Next note
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <p className="mission-session-details__body">No common mistakes are listed for this lesson yet.</p>
+            )
+          ) : null}
+
+          {currentStep.id === 'drills' ? (
+            currentDrill ? (
+              <>
+                <DrillCard
+                  key={currentDrill.id}
+                  missionId={mission.id}
+                  lessonId={lesson.id}
+                  drill={currentDrill}
+                  index={currentDrillIndex}
+                  totalCount={lesson.drills.length}
+                  hasNextDrill={currentDrillIndex < lesson.drills.length - 1}
+                  onAdvance={goToNextDrill}
+                  onCleared={handleDrillCleared}
+                />
+                <p className="list-meta">
+                  {clearedDrillIds.length}/{lesson.drills.length} drills done.
+                </p>
+              </>
+            ) : (
+              <p className="mission-session-details__body">No drills are linked to this lesson yet.</p>
+            )
+          ) : null}
+
           <div className="mission-step-actions">
             <button
               type="button"
               className="mission-button mission-button--secondary"
-              onClick={() => setCurrentStepIndex((index) => Math.max(0, index - 1))}
+              onClick={goToPreviousStep}
               disabled={currentStepIndex === 0}
             >
               Previous
@@ -196,11 +356,7 @@ export function GrammarMissionPlayer({
               <button
                 type="button"
                 className="mission-button"
-                onClick={() =>
-                  setCurrentStepIndex((index) =>
-                    Math.min(missionSteps.length - 1, index + 1),
-                  )
-                }
+                onClick={goToNextStep}
               >
                 Next section
               </button>
@@ -223,75 +379,27 @@ export function GrammarMissionPlayer({
   );
 }
 
-function renderStepContent(
-  stepId: MissionStepId,
-  mission: Mission,
-  lesson: GrammarLesson,
-  examples: ExampleSentence[],
-  onDrillCleared: (drillId: string) => void,
-) {
-  switch (stepId) {
-    case 'intro':
-      return (
-        <div className="mission-copy-stack">
-          <section className="mission-copy-block">
-            <p className="mission-copy-block__eyebrow">Objective</p>
-            <p className="mission-copy-block__body">{lesson.objective}</p>
-          </section>
-          <section className="mission-copy-block">
-            <p className="mission-copy-block__eyebrow">Explanation</p>
-            <p className="mission-copy-block__body">{lesson.explanation}</p>
-          </section>
-        </div>
-      );
-    case 'examples':
-      return (
-        <div className="mission-example-list">
-          {examples.map((example) => (
-            <article key={example.id} className="mission-example-card">
-              <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
-              <p className="mission-example-card__english">{example.english}</p>
-            </article>
-          ))}
-        </div>
-      );
-    case 'mistakes':
-      return (
-        <ul className="mission-mistakes-list">
-          {lesson.commonMistakes.map((mistake) => (
-            <li key={mistake} className="mission-mistake-card">
-              {mistake}
-            </li>
-          ))}
-        </ul>
-      );
-    case 'drills':
-      return (
-        <div className="mission-drill-list">
-          {lesson.drills.map((drill, index) => (
-            <DrillCard
-              key={drill.id}
-              missionId={mission.id}
-              lessonId={lesson.id}
-              drill={drill}
-              index={index}
-              onCleared={onDrillCleared}
-            />
-          ))}
-        </div>
-      );
-  }
-}
-
 type DrillCardProps = {
   missionId: string;
   lessonId: string;
   drill: GrammarDrill;
   index: number;
+  totalCount: number;
+  hasNextDrill: boolean;
+  onAdvance: () => void;
   onCleared: (drillId: string) => void;
 };
 
-function DrillCard({ missionId, lessonId, drill, index, onCleared }: DrillCardProps) {
+function DrillCard({
+  missionId,
+  lessonId,
+  drill,
+  index,
+  totalCount,
+  hasNextDrill,
+  onAdvance,
+  onCleared,
+}: DrillCardProps) {
   const reorderTokens = getReorderTokens(drill);
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -341,7 +449,7 @@ function DrillCard({ missionId, lessonId, drill, index, onCleared }: DrillCardPr
     <article className="mission-drill-card">
       <div className="mission-drill-card__header">
         <p className="mission-drill-card__eyebrow">
-          Drill {index + 1} · {formatDrillType(drill.type)}
+          Drill {index + 1} of {totalCount} · {formatDrillType(drill.type)}
         </p>
         <h3 className="mission-drill-card__prompt">{drill.prompt}</h3>
       </div>
@@ -436,21 +544,42 @@ function DrillCard({ missionId, lessonId, drill, index, onCleared }: DrillCardPr
         {drill.support ? <p className="mission-drill-card__support">{drill.support}</p> : null}
 
         <div className="mission-drill-card__actions">
-          <button
-            type="button"
-            className="mission-button"
-            onClick={submitAnswer}
-            disabled={!hasResponse}
-          >
-            Check answer
-          </button>
-          <button
-            type="button"
-            className="mission-button mission-button--secondary"
-            onClick={resetAnswer}
-          >
-            Reset
-          </button>
+          {feedback ? (
+            <>
+              <button
+                type="button"
+                className="mission-button"
+                onClick={onAdvance}
+              >
+                {hasNextDrill ? 'Next drill' : 'Back to today'}
+              </button>
+              <button
+                type="button"
+                className="mission-button mission-button--secondary"
+                onClick={() => setFeedback(null)}
+              >
+                Edit answer
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="mission-button"
+                onClick={submitAnswer}
+                disabled={!hasResponse}
+              >
+                Check answer
+              </button>
+              <button
+                type="button"
+                className="mission-button mission-button--secondary"
+                onClick={resetAnswer}
+              >
+                Reset
+              </button>
+            </>
+          )}
         </div>
 
         {feedback ? (
@@ -472,6 +601,42 @@ function DrillCard({ missionId, lessonId, drill, index, onCleared }: DrillCardPr
       </div>
     </article>
   );
+}
+
+function getStepDescription(
+  stepId: MissionStepId,
+  {
+    exampleCount,
+    currentExampleIndex,
+    mistakeCount,
+    currentMistakeIndex,
+    drillCount,
+    currentDrillIndex,
+  }: {
+    exampleCount: number;
+    currentExampleIndex: number;
+    mistakeCount: number;
+    currentMistakeIndex: number;
+    drillCount: number;
+    currentDrillIndex: number;
+  },
+) {
+  switch (stepId) {
+    case 'intro':
+      return 'Get the pattern clear before you start answering.';
+    case 'examples':
+      return exampleCount > 0
+        ? `Example ${currentExampleIndex + 1} of ${exampleCount}`
+        : 'No examples linked yet.';
+    case 'mistakes':
+      return mistakeCount > 0
+        ? `Guardrail ${currentMistakeIndex + 1} of ${mistakeCount}`
+        : 'No common mistakes listed yet.';
+    case 'drills':
+      return drillCount > 0
+        ? `One active drill at a time · ${currentDrillIndex + 1} of ${drillCount}`
+        : 'No drills linked yet.';
+  }
 }
 
 function getCurrentResponse({

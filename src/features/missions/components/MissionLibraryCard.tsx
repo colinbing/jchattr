@@ -36,6 +36,7 @@ export function MissionLibraryCard({
   } = item;
   const cardClassName = [
     'mission-card',
+    'mission-library-card',
     isRecommended ? 'mission-card--recommended' : '',
     !isUnlocked ? 'mission-card--locked' : '',
   ]
@@ -53,8 +54,12 @@ export function MissionLibraryCard({
       </div>
 
       <div className="mission-card__details">
-        <p className="mission-card__skill-label">Target skill</p>
-        <p className="mission-card__skill-value">{formatTargetSkill(mission.targetSkill)}</p>
+        <div className="mission-library-card__quick-row" aria-label="Mission details">
+          <p className="mission-card__skill-value">{formatTargetSkill(mission.targetSkill)}</p>
+          <p className="mission-library-card__content-note">
+            {buildContentNote(mission, starterContent)}
+          </p>
+        </div>
 
         <div className="mission-library-card__state-row" aria-label="Mission state">
           <span
@@ -85,35 +90,31 @@ export function MissionLibraryCard({
           <p className="mission-library-card__reason">{recommendedReason}</p>
         ) : null}
 
-        <ul className="mission-library-card__stats">
-          <li>
-            {progress.isCompleted
-              ? `Completed ${progress.completionCount} time${
-                  progress.completionCount === 1 ? '' : 's'
-                }`
-              : 'No saved completions yet. Completion saves automatically after you clear every drill or check.'}
-          </li>
-          <li>
-            {weakPointCount > 0
-              ? `${totalMisses} recorded miss${totalMisses === 1 ? '' : 'es'} across ${weakPointCount} weak point${
-                  weakPointCount === 1 ? '' : 's'
-                }`
-              : 'No weak-point pressure recorded'}
-          </li>
-          <li>
-            {progress.lastCompletedAt
-              ? `Last completed ${formatCompletedAt(progress.lastCompletedAt)}`
-              : 'Not completed on this device yet'}
-          </li>
-        </ul>
-
-        {!isUnlocked && unlockRequirement ? (
-          <p className="mission-library-card__lock-note">{unlockRequirement}</p>
-        ) : null}
-
-        <p className="mission-library-card__content-note">
-          {buildContentNote(mission, starterContent)}
-        </p>
+        <details className="mission-library-card__details">
+          <summary className="mission-library-card__details-summary">
+            Mission details
+          </summary>
+          <div className="mission-library-card__detail-stack">
+            <p className="mission-library-card__detail-text">
+              {buildProgressNote(progress, isUnlocked)}
+            </p>
+            <p className="mission-library-card__detail-text">
+              {weakPointCount > 0
+                ? `${totalMisses} miss${totalMisses === 1 ? '' : 'es'} across ${weakPointCount} review item${
+                    weakPointCount === 1 ? '' : 's'
+                  }.`
+                : 'No review pressure recorded yet.'}
+            </p>
+            {progress.lastCompletedAt ? (
+              <p className="mission-library-card__detail-text">
+                Last cleared {formatCompletedAt(progress.lastCompletedAt)}.
+              </p>
+            ) : null}
+            {!isUnlocked && unlockRequirement ? (
+              <p className="mission-library-card__lock-note">{unlockRequirement}</p>
+            ) : null}
+          </div>
+        </details>
       </div>
 
       {isUnlocked ? (
@@ -122,7 +123,7 @@ export function MissionLibraryCard({
           className="mission-card__cta"
           aria-label={`Open ${mission.title}`}
         >
-          Open mission
+          {progress.isCompleted ? 'Open again' : 'Start mission'}
         </Link>
       ) : (
         <span className="mission-card__cta mission-card__cta--disabled" aria-disabled="true">
@@ -133,7 +134,7 @@ export function MissionLibraryCard({
   );
 }
 
-function buildContentNote(mission: Mission, starterContent: StarterContent) {
+export function buildContentNote(mission: Mission, starterContent: StarterContent) {
   if (mission.type === 'grammar') {
     const lessonId = mission.contentRefs.grammarLessonIds?.[0];
     const lesson = lessonId ? starterContent.byId.grammarLessons[lessonId] : null;
@@ -156,7 +157,7 @@ function buildContentNote(mission: Mission, starterContent: StarterContent) {
   return `${taskCount} output task${taskCount === 1 ? '' : 's'} in this set`;
 }
 
-function formatMissionType(type: Mission['type']) {
+export function formatMissionType(type: Mission['type']) {
   switch (type) {
     case 'grammar':
       return 'Grammar';
@@ -169,8 +170,18 @@ function formatMissionType(type: Mission['type']) {
   }
 }
 
-function formatTargetSkill(targetSkill: Mission['targetSkill']) {
+export function formatTargetSkill(targetSkill: Mission['targetSkill']) {
   return targetSkill.replace(/-/g, ' ');
+}
+
+function buildProgressNote(progress: MissionProgressEntry, isUnlocked: boolean) {
+  if (progress.isCompleted) {
+    return progress.completionCount > 1
+      ? `Mission complete. Cleared ${progress.completionCount} times.`
+      : 'Mission complete.';
+  }
+
+  return isUnlocked ? 'Ready for a first clear.' : 'Locked until the earlier requirement is cleared.';
 }
 
 function formatCompletedAt(timestamp: string) {

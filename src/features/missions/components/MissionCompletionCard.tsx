@@ -24,27 +24,27 @@ export function MissionCompletionCard({
   return (
     <SurfaceCard
       title="Completion"
-      description="This mission now completes automatically when you clear every drill or check in the current pass."
+      description="Clear every drill or check to finish this mission."
     >
       <div className="mission-completion-card">
         <div className="mission-completion-card__summary">
           <p className="mission-completion-card__status">
             {completion.isCompleted
               ? isAutoCompleteReady
-                ? 'Completed automatically in this pass'
-                : 'Completed on this device'
-              : 'In progress'}
+                ? 'Mission complete'
+                : 'Completed earlier on this device'
+              : 'Keep going'}
           </p>
           <p className="mission-completion-card__meta">
-            Cleared {Math.min(clearedCount, totalCount)} of {totalCount} {unitLabel}
-            {totalCount === 1 ? '' : 's'} in this pass
+            {Math.min(clearedCount, totalCount)}/{totalCount} {unitLabel}
+            {totalCount === 1 ? '' : 's'} done
           </p>
           <p className="mission-completion-card__meta">
             {completion.completionCount > 0
               ? `Completed ${completion.completionCount} time${
                   completion.completionCount === 1 ? '' : 's'
                 }`
-              : 'No saved completions yet'}
+              : 'Not completed yet'}
           </p>
           {completion.lastCompletedAt ? (
             <p className="mission-completion-card__meta">

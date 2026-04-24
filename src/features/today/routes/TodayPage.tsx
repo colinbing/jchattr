@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import type { Mission, StarterContent } from '../../../lib/content/types';
 import { ContinueMissionCard } from '../components/ContinueMissionCard';
@@ -23,11 +24,16 @@ import {
 import { missionLibraryChapters } from '../../missions/lib/missionLibraryStructure';
 
 export function TodayPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const starterContent = getStarterContent();
   const missionProgress = useMissionProgress();
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
+  const [reviewCompletion, setReviewCompletion] = useState<TodayReviewCompletion | null>(() => {
+    return ((location.state as TodayLocationState | null)?.reviewCompletion ?? null);
+  });
   const recommendations = deriveTodayRecommendations(
     starterContent,
     missionProgress,
@@ -84,11 +90,23 @@ export function TodayPage() {
       )
     : null;
 
+  useEffect(() => {
+    const nextCompletion = (location.state as TodayLocationState | null)?.reviewCompletion ?? null;
+
+    if (!nextCompletion) {
+      return;
+    }
+
+    setReviewCompletion(nextCompletion);
+    navigate(location.pathname, { replace: true });
+  }, [location.pathname, location.state, navigate]);
+
   return (
     <PageShell
+      variant="compact"
       eyebrow="Daily Entry"
       title="Today"
-      description="Start from a small local-first daily plan, then use the mission path only when you want more. Recommendations stay deterministic and the bonus lane stays explicit."
+      description="Start with the small daily plan. Open the rest only if you want more."
       aside={<span className="status-chip">Daily loop</span>}
     >
       <SessionSummary
@@ -100,10 +118,74 @@ export function TodayPage() {
         bonusMinutes={getRecommendationMinuteTotal(bonusRecommendations)}
       />
 
+      {reviewCompletion ? (
+        <SurfaceCard
+          className="today-support-card"
+          title="Review finished"
+          description={
+            reviewCompletion.nextBatchSize > 0
+              ? 'The queue is lighter. Keep moving with Today, or come back later for one more short batch.'
+              : 'The review queue is clear. Move straight into Today.'
+          }
+        >
+          <div className="review-return-card">
+            <p className="review-launch-card__title">
+              {reviewCompletion.clearedCount}/{reviewCompletion.attemptedCount} retries cleared
+            </p>
+            <p className="review-launch-card__body">
+              {reviewCompletion.unresolvedCount > 0
+                ? `${reviewCompletion.unresolvedCount} item${
+                    reviewCompletion.unresolvedCount === 1 ? '' : 's'
+                  } still need another pass.`
+                : 'That batch is fully cleared.'}{' '}
+              {reviewCompletion.nextBatchSize > 0
+                ? `${reviewCompletion.nextBatchSize} more item${
+                    reviewCompletion.nextBatchSize === 1 ? '' : 's'
+                  } are waiting in Review.`
+                : 'No next review batch is queued right now.'}
+            </p>
+
+            <div className="review-chip-row" aria-label="Returned review summary">
+              <span className="review-chip">
+                {reviewCompletion.remainingWeakPointCount} weak point
+                {reviewCompletion.remainingWeakPointCount === 1 ? '' : 's'} left
+              </span>
+              <span className="review-chip">
+                {reviewCompletion.nextBatchSize > 0
+                  ? `${reviewCompletion.nextBatchSize} ready in Review`
+                  : 'Queue clear for now'}
+              </span>
+            </div>
+          </div>
+        </SurfaceCard>
+      ) : null}
+
+      <SurfaceCard
+        title="Do this today"
+        description="Do the core plan first. Keep it short."
+      >
+        <div className="mission-list" role="list" aria-label="Do this today">
+          {requiredRecommendations.map((recommendation) => (
+            <div key={recommendation.id} role="listitem">
+              <TodayRecommendationCard
+                recommendation={recommendation}
+                missionProgress={missionProgress}
+                linkState={
+                  recommendation.kind === 'review'
+                    ? { returnTo: 'today' }
+                    : undefined
+                }
+              />
+            </div>
+          ))}
+        </div>
+      </SurfaceCard>
+
       {continueMission ? (
         <SurfaceCard
-          title="Continue where you left off"
-          description="Jump back into the most recent unfinished mission without preserving the full page state."
+          className="today-support-card"
+          title="Pick up where you stopped"
+          description="Use this only if you want to resume the unfinished mission before browsing elsewhere."
         >
           <ContinueMissionCard
             mission={continueMission.mission}
@@ -114,118 +196,116 @@ export function TodayPage() {
       ) : null}
 
       <SurfaceCard
-        title="Do this today"
-        description="This is the core daily loop. Keep it short on purpose: urgent review first when needed, then the cleanest next step in the path."
+        className="today-support-card"
+        title="Bonus later"
+        description="Open this only if you want more after the main plan."
       >
-        <div className="mission-list" role="list" aria-label="Do this today">
-          {requiredRecommendations.map((recommendation) => (
-            <div key={recommendation.id} role="listitem">
-              <TodayRecommendationCard
-                recommendation={recommendation}
-                missionProgress={missionProgress}
-              />
+        <details className="today-details">
+          <summary className="today-details__summary">
+            {bonusRecommendations.length > 0
+              ? `${bonusRecommendations.length} bonus option${
+                  bonusRecommendations.length === 1 ? '' : 's'
+                }`
+              : 'No bonus slot right now'}
+          </summary>
+          {bonusRecommendations.length > 0 ? (
+            <div className="mission-list" role="list" aria-label="Bonus practice">
+              {bonusRecommendations.map((recommendation) => (
+                <div key={recommendation.id} role="listitem">
+                  <TodayRecommendationCard
+                    recommendation={recommendation}
+                    missionProgress={missionProgress}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </SurfaceCard>
-
-      <SurfaceCard
-        title="Bonus if you want more"
-        description="Use this only after the main plan. The bonus lane is there for reinforcement, stabilization, or one extra mission while momentum is still good."
-      >
-        {bonusRecommendations.length > 0 ? (
-          <div className="mission-list" role="list" aria-label="Bonus practice">
-            {bonusRecommendations.map((recommendation) => (
-              <div key={recommendation.id} role="listitem">
-                <TodayRecommendationCard
-                  recommendation={recommendation}
-                  missionProgress={missionProgress}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <ul className="simple-list">
-            <li>
-              No extra slot is needed right now. Clear the main plan, then come back later or
-              browse the mission path manually.
-            </li>
-          </ul>
-        )}
-      </SurfaceCard>
-
-      <SurfaceCard
-        title="Where you are in the path"
-        description="The full mission library now lives on the Missions screen as a progression path: ten core chapters plus one reading lane."
-      >
-        <div className="path-summary">
-          <div className="path-summary__card">
-            <p className="path-summary__label">Current core chapter</p>
-            <h3 className="path-summary__title">
-              {currentCoreChapter ? currentCoreChapter.chapter.title : 'Core path complete'}
-            </h3>
-            <p className="path-summary__body">
-              {currentCoreChapter
-                ? `${currentCoreChapter.completedCount} of ${currentCoreChapter.missionCount} missions cleared.`
-                : 'Every core chapter is cleared on this device.'}
+          ) : (
+            <p className="today-details__body">
+              No extra slot is needed right now. Clear the main plan, then come back later if you
+              want more.
             </p>
-            {currentCoreChapter?.nextMission ? (
-              <p className="path-summary__meta">
-                Next mission: {currentCoreChapter.nextMission.title}
-              </p>
-            ) : null}
-            <Link
-              to={
-                currentCoreChapter
-                  ? `/missions#${currentCoreChapter.chapter.id}`
-                  : '/missions'
-              }
-              className="inline-link"
-            >
-              Open mission path
-            </Link>
-          </div>
+          )}
+        </details>
+      </SurfaceCard>
 
-          {readingCounts ? (
+      <SurfaceCard
+        className="today-support-card"
+        title="More context"
+        description="Open this only when you want the path view or loop notes."
+      >
+        <details className="today-details">
+          <summary className="today-details__summary">Path and loop notes</summary>
+
+          <div className="path-summary">
             <div className="path-summary__card">
-              <p className="path-summary__label">Reading lane</p>
+              <p className="path-summary__label">Current core chapter</p>
               <h3 className="path-summary__title">
-                {readingChapter?.title ?? 'Reading checkpoints'}
+                {currentCoreChapter ? currentCoreChapter.chapter.title : 'Core path complete'}
               </h3>
               <p className="path-summary__body">
-                {readingCounts.completedCount} of {readingCounts.missionCount} reading missions
-                cleared.
+                {currentCoreChapter
+                  ? `${currentCoreChapter.completedCount} of ${currentCoreChapter.missionCount} missions cleared.`
+                  : 'Every core chapter is cleared on this device.'}
               </p>
-              <p className="path-summary__meta">
-                Use this lane to recombine prior content after the core path keeps moving.
-              </p>
-              <Link to="/missions#chapter-reading-path" className="inline-link">
-                Open reading path
+              {currentCoreChapter?.nextMission ? (
+                <p className="path-summary__meta">
+                  Next mission: {currentCoreChapter.nextMission.title}
+                </p>
+              ) : null}
+              <Link
+                to={
+                  currentCoreChapter
+                    ? `/missions#${currentCoreChapter.chapter.id}`
+                    : '/missions'
+                }
+                className="inline-link"
+              >
+                Open mission path
               </Link>
             </div>
-          ) : null}
-        </div>
-      </SurfaceCard>
 
-      <SurfaceCard
-        title="How the loop works"
-        description="The daily loop is now explicit instead of mixing the mission backlog into the same screen."
-      >
-        <ul className="simple-list">
-          <li>
-            Do the core plan first: urgent review when needed, then the cleanest next mission.
-          </li>
-          <li>
-            Use the bonus lane only if you want more practice while momentum is still high.
-          </li>
-          <li>
-            Browse the full path on the Missions screen, where the library is grouped into progression chapters instead of one long flat list.
-          </li>
-        </ul>
+            {readingCounts ? (
+              <div className="path-summary__card">
+                <p className="path-summary__label">Reading lane</p>
+                <h3 className="path-summary__title">
+                  {readingChapter?.title ?? 'Reading checkpoints'}
+                </h3>
+                <p className="path-summary__body">
+                  {readingCounts.completedCount} of {readingCounts.missionCount} reading missions
+                  cleared.
+                </p>
+                <p className="path-summary__meta">
+                  Use this lane to recombine prior content after the core path keeps moving.
+                </p>
+                <Link to="/missions#chapter-reading-path" className="inline-link">
+                  Open reading path
+                </Link>
+              </div>
+            ) : null}
+          </div>
+
+          <ul className="simple-list">
+            <li>Do the core plan first: review when needed, then the cleanest next mission.</li>
+            <li>Use the bonus lane only if you want more while momentum is still good.</li>
+            <li>Browse the full path on Missions instead of using Today as a backlog screen.</li>
+          </ul>
+        </details>
       </SurfaceCard>
     </PageShell>
   );
 }
+
+type TodayReviewCompletion = {
+  attemptedCount: number;
+  clearedCount: number;
+  unresolvedCount: number;
+  remainingWeakPointCount: number;
+  nextBatchSize: number;
+};
+
+type TodayLocationState = {
+  reviewCompletion?: TodayReviewCompletion;
+};
 
 function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
   return recommendations.reduce((total, recommendation) => {

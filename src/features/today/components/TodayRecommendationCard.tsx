@@ -10,11 +10,13 @@ import { type TodayRecommendation } from '../lib/todayRecommendations';
 type TodayRecommendationCardProps = {
   recommendation: TodayRecommendation;
   missionProgress: MissionProgressRecord;
+  linkState?: unknown;
 };
 
 export function TodayRecommendationCard({
   recommendation,
   missionProgress,
+  linkState,
 }: TodayRecommendationCardProps) {
   const progress =
     recommendation.kind === 'mission'
@@ -67,6 +69,7 @@ export function TodayRecommendationCard({
 
       <Link
         to={recommendation.to}
+        state={linkState}
         className="mission-card__cta"
         aria-label={recommendation.title}
       >
