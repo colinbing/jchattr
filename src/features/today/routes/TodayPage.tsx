@@ -22,6 +22,7 @@ import {
   isMissionUnlocked,
 } from '../lib/todayRecommendations';
 import { missionLibraryChapters } from '../../missions/lib/missionLibraryStructure';
+import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
 
 export function TodayPage() {
   const location = useLocation();
@@ -31,6 +32,9 @@ export function TodayPage() {
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
+  const [missionCompletion, setMissionCompletion] = useState<TodayMissionCompletion | null>(() => {
+    return ((location.state as TodayLocationState | null)?.missionCompletion ?? null);
+  });
   const [reviewCompletion, setReviewCompletion] = useState<TodayReviewCompletion | null>(() => {
     return ((location.state as TodayLocationState | null)?.reviewCompletion ?? null);
   });
@@ -91,13 +95,22 @@ export function TodayPage() {
     : null;
 
   useEffect(() => {
-    const nextCompletion = (location.state as TodayLocationState | null)?.reviewCompletion ?? null;
+    const nextState = (location.state as TodayLocationState | null) ?? null;
+    const nextMissionCompletion = nextState?.missionCompletion ?? null;
+    const nextReviewCompletion = nextState?.reviewCompletion ?? null;
 
-    if (!nextCompletion) {
+    if (!nextMissionCompletion && !nextReviewCompletion) {
       return;
     }
 
-    setReviewCompletion(nextCompletion);
+    if (nextMissionCompletion) {
+      setMissionCompletion(nextMissionCompletion);
+    }
+
+    if (nextReviewCompletion) {
+      setReviewCompletion(nextReviewCompletion);
+    }
+
     navigate(location.pathname, { replace: true });
   }, [location.pathname, location.state, navigate]);
 
@@ -117,6 +130,36 @@ export function TodayPage() {
         bonusCount={bonusRecommendations.length}
         bonusMinutes={getRecommendationMinuteTotal(bonusRecommendations)}
       />
+
+      {missionCompletion ? (
+        <SurfaceCard
+          className="today-support-card"
+          title="Mission finished"
+          description={
+            missionCompletion.sessionMode === 'reinforce'
+              ? 'Short follow-up pass done. Return to the Today plan for the next best move.'
+              : 'That mission pass is done. Today now points you at the next best move.'
+          }
+        >
+          <div className="review-return-card mission-return-card">
+            <p className="review-launch-card__title">
+              {missionCompletion.clearedCount}/{missionCompletion.totalCount}{' '}
+              {formatMissionUnitLabel(missionCompletion.missionType, missionCompletion.totalCount)} cleared
+            </p>
+            <p className="review-launch-card__body">
+              {missionCompletion.missionTitle} · {formatMissionTypeLabel(missionCompletion.missionType)} ·{' '}
+              {formatTargetSkillLabel(missionCompletion.targetSkill)}
+            </p>
+
+            <div className="review-chip-row" aria-label="Returned mission summary">
+              <span className="review-chip">
+                {missionCompletion.sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Core mission pass'}
+              </span>
+              <span className="review-chip">Today is ready with the next step</span>
+            </div>
+          </div>
+        </SurfaceCard>
+      ) : null}
 
       {reviewCompletion ? (
         <SurfaceCard
@@ -303,7 +346,10 @@ type TodayReviewCompletion = {
   nextBatchSize: number;
 };
 
+type TodayMissionCompletion = MissionCompletionSummary;
+
 type TodayLocationState = {
+  missionCompletion?: TodayMissionCompletion;
   reviewCompletion?: TodayReviewCompletion;
 };
 
@@ -386,4 +432,37 @@ function formatContinueDetail(
       : 0;
 
   return `Resume output task ${safeStepIndex + 1} of ${totalTasks}.`;
+}
+
+function formatMissionTypeLabel(type: TodayMissionCompletion['missionType']) {
+  switch (type) {
+    case 'grammar':
+      return 'Grammar';
+    case 'listening':
+      return 'Listening';
+    case 'output':
+      return 'Output';
+    case 'reading':
+      return 'Reading';
+  }
+}
+
+function formatTargetSkillLabel(targetSkill: TodayMissionCompletion['targetSkill']) {
+  return targetSkill.replace(/-/g, ' ');
+}
+
+function formatMissionUnitLabel(
+  missionType: TodayMissionCompletion['missionType'],
+  totalCount: number,
+) {
+  const unitLabel =
+    missionType === 'grammar'
+      ? 'drill'
+      : missionType === 'listening'
+        ? 'listening check'
+        : missionType === 'output'
+          ? 'output task'
+          : 'reading check';
+
+  return `${unitLabel}${totalCount === 1 ? '' : 's'}`;
 }

@@ -18,6 +18,10 @@ export function TodayRecommendationCard({
   missionProgress,
   linkState,
 }: TodayRecommendationCardProps) {
+  const missionLinkState =
+    recommendation.kind === 'mission' && recommendation.sessionMode === 'reinforce'
+      ? { ...(typeof linkState === 'object' && linkState !== null ? linkState : {}), sessionMode: 'reinforce' as const }
+      : linkState;
   const progress =
     recommendation.kind === 'mission'
       ? getMissionProgressEntry(missionProgress, recommendation.mission.id)
@@ -57,6 +61,7 @@ export function TodayRecommendationCard({
         ) : null}
         {recommendation.kind === 'mission' ? (
           <p className="list-meta">
+            {recommendation.sessionMode === 'reinforce' ? 'Short reinforce pass. ' : ''}
             {progress?.isCompleted
               ? `Completed ${progress.completionCount} time${
                   progress.completionCount === 1 ? '' : 's'
@@ -69,7 +74,7 @@ export function TodayRecommendationCard({
 
       <Link
         to={recommendation.to}
-        state={linkState}
+        state={missionLinkState}
         className="mission-card__cta"
         aria-label={recommendation.title}
       >

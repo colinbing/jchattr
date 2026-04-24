@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { SurfaceCard } from '../../../components/layout/PageShell';
@@ -15,52 +15,58 @@ import {
   updateContinueState,
 } from '../../../lib/progress/continueState';
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
+import {
+  getMissionProgressEntry,
+  useMissionProgress,
+} from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import {
+  buildMissionCompletionRouteState,
+  selectMissionSessionItems,
+  type MissionSessionMode,
+} from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
-
-const missionSteps = [
-  {
-    id: 'intro',
-    label: 'Intro',
-    title: 'Lesson intro',
-    description: 'Get the pattern clear before you start answering.',
-  },
-  {
-    id: 'examples',
-    label: 'Examples',
-    title: 'Examples',
-    description: 'See the pattern in short, useful beginner lines.',
-  },
-  {
-    id: 'mistakes',
-    label: 'Mistakes',
-    title: 'Common mistakes',
-    description: 'Use the confusion points as quick guardrails.',
-  },
-  {
-    id: 'drills',
-    label: 'Drills',
-    title: 'Drills',
-    description: 'Do a first active pass with simple local feedback.',
-  },
-] as const;
 
 type GrammarMissionPlayerProps = {
   mission: Mission;
   lesson: GrammarLesson;
   examples: ExampleSentence[];
+  sessionMode: MissionSessionMode;
 };
 
-type MissionStepId = (typeof missionSteps)[number]['id'];
+type MissionStep = {
+  id: 'intro' | 'examples' | 'mistakes' | 'drills';
+  label: string;
+  title: string;
+  description: string;
+};
+type MissionStepId = MissionStep['id'];
 type DrillFeedback = 'correct' | 'incorrect' | null;
 
 export function GrammarMissionPlayer({
   mission,
   lesson,
   examples,
+  sessionMode,
 }: GrammarMissionPlayerProps) {
   const navigate = useNavigate();
+  const missionProgress = useMissionProgress();
+  const [sessionRotation] = useState(() => {
+    return getMissionProgressEntry(missionProgress, mission.id).completionCount;
+  });
+  const sessionExamples = useMemo(
+    () => selectMissionSessionItems(examples, sessionMode, sessionRotation, 1),
+    [examples, sessionMode, sessionRotation],
+  );
+  const sessionDrills = useMemo(
+    () => selectMissionSessionItems(lesson.drills, sessionMode, sessionRotation, 2),
+    [lesson.drills, sessionMode, sessionRotation],
+  );
+  const sessionSteps = useMemo(
+    () => getMissionSteps(sessionMode, sessionExamples.length, sessionDrills.length),
+    [sessionDrills.length, sessionExamples.length, sessionMode],
+  );
   const [clearedDrillIds, setClearedDrillIds] = useState<string[]>([]);
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
   const [currentMistakeIndex, setCurrentMistakeIndex] = useState(0);
@@ -71,15 +77,15 @@ export function GrammarMissionPlayer({
         readContinueState(),
         mission.id,
         mission.type,
-        missionSteps.length - 1,
+        sessionSteps.length - 1,
       ) ?? 0
     );
   });
-  const currentStep = missionSteps[currentStepIndex];
-  const progressValue = ((currentStepIndex + 1) / missionSteps.length) * 100;
-  const currentExample = examples[currentExampleIndex] ?? null;
+  const currentStep = sessionSteps[currentStepIndex] ?? sessionSteps[0];
+  const progressValue = ((currentStepIndex + 1) / sessionSteps.length) * 100;
+  const currentExample = sessionExamples[currentExampleIndex] ?? null;
   const currentMistake = lesson.commonMistakes[currentMistakeIndex] ?? null;
-  const currentDrill = lesson.drills[currentDrillIndex] ?? null;
+  const currentDrill = sessionDrills[currentDrillIndex] ?? null;
 
   useEffect(() => {
     updateContinueState({
@@ -90,8 +96,8 @@ export function GrammarMissionPlayer({
   }, [currentStepIndex, mission.id, mission.type]);
 
   useEffect(() => {
-    setCurrentExampleIndex((index) => Math.min(index, Math.max(0, examples.length - 1)));
-  }, [examples.length]);
+    setCurrentExampleIndex((index) => Math.min(index, Math.max(0, sessionExamples.length - 1)));
+  }, [sessionExamples.length]);
 
   useEffect(() => {
     setCurrentMistakeIndex((index) =>
@@ -100,13 +106,17 @@ export function GrammarMissionPlayer({
   }, [lesson.commonMistakes.length]);
 
   useEffect(() => {
-    setCurrentDrillIndex((index) => Math.min(index, Math.max(0, lesson.drills.length - 1)));
-  }, [lesson.drills.length]);
+    setCurrentDrillIndex((index) => Math.min(index, Math.max(0, sessionDrills.length - 1)));
+  }, [sessionDrills.length]);
+
+  useEffect(() => {
+    setCurrentStepIndex((index) => Math.min(index, Math.max(0, sessionSteps.length - 1)));
+  }, [sessionSteps.length]);
 
   useMissionAutoComplete({
     missionId: mission.id,
     clearedCount: clearedDrillIds.length,
-    totalCount: lesson.drills.length,
+    totalCount: sessionDrills.length,
   });
 
   function handleDrillCleared(drillId: string) {
@@ -116,7 +126,7 @@ export function GrammarMissionPlayer({
   }
 
   function goToNextStep() {
-    setCurrentStepIndex((index) => Math.min(missionSteps.length - 1, index + 1));
+    setCurrentStepIndex((index) => Math.min(sessionSteps.length - 1, index + 1));
   }
 
   function goToPreviousStep() {
@@ -124,12 +134,19 @@ export function GrammarMissionPlayer({
   }
 
   function goToNextDrill() {
-    if (currentDrillIndex < lesson.drills.length - 1) {
-      setCurrentDrillIndex((index) => Math.min(lesson.drills.length - 1, index + 1));
+    if (currentDrillIndex < sessionDrills.length - 1) {
+      setCurrentDrillIndex((index) => Math.min(sessionDrills.length - 1, index + 1));
       return;
     }
 
-    navigate('/');
+    navigate('/', {
+      state: buildMissionCompletionRouteState(
+        mission,
+        sessionMode,
+        Math.min(clearedDrillIds.length, sessionDrills.length),
+        sessionDrills.length,
+      ),
+    });
   }
 
   return (
@@ -137,13 +154,21 @@ export function GrammarMissionPlayer({
       <SurfaceCard
         className="mission-session-card"
         title={lesson.title}
-        description={`${currentStep.title} · ${formatTargetSkill(mission.targetSkill)}`}
+        description={
+          sessionMode === 'reinforce'
+            ? `Short reinforce pass · ${formatTargetSkill(mission.targetSkill)}`
+            : `${currentStep.title} · ${formatTargetSkill(mission.targetSkill)}`
+        }
       >
         <div className="mission-session-card__meta-row">
           <p className="mission-session-card__meta">
-            Step {currentStepIndex + 1} of {missionSteps.length}
+            Step {currentStepIndex + 1} of {sessionSteps.length}
           </p>
-          <p className="mission-session-card__meta">{mission.estimatedMinutes} min</p>
+          <p className="mission-session-card__meta">
+            {sessionMode === 'reinforce'
+              ? `${Math.max(2, Math.ceil(mission.estimatedMinutes / 2))} min`
+              : `${mission.estimatedMinutes} min`}
+          </p>
         </div>
 
         <div className="mission-progress">
@@ -167,7 +192,7 @@ export function GrammarMissionPlayer({
         </div>
 
         <div className="mission-step-tabs mission-step-tabs--compact" aria-label="Mission sections">
-          {missionSteps.map((step, index) => {
+          {sessionSteps.map((step, index) => {
             const isActive = index === currentStepIndex;
 
             return (
@@ -198,25 +223,29 @@ export function GrammarMissionPlayer({
             </div>
             <div className="mission-overview__stat">
               <dt>Examples</dt>
-              <dd>{examples.length}</dd>
+              <dd>{sessionExamples.length}</dd>
             </div>
             <div className="mission-overview__stat">
               <dt>Drills</dt>
-              <dd>{lesson.drills.length}</dd>
+              <dd>{sessionDrills.length}</dd>
             </div>
           </dl>
-          <p className="mission-session-details__body">{lesson.objective}</p>
+          <p className="mission-session-details__body">
+            {sessionMode === 'reinforce'
+              ? 'This short pass skips the full lesson setup and rotates a smaller set of examples and drills.'
+              : lesson.objective}
+          </p>
         </details>
       </SurfaceCard>
 
       <SurfaceCard
         title={currentStep.title}
         description={getStepDescription(currentStep.id, {
-          exampleCount: examples.length,
+          exampleCount: sessionExamples.length,
           currentExampleIndex,
           mistakeCount: lesson.commonMistakes.length,
           currentMistakeIndex,
-          drillCount: lesson.drills.length,
+          drillCount: sessionDrills.length,
           currentDrillIndex,
         })}
       >
@@ -238,7 +267,7 @@ export function GrammarMissionPlayer({
             currentExample ? (
               <div className="mission-focus-card">
                 <p className="mission-focus-card__eyebrow">
-                  Example {currentExampleIndex + 1} of {examples.length}
+                  Example {currentExampleIndex + 1} of {sessionExamples.length}
                 </p>
                 <article className="mission-example-card">
                   <JapaneseTextPair
@@ -247,7 +276,7 @@ export function GrammarMissionPlayer({
                   />
                   <p className="mission-example-card__english">{currentExample.english}</p>
                 </article>
-                {examples.length > 1 ? (
+                {sessionExamples.length > 1 ? (
                   <div className="mission-inline-actions">
                     <button
                       type="button"
@@ -264,10 +293,10 @@ export function GrammarMissionPlayer({
                       className="mission-button"
                       onClick={() =>
                         setCurrentExampleIndex((index) =>
-                          Math.min(examples.length - 1, index + 1),
+                          Math.min(sessionExamples.length - 1, index + 1),
                         )
                       }
-                      disabled={currentExampleIndex >= examples.length - 1}
+                      disabled={currentExampleIndex >= sessionExamples.length - 1}
                     >
                       Next example
                     </button>
@@ -329,13 +358,13 @@ export function GrammarMissionPlayer({
                   lessonId={lesson.id}
                   drill={currentDrill}
                   index={currentDrillIndex}
-                  totalCount={lesson.drills.length}
-                  hasNextDrill={currentDrillIndex < lesson.drills.length - 1}
+                  totalCount={sessionDrills.length}
+                  hasNextDrill={currentDrillIndex < sessionDrills.length - 1}
                   onAdvance={goToNextDrill}
                   onCleared={handleDrillCleared}
                 />
                 <p className="list-meta">
-                  {clearedDrillIds.length}/{lesson.drills.length} drills done.
+                  {clearedDrillIds.length}/{sessionDrills.length} drills done.
                 </p>
               </>
             ) : (
@@ -352,7 +381,7 @@ export function GrammarMissionPlayer({
             >
               Previous
             </button>
-            {currentStepIndex < missionSteps.length - 1 ? (
+            {currentStepIndex < sessionSteps.length - 1 ? (
               <button
                 type="button"
                 className="mission-button"
@@ -361,9 +390,22 @@ export function GrammarMissionPlayer({
                 Next section
               </button>
             ) : (
-              <Link to="/" className="mission-button mission-button--link">
-                Back to today
-              </Link>
+              <button
+                type="button"
+                className="mission-button mission-button--link"
+                onClick={() =>
+                  navigate('/', {
+                    state: buildMissionCompletionRouteState(
+                      mission,
+                      sessionMode,
+                      Math.min(clearedDrillIds.length, sessionDrills.length),
+                      sessionDrills.length,
+                    ),
+                  })
+                }
+              >
+                Back to Today
+              </button>
             )}
           </div>
         </div>
@@ -372,8 +414,15 @@ export function GrammarMissionPlayer({
       <MissionCompletionCard
         missionId={mission.id}
         clearedCount={clearedDrillIds.length}
-        totalCount={lesson.drills.length}
+        totalCount={sessionDrills.length}
         unitLabel="drill"
+        sessionMode={sessionMode}
+        returnState={buildMissionCompletionRouteState(
+          mission,
+          sessionMode,
+          Math.min(clearedDrillIds.length, sessionDrills.length),
+          sessionDrills.length,
+        )}
       />
     </div>
   );
@@ -601,6 +650,72 @@ function DrillCard({
       </div>
     </article>
   );
+}
+
+function getMissionSteps(
+  sessionMode: MissionSessionMode,
+  exampleCount: number,
+  drillCount: number,
+): MissionStep[] {
+  if (sessionMode === 'reinforce') {
+    const steps: MissionStep[] = [];
+
+    if (exampleCount > 0) {
+      steps.push({
+        id: 'examples',
+        label: 'Example',
+        title: 'Quick example',
+        description: 'See one short line before the follow-up checks.',
+      });
+    }
+
+    if (drillCount > 0) {
+      steps.push({
+        id: 'drills',
+        label: 'Drills',
+        title: 'Follow-up drills',
+        description: 'Use a shorter alternate drill pass instead of replaying the full lesson.',
+      });
+    }
+
+    return steps.length > 0
+      ? steps
+      : [
+          {
+            id: 'intro',
+            label: 'Intro',
+            title: 'Lesson intro',
+            description: 'Get the pattern clear before you start answering.',
+          },
+        ];
+  }
+
+  return [
+    {
+      id: 'intro',
+      label: 'Intro',
+      title: 'Lesson intro',
+      description: 'Get the pattern clear before you start answering.',
+    },
+    {
+      id: 'examples',
+      label: 'Examples',
+      title: 'Examples',
+      description: 'See the pattern in short, useful beginner lines.',
+    },
+    {
+      id: 'mistakes',
+      label: 'Mistakes',
+      title: 'Common mistakes',
+      description: 'Use the confusion points as quick guardrails.',
+    },
+    {
+      id: 'drills',
+      label: 'Drills',
+      title: 'Drills',
+      description: 'Do a first active pass with simple local feedback.',
+    },
+  ] as const;
 }
 
 function getStepDescription(

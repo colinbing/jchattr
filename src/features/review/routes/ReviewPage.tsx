@@ -136,8 +136,8 @@ export function ReviewPage() {
           title="Batch finished"
           description={
             lastBatchSummary.nextBatchSize > 0
-              ? 'Good. The queue is lighter. Take another short pass only if you still want it.'
-              : 'Good. This batch is done and there is no next retry batch waiting right now.'
+              ? 'Good. The queue is lighter. Return to Today first, then come back only if you want one more short batch.'
+              : 'Good. This batch is done. Return to Today and keep the loop moving.'
           }
         >
           <div className="review-post-batch-card">
@@ -154,7 +154,7 @@ export function ReviewPage() {
                 {lastBatchSummary.nextBatchSize > 0
                   ? `${lastBatchSummary.nextBatchSize} more item${
                       lastBatchSummary.nextBatchSize === 1 ? '' : 's'
-                    } are ready if you want one more short batch.`
+                    } are ready if you want one more short batch later.`
                   : 'No next batch is queued.'}
               </p>
             </div>
@@ -165,9 +165,6 @@ export function ReviewPage() {
                 {lastBatchSummary.remainingWeakPointCount === 1 ? '' : 's'} left
               </span>
               <span className="review-chip">
-                {lastBatchSummary.unresolvedCount} unresolved from last batch
-              </span>
-              <span className="review-chip">
                 {lastBatchSummary.nextBatchSize > 0
                   ? `${lastBatchSummary.nextBatchSize} ready next`
                   : 'Queue clear for now'}
@@ -175,10 +172,14 @@ export function ReviewPage() {
             </div>
 
             <div className="mission-step-actions review-card-actions">
+              <Link to="/" className="mission-button mission-button--link">
+                Back to Today
+              </Link>
+
               {lastBatchSummary.nextBatchSize > 0 ? (
                 <button
                   type="button"
-                  className="mission-button"
+                  className="mission-button mission-button--secondary"
                   onClick={() => {
                     setLastBatchSummary(null);
                     setActiveBatch(batchItems);
@@ -186,19 +187,6 @@ export function ReviewPage() {
                 >
                   Start next batch
                 </button>
-              ) : (
-                <Link to="/" className="mission-button mission-button--link">
-                  Back to Today
-                </Link>
-              )}
-
-              {lastBatchSummary.nextBatchSize > 0 ? (
-                <Link
-                  to="/"
-                  className="mission-button mission-button--secondary mission-button--link"
-                >
-                  Back to Today
-                </Link>
               ) : null}
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
 import type {
@@ -9,6 +9,7 @@ import type {
   ReadingCheck,
   VocabItem,
 } from '../../../lib/content/types';
+import type { MissionSessionMode } from '../lib/missionSession';
 import { GrammarMissionPlayer } from '../components/GrammarMissionPlayer';
 import { ListeningMissionPlayer } from '../components/ListeningMissionPlayer';
 import { OutputMissionPlayer } from '../components/OutputMissionPlayer';
@@ -16,8 +17,11 @@ import { ReadingMissionPlayer } from '../components/ReadingMissionPlayer';
 
 export function MissionDetailPage() {
   const { missionId } = useParams<{ missionId: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const starterContent = getStarterContent();
+  const sessionMode: MissionSessionMode =
+    (location.state as MissionRouteState | null)?.sessionMode ?? 'default';
 
   if (!missionId) {
     return (
@@ -67,7 +71,12 @@ export function MissionDetailPage() {
         variant="compact"
       >
         <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
-        <GrammarMissionPlayer mission={mission} lesson={lesson} examples={examples} />
+        <GrammarMissionPlayer
+          mission={mission}
+          lesson={lesson}
+          examples={examples}
+          sessionMode={sessionMode}
+        />
       </PageShell>
     );
   }
@@ -111,6 +120,7 @@ export function MissionDetailPage() {
           relatedLessons={relatedLessons}
           relatedExamples={relatedExamples}
           choicePool={starterContent.listeningItems}
+          sessionMode={sessionMode}
         />
       </PageShell>
     );
@@ -156,6 +166,7 @@ export function MissionDetailPage() {
           relatedLessons={relatedLessons}
           relatedExamples={relatedExamples}
           relatedVocab={relatedVocab}
+          sessionMode={sessionMode}
         />
       </PageShell>
     );
@@ -195,6 +206,7 @@ export function MissionDetailPage() {
           mission={mission}
           checks={readingChecks}
           examplesById={examplesById}
+          sessionMode={sessionMode}
         />
       </PageShell>
     );
@@ -207,6 +219,11 @@ export function MissionDetailPage() {
     />
   );
 }
+
+type MissionRouteState = {
+  preserveScroll?: boolean;
+  sessionMode?: MissionSessionMode;
+};
 
 type MissionRouteBarProps = {
   onGoBack: () => void;

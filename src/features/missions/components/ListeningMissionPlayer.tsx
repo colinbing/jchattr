@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
@@ -15,8 +15,17 @@ import {
 } from '../../../lib/progress/continueState';
 import { hasDistinctReading } from '../../../lib/japaneseText';
 import { getListeningTranslationChoices } from '../../../lib/listeningChoices';
+import {
+  getMissionProgressEntry,
+  useMissionProgress,
+} from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import {
+  buildMissionCompletionRouteState,
+  selectMissionSessionItems,
+  type MissionSessionMode,
+} from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type ListeningMissionPlayerProps = {
@@ -25,6 +34,7 @@ type ListeningMissionPlayerProps = {
   relatedLessons: GrammarLesson[];
   relatedExamples: ExampleSentence[];
   choicePool: ListeningItem[];
+  sessionMode: MissionSessionMode;
 };
 
 export function ListeningMissionPlayer({
@@ -33,7 +43,21 @@ export function ListeningMissionPlayer({
   relatedLessons,
   relatedExamples,
   choicePool,
+  sessionMode,
 }: ListeningMissionPlayerProps) {
+  const navigate = useNavigate();
+  const missionProgress = useMissionProgress();
+  const [sessionRotation] = useState(() => {
+    return getMissionProgressEntry(missionProgress, mission.id).completionCount;
+  });
+  const sessionItems = useMemo(
+    () => selectMissionSessionItems(listeningItems, sessionMode, sessionRotation, 2),
+    [listeningItems, sessionMode, sessionRotation],
+  );
+  const sessionExamples = useMemo(
+    () => selectMissionSessionItems(relatedExamples, sessionMode, sessionRotation, 2),
+    [relatedExamples, sessionMode, sessionRotation],
+  );
   const [clearedItemIds, setClearedItemIds] = useState<string[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(() => {
     return (
@@ -41,12 +65,12 @@ export function ListeningMissionPlayer({
         readContinueState(),
         mission.id,
         mission.type,
-        listeningItems.length - 1,
+        sessionItems.length - 1,
       ) ?? 0
     );
   });
-  const currentItem = listeningItems[currentItemIndex];
-  const progressValue = ((currentItemIndex + 1) / listeningItems.length) * 100;
+  const currentItem = sessionItems[currentItemIndex];
+  const progressValue = ((currentItemIndex + 1) / sessionItems.length) * 100;
   const primaryLesson = relatedLessons[0];
 
   useEffect(() => {
@@ -57,10 +81,14 @@ export function ListeningMissionPlayer({
     });
   }, [currentItemIndex, mission.id, mission.type]);
 
+  useEffect(() => {
+    setCurrentItemIndex((index) => Math.min(index, Math.max(0, sessionItems.length - 1)));
+  }, [sessionItems.length]);
+
   useMissionAutoComplete({
     missionId: mission.id,
     clearedCount: clearedItemIds.length,
-    totalCount: listeningItems.length,
+    totalCount: sessionItems.length,
   });
 
   function handleItemCleared(itemId: string) {
@@ -72,8 +100,12 @@ export function ListeningMissionPlayer({
   return (
     <div className="mission-player-shell">
       <SurfaceCard
-        title="Mission overview"
-        description="Work through one listening item at a time with a guess-first flow and progressive hints. Progress stays local to this page for now."
+        title={sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Mission overview'}
+        description={
+          sessionMode === 'reinforce'
+            ? 'Take a shorter listening follow-up pass with a small rotated set of lines.'
+            : 'Work through one listening item at a time with a guess-first flow and progressive hints.'
+        }
       >
         <div className="mission-overview">
           <div className="mission-overview__lesson">
@@ -99,20 +131,22 @@ export function ListeningMissionPlayer({
             </div>
             <div className="mission-overview__stat">
               <dt>Listening items</dt>
-              <dd>{listeningItems.length}</dd>
+              <dd>{sessionItems.length}</dd>
             </div>
             <div className="mission-overview__stat">
               <dt>Support examples</dt>
-              <dd>{relatedExamples.length}</dd>
+              <dd>{sessionExamples.length}</dd>
             </div>
           </dl>
 
           <div className="mission-progress">
             <div className="mission-progress__meta">
               <p className="mission-progress__label">
-                Item {currentItemIndex + 1} of {listeningItems.length}
+                Item {currentItemIndex + 1} of {sessionItems.length}
               </p>
-              <p className="mission-progress__step">One line at a time</p>
+              <p className="mission-progress__step">
+                {sessionMode === 'reinforce' ? 'Short follow-up checks' : 'One line at a time'}
+              </p>
             </div>
             <div
               className="mission-progress__track"
@@ -141,13 +175,13 @@ export function ListeningMissionPlayer({
             missionId={mission.id}
             item={currentItem}
             choicePool={choicePool}
-            avoidTranslations={listeningItems
+            avoidTranslations={sessionItems
               .slice(Math.max(0, currentItemIndex - 2), currentItemIndex)
               .map((listeningItem) => listeningItem.translation)}
             onCleared={handleItemCleared}
           />
           <p className="list-meta">
-            Cleared {clearedItemIds.length} of {listeningItems.length} listening checks in this pass.
+            Cleared {clearedItemIds.length} of {sessionItems.length} listening checks in this pass.
           </p>
 
           <div className="mission-step-actions">
@@ -159,28 +193,41 @@ export function ListeningMissionPlayer({
             >
               Previous line
             </button>
-            {currentItemIndex < listeningItems.length - 1 ? (
+            {currentItemIndex < sessionItems.length - 1 ? (
               <button
                 type="button"
                 className="mission-button"
                 onClick={() =>
                   setCurrentItemIndex((index) =>
-                    Math.min(listeningItems.length - 1, index + 1),
+                    Math.min(sessionItems.length - 1, index + 1),
                   )
                 }
               >
                 Next line
               </button>
             ) : (
-              <Link to="/" className="mission-button mission-button--link">
-                Back to today
-              </Link>
+              <button
+                type="button"
+                className="mission-button mission-button--link"
+                onClick={() =>
+                  navigate('/', {
+                    state: buildMissionCompletionRouteState(
+                      mission,
+                      sessionMode,
+                      Math.min(clearedItemIds.length, sessionItems.length),
+                      sessionItems.length,
+                    ),
+                  })
+                }
+              >
+                Finish to Today
+              </button>
             )}
           </div>
         </div>
       </SurfaceCard>
 
-      {(primaryLesson || relatedExamples.length > 0) ? (
+      {(primaryLesson || sessionExamples.length > 0) ? (
         <SurfaceCard
           title="Pattern support"
           description="Use the linked grammar and examples as a compact reference after you have already taken your first guess."
@@ -194,9 +241,9 @@ export function ListeningMissionPlayer({
               </section>
             ) : null}
 
-            {relatedExamples.length > 0 ? (
+            {sessionExamples.length > 0 ? (
               <div className="mission-example-list">
-                {relatedExamples.map((example) => (
+                {sessionExamples.map((example) => (
                   <article key={example.id} className="mission-example-card">
                     <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
                     <p className="mission-example-card__english">{example.english}</p>
@@ -211,8 +258,15 @@ export function ListeningMissionPlayer({
       <MissionCompletionCard
         missionId={mission.id}
         clearedCount={clearedItemIds.length}
-        totalCount={listeningItems.length}
+        totalCount={sessionItems.length}
         unitLabel="listening check"
+        sessionMode={sessionMode}
+        returnState={buildMissionCompletionRouteState(
+          mission,
+          sessionMode,
+          Math.min(clearedItemIds.length, sessionItems.length),
+          sessionItems.length,
+        )}
       />
     </div>
   );

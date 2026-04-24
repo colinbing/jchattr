@@ -8,12 +8,12 @@
 ## Current Phase / Status
 
 - Phase: Phase 4 started
-- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, the first twelve post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, listening/output drill flow, the new mobile core-loop friction cleanup v1 across navigation, mission-route chrome, duplicate reading/support rendering, listening choice variation, retry-state reset, route scroll positioning, and Today recommendation copy, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup across a simpler Review landing page, lighter post-batch state, collapsed queue details, and intentional return-to-Today completion feedback, the new Today-density cleanup across a compact top summary, required-first section order, and collapsed bonus/path/help context, the new active Review-batch cleanup across a denser retry header, collapsed support notes, and more focused one-item-at-a-time mobile retry flow, the new Missions-surface cleanup across a compact page shell, next-mission chapter focus, collapsed support sections, and lighter mission-card detail density, the new Progress-surface cleanup across a compact snapshot card, priority skill-area focus, and collapsed secondary progress detail, the new Settings-surface cleanup across a compact local snapshot, routine reset actions first, and collapsed destructive/audio detail, plus static-host deployment readiness for Vercel and Netlify without changing the local-first runtime model
-- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, cleaner mobile chrome, less answer-pattern leakage in listening, a less error-prone review retry loop, more task-focused grammar and reading missions on mobile, a cleaner Review surface, a lighter Today entry surface on mobile, a slimmer active retry experience inside Review itself, a faster-to-scan Missions surface on phone widths, a lighter Progress surface on mobile, a lighter Settings surface on mobile, and a straightforward path to public static hosting; the next material work is deepening personalization and polishing remaining secondary surfaces rather than reopening core content coverage
+- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, the first thirteen post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, mission-library presentation, listening/output drill flow, the new mobile core-loop friction cleanup v1 across navigation, mission-route chrome, duplicate reading/support rendering, listening choice variation, retry-state reset, route scroll positioning, and Today recommendation copy, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup across a simpler Review landing page, lighter post-batch state, collapsed queue details, and intentional return-to-Today completion feedback, the new Today-density cleanup across a compact top summary, required-first section order, and collapsed bonus/path/help context, the new active Review-batch cleanup across a denser retry header, collapsed support notes, and more focused one-item-at-a-time mobile retry flow, the new Missions-surface cleanup across a compact page shell, next-mission chapter focus, collapsed support sections, and lighter mission-card detail density, the new Progress-surface cleanup across a compact snapshot card, priority skill-area focus, and collapsed secondary progress detail, the new Settings-surface cleanup across a compact local snapshot, routine reset actions first, and collapsed destructive/audio detail, the new reinforce-and-completion-flow cleanup across short reinforce passes, reduced immediate same-mission repetition, and lighter mission/review return-to-Today transitions, plus static-host deployment readiness for Vercel and Netlify without changing the local-first runtime model
+- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, cleaner mobile chrome, less answer-pattern leakage in listening, a less error-prone review retry loop, more task-focused grammar and reading missions on mobile, a cleaner Review surface, a lighter Today entry surface on mobile, a slimmer active retry experience inside Review itself, a faster-to-scan Missions surface on phone widths, a lighter Progress surface on mobile, a lighter Settings surface on mobile, short reinforce passes that feel distinct from first-run missions, lighter mission/review completion handoffs back into Today, and a straightforward path to public static hosting; the next material work is deepening personalization and polishing remaining secondary surfaces rather than reopening core content coverage
 
 ## Current Objective
 
-- Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup, the new Today-density cleanup, the new active Review-batch cleanup, the new Missions-surface cleanup, the new Progress-surface cleanup, the new Settings-surface cleanup, and static-host-ready SPA routing setup as the Phase 4 baseline, then deepen adaptive recommendation work and polish remaining secondary surfaces without widening scope.
+- Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup, the new Today-density cleanup, the new active Review-batch cleanup, the new Missions-surface cleanup, the new Progress-surface cleanup, the new Settings-surface cleanup, the new reinforce-and-completion-flow cleanup, and static-host-ready SPA routing setup as the Phase 4 baseline, then deepen adaptive recommendation work and polish remaining secondary surfaces without widening scope.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -162,6 +162,7 @@
 - Phase 4 Missions-surface cleanup that switches the Missions route onto the compact page-shell variant, keeps the active chapter and next required mission above the fold, moves recommended/totals/path rules behind optional details, and trims mission-card density by collapsing secondary completion and review diagnostics
 - Phase 4 Progress-surface cleanup that switches Progress onto the compact page-shell variant, replaces stacked completion and weak-point summary cards with one compact snapshot card, keeps priority skill areas visible first, and moves secondary tier explanations and extra counts behind lightweight details
 - Phase 4 Settings-surface cleanup that switches Settings onto the compact page-shell variant, replaces the heavier intro stack with one compact local snapshot card, keeps routine reset actions visible first, and moves full-reset and audio-detail explanations behind lighter disclosures without changing local reset behavior
+- Phase 4 reinforce-and-completion-flow cleanup that turns Today reinforce recommendations into short follow-up passes with rotated subsets where possible, avoids immediately reusing just-completed missions when alternate completed options exist, returns mission completions to Today with compact handoff feedback, and makes direct Review post-batch actions point back into the daily loop first
 - Phase 4 deployment-readiness slice that adds minimal SPA rewrite configuration for Vercel and Netlify so `createBrowserRouter` works on static hosting without moving away from the current local-first `localStorage` architecture
 
 ## Current App Capabilities
@@ -178,6 +179,9 @@
   - a more compact top-of-page summary with path totals hidden behind details instead of always-visible stats
   - the required plan before the continue card so the first core action lands earlier on mobile
   - collapsed bonus and extra context sections so Today behaves more like a daily plan than a dashboard dump
+  - short reinforce passes for completed-mission recommendations instead of always replaying the full mission flow
+  - avoidance of immediately reusing just-completed missions for reinforce when alternate completed options exist
+  - a compact `Mission finished` return state after mission completion so the handoff back into Today feels intentional
 - User can open Missions and see all current missions with:
   - a compact top shell and active chapter first instead of leading with summary/explainer cards
   - a horizontal chapter switcher that selects one active chapter at a time
@@ -216,11 +220,13 @@
   - lesson intro, example sentences, common mistakes, and drills inside the same focused flow
   - one example, one mistake note, or one drill visible at a time on mobile
   - post-check drill feedback and next-action controls kept close to the active answer area
+  - short reinforce passes that skip the full intro stack and rotate a smaller example/drill subset when launched from Today reinforce recommendations
 - Listening missions currently include:
   - optional audio player if static file exists
   - a guess-first multiple-choice meaning check that is available before full reveal
   - progressive hints for transcript, reading when distinct, meaning, and focus support
   - one local multiple-choice meaning check per listening item with deterministic per-item shuffling and reduced immediate distractor repetition
+  - short reinforce passes that rotate a smaller line/example subset when launched from Today reinforce recommendations
 - Output missions currently include:
   - short prompt
   - optional hint
@@ -229,6 +235,7 @@
   - Enter-to-check support inside the task input
   - local evaluation with normalization, explicit accepted answers, and token-pattern diagnostics for close answers
   - a post-check primary action that advances directly to the next task instead of forcing the learner through a second unrelated next-step click
+  - short reinforce passes that rotate a smaller prompt/example/vocab subset when launched from Today reinforce recommendations
 - Typed Japanese entry currently used in grammar and output flows:
   - supports optional local romaji-to-hiragana assist
   - accepts hiragana and katakana as equivalent for answer checking
@@ -238,6 +245,7 @@
   - one local multiple-choice comprehension decision per line before reveal
   - one active reading check at a time with compact top progress and nearby next/previous controls
   - compact reveal of reading, meaning, and a short support note after submission, with reading hidden when it would duplicate the Japanese line exactly
+  - short reinforce passes that rotate a smaller check set when launched from Today reinforce recommendations
 - Review loop currently:
   - selects top weak points by miss count, then recency
   - caps batch size at 3
@@ -245,7 +253,7 @@
   - supports grammar drills, listening checks, output tasks, and reading checks
   - opens on a compact queue card instead of a full stacked stats dashboard
   - returns to Today after batch completion when Review was launched from Today
-  - shows a lighter post-batch state with direct next-batch or back-to-Today actions when Review was opened directly
+  - shows a lighter post-batch state with `Back to Today` as the primary direct action when Review was opened directly
   - keeps tracked-item inventory behind collapsed details on mobile by default
   - resets local selected and typed retry state when the active retry item changes
   - keeps the active retry header compact on mobile with one current-focus label, item progress, and hidden secondary mission context by default
@@ -256,6 +264,7 @@
   - keep the same small 3-slot plan: review, next step, then one support slot
   - turn the third slot into a mission-level stabilize recommendation when unresolved weak points are urgent
   - avoid immediately reusing just-reviewed missions for generic reinforcement when review pressure is low
+  - avoid immediately reusing just-completed missions for reinforce when alternate completed options are available
 - Progress screen currently shows:
   - one compact snapshot card with visible mission clears, weak-point count, and current focus area
   - completion and weak-point totals behind optional details instead of separate always-open summary cards

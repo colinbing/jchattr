@@ -1464,6 +1464,10 @@ button {
   gap: var(--space-4);
 }
 
+.mission-completion-card__actions {
+  padding-top: var(--space-1);
+}
+
 .mission-route-bar,
 .mission-route-bar__links {
   display: flex;
@@ -1572,6 +1576,7 @@ button {
 .review-post-batch-card,
 .review-post-batch-card__copy,
 .review-return-card,
+.mission-return-card,
 .review-launch-card__summary,
 .review-batch-player,
 .review-current-item__header,
@@ -1602,6 +1607,10 @@ button {
 .review-launch-card__meta,
 .review-current-item__meta {
   color: var(--color-ink-muted);
+}
+
+.mission-return-card .review-launch-card__body {
+  color: var(--color-ink);
 }
 
 .review-current-item__body {

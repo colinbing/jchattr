@@ -9,11 +9,13 @@ import {
   getWeakPointList,
   type WeakPointStore,
 } from '../../../lib/progress/weakPoints';
+import type { MissionSessionMode } from '../../missions/lib/missionSession';
 import { selectReviewBatch } from '../../review/lib/reviewBatch';
 
 export const TODAY_RECOMMENDATION_LIMIT = 3;
 const FRESH_WEAK_POINT_WINDOW_MS = 24 * 60 * 60 * 1000;
 const RECENT_REVIEW_WINDOW_MS = 12 * 60 * 60 * 1000;
+const RECENT_MISSION_COMPLETION_WINDOW_MS = 12 * 60 * 60 * 1000;
 const URGENT_WEAK_POINT_COUNT = 3;
 const REPEATED_MISS_THRESHOLD = 2;
 
@@ -38,6 +40,7 @@ export type TodayRecommendation =
       ctaLabel: string;
       to: string;
       mission: Mission;
+      sessionMode: MissionSessionMode;
     };
 
 // Keep the heuristics intentionally small and readable:
@@ -61,6 +64,7 @@ export function deriveTodayRecommendations(
   );
   const reviewAwareness = deriveReviewAwareness(
     starterContent,
+    missionProgress,
     weakPoints,
     reviewLoopProgress,
   );
@@ -91,6 +95,7 @@ export function deriveTodayRecommendations(
       ctaLabel: 'Open mission',
       to: `/mission/${nextMission.id}`,
       mission: nextMission,
+      sessionMode: 'default',
     });
     selectedMissionIds.add(nextMission.id);
   }
@@ -112,6 +117,7 @@ export function deriveTodayRecommendations(
       ctaLabel: supportMission.ctaLabel,
       to: `/mission/${supportMission.mission.id}`,
       mission: supportMission.mission,
+      sessionMode: supportMission.sessionMode,
     });
     selectedMissionIds.add(supportMission.mission.id);
   }
@@ -174,6 +180,7 @@ export function deriveTodayRecommendations(
       ctaLabel: 'Open mission',
       to: `/mission/${mission.id}`,
       mission,
+      sessionMode: progress.completionCount > 0 ? 'reinforce' : 'default',
     });
   });
 
@@ -236,6 +243,7 @@ type ReviewAwareness = {
   isUrgent: boolean;
   topWeakPoint: WeakPoint | null;
   recentlyReviewedMissionIds: Set<string>;
+  recentlyCompletedMissionIds: Set<string>;
 };
 
 type SupportMissionSelection = {
@@ -243,6 +251,7 @@ type SupportMissionSelection = {
   slotLabel: string;
   reason: string;
   ctaLabel: string;
+  sessionMode: MissionSessionMode;
 };
 
 function selectSupportMission(
@@ -263,7 +272,8 @@ function selectSupportMission(
         mission: stabilizeMission,
         slotLabel: 'Stabilize',
         reason: buildStabilizeReason(reviewAwareness.topWeakPoint),
-        ctaLabel: 'Retry mission',
+        ctaLabel: 'Open short pass',
+        sessionMode: 'reinforce',
       };
     }
   }
@@ -279,9 +289,16 @@ function selectSupportMission(
   const completedCandidates = fallbackMissions.filter((mission) => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount > 0;
   });
+  const alternateCompletedCandidates = completedCandidates.filter(
+    (mission) => !reviewAwareness.recentlyCompletedMissionIds.has(mission.id),
+  );
+  const reinforceCandidates =
+    alternateCompletedCandidates.length > 0
+      ? alternateCompletedCandidates
+      : completedCandidates;
 
-  if (completedCandidates.length > 0) {
-    const mission = completedCandidates.sort((left, right) => {
+  if (reinforceCandidates.length > 0) {
+    const mission = reinforceCandidates.sort((left, right) => {
       const leftProgress = getMissionProgressEntry(missionProgress, left.id);
       const rightProgress = getMissionProgressEntry(missionProgress, right.id);
 
@@ -303,7 +320,8 @@ function selectSupportMission(
       mission,
       slotLabel: 'Reinforce',
       reason: buildReinforcementReason(mission, missionProgress, reviewAwareness),
-      ctaLabel: 'Reinforce mission',
+      ctaLabel: 'Open short pass',
+      sessionMode: 'reinforce',
     };
   }
 
@@ -317,7 +335,14 @@ function selectSupportMission(
     mission,
     slotLabel: 'Light pass',
     reason: buildReinforcementReason(mission, missionProgress, reviewAwareness),
-    ctaLabel: 'Open mission',
+    ctaLabel:
+      getMissionProgressEntry(missionProgress, mission.id).completionCount > 0
+        ? 'Open short pass'
+        : 'Open mission',
+    sessionMode:
+      getMissionProgressEntry(missionProgress, mission.id).completionCount > 0
+        ? 'reinforce'
+        : 'default',
   };
 }
 
@@ -329,18 +354,19 @@ function buildReinforcementReason(
   const progress = getMissionProgressEntry(missionProgress, mission.id);
 
   if (reviewAwareness.hasRecentReview && !reviewAwareness.isUrgent) {
-    return 'You reviewed recently, so this gives you a steadier follow-up instead of another retry pass.';
+    return 'You reviewed recently, so this uses a shorter follow-up pass instead of another full retry loop.';
   }
 
   if (progress.completionCount <= 1) {
-    return 'You have only cleared this once, so one more pass should make it stick better.';
+    return 'You have only cleared this once, so a short alternate follow-up pass should make it stick better.';
   }
 
-  return 'This is already in rotation, but it still has a lighter practice count than the rest.';
+  return 'This is already in rotation, but it still has a lighter practice count than the rest, so use a short pass instead of replaying the full mission.';
 }
 
 function deriveReviewAwareness(
   starterContent: StarterContent,
+  missionProgress: MissionProgressRecord,
   weakPoints: WeakPointStore,
   reviewLoopProgress: ReviewLoopProgress,
 ): ReviewAwareness {
@@ -380,6 +406,7 @@ function deriveReviewAwareness(
     recentlyReviewedMissionIds: hasRecentReview
       ? resolveRecentlyReviewedMissionIds(starterContent, reviewLoopProgress.lastCompletedItemIds)
       : new Set<string>(),
+    recentlyCompletedMissionIds: resolveRecentlyCompletedMissionIds(missionProgress),
   };
 }
 
@@ -436,7 +463,17 @@ function buildStabilizeReason(topWeakPoint: WeakPoint | null) {
     ? ` with ${topWeakPoint.missCount} recorded misses`
     : '';
 
-  return `This mission owns your strongest open weak point${repeatedMisses}, so use one quick pass to stabilize it after review.`;
+  return `This mission owns your strongest open weak point${repeatedMisses}, so use one short stabilize pass instead of replaying the full lesson.`;
+}
+
+function resolveRecentlyCompletedMissionIds(missionProgress: MissionProgressRecord) {
+  const now = Date.now();
+
+  return new Set(
+    Object.entries(missionProgress.lastCompletedAtByMissionId)
+      .filter(([, timestamp]) => now - Date.parse(timestamp) <= RECENT_MISSION_COMPLETION_WINDOW_MS)
+      .map(([missionId]) => missionId),
+  );
 }
 
 function resolveRecentlyReviewedMissionIds(

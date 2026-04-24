@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { ExampleSentence, Mission, ReadingCheck } from '../../../lib/content/types';
@@ -8,14 +8,24 @@ import {
   updateContinueState,
 } from '../../../lib/progress/continueState';
 import { hasDistinctReading } from '../../../lib/japaneseText';
+import {
+  getMissionProgressEntry,
+  useMissionProgress,
+} from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import {
+  buildMissionCompletionRouteState,
+  selectMissionSessionItems,
+  type MissionSessionMode,
+} from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type ReadingMissionPlayerProps = {
   mission: Mission;
   checks: ReadingCheck[];
   examplesById: Record<string, ExampleSentence>;
+  sessionMode: MissionSessionMode;
 };
 
 type ReadingCheckFeedback = 'correct' | 'incorrect' | null;
@@ -24,8 +34,17 @@ export function ReadingMissionPlayer({
   mission,
   checks,
   examplesById,
+  sessionMode,
 }: ReadingMissionPlayerProps) {
   const navigate = useNavigate();
+  const missionProgress = useMissionProgress();
+  const [sessionRotation] = useState(() => {
+    return getMissionProgressEntry(missionProgress, mission.id).completionCount;
+  });
+  const sessionChecks = useMemo(
+    () => selectMissionSessionItems(checks, sessionMode, sessionRotation, 2),
+    [checks, sessionMode, sessionRotation],
+  );
   const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
@@ -33,13 +52,13 @@ export function ReadingMissionPlayer({
         readContinueState(),
         mission.id,
         mission.type,
-        checks.length - 1,
+        sessionChecks.length - 1,
       ) ?? 0
     );
   });
-  const currentCheck = checks[currentCheckIndex];
+  const currentCheck = sessionChecks[currentCheckIndex];
   const currentExample = examplesById[currentCheck.exampleId];
-  const progressValue = ((currentCheckIndex + 1) / checks.length) * 100;
+  const progressValue = ((currentCheckIndex + 1) / sessionChecks.length) * 100;
 
   useEffect(() => {
     updateContinueState({
@@ -49,10 +68,14 @@ export function ReadingMissionPlayer({
     });
   }, [currentCheckIndex, mission.id, mission.type]);
 
+  useEffect(() => {
+    setCurrentCheckIndex((index) => Math.min(index, Math.max(0, sessionChecks.length - 1)));
+  }, [sessionChecks.length]);
+
   useMissionAutoComplete({
     missionId: mission.id,
     clearedCount: clearedCheckIds.length,
-    totalCount: checks.length,
+    totalCount: sessionChecks.length,
   });
 
   function handleCheckCleared(checkId: string) {
@@ -62,12 +85,19 @@ export function ReadingMissionPlayer({
   }
 
   function goToNextCheck() {
-    if (currentCheckIndex < checks.length - 1) {
-      setCurrentCheckIndex((index) => Math.min(checks.length - 1, index + 1));
+    if (currentCheckIndex < sessionChecks.length - 1) {
+      setCurrentCheckIndex((index) => Math.min(sessionChecks.length - 1, index + 1));
       return;
     }
 
-    navigate('/');
+    navigate('/', {
+      state: buildMissionCompletionRouteState(
+        mission,
+        sessionMode,
+        Math.min(clearedCheckIds.length, sessionChecks.length),
+        sessionChecks.length,
+      ),
+    });
   }
 
   return (
@@ -75,11 +105,15 @@ export function ReadingMissionPlayer({
       <SurfaceCard
         className="mission-session-card"
         title={mission.title}
-        description={`Reading check ${currentCheckIndex + 1} · ${formatTargetSkill(mission.targetSkill)}`}
+        description={
+          sessionMode === 'reinforce'
+            ? `Short reinforce pass · ${formatTargetSkill(mission.targetSkill)}`
+            : `Reading check ${currentCheckIndex + 1} · ${formatTargetSkill(mission.targetSkill)}`
+        }
       >
         <div className="mission-session-card__meta-row">
           <p className="mission-session-card__meta">
-            Check {currentCheckIndex + 1} of {checks.length}
+            Check {currentCheckIndex + 1} of {sessionChecks.length}
           </p>
           <p className="mission-session-card__meta">{mission.estimatedMinutes} min</p>
         </div>
@@ -117,23 +151,28 @@ export function ReadingMissionPlayer({
             </div>
             <div className="mission-overview__stat">
               <dt>Reading checks</dt>
-              <dd>{checks.length}</dd>
+              <dd>{sessionChecks.length}</dd>
             </div>
             <div className="mission-overview__stat">
               <dt>Source lines</dt>
-              <dd>{checks.length}</dd>
+              <dd>{sessionChecks.length}</dd>
             </div>
           </dl>
           <p className="mission-session-details__body">
-            Build reading recognition with short beginner lines before the app reveals the reading
-            and meaning.
+            {sessionMode === 'reinforce'
+              ? 'This short pass rotates a smaller reading set so you can re-check recognition without replaying the full mission.'
+              : 'Build reading recognition with short beginner lines before the app reveals the reading and meaning.'}
           </p>
         </details>
       </SurfaceCard>
 
       <SurfaceCard
         title={`Reading check ${currentCheckIndex + 1}`}
-        description="One active line at a time. Answer first, then reveal support."
+        description={
+          sessionMode === 'reinforce'
+            ? 'One active line at a time from a shorter rotated reinforce set.'
+            : 'One active line at a time. Answer first, then reveal support.'
+        }
       >
         <div className="mission-step-panel">
           <ReadingCheckCard
@@ -141,12 +180,12 @@ export function ReadingMissionPlayer({
             missionId={mission.id}
             check={currentCheck}
             example={currentExample}
-            hasNextCheck={currentCheckIndex < checks.length - 1}
+            hasNextCheck={currentCheckIndex < sessionChecks.length - 1}
             onAdvance={goToNextCheck}
             onCleared={handleCheckCleared}
           />
           <p className="list-meta">
-            {clearedCheckIds.length}/{checks.length} reading checks done.
+            {clearedCheckIds.length}/{sessionChecks.length} reading checks done.
           </p>
 
           {currentCheckIndex > 0 ? (
@@ -166,8 +205,15 @@ export function ReadingMissionPlayer({
       <MissionCompletionCard
         missionId={mission.id}
         clearedCount={clearedCheckIds.length}
-        totalCount={checks.length}
+        totalCount={sessionChecks.length}
         unitLabel="reading check"
+        sessionMode={sessionMode}
+        returnState={buildMissionCompletionRouteState(
+          mission,
+          sessionMode,
+          Math.min(clearedCheckIds.length, sessionChecks.length),
+          sessionChecks.length,
+        )}
       />
     </div>
   );

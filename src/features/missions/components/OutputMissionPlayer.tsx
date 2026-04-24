@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
@@ -15,9 +15,18 @@ import {
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
+import {
+  getMissionProgressEntry,
+  useMissionProgress,
+} from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import {
+  buildMissionCompletionRouteState,
+  selectMissionSessionItems,
+  type MissionSessionMode,
+} from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type OutputMissionPlayerProps = {
@@ -26,6 +35,7 @@ type OutputMissionPlayerProps = {
   relatedLessons: GrammarLesson[];
   relatedExamples: ExampleSentence[];
   relatedVocab: VocabItem[];
+  sessionMode: MissionSessionMode;
 };
 
 export function OutputMissionPlayer({
@@ -34,8 +44,25 @@ export function OutputMissionPlayer({
   relatedLessons,
   relatedExamples,
   relatedVocab,
+  sessionMode,
 }: OutputMissionPlayerProps) {
   const navigate = useNavigate();
+  const missionProgress = useMissionProgress();
+  const [sessionRotation] = useState(() => {
+    return getMissionProgressEntry(missionProgress, mission.id).completionCount;
+  });
+  const sessionTasks = useMemo(
+    () => selectMissionSessionItems(tasks, sessionMode, sessionRotation, 2),
+    [sessionMode, sessionRotation, tasks],
+  );
+  const sessionExamples = useMemo(
+    () => selectMissionSessionItems(relatedExamples, sessionMode, sessionRotation, 2),
+    [relatedExamples, sessionMode, sessionRotation],
+  );
+  const sessionVocab = useMemo(
+    () => selectMissionSessionItems(relatedVocab, sessionMode, sessionRotation, 4),
+    [relatedVocab, sessionMode, sessionRotation],
+  );
   const [clearedTaskIds, setClearedTaskIds] = useState<string[]>([]);
   const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
@@ -43,14 +70,14 @@ export function OutputMissionPlayer({
   >({});
   const [currentTaskIndex, setCurrentTaskIndex] = useState(() => {
     return (
-      resolveContinueStepIndex(readContinueState(), mission.id, mission.type, tasks.length - 1) ??
+      resolveContinueStepIndex(readContinueState(), mission.id, mission.type, sessionTasks.length - 1) ??
       0
     );
   });
-  const currentTask = tasks[currentTaskIndex];
+  const currentTask = sessionTasks[currentTaskIndex];
   const currentResponse = responsesByTaskId[currentTask.id] ?? '';
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
-  const progressValue = ((currentTaskIndex + 1) / tasks.length) * 100;
+  const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
 
   useEffect(() => {
     updateContinueState({
@@ -60,10 +87,14 @@ export function OutputMissionPlayer({
     });
   }, [currentTaskIndex, mission.id, mission.type]);
 
+  useEffect(() => {
+    setCurrentTaskIndex((index) => Math.min(index, Math.max(0, sessionTasks.length - 1)));
+  }, [sessionTasks.length]);
+
   useMissionAutoComplete({
     missionId: mission.id,
     clearedCount: clearedTaskIds.length,
-    totalCount: tasks.length,
+    totalCount: sessionTasks.length,
   });
 
   function handleTaskCleared(taskId: string) {
@@ -92,19 +123,30 @@ export function OutputMissionPlayer({
   }
 
   function goToNextTask() {
-    if (currentTaskIndex < tasks.length - 1) {
-      setCurrentTaskIndex((index) => Math.min(tasks.length - 1, index + 1));
+    if (currentTaskIndex < sessionTasks.length - 1) {
+      setCurrentTaskIndex((index) => Math.min(sessionTasks.length - 1, index + 1));
       return;
     }
 
-    navigate('/');
+    navigate('/', {
+      state: buildMissionCompletionRouteState(
+        mission,
+        sessionMode,
+        Math.min(clearedTaskIds.length, sessionTasks.length),
+        sessionTasks.length,
+      ),
+    });
   }
 
   return (
     <div className="mission-player-shell">
       <SurfaceCard
-        title="Mission overview"
-        description="Write short lines with linked grammar support nearby. Drafts now stay task-local, and Enter can submit the current answer. Progress stays local to this page for now."
+        title={sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Mission overview'}
+        description={
+          sessionMode === 'reinforce'
+            ? 'Take a shorter output follow-up pass with a small rotated set of prompts.'
+            : 'Write short lines with linked grammar support nearby. Drafts stay task-local, and Enter can submit the current answer.'
+        }
       >
         <div className="mission-overview">
           <div className="mission-overview__lesson">
@@ -126,20 +168,22 @@ export function OutputMissionPlayer({
             </div>
             <div className="mission-overview__stat">
               <dt>Output tasks</dt>
-              <dd>{tasks.length}</dd>
+              <dd>{sessionTasks.length}</dd>
             </div>
             <div className="mission-overview__stat">
               <dt>Support examples</dt>
-              <dd>{relatedExamples.length}</dd>
+              <dd>{sessionExamples.length}</dd>
             </div>
           </dl>
 
           <div className="mission-progress">
             <div className="mission-progress__meta">
               <p className="mission-progress__label">
-                Task {currentTaskIndex + 1} of {tasks.length}
+                Task {currentTaskIndex + 1} of {sessionTasks.length}
               </p>
-              <p className="mission-progress__step">Compose one short line</p>
+              <p className="mission-progress__step">
+                {sessionMode === 'reinforce' ? 'Short follow-up prompts' : 'Compose one short line'}
+              </p>
             </div>
             <div
               className="mission-progress__track"
@@ -160,7 +204,11 @@ export function OutputMissionPlayer({
 
       <SurfaceCard
         title={`Output task ${currentTaskIndex + 1}`}
-        description="Keep the answer short and clean. Evaluation stays local and rule-based, with task-local drafts and a direct check-to-next flow."
+        description={
+          sessionMode === 'reinforce'
+            ? 'Keep the answer short and clean. This pass uses a smaller rotated prompt set.'
+            : 'Keep the answer short and clean. Evaluation stays local and rule-based, with task-local drafts and a direct check-to-next flow.'
+        }
       >
         <div className="mission-step-panel">
           <OutputTaskCard
@@ -173,10 +221,10 @@ export function OutputMissionPlayer({
             onCleared={handleTaskCleared}
             onReset={resetTask}
             onAdvance={goToNextTask}
-            hasNextTask={currentTaskIndex < tasks.length - 1}
+            hasNextTask={currentTaskIndex < sessionTasks.length - 1}
           />
           <p className="list-meta">
-            Cleared {clearedTaskIds.length} of {tasks.length} output tasks in this pass.
+            Cleared {clearedTaskIds.length} of {sessionTasks.length} output tasks in this pass.
           </p>
 
           <div className="mission-step-actions">
@@ -189,18 +237,33 @@ export function OutputMissionPlayer({
               Previous task
             </button>
             {!currentFeedback ? (
-              currentTaskIndex < tasks.length - 1 ? (
+              currentTaskIndex < sessionTasks.length - 1 ? (
                 <button
                   type="button"
                   className="mission-button"
-                  onClick={() => setCurrentTaskIndex((index) => Math.min(tasks.length - 1, index + 1))}
+                  onClick={() =>
+                    setCurrentTaskIndex((index) => Math.min(sessionTasks.length - 1, index + 1))
+                  }
                 >
                   Skip for now
                 </button>
               ) : (
-                <Link to="/" className="mission-button mission-button--link">
-                  Back to today
-                </Link>
+                <button
+                  type="button"
+                  className="mission-button mission-button--link"
+                  onClick={() =>
+                    navigate('/', {
+                      state: buildMissionCompletionRouteState(
+                        mission,
+                        sessionMode,
+                        Math.min(clearedTaskIds.length, sessionTasks.length),
+                        sessionTasks.length,
+                      ),
+                    })
+                  }
+                >
+                  Back to Today
+                </button>
               )
             ) : null}
           </div>
@@ -224,9 +287,9 @@ export function OutputMissionPlayer({
             </div>
           ) : null}
 
-          {relatedExamples.length > 0 ? (
+          {sessionExamples.length > 0 ? (
             <div className="mission-example-list">
-              {relatedExamples.map((example) => (
+              {sessionExamples.map((example) => (
                 <article key={example.id} className="mission-example-card">
                   <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
                   <p className="mission-example-card__english">{example.english}</p>
@@ -236,9 +299,9 @@ export function OutputMissionPlayer({
           ) : null}
         </div>
 
-        {relatedVocab.length > 0 ? (
+        {sessionVocab.length > 0 ? (
           <div className="output-vocab-strip">
-            {relatedVocab.map((item) => (
+            {sessionVocab.map((item) => (
               <article key={item.id} className="output-vocab-chip">
                 <p className="output-vocab-chip__kana">{item.kana}</p>
                 <p className="output-vocab-chip__meaning">{item.meaning}</p>
@@ -251,8 +314,15 @@ export function OutputMissionPlayer({
       <MissionCompletionCard
         missionId={mission.id}
         clearedCount={clearedTaskIds.length}
-        totalCount={tasks.length}
+        totalCount={sessionTasks.length}
         unitLabel="output task"
+        sessionMode={sessionMode}
+        returnState={buildMissionCompletionRouteState(
+          mission,
+          sessionMode,
+          Math.min(clearedTaskIds.length, sessionTasks.length),
+          sessionTasks.length,
+        )}
       />
     </div>
   );
