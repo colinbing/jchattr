@@ -2951,6 +2951,8 @@ export const grammarLessons = [
       'ex-kafe-ni-ikitai-desu',
       'ex-resutoran-ni-ikitai-desu',
       'ex-doyoubi-ni-eigakan-ni-ikitai-desu',
+      'ex-uchi-ni-kaeritai-desu',
+      'ex-umi-ni-ikitai-desu',
     ],
     commonMistakes: [
       'Using を instead of に before the place when the line means "want to go to".',
@@ -2989,6 +2991,9 @@ export const grammarLessons = [
       'ex-hon-o-yomitai-desu',
       'ex-eiga-o-mitai-desu',
       'ex-nihongo-o-benkyoushitai-desu',
+      'ex-kyou-wa-uchi-de-yasumitai-desu',
+      'ex-tomodachi-to-hanashitai-desu',
+      'ex-umi-de-oyogitai-desu',
     ],
     commonMistakes: [
       'Keeping the base polite verb like たべます instead of changing it to たべたいです.',
@@ -3027,6 +3032,9 @@ export const grammarLessons = [
       'ex-jitensha-ga-hoshii-desu',
       'ex-mizu-ga-hoshii-desu',
       'ex-keeki-ga-hoshii-desu',
+      'ex-saifu-ga-hoshii-desu',
+      'ex-kippu-ga-hoshii-desu',
+      'ex-pasupooto-ga-hoshii-desu',
     ],
     commonMistakes: [
       'Using を instead of が in the core ほしいです pattern taught in this repo.',
@@ -3065,6 +3073,8 @@ export const grammarLessons = [
       'ex-koohii-ga-hoshii-desu',
       'ex-kono-hon-ga-hoshii-desu',
       'ex-atarashii-kamera-ga-hoshii-desu',
+      'ex-chizu-ga-hoshii-desu',
+      'ex-kono-jisho-ga-hoshii-desu',
     ],
     commonMistakes: [
       'Changing the sentence order instead of keeping the same がほしいです shape.',
@@ -3103,6 +3113,9 @@ export const grammarLessons = [
       'ex-jitensha-ni-noru-koto-ga-dekimasu',
       'ex-kafe-made-aruku-koto-ga-dekimasu',
       'ex-hon-o-kau-koto-ga-dekimasu',
+      'ex-kanji-o-kaku-koto-ga-dekimasu',
+      'ex-uta-o-utau-koto-ga-dekimasu',
+      'ex-ryouri-o-tsukuru-koto-ga-dekimasu',
     ],
     commonMistakes: [
       'Using the polite ます form before ことができます instead of the dictionary form taught here.',
@@ -3145,6 +3158,8 @@ export const grammarLessons = [
       'ex-densha-ni-noru-koto-ga-dekimasu',
       'ex-nihongo-o-yomu-koto-ga-dekimasu-ka',
       'ex-hai-nihongo-o-yomu-koto-ga-dekimasu',
+      'ex-umi-de-oyogu-koto-ga-dekimasu',
+      'ex-kanji-o-kaku-koto-ga-dekimasu-ka',
     ],
     commonMistakes: [
       'Dropping part of ことができます when turning the statement into a question.',
@@ -3187,6 +3202,9 @@ export const grammarLessons = [
       'ex-kuukou-ni-itta-koto-ga-arimasu',
       'ex-kono-kafe-ni-itta-koto-ga-arimasu',
       'ex-eigakan-ni-itta-koto-ga-arimasu-ka',
+      'ex-oosaka-ni-itta-koto-ga-arimasu',
+      'ex-onsen-ni-itta-koto-ga-arimasu',
+      'ex-bijutsukan-ni-itta-koto-ga-arimasu',
     ],
     commonMistakes: [
       'Replacing the fixed past chunk いった with the polite form いきました inside this pattern.',
@@ -3229,6 +3247,8 @@ export const grammarLessons = [
       'ex-eiga-o-mita-koto-ga-arimasu',
       'ex-anime-o-mita-koto-ga-arimasu',
       'ex-sushi-o-tabeta-koto-ga-arimasu-ka',
+      'ex-koucha-o-nonda-koto-ga-arimasu',
+      'ex-hon-o-yonda-koto-ga-arimasu',
     ],
     commonMistakes: [
       'Changing the fixed past chunk into a plain present verb like たべます or みます.',
@@ -3271,6 +3291,9 @@ export const grammarLessons = [
       'ex-kazoku-to-resutoran-ni-ikimasu',
       'ex-sensei-to-toshokan-ni-ikimasu',
       'ex-ane-to-kafe-ni-ikimasu',
+      'ex-ryoushin-to-oosaka-ni-ikimasu',
+      'ex-imouto-to-bijutsukan-ni-ikimasu',
+      'ex-hitori-de-kafe-ni-ikimasu',
     ],
     commonMistakes: [
       'Using に instead of と after the companion when the sentence means "with someone."',
@@ -3313,6 +3336,8 @@ export const grammarLessons = [
       'ex-densha-de-toukyou-ni-ikimasu',
       'ex-jitensha-de-kafe-ni-ikimasu',
       'ex-takushii-de-resutoran-ni-ikimasu',
+      'ex-hikouki-de-oosaka-ni-ikimasu',
+      'ex-chikatetsu-de-bijutsukan-ni-ikimasu',
     ],
     commonMistakes: [
       'Forgetting で after the transport and losing the method meaning.',
