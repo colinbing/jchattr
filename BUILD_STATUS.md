@@ -118,6 +118,8 @@
 - Batch 10 content pass for packs 45 to 47 with realistic friction language, noun-based `まえに / あとで`, plain-style recognition I, the planned post-Batch-10 reading follow-up, and overlap-safe gloss cleanup for new polite/plain meaning pairs
 - Batch 11 content pass for packs 48 to 50 with recognition-first plain verb exposure, sentence-level connected speech, noun-list flexibility with `と / や`, the planned post-Batch-11 reading recombination, and an audit-gate check confirming plain-form work stayed recognition-first while connected speech avoided hidden N4 complexity
 - Final claim-gate audit pass with full coverage review, reading/listening balance review, and BUILD_STATUS accuracy verification; repo structure is now broad and coherent, but the repo-defined `N5-comprehensive` claim threshold is still not met because vocab breadth remains far below plan target and reading is still intentionally compact relative to total content volume
+- Post-claim-gap Block A1 reinforcement pass for packs 1 to 5 with pack-native vocab densification, new example/listening support lines, and a QA check confirming no structural drift before moving on to packs 6 to 10
+- Post-claim-gap Block A2 reinforcement pass for packs 6 to 10 with pack-native vocab densification, two Block A reading follow-up missions, and an early-reading concentration cleanup that brings all current reading missions back to the `40%` per-pack cap or lower
 
 ## Current App Capabilities
 
@@ -136,11 +138,11 @@
   - reset all local study data with explicit confirmation
   - see listening-audio coverage based on a checked-in manifest
 - User can resume the last active mission from local continue state
-- User can complete 177 starter missions across 4 mission types:
+- User can complete 179 starter missions across 4 mission types:
   - 50 grammar
   - 50 listening
   - 50 output
-  - 27 reading
+  - 29 reading
 - Grammar missions currently include:
   - lesson intro
   - example sentences
@@ -247,15 +249,15 @@
 
 - Content is still small starter content only:
   - 100 grammar lessons
-  - 512 example sentences
-  - 334 vocab items
-  - 249 listening items
-  - 177 missions
+  - 550 example sentences
+  - 374 vocab items
+  - 269 listening items
+  - 179 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
-- Reading slice is still intentionally small: 27 reading missions with 135 total multiple-choice checks, all built from existing example sentences
+- Reading slice is still intentionally small: 29 reading missions with 145 total multiple-choice checks, all built from existing example sentences
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Shopping coverage now includes quantities, prices, availability checks, and short choice lines, but it is still a narrow beginner slice rather than broader payment, returns, or service-interaction coverage
@@ -273,8 +275,8 @@
 - Adjective coverage now includes negatives, past descriptions, beginner comparison, and simple `いちばん` superlatives, but it is still a narrow descriptive slice rather than full adjective tense/degree nuance or open-ended opinion language
 - Comparison and ranking coverage now exists, but it is still limited to short `より / のほうが` and `いちばん` lines rather than broader ranking nuance, contrastive justification, or multi-clause opinions
 - Frequency and reason coverage now exists, but it is still intentionally limited to a small adverb set and short polite `から` clauses rather than broader discourse-level explanation
-- Current listening audio coverage is manifest-complete through pack 50 with all shipped listening refs represented in the checked-in manifest
-- The repo is not yet ready to claim `N5-comprehensive` by its own plan threshold: vocab breadth is still 334 against the plan's rough 550 to 650 target range, and reading remains a compact reinforcement lane rather than a fully dense parallel study lane
+- Current listening audio coverage is manifest-complete through the previously shipped pack 50 set plus Block A1, but the new Block A2 listening refs are now ahead of the checked-in manifest and static audio files
+- The repo is not yet ready to claim `N5-comprehensive` by its own plan threshold: vocab breadth is still 374 against the plan's rough 550 to 650 target range, and reading remains a compact reinforcement lane rather than a fully dense parallel study lane
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -287,7 +289,7 @@
 
 ## Next Recommended Slices
 
-1. Execute the post-claim-gap expansion plan in `N5_CURRICULUM_PLAN.md`, starting with Block A for packs `1-10`, to raise vocab breadth and close the earliest reading-reuse holes before adding new platform features.
+1. Sync the new Block A2 listening audio into the checked-in manifest, then continue the post-claim-gap expansion plan with Block B1 for packs `11-15` and the same five-pack audit discipline.
 2. Keep expanding output content through the current token-pattern evaluation path rather than broadening into AI grading.
 3. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
 
@@ -361,14 +363,14 @@
   - where-questions like `トイレはどこですか`
   - location answers like `トイレはあそこです` and `かぎはつくえのうえにあります`
   - family/object ownership like `これはちちのカメラです` and `それはははのかさです`
-  - twenty-seven reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
+  - twenty-nine reading-recognition missions that reuse existing example sentences for Japanese-first comprehension checks
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 249 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for all 249 of the 249 listening items
-- Manifest-backed listening-audio coverage is currently complete through the pack 50 asset set, with 0 missing shipped listening refs
-- Settings currently reports full listening-audio coverage for the shipped packs
+- Listening items may include `audioRef`; all 269 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 259 of the 269 listening items
+- Manifest-backed listening-audio coverage is currently complete through the pack 50 asset set plus Block A1, with 10 new Block A2 listening refs not yet represented in the checked-in manifest
+- Settings currently reports partial listening-audio coverage until those Block A2 audio files and manifest entries are added
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`

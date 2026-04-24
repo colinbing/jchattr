@@ -10,7 +10,12 @@ export const grammarLessons = [
       'Use は after the topic and end with です for a polite basic statement. Add か to turn the sentence into a simple question. In early beginner Japanese, this creates useful lines like self-introductions and role descriptions.',
     prerequisites: [],
     tags: ['particles', 'copula', 'self-introduction', 'n5'],
-    exampleIds: ['ex-colin-desu', 'ex-student-desu', 'ex-teacher-question'],
+    exampleIds: [
+      'ex-colin-desu',
+      'ex-student-desu',
+      'ex-teacher-question',
+      'ex-daigakusei-desu',
+    ],
     commonMistakes: [
       'Dropping は when the sentence needs a clear topic.',
       'Using English-style word order like です わたし.',
@@ -42,7 +47,13 @@ export const grammarLessons = [
       'Use で after a place when an action happens there. This is different from marking a topic or a direct object. It is a high-value beginner pattern because it connects vocabulary into real study, cafe, and home routines.',
     prerequisites: ['grammar-topic-desu'],
     tags: ['particles', 'location', 'daily-routine', 'n5'],
-    exampleIds: ['ex-study-home', 'ex-coffee-cafe', 'ex-read-library'],
+    exampleIds: [
+      'ex-study-home',
+      'ex-coffee-cafe',
+      'ex-read-library',
+      'ex-kyoushitsu-de-pasokon-o-tsukaimasu',
+      'ex-shokudou-de-koohii-o-nomimasu',
+    ],
     commonMistakes: [
       'Using に instead of で when describing an action taking place somewhere.',
       'Omitting the place particle and leaving only the location noun.',
@@ -83,6 +94,9 @@ export const grammarLessons = [
       'ex-kore-nan',
       'ex-sore-shukudai',
       'ex-kore-eigo-hon',
+      'ex-kore-jisho-desu',
+      'ex-sore-nooto-desu',
+      'ex-kore-kyoukasho-desu',
     ],
     commonMistakes: [
       'Using English-style word order like なん これは ですか.',
@@ -120,6 +134,7 @@ export const grammarLessons = [
       'ex-mainichi-gakkou',
       'ex-kyou-toshokan',
       'ex-ima-kyoushitsu',
+      'ex-ashita-daigaku-ni-ikimasu',
     ],
     commonMistakes: [
       'Using で instead of に when the sentence is about going to a destination.',
@@ -160,6 +175,7 @@ export const grammarLessons = [
       'ex-neko-heya-imasu',
       'ex-sensei-kyoushitsu-imasu',
       'ex-hon-toshokan-arimasu',
+      'ex-tori-wa-heya-ni-imasu',
     ],
     commonMistakes: [
       'Using います for things like books or bags.',
@@ -196,7 +212,13 @@ export const grammarLessons = [
       'Use noun plus の plus a position word before に: for example, つくえのうえに or かばんのなかに. Then finish with あります or います. This extends the existence pattern into more useful room and classroom descriptions.',
     prerequisites: ['grammar-existence-arimasu-imasu'],
     tags: ['particles', 'position', 'location', 'n5'],
-    exampleIds: ['ex-hon-tsukue-ue', 'ex-kaban-isu-shita', 'ex-hon-kaban-naka'],
+    exampleIds: [
+      'ex-hon-tsukue-ue',
+      'ex-kaban-isu-shita',
+      'ex-hon-kaban-naka',
+      'ex-tokei-wa-doa-no-ue-ni-arimasu',
+      'ex-kaban-wa-tana-no-shita-ni-arimasu',
+    ],
     commonMistakes: [
       'Skipping の between the main noun and the position word.',
       'Putting に before the position word instead of after it.',
@@ -232,7 +254,14 @@ export const grammarLessons = [
       'Put the thing you like or dislike before が, then finish with すきです or きらいです. You can add a topic like わたしは at the start, but the key beginner pattern is X が すきです or X が きらいです.',
     prerequisites: ['grammar-existence-arimasu-imasu'],
     tags: ['particles', 'preference', 'daily-conversation', 'n5'],
-    exampleIds: ['ex-watashi-sushi-suki', 'ex-watashi-koohii-kirai', 'ex-ongaku-suki'],
+    exampleIds: [
+      'ex-watashi-sushi-suki',
+      'ex-watashi-koohii-kirai',
+      'ex-ongaku-suki',
+      'ex-geemu-ga-suki-desu',
+      'ex-uta-ga-suki-desu',
+      'ex-piza-ga-suki-desu',
+    ],
     commonMistakes: [
       'Using を instead of が before すきです or きらいです.',
       'Dropping です when the lesson is teaching the polite basic pattern.',
@@ -268,7 +297,12 @@ export const grammarLessons = [
       'Use なにがすきですか to ask what someone likes. You can add a topic first, like たべものは or のみものは, to ask about one category. A simple answer uses noun plus が plus すきです or きらいです.',
     prerequisites: ['grammar-preference-suki-kirai'],
     tags: ['question', 'preference', 'daily-conversation', 'n5'],
-    exampleIds: ['ex-nani-suki', 'ex-tabemono-nani-suki', 'ex-nomimono-nani-suki'],
+    exampleIds: [
+      'ex-nani-suki',
+      'ex-tabemono-nani-suki',
+      'ex-nomimono-nani-suki',
+      'ex-yakyuu-ga-suki-desu-ka',
+    ],
     commonMistakes: [
       'Using なにを instead of なにが in this beginner preference question.',
       'Answering with only a noun when the lesson is teaching noun plus が plus すきです.',
@@ -300,7 +334,13 @@ export const grammarLessons = [
       'Put the topic first with は, then ask どこですか. This gives you a direct beginner pattern for questions like トイレはどこですか and せんせいはどこですか.',
     prerequisites: ['grammar-preference-questions'],
     tags: ['question', 'location', 'daily-conversation', 'n5'],
-    exampleIds: ['ex-toire-doko', 'ex-kagi-doko', 'ex-sensei-doko-desu'],
+    exampleIds: [
+      'ex-toire-doko',
+      'ex-kagi-doko',
+      'ex-sensei-doko-desu',
+      'ex-kaidan-wa-doko-desu-ka',
+      'ex-uketsuke-wa-doko-desu-ka',
+    ],
     commonMistakes: [
       'Dropping は before どこですか when the sentence needs a topic.',
       'Using どこにですか instead of the simpler beginner pattern どこですか.',
@@ -332,7 +372,13 @@ export const grammarLessons = [
       'For very short answers, use ここです, そこです, or あそこです. When you need a fuller answer about a person or thing, use the location pattern already established in the app, such as つくえのうえにあります or じむしょにいます.',
     prerequisites: ['grammar-where-doko-desu'],
     tags: ['location', 'answer-patterns', 'daily-conversation', 'n5'],
-    exampleIds: ['ex-toire-asoko', 'ex-jimusho-koko', 'ex-genkan-soko'],
+    exampleIds: [
+      'ex-toire-asoko',
+      'ex-jimusho-koko',
+      'ex-genkan-soko',
+      'ex-erebeetaa-wa-soko-desu',
+      'ex-robii-wa-asoko-desu',
+    ],
     commonMistakes: [
       'Mixing up ここ, そこ, and あそこ without keeping the answer simple and direct.',
       'Answering only with a place noun when the lesson is teaching ここです / そこです / あそこです.',
@@ -369,6 +415,8 @@ export const grammarLessons = [
       'ex-sore-ane-no-kaban',
       'ex-kore-chichi-no-kamera',
       'ex-kore-kazoku-no-shashin',
+      'ex-kore-sofu-no-tokei-desu',
+      'ex-kore-chichi-no-saifu-desu',
     ],
     commonMistakes: [
       'Dropping の and placing the two nouns next to each other with no link.',
@@ -410,6 +458,8 @@ export const grammarLessons = [
       'ex-kore-otouto-no-hon',
       'ex-sore-imouto-no-keitai',
       'ex-ane-no-shashin',
+      'ex-sore-sobo-no-shashin-desu',
+      'ex-sore-ane-no-enpitsu-desu',
     ],
     commonMistakes: [
       'Using a family noun alone without linking it to the item with の.',
@@ -452,6 +502,8 @@ export const grammarLessons = [
       'ex-uchi-terebi-mimasu',
       'ex-kouen-ongaku-kikimasu',
       'ex-yoru-nihongo-benkyoushimasu',
+      'ex-asagohan-o-tabemasu',
+      'ex-asa-shinbun-o-yomimasu',
     ],
     commonMistakes: [
       'Dropping ます and leaving only the verb stem in a polite beginner sentence.',
@@ -493,6 +545,8 @@ export const grammarLessons = [
       'ex-ashita-toshokan-ikimasen',
       'ex-uchi-terebi-mimasen',
       'ex-asa-pan-tabemasen',
+      'ex-bangohan-o-tabemasen',
+      'ex-yoru-meeru-o-yomimasen',
     ],
     commonMistakes: [
       'Leaving the verb in ます form when the sentence is supposed to be negative.',
@@ -535,6 +589,9 @@ export const grammarLessons = [
       'ex-heya-shizuka',
       'ex-kamera-atarashii',
       'ex-hon-furui',
+      'ex-kouen-wa-tanoshii-desu',
+      'ex-kono-jisho-wa-benri-desu',
+      'ex-heya-wa-semai-desu',
     ],
     commonMistakes: [
       'Dropping です when the lesson is teaching a polite beginner statement.',
@@ -577,6 +634,7 @@ export const grammarLessons = [
       'ex-kirei-mise-desu',
       'ex-yasashii-sensei-desu',
       'ex-hiroi-heya-desu',
+      'ex-nigiyaka-na-kafe-desu',
     ],
     commonMistakes: [
       'Adding な after an い-adjective like あたらしい.',
@@ -619,6 +677,9 @@ export const grammarLessons = [
       'ex-kafe-koohii-nomimashita',
       'ex-kyou-toshokan-ikimashita',
       'ex-kinou-uchi-nihongo-benkyoushimashita',
+      'ex-kinou-zasshi-o-yomimashita',
+      'ex-kinou-depaato-ni-ikimashita',
+      'ex-asa-sarada-o-tabemashita',
     ],
     commonMistakes: [
       'Leaving the verb in ます form when the sentence is supposed to describe a completed action.',
@@ -659,6 +720,7 @@ export const grammarLessons = [
       'ex-kinou-koohii-nomimasendeshita',
       'ex-kinou-gakkou-ikimasendeshita',
       'ex-kinou-eiga-mimasendeshita',
+      'ex-senshuu-dorama-o-mimasendeshita',
     ],
     commonMistakes: [
       'Stopping at ません when the sentence needs a past negative rather than a present negative.',
@@ -701,6 +763,8 @@ export const grammarLessons = [
       'ex-koko-suwatte-mo-ii',
       'ex-hon-yonde-mo-ii',
       'ex-mado-akete-mo-ii',
+      'ex-mado-o-shimete-mo-ii-desu-ka',
+      'ex-terebi-o-keshite-mo-ii-desu-ka',
     ],
     commonMistakes: [
       'Leaving the verb in ます form instead of changing it into the て-form before もいいですか.',
@@ -743,6 +807,8 @@ export const grammarLessons = [
       'ex-koko-suwatte-kudasai',
       'ex-yukkuri-yonde-kudasai',
       'ex-mou-ichido-yonde-kudasai',
+      'ex-hon-o-totte-kudasai',
+      'ex-jisho-o-tsukatte-kudasai',
     ],
     commonMistakes: [
       'Using the ます form before ください instead of the て-form.',
