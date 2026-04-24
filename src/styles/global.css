@@ -392,6 +392,10 @@ button {
   margin: 0;
 }
 
+.mission-library-page__section {
+  grid-column: 1 / -1;
+}
+
 .mission-library-summary__stat {
   padding: var(--space-4);
   border-radius: var(--radius-md);
@@ -489,6 +493,73 @@ button {
   gap: var(--space-3);
 }
 
+.mission-library-switcher,
+.mission-library-switcher__active,
+.mission-library-switcher__toolbar,
+.mission-library-switcher__toolbar-copy {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.mission-library-switcher__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(220px, 1fr);
+  gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scrollbar-width: thin;
+}
+
+.mission-library-switcher__tab {
+  display: grid;
+  gap: var(--space-1);
+  min-height: 7rem;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  background: var(--color-surface-strong);
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.mission-library-switcher__tab--active {
+  border-color: rgba(36, 84, 70, 0.22);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.96), rgba(220, 233, 226, 0.66)),
+    var(--color-surface-strong);
+}
+
+.mission-library-switcher__tab-label,
+.mission-library-switcher__eyebrow {
+  margin: 0;
+  color: var(--color-ink-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.mission-library-switcher__tab-title,
+.mission-library-switcher__title {
+  margin: 0;
+  line-height: 1.15;
+}
+
+.mission-library-switcher__tab-title {
+  font-size: 1rem;
+}
+
+.mission-library-switcher__tab-meta,
+.mission-library-switcher__body {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.mission-library-switcher__actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .path-summary__card,
 .mission-chapter {
   border-radius: var(--radius-md);
@@ -533,12 +604,6 @@ button {
   display: grid;
   gap: var(--space-4);
   padding: var(--space-4);
-  list-style: none;
-  cursor: pointer;
-}
-
-.mission-chapter__summary::-webkit-details-marker {
-  display: none;
 }
 
 .mission-chapter__copy {
@@ -1526,6 +1591,15 @@ button {
   }
 
   .path-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-library-switcher__toolbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .mission-library-switcher__actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

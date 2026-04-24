@@ -6,14 +6,12 @@ type MissionChapterCardProps = {
   chapter: MissionLibraryChapter;
   items: MissionLibraryCardData[];
   starterContent: StarterContent;
-  isOpenByDefault?: boolean;
 };
 
 export function MissionChapterCard({
   chapter,
   items,
   starterContent,
-  isOpenByDefault = false,
 }: MissionChapterCardProps) {
   const completedCount = items.filter((item) => item.progress.isCompleted).length;
   const unlockedCount = items.filter((item) => item.isUnlocked).length;
@@ -24,12 +22,8 @@ export function MissionChapterCard({
   );
 
   return (
-    <details
-      className="mission-chapter"
-      open={isOpenByDefault}
-      id={chapter.id}
-    >
-      <summary className="mission-chapter__summary">
+    <section className="mission-chapter" id={chapter.id}>
+      <div className="mission-chapter__summary">
         <div className="mission-chapter__copy">
           <p className="mission-chapter__eyebrow">
             {chapter.packRangeLabel ?? chapter.label}
@@ -61,7 +55,7 @@ export function MissionChapterCard({
             <dd>{weakPointCount}</dd>
           </div>
         </dl>
-      </summary>
+      </div>
 
       <div className="mission-chapter__body">
         <div className="mission-chapter__state-row" aria-label="Chapter state">
@@ -89,6 +83,6 @@ export function MissionChapterCard({
           ))}
         </div>
       </div>
-    </details>
+    </section>
   );
 }

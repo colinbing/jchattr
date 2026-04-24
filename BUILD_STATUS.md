@@ -8,12 +8,12 @@
 ## Current Phase / Status
 
 - Phase: Phase 4 started
-- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, and the first two post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, and mission auto-complete
-- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, and less ambiguous completion behavior; the next material work is mission-library presentation/design iteration plus mission-flow polish rather than missing core N5 study surfaces
+- Status: the core MVP loop is working end-to-end with a real mission library, local progress, weak-point tracking, deterministic review/recommendation logic, a repo-verified N5-scale content set, and the first three post-Phase-3 product/UX passes on mission-path organization, daily-loop framing, mission auto-complete, and mission-library presentation
+- Interpretation: this now feels like a usable local-first beginner study product with repeatable mission flow, clearer progression structure, a smaller daily entry surface, less ambiguous completion behavior, and a cleaner mission-library browsing model; the next material work is mission-flow polish and then deeper personalization rather than missing core N5 study surfaces
 
 ## Current Objective
 
-- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, and mission auto-complete as the Phase 4 baseline, then iterate on mission-library presentation and mission-flow friction before deeper adaptive recommendation work.
+- Immediate objective: use the new mission-path structure, explicit Today-vs-bonus split, mission auto-complete, and single-active-chapter Missions view as the Phase 4 baseline, then iterate on mission-flow friction before deeper adaptive recommendation work.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -152,6 +152,7 @@
 - Final Phase 3 claim-gate rerun after vocab-floor closure with full typecheck/build/report verification, repo-verified audio sync at `349 / 349 / 349 / 0`, and an explicit verdict that the repo's documented `N5-comprehensive` threshold is now credibly met without requiring another blocking reading-reuse pass
 - Phase 4 entry slice that reorganizes the mission library into five-pack progression chapters plus a separate reading lane, reframes Today into a core daily plan versus optional bonus practice, and removes the duplicate shell-level page header so one navigation/context system owns the page structure
 - Phase 4 follow-up slice that auto-completes grammar, listening, output, and reading missions once all drills or checks in the current pass are cleared, clears continue-state on auto-complete, and makes that saved completion rule visible inside mission players plus the Today and Missions surfaces
+- Phase 4 presentation slice that replaces the provisional all-open grouped Missions stack with a single-active-chapter library format, uses a horizontal chapter switcher plus one visible chapter at a time, and keeps the reading lane inside the same navigation model without forcing the user through a long two-column archive view
 
 ## Current App Capabilities
 
@@ -164,8 +165,9 @@
   - "Bonus if you want more" for the optional support slot
   - a compact mission-path summary instead of a second full mission backlog
 - User can open Missions and see all current missions with:
-  - five-pack progression chapters for the core path
-  - a separate reading-checkpoint lane
+  - a horizontal chapter switcher that selects one active chapter at a time
+  - five-pack progression chapters for the core path in a single-column sequence
+  - a separate reading-checkpoint lane inside the same switcher model
   - recommended-today membership
   - unlocked / locked state
   - completed state that now reflects saved auto-complete progress from mission players
@@ -332,8 +334,8 @@
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
 - Reading slice is still intentionally small: 49 reading missions with 245 total multiple-choice checks, all built from existing example sentences
 - Reading reuse is lighter than the total example inventory but no longer a blocking claim-gate weakness: 232 of 731 example sentences are currently reused in reading, with the new weakest pocket now at pack `31` (`24%`) and the next cluster at `25%` across packs `9`, `11`, `13`, and `17`
-- Mission chaptering now reorganizes the library and mission auto-complete now reduces completion ambiguity, but recommendation weighting and adaptive personalization logic are still intentionally simple and deterministic
-- The Missions page presentation is still provisional: the grouped two-column chapter layout is not the final answer, and we still need a dedicated format/design pass to decide whether grouped missions should live in tabs, a single-column sequence, row/slider sections, slideshow-style steps, or another clearer library pattern
+- Mission-library presentation is now stronger and explicitly chosen as a single-active-chapter sequence, but recommendation weighting and adaptive personalization logic are still intentionally simple and deterministic
+- Mission-library format is no longer the main blocker, but the page can still improve visually: chapter navigation, card density, and desktop rhythm may still need another design polish pass after the drill-type UX work is clearer
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Shopping coverage now includes quantities, prices, availability checks, and short choice lines, but it is still a narrow beginner slice rather than broader payment, returns, or service-interaction coverage
@@ -365,17 +367,19 @@
 
 ## Next Recommended Slices
 
-1. Run a mission-library presentation/design pass to decide the right grouped Missions format, then redesign the page around that format instead of keeping the current provisional two-column chapter layout.
-2. Run a drill-type UX pass across grammar, listening, output, and reading so each mission player has cleaner step transitions, clearer feedback, and less ambiguity about what to do next after auto-complete.
-3. After the library presentation and core drill flow are tighter, begin deeper Phase 4 personalization work such as confusion-pair tracking, preferred-mode weighting, and stronger mission selection relevance.
+1. Run a drill-type UX pass across grammar, listening, output, and reading so each mission player has cleaner step transitions, clearer feedback, and less ambiguity about what to do next after auto-complete.
+2. Use that pass to address the first documented mission-flow friction points already identified in listening and output, especially reveal/check ordering, hint leakage, Enter-to-check behavior, task-local input state, and check-to-next transitions.
+3. After the core drill flow is tighter, begin deeper Phase 4 personalization work such as confusion-pair tracking, preferred-mode weighting, and stronger mission selection relevance.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
 - Mission-library organization: completed in the Phase 4 entry slice via five-pack progression chapters plus a separate reading lane.
 - Daily-loop framing: completed in the Phase 4 entry slice via an explicit "do this today" core plan and optional "bonus practice" lane.
 - Mission completion behavior: completed in this slice via automatic mission completion once all drills/checks in a mission pass are cleared, with that saved status now visible in Today and Missions.
-- Mission-library presentation iteration: chaptering is in place, but the current grouped two-column Missions page is still provisional; we need to decide on the right grouped format and redesign the page around that format.
+- Mission-library presentation iteration: completed for the first major pass via a single-active-chapter format with a horizontal chapter switcher replacing the earlier grouped two-column stack.
 - Drill-type UX pass: grammar, listening, output, and reading drill flows should each get a focused interaction audit once the content footprint is stable.
+- Listening flow follow-up: staged reveal currently exposes transcript, reading, translation, and focus support above the quick check; we should evaluate earlier answer timing, progressive hints, transcript/reading redundancy, and whether support text should stay hidden until after the learner commits.
+- Output flow follow-up: output tasks should be reviewed for Enter-to-check behavior, per-task input persistence, and a cleaner post-check transition where the main action becomes the next step instead of forcing a second unrelated click.
 - Navigation consolidation: completed in the Phase 4 entry slice by removing the duplicate shell-level page header so one navigation/context system owns the page structure.
 - End-to-end mission-flow audit: simulate each mission type as a learner, identify friction points, and tighten what the user sees, clicks, and expects at each step.
 
