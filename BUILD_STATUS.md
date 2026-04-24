@@ -130,6 +130,7 @@
 - Post-claim-gap Block B2 reinforcement pass for packs 16 to 20 with pack-native vocab densification, repo-reality sync after the Block B1 audio manifest update, two Block B reading follow-up missions across packs 11 to 20, and a five-pack audit confirming no new drift while lifting reuse for packs 13, 15, 19, and 20
 - Post-claim-gap Block C1 reinforcement pass for packs 21 to 25 with pack-native calendar, transaction, quantity, and price densification, repo-reality sync after the Block B2 audio manifest update, and a five-pack audit confirming clean structure while Block C reading reuse work remains deferred until the full packs 21 to 30 slice is in place
 - Post-claim-gap Block C2 reinforcement pass for packs 26 to 30 with pack-native store, te-form, sequence, progressive, and adjective-negative densification, repo-reality sync after the Block C1 audio manifest update, two Block C reading follow-up missions across packs 21 to 30, and a five-pack audit confirming clean structure while lifting reuse across the middle shopping/te-form slice
+- Post-claim-gap Block D1 reinforcement pass for packs 31 to 35 with pack-native adjective-past, comparison, superlative, frequency, and reason densification, repo verification confirming the earlier Block C2 audio sync had already landed, and a five-pack audit confirming no structural drift while Block D reading reuse work remains deferred until the full packs 31 to 40 slice is in place
 
 ## Current App Capabilities
 
@@ -277,18 +278,18 @@
 
 ## Known Limitations / Gaps
 
-- Content is still small starter content only:
+- Content is still compact relative to the repo's full N5 plan:
   - 100 grammar lessons
-  - 634 example sentences
-  - 456 vocab items
-  - 309 listening items
+  - 655 example sentences
+  - 478 vocab items
+  - 319 listening items
   - 183 missions
 - Mission completion is manual; there is no auto-complete logic
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
 - Listening checks are translation-choice only after reveal; no pre-reveal comprehension scoring
 - Reading slice is still intentionally small: 33 reading missions with 165 total multiple-choice checks, all built from existing example sentences
-- Reading reuse is improving but still intentionally compact in the post-claim-gap expansion phase: 152 of 634 example sentences are currently reused in reading, and packs 21, 22, 23, and 25 remain the lightest part of the current Block C slice even after the Block C reading follow-up landed
+- Reading reuse is improving but still intentionally compact in the post-claim-gap expansion phase: 152 of 655 example sentences are currently reused in reading, and packs 31 to 35 are now intentionally thinner again until the full Block D follow-up lands with the planned reading recombination across packs 31 to 40
 - Verb-form coverage is now instrumented across present, negative present, polite past, and simple negative past, but it is still a narrow beginner slice rather than broad conjugation coverage
 - Permission and request coverage now exists, but it is still a narrow beginner slice rather than broad command / request / politeness coverage
 - Shopping coverage now includes quantities, prices, availability checks, and short choice lines, but it is still a narrow beginner slice rather than broader payment, returns, or service-interaction coverage
@@ -306,8 +307,8 @@
 - Adjective coverage now includes negatives, past descriptions, beginner comparison, and simple `いちばん` superlatives, but it is still a narrow descriptive slice rather than full adjective tense/degree nuance or open-ended opinion language
 - Comparison and ranking coverage now exists, but it is still limited to short `より / のほうが` and `いちばん` lines rather than broader ranking nuance, contrastive justification, or multi-clause opinions
 - Frequency and reason coverage now exists, but it is still intentionally limited to a small adverb set and short polite `から` clauses rather than broader discourse-level explanation
-- Current listening audio coverage is manifest-complete through the shipped pack 50 set plus Blocks A1, A2, B1, B2, and C1, but the new Block C2 listening refs are now ahead of the checked-in manifest and static audio files
-- The repo is not yet ready to claim `N5-comprehensive` by its own plan threshold: vocab breadth is still 456 against the plan's rough 550 to 650 target range, and reading remains a compact reinforcement lane rather than a fully dense parallel study lane
+- Current listening audio coverage is manifest-complete through the shipped pack 50 set plus Blocks A1, A2, B1, B2, C1, and C2; this pass added 10 new Block D1 listening refs, but their static MP3 files and manifest entries are still pending because `OPENAI_API_KEY` was not available in the local shell environment when the generator was run
+- The repo is not yet ready to claim `N5-comprehensive` by its own plan threshold: vocab breadth is still 478 against the plan's rough 550 to 650 target range, and reading remains a compact reinforcement lane rather than a fully dense parallel study lane
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
@@ -320,7 +321,7 @@
 
 ## Next Recommended Slices
 
-1. Confirm the new Block C2 listening audio has been generated, sync it into the checked-in manifest, then continue the post-claim-gap expansion plan with Block D1 for packs `31-35`, keeping the same five-pack audit discipline before the full Block D follow-up lands across packs `31-40`.
+1. Generate the 10 pending Block D1 listening MP3 files once `OPENAI_API_KEY` is available, sync the checked-in manifest, then continue the post-claim-gap expansion plan with Block D2 for packs `36-40` and add the two planned Block D reading follow-up missions across packs `31-40`.
 2. Keep expanding output content through the current token-pattern evaluation path rather than broadening into AI grading.
 3. Keep BUILD_STATUS, the pack registry, and the listening-audio manifest updated whenever content or generated assets change.
 
@@ -398,15 +399,16 @@
 
 ## Audio / TTS Notes
 
-- Listening items may include `audioRef`; all 309 current listening items point to static files under `public/audio/listening`
-- Matching MP3 files currently exist for 299 of the 309 listening items
-- Manifest-backed listening-audio coverage is currently complete through the pack 50 asset set plus Blocks A1, A2, B1, B2, and C1, with 10 new Block C2 listening refs not yet represented in the checked-in manifest
-- Settings currently reports partial listening-audio coverage until those Block C2 audio files and manifest entries are added
+- Listening items may include `audioRef`; all 319 current listening items point to static files under `public/audio/listening`
+- Matching MP3 files currently exist for 309 of the 319 listening items
+- Manifest-backed listening-audio coverage is currently complete through the pack 50 asset set plus Blocks A1, A2, B1, B2, C1, and C2, with 10 new Block D1 listening refs not yet represented in the checked-in manifest
+- Settings currently reports partial listening-audio coverage until those Block D1 audio files and manifest entries are added
 - Settings derives audio coverage from a checked-in manifest in `src/lib/audio/listeningAudioAssets.ts`, not from runtime filesystem checks
 - Listening audio generation script exists at `scripts/generate-listening-audio.ts`
 - Manifest sync script exists at `scripts/sync-listening-audio-manifest.ts`
 - `npm run generate:listening-audio` now syncs the manifest after a generation run
 - `npm run sync:listening-audio-manifest` rewrites the manifest from the current `public/audio/listening` folder
+- The generator could not run successfully in this pass because `OPENAI_API_KEY` was not present in either the sandboxed or escalated shell environment
 - Current generator uses the OpenAI Speech API with defaults:
   - model `gpt-4o-mini-tts`
   - voice `marin`

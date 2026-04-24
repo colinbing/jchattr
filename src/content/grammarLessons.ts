@@ -2510,6 +2510,9 @@ export const grammarLessons = [
       'ex-kamera-atarashikatta-desu',
       'ex-pan-oishikatta-desu',
       'ex-resutoran-takakatta-desu',
+      'ex-jugyou-wa-nagakatta-desu',
+      'ex-kaigi-wa-mijikakatta-desu',
+      'ex-ryokou-wa-tanoshikatta-desu',
     ],
     commonMistakes: [
       'Keeping the adjective in present form and only adding でした at the end.',
@@ -2552,6 +2555,8 @@ export const grammarLessons = [
       'ex-kafe-shizuka-deshita',
       'ex-heya-kirei-deshita',
       'ex-toshokan-shizuka-deshita',
+      'ex-shiken-wa-kantan-deshita',
+      'ex-hoteru-wa-benri-deshita',
     ],
     commonMistakes: [
       'Using かったです with a な-adjective like しずか.',
@@ -2594,6 +2599,9 @@ export const grammarLessons = [
       'ex-resutoran-yori-kafe-no-hou-ga-yasui-desu',
       'ex-basu-yori-densha-no-hou-ga-hayai-desu',
       'ex-mizu-yori-koohii-no-hou-ga-takai-desu',
+      'ex-basu-yori-kuruma-no-hou-ga-hayai-desu',
+      'ex-pasuta-yori-raamen-no-hou-ga-oishii-desu',
+      'ex-konbini-yori-supaa-no-hou-ga-benri-desu',
     ],
     commonMistakes: [
       'Reversing the order and changing which item is actually stronger in the comparison.',
@@ -2636,6 +2644,7 @@ export const grammarLessons = [
       'ex-pan-yori-keeki-no-hou-ga-oishii-desu',
       'ex-kafe-yori-resutoran-no-hou-ga-suki-desu',
       'ex-kamera-yori-hon-no-hou-ga-yasui-desu',
+      'ex-raamen-yori-udon-no-hou-ga-suki-desu',
     ],
     commonMistakes: [
       'Using plain すき instead of the beginner polite line すきです.',
@@ -2678,6 +2687,8 @@ export const grammarLessons = [
       'ex-toshokan-ga-ichiban-suki-desu',
       'ex-keeki-ga-ichiban-suki-desu',
       'ex-nihongo-ga-ichiban-suki-desu',
+      'ex-supootsu-ga-ichiban-suki-desu',
+      'ex-koucha-ga-ichiban-suki-desu',
     ],
     commonMistakes: [
       'Dropping が after the thing you like best and turning the sentence into an incomplete chunk.',
@@ -2720,6 +2731,8 @@ export const grammarLessons = [
       'ex-densha-ga-ichiban-hayai-desu',
       'ex-keeki-ga-ichiban-oishii-desu',
       'ex-eiga-ga-ichiban-omoshiroi-desu',
+      'ex-kono-kurasu-ga-ichiban-shizuka-desu',
+      'ex-karee-ga-ichiban-oishii-desu',
     ],
     commonMistakes: [
       'Leaving out いちばん and falling back to a plain adjective description.',
@@ -2762,6 +2775,8 @@ export const grammarLessons = [
       'ex-tokidoki-eiga-o-mimasu',
       'ex-itsumo-yoru-nihongo-o-benkyoushimasu',
       'ex-yoku-ongaku-o-kikimasu',
+      'ex-itsumo-nikki-o-kakimasu',
+      'ex-tokidoki-tegami-o-kakimasu',
     ],
     commonMistakes: [
       'Dropping the adverb and leaving only a plain routine line.',
@@ -2804,6 +2819,8 @@ export const grammarLessons = [
       'ex-amari-kafe-ni-ikimasen',
       'ex-amari-pan-o-tabemasen',
       'ex-amari-hon-o-yomimasen',
+      'ex-amari-terebi-o-mimasen',
+      'ex-amari-supootsu-o-shimasen',
     ],
     commonMistakes: [
       'Using あまり with a positive ます ending instead of a negative ません ending.',
@@ -2846,6 +2863,8 @@ export const grammarLessons = [
       'ex-eiga-wa-omoshiroi-desukara-yoku-mimasu',
       'ex-densha-wa-hayai-desukara-yoku-norimasu',
       'ex-keeki-wa-oishii-desukara-yoku-tabemasu',
+      'ex-basu-wa-osoi-desukara-densha-ni-norimasu',
+      'ex-kyou-wa-nemui-desukara-hayaku-nemasu',
     ],
     commonMistakes: [
       'Stopping after the reason clause and forgetting to add the result part of the sentence.',
@@ -2888,6 +2907,8 @@ export const grammarLessons = [
       'ex-kono-resutoran-wa-takai-desukara-ikimasen',
       'ex-heya-wa-shizuka-janai-desukara-koko-de-benkyoushimasen',
       'ex-kinou-eiga-o-mimashita-kara-kyou-wa-mimasen',
+      'ex-kyou-wa-isogashii-desukara-kafe-ni-ikimasen',
+      'ex-ashita-wa-shiken-desukara-yoru-wa-geemu-o-shimasen',
     ],
     commonMistakes: [
       'Putting the refusal first and the reason second when the target pattern starts with the reason clause.',
