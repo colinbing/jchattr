@@ -84,7 +84,8 @@ The current repo shape supports a narrow first implementation path:
 | V2.2 review loop containment | Addressed | Review now separates queue landing, active retry, and post-batch handoff states; active retries use focused chrome and clearer local navigation; cleared Review return copy no longer implies Today should require another Review step. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
 | V2.3 early trust fixes | Addressed | Listening choices now use deterministic per-item/context shuffling with closer distractor scoring, output feedback no longer exposes internal accepted-pattern language, reorder prompts hide canonical chunk order and split target particles for relevant `に` lessons, and the narrow output-hint/progress spacing bugs are tightened. | No new mission type; no runtime AI distractor generation; no broad content rewrite. |
 | V2.4 early output and grammar pedagogy | Addressed | Early output tasks now show visible task-local answer pieces from existing token patterns and linked vocab, and grammar Common Mistakes moved out of the required section flow into optional collapsed drill support. | No full vocab lesson system, new mission type, new schema, or new progress schema. |
-| V2.5 content cleanup | Accepted as a small content slice | Replace hardcoded Colin examples with neutral/Japanese placeholder content and revisit early mission estimated minutes. | No broad personalization engine; no large content expansion. |
+| V2.5 content cleanup | Addressed | Replaced early learner-facing Colin/コリン content with Tanaka/たなか, tightened first-loop estimates, and hydrated Today session-plan display items from current local content so stale estimate copy does not survive a content update. | No broad personalization engine; no large content expansion; no date-keyed scheduler. |
+| Listening prep audio coverage | Addressed | Added matching local listening items and generated checked-in audio for the 12 prep/model examples that lacked Listen buttons, regenerated the Tanaka self-introduction audio, and synced the manifest to the current 361-item audio set. | No runtime audio generation; no schema change; no recommendation/review selection change. |
 | V2.6 stable daily session model | Deferred | Persist a date-keyed daily plan if the live recommendation model still feels feed-like after V2.1. | Not part of the first implementation pass. |
 | V2.7 larger learning-system upgrades | Deferred | SRS intervals, richer proficiency spacing, new mission structures, larger pack/content additions, and deeper skill reporting. | Do not fold into mobile daily-loop cleanup. |
 
@@ -679,6 +680,8 @@ Recommendation:
 
 ### M. Personalization issue: remove Colin-specific content
 
+Status: Addressed in V2.5 for learner-facing early content. The first self-introduction example, grammar drill, output task, output answer pieces, and self-intro listening text now use Tanaka/たなか instead of Colin/コリン.
+
 User says no mission should be based around “Colin,” even if he is the primary user/developer.
 
 Interpretation:
@@ -738,6 +741,8 @@ Codex should propose:
 ---
 
 ### 3. Are mission estimated times inflated?
+
+Status: Addressed in V2.5 for the first loop. The first grammar/listening/output mission estimates were tightened to match the current compact mobile flows, and Today now hydrates session-snapshot mission items from current content so completed plan rows do not keep stale estimate copy.
 
 User thinks 7 minutes for the first grammar mission is too high if it only has intro/examples/2 drills.
 
@@ -808,10 +813,10 @@ Codex should inspect current grammar mission model and propose a minimal path to
 
 ---
 
-## Current Recommended Next Codex Prompt — V2.5
+## Current Recommended Next Codex Prompt — V2.0-V2.5 Plus Prep Audio Acceptance Audit
 
 ```md
-Implement V2.5 content cleanup. Preserve local-first storage, TypeScript-only code, current schemas, mission types, deterministic recommendation/review selection, and the V2.1-V2.4 Today-Review-trust/pedagogy shell. Use a narrow iPhone-like viewport to audit early grammar, listening, and output missions for hardcoded Colin/developer-specific examples and any early estimate copy that still makes the first loop feel heavier than it is. If the audit confirms friction, replace only the narrow early-flow examples/prompts/answers needed to make the app feel generic, using neutral or Japanese placeholder names compatible with current content and evaluation token patterns. Keep new mission types, date-keyed daily sessions, broader content expansion, and SRS changes out of this slice. Update BUILD_STATUS.md and Japanese_OS_feedback_plan.md, then run typecheck, build, report:build-status-summary, report:progression-gaps, report:reading-reuse, and git diff --check.
+Run a V2.0-V2.5 plus listening-prep-audio mobile acceptance audit. Preserve local-first storage, TypeScript-only code, current schemas, mission types, deterministic recommendation/review selection, and the V2.1-V2.5 Today-Review-trust/pedagogy/content shell. Use a narrow iPhone-like viewport to test Today through one recommended grammar mission, one listening mission, the first output mission, one Review retry if weak points exist, Progress, and Missions. Confirm no Colin-specific learner-facing content remains in the early loop, Today estimates use current content values, all currently linked listening prep/model lines show Listen buttons, and the finite Today shell still feels complete rather than feed-like. Do not implement unless the audit finds a narrow high-confidence regression; if edits are needed, update BUILD_STATUS.md and Japanese_OS_feedback_plan.md, then run typecheck, build, report:build-status-summary, report:progression-gaps, report:reading-reuse, and git diff --check. Return confirmed regressions, UX friction, suspected issues, and whether the product is clean enough to keep gathering real feedback.
 ```
 
 ---
