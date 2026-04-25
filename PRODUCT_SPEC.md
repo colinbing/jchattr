@@ -78,6 +78,13 @@ Must support:
 - completion state
 - next mission transition
 
+Mission UX standard:
+- keep the active task, needed hint, feedback, and next action in one focused mobile workspace whenever practical
+- keep overview, metadata, and reference material secondary to the active task
+- reveal support progressively and close to the task instead of placing large hint/reference blocks below the working area
+- make modality-specific support actionable, especially playable support lines inside listening missions when an existing audio asset is available
+- reserve recap, saved-progress detail, and skill-impact explanation for the end of the mission
+
 ### 5.3 Skill Map
 Purpose:
 - visualize learning areas in a meaningful way

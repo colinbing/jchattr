@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
-import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
   ExampleSentence,
   GrammarLesson,
@@ -20,7 +19,6 @@ import {
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
-import { MissionCompletionCard } from './MissionCompletionCard';
 import {
   buildMissionCompletionRouteState,
   selectMissionSessionItems,
@@ -58,6 +56,14 @@ export function ListeningMissionPlayer({
     () => selectMissionSessionItems(relatedExamples, sessionMode, sessionRotation, 2),
     [relatedExamples, sessionMode, sessionRotation],
   );
+  const supportExamples = useMemo(
+    () =>
+      sessionExamples.map((example) => ({
+        example,
+        audioRef: findSupportExampleAudioRef(example, choicePool),
+      })),
+    [choicePool, sessionExamples],
+  );
   const [clearedItemIds, setClearedItemIds] = useState<string[]>([]);
   const [currentItemIndex, setCurrentItemIndex] = useState(() => {
     return (
@@ -71,6 +77,12 @@ export function ListeningMissionPlayer({
   });
   const currentItem = sessionItems[currentItemIndex];
   const progressValue = ((currentItemIndex + 1) / sessionItems.length) * 100;
+  const completionState = buildMissionCompletionRouteState(
+    mission,
+    sessionMode,
+    Math.min(clearedItemIds.length, sessionItems.length),
+    sessionItems.length,
+  );
   const primaryLesson = relatedLessons[0];
 
   useEffect(() => {
@@ -98,56 +110,21 @@ export function ListeningMissionPlayer({
   }
 
   return (
-    <div className="mission-player-shell">
-      <SurfaceCard
-        title={sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Mission overview'}
-        description={
-          sessionMode === 'reinforce'
-            ? 'Take a shorter listening follow-up pass with a small rotated set of lines.'
-            : 'Work through one listening item at a time with a guess-first flow and progressive hints.'
-        }
-      >
-        <div className="mission-overview">
-          <div className="mission-overview__lesson">
-            <p className="mission-overview__eyebrow">Listening mission</p>
-            <h2 className="mission-overview__lesson-title">
-              {primaryLesson ? primaryLesson.title : 'Starter listening set'}
-            </h2>
-            <p className="mission-overview__objective">
-              {primaryLesson
-                ? primaryLesson.objective
-                : 'Use staged reveal to connect meaning, structure, and focus points one line at a time.'}
+    <div className="mission-player-shell mission-player-shell--listening">
+      <div className="listening-workspace">
+        <div className="listening-session-bar" aria-label="Listening mission progress">
+          <div className="listening-session-bar__copy">
+            <p className="mission-copy-block__eyebrow">
+              {sessionMode === 'reinforce' ? 'Short listening pass' : 'Listening mission'}
             </p>
+            <h2 className="listening-session-bar__title">
+              {primaryLesson ? primaryLesson.title : mission.title}
+            </h2>
           </div>
-
-          <dl className="mission-overview__stats">
-            <div className="mission-overview__stat">
-              <dt>Target skill</dt>
-              <dd>{formatTargetSkill(mission.targetSkill)}</dd>
-            </div>
-            <div className="mission-overview__stat">
-              <dt>Estimated time</dt>
-              <dd>{mission.estimatedMinutes} min</dd>
-            </div>
-            <div className="mission-overview__stat">
-              <dt>Listening items</dt>
-              <dd>{sessionItems.length}</dd>
-            </div>
-            <div className="mission-overview__stat">
-              <dt>Support examples</dt>
-              <dd>{sessionExamples.length}</dd>
-            </div>
-          </dl>
-
-          <div className="mission-progress">
-            <div className="mission-progress__meta">
-              <p className="mission-progress__label">
-                Item {currentItemIndex + 1} of {sessionItems.length}
-              </p>
-              <p className="mission-progress__step">
-                {sessionMode === 'reinforce' ? 'Short follow-up checks' : 'One line at a time'}
-              </p>
-            </div>
+          <div className="listening-session-bar__progress">
+            <span>
+              {currentItemIndex + 1}/{sessionItems.length}
+            </span>
             <div
               className="mission-progress__track"
               role="progressbar"
@@ -156,118 +133,91 @@ export function ListeningMissionPlayer({
               aria-valuemax={100}
               aria-valuenow={progressValue}
             >
-              <span
-                className="mission-progress__fill"
-                style={{ width: `${progressValue}%` }}
-              />
+              <span className="mission-progress__fill" style={{ width: `${progressValue}%` }} />
             </div>
           </div>
         </div>
-      </SurfaceCard>
 
-      <SurfaceCard
-        title={`Listening item ${currentItemIndex + 1}`}
-        description={`Difficulty: ${currentItem.difficulty}`}
-      >
-        <div className="mission-step-panel">
-          <ListeningItemPanel
-            key={currentItem.id}
-            missionId={mission.id}
-            item={currentItem}
-            choicePool={choicePool}
-            avoidTranslations={sessionItems
-              .slice(Math.max(0, currentItemIndex - 2), currentItemIndex)
-              .map((listeningItem) => listeningItem.translation)}
-            onCleared={handleItemCleared}
-          />
-          <p className="list-meta">
-            Cleared {clearedItemIds.length} of {sessionItems.length} listening checks in this pass.
-          </p>
+        <details className="listening-session-details">
+          <summary className="mission-session-details__summary">Mission details</summary>
+          <dl className="listening-session-details__grid">
+            <div>
+              <dt>Skill</dt>
+              <dd>{formatTargetSkill(mission.targetSkill)}</dd>
+            </div>
+            <div>
+              <dt>Time</dt>
+              <dd>{mission.estimatedMinutes} min</dd>
+            </div>
+            <div>
+              <dt>Lines</dt>
+              <dd>{sessionItems.length}</dd>
+            </div>
+            <div>
+              <dt>Support</dt>
+              <dd>{supportExamples.length}</dd>
+            </div>
+          </dl>
+        </details>
 
-          <div className="mission-step-actions">
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
-              onClick={() => setCurrentItemIndex((index) => Math.max(0, index - 1))}
-              disabled={currentItemIndex === 0}
-            >
-              Previous line
-            </button>
-            {currentItemIndex < sessionItems.length - 1 ? (
-              <button
-                type="button"
-                className="mission-button"
-                onClick={() =>
-                  setCurrentItemIndex((index) =>
-                    Math.min(sessionItems.length - 1, index + 1),
-                  )
-                }
-              >
-                Next line
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="mission-button mission-button--link"
-                onClick={() =>
-                  navigate('/', {
-                    state: buildMissionCompletionRouteState(
-                      mission,
-                      sessionMode,
-                      Math.min(clearedItemIds.length, sessionItems.length),
-                      sessionItems.length,
-                    ),
-                  })
-                }
-                >
-                  Finish to Today
-                </button>
-              )}
-          </div>
-        </div>
-      </SurfaceCard>
+        <ListeningItemPanel
+          key={currentItem.id}
+          missionId={mission.id}
+          item={currentItem}
+          choicePool={choicePool}
+          avoidTranslations={sessionItems
+            .slice(Math.max(0, currentItemIndex - 2), currentItemIndex)
+            .map((listeningItem) => listeningItem.translation)}
+          currentItemIndex={currentItemIndex}
+          totalItems={sessionItems.length}
+          clearedCount={clearedItemIds.length}
+          canGoPrevious={currentItemIndex > 0}
+          isLastItem={currentItemIndex === sessionItems.length - 1}
+          onCleared={handleItemCleared}
+          onPrevious={() => setCurrentItemIndex((index) => Math.max(0, index - 1))}
+          onNext={() =>
+            setCurrentItemIndex((index) => Math.min(sessionItems.length - 1, index + 1))
+          }
+          onFinish={() => navigate('/', { state: completionState })}
+        />
+      </div>
 
-      {(primaryLesson || sessionExamples.length > 0) ? (
-        <SurfaceCard
-          title="Pattern support"
-          description="Use the linked grammar and examples as a compact reference after you have already taken your first guess."
-        >
+      {(primaryLesson || supportExamples.length > 0) ? (
+        <details className="listening-support-drawer">
+          <summary className="listening-support-drawer__summary">Practice the pattern first</summary>
           <div className="listening-support">
             {primaryLesson ? (
               <section className="mission-copy-block">
-                <p className="mission-copy-block__eyebrow">Linked grammar lesson</p>
+                <p className="mission-copy-block__eyebrow">Pattern</p>
                 <h3 className="listening-support__title">{primaryLesson.title}</h3>
                 <p className="mission-copy-block__body">{primaryLesson.explanation}</p>
               </section>
             ) : null}
 
-            {sessionExamples.length > 0 ? (
-              <div className="mission-example-list">
-                {sessionExamples.map((example) => (
-                  <article key={example.id} className="mission-example-card">
-                    <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
-                    <p className="mission-example-card__english">{example.english}</p>
+            {supportExamples.length > 0 ? (
+              <div className="listening-support-example-list">
+                {supportExamples.map(({ example, audioRef }) => (
+                  <article key={example.id} className="listening-support-example">
+                    <div className="listening-support-example__text">
+                      <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
+                      <p className="mission-example-card__english">{example.english}</p>
+                    </div>
+                    {audioRef ? (
+                      <button
+                        type="button"
+                        className="listening-support-example__play"
+                        onClick={() => playAudioRef(audioRef)}
+                      >
+                        Listen
+                      </button>
+                    ) : null}
                   </article>
                 ))}
               </div>
             ) : null}
           </div>
-        </SurfaceCard>
+        </details>
       ) : null}
-
-      <MissionCompletionCard
-        missionId={mission.id}
-        clearedCount={clearedItemIds.length}
-        totalCount={sessionItems.length}
-        unitLabel="listening check"
-        sessionMode={sessionMode}
-        returnState={buildMissionCompletionRouteState(
-          mission,
-          sessionMode,
-          Math.min(clearedItemIds.length, sessionItems.length),
-          sessionItems.length,
-        )}
-      />
     </div>
   );
 }
@@ -277,7 +227,15 @@ type ListeningItemPanelProps = {
   item: ListeningItem;
   choicePool: ListeningItem[];
   avoidTranslations: string[];
+  currentItemIndex: number;
+  totalItems: number;
+  clearedCount: number;
+  canGoPrevious: boolean;
+  isLastItem: boolean;
   onCleared: (itemId: string) => void;
+  onPrevious: () => void;
+  onNext: () => void;
+  onFinish: () => void;
 };
 
 type ListeningFeedback = 'correct' | 'incorrect' | null;
@@ -288,7 +246,15 @@ function ListeningItemPanel({
   item,
   choicePool,
   avoidTranslations,
+  currentItemIndex,
+  totalItems,
+  clearedCount,
+  canGoPrevious,
+  isLastItem,
   onCleared,
+  onPrevious,
+  onNext,
+  onFinish,
 }: ListeningItemPanelProps) {
   const readingMatchesTranscript = !hasDistinctReading(item.transcript, item.reading);
   const [revealed, setRevealed] = useState<Record<RevealKey, boolean>>({
@@ -302,6 +268,7 @@ function ListeningItemPanel({
   const translationChoices = getListeningTranslationChoices(item, choicePool, {
     avoidTranslations,
   });
+  const latestVisibleHint = getLatestVisibleHint(item, revealed, readingMatchesTranscript);
 
   function reveal(step: RevealKey) {
     setRevealed((current) => ({ ...current, [step]: true }));
@@ -328,104 +295,43 @@ function ListeningItemPanel({
   }
 
   return (
-    <div className="listening-item-panel">
-      <ListeningAudioCard item={item} />
-
-      <div className="listening-prompt-card">
-        <p className="mission-copy-block__eyebrow">Answer first</p>
-        <p className="mission-copy-block__body">
-          Try the quick check before you reveal the meaning. If you need help, open hints one layer
-          at a time instead of exposing everything at once.
+    <div className="listening-item-panel listening-focus-card">
+      <div className="listening-focus-card__header">
+        <div>
+          <p className="mission-copy-block__eyebrow">
+            Line {currentItemIndex + 1} of {totalItems}
+          </p>
+          <h3 className="listening-focus-card__prompt">Choose the meaning you heard.</h3>
+        </div>
+        <p className="listening-focus-card__count">
+          {clearedCount}/{totalItems}
         </p>
       </div>
 
-      <div className="mission-drill-card">
-        <div className="mission-drill-card__header">
-          <p className="mission-drill-card__eyebrow">Quick check</p>
-          <h3 className="mission-drill-card__prompt">
-            Which English meaning matches this line?
-          </h3>
-          <p className="mission-drill-card__support">
-            Audio first if you want it, then guess. Use the hint controls below only when you need
-            them.
-          </p>
-        </div>
+      <ListeningAudioCard item={item} />
 
-        <div className="mission-drill-card__body">
-          <div className="mission-choice-grid">
-            {translationChoices.map((choice) => {
-              const isSelected = selectedChoice === choice;
+      <div className="mission-choice-grid listening-choice-grid">
+        {translationChoices.map((choice) => {
+          const isSelected = selectedChoice === choice;
 
-              return (
-                <button
-                  key={choice}
-                  type="button"
-                  className={`mission-choice${
-                    isSelected ? ' mission-choice--selected' : ''
-                  }`}
-                  onClick={() => {
-                    setSelectedChoice(choice);
-                    setFeedback(null);
-                  }}
-                >
-                  {choice}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mission-drill-card__actions">
+          return (
             <button
+              key={choice}
               type="button"
-              className="mission-button"
-              onClick={submitCheck}
-              disabled={!selectedChoice}
-            >
-              Check answer
-            </button>
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
+              className={`mission-choice${isSelected ? ' mission-choice--selected' : ''}`}
               onClick={() => {
-                setSelectedChoice('');
+                setSelectedChoice(choice);
                 setFeedback(null);
               }}
             >
-              Reset
+              {choice}
             </button>
-          </div>
-
-          {feedback ? (
-            <div
-              className={`mission-feedback mission-feedback--${feedback}`}
-              role="status"
-              aria-live="polite"
-            >
-              <p className="mission-feedback__title">
-                {feedback === 'correct' ? 'Correct.' : 'Not quite.'}
-              </p>
-              <p className="mission-feedback__body">
-                {feedback === 'correct'
-                  ? revealed.translation || revealed.focus || revealed.transcript
-                    ? 'The meaning matches the line. You got there after using hints.'
-                    : 'The meaning matches the line. Nice first-pass recognition.'
-                  : `Correct answer: ${item.translation}`}
-              </p>
-            </div>
-          ) : null}
-        </div>
+          );
+        })}
       </div>
 
       <div className="listening-hint-panel">
-        <div className="listening-hint-panel__copy">
-          <p className="mission-copy-block__eyebrow">Need a hint?</p>
-          <p className="mission-copy-block__body">
-            Reveal only the next layer you need. Meaning and focus stay last so the answer does not
-            sit in front of the check by default.
-          </p>
-        </div>
-
-        <div className="listening-reveal-controls">
+        <div className="listening-reveal-controls" aria-label="Listening hints">
           <button
             type="button"
             className={`listening-reveal-button${
@@ -450,49 +356,84 @@ function ListeningItemPanel({
           <button
             type="button"
             className={`listening-reveal-button${
-              revealed.translation ? ' listening-reveal-button--complete' : ''
+              revealed.focus ? ' listening-reveal-button--complete' : ''
             }`}
-            onClick={() => reveal('translation')}
+            onClick={() => reveal('focus')}
             disabled={!revealed.transcript}
           >
-            Reveal meaning hint
+            Reveal pattern hint
           </button>
           <button
             type="button"
             className={`listening-reveal-button${
-              revealed.focus ? ' listening-reveal-button--complete' : ''
+              revealed.translation ? ' listening-reveal-button--complete' : ''
             }`}
-            onClick={() => reveal('focus')}
-            disabled={!revealed.translation}
+            onClick={() => reveal('translation')}
+            disabled={!revealed.focus}
           >
-            Reveal pattern hint
+            Reveal meaning hint
           </button>
         </div>
       </div>
 
-      <div className="listening-reveal-stack">
-        <RevealBlock
-          label="Transcript"
-          isVisible={revealed.transcript}
-          value={item.transcript}
-        />
-        {!readingMatchesTranscript ? (
-          <RevealBlock
-            label="Reading"
-            isVisible={revealed.reading}
-            value={item.reading}
-          />
-        ) : null}
-        <RevealBlock
-          label="Meaning hint"
-          isVisible={revealed.translation}
-          value={item.translation}
-        />
-        <RevealBlock
-          label="Pattern hint"
-          isVisible={revealed.focus}
-          value={item.focusPoint}
-        />
+      <div className="listening-reveal-slot" aria-live="polite">
+        {latestVisibleHint ? (
+          <RevealBlock label={latestVisibleHint.label} value={latestVisibleHint.value} />
+        ) : (
+          <p className="listening-reveal-slot__empty">
+            Try the audio first. Reveal only the next hint you need.
+          </p>
+        )}
+      </div>
+
+      {feedback ? (
+        <div
+          className={`mission-feedback mission-feedback--${feedback}`}
+          role="status"
+          aria-live="polite"
+        >
+          <p className="mission-feedback__title">
+            {feedback === 'correct' ? 'Correct.' : 'Not quite.'}
+          </p>
+          <p className="mission-feedback__body">
+            {feedback === 'correct'
+              ? revealed.translation || revealed.focus || revealed.transcript
+                ? 'Good recovery. You used the support and got the meaning.'
+                : 'Clean first-pass recognition.'
+              : `Correct answer: ${item.translation}`}
+          </p>
+        </div>
+      ) : null}
+
+      <div className="listening-focus-card__actions">
+        <button
+          type="button"
+          className="mission-button mission-button--secondary"
+          onClick={onPrevious}
+          disabled={!canGoPrevious}
+        >
+          Previous
+        </button>
+        {feedback ? (
+          isLastItem ? (
+            <button type="button" className="mission-button mission-button--link" onClick={onFinish}>
+              Finish to Today
+            </button>
+          ) : (
+            <button type="button" className="mission-button" onClick={onNext}>
+              Next line
+            </button>
+          )
+        ) : (
+          <button
+            type="button"
+            className="mission-button"
+            onClick={submitCheck}
+            disabled={!selectedChoice}
+          >
+            Check answer
+          </button>
+        )}
       </div>
     </div>
   );
@@ -508,11 +449,7 @@ function ListeningAudioCard({ item }: { item: ListeningItem }) {
   return (
     <section className="listening-audio-card">
       <div className="listening-audio-card__copy">
-        <p className="mission-copy-block__eyebrow">Audio</p>
-        <p className="mission-copy-block__body">
-          Play the line first if you want an audio pass before revealing anything. Audio is
-          optional and AI-generated.
-        </p>
+        <p className="mission-copy-block__eyebrow">Audio first</p>
       </div>
 
       {!audioFailed ? (
@@ -540,21 +477,64 @@ function ListeningAudioCard({ item }: { item: ListeningItem }) {
 
 type RevealBlockProps = {
   label: string;
-  isVisible: boolean;
   value: string;
 };
 
-function RevealBlock({ label, isVisible, value }: RevealBlockProps) {
+function RevealBlock({ label, value }: RevealBlockProps) {
   return (
-    <section className={`listening-reveal-card${isVisible ? ' listening-reveal-card--visible' : ''}`}>
+    <section className="listening-reveal-card listening-reveal-card--visible">
       <p className="mission-copy-block__eyebrow">{label}</p>
-      {isVisible ? (
-        <p className="listening-reveal-card__value">{value}</p>
-      ) : (
-        <p className="listening-reveal-card__hidden">Hidden until you reveal this step.</p>
-      )}
+      <p className="listening-reveal-card__value">{value}</p>
     </section>
   );
+}
+
+function getLatestVisibleHint(
+  item: ListeningItem,
+  revealed: Record<RevealKey, boolean>,
+  readingMatchesTranscript: boolean,
+) {
+  if (revealed.translation) {
+    return { label: 'Meaning', value: item.translation };
+  }
+
+  if (revealed.focus) {
+    return { label: 'Pattern', value: item.focusPoint };
+  }
+
+  if (!readingMatchesTranscript && revealed.reading) {
+    return { label: 'Reading', value: item.reading };
+  }
+
+  if (revealed.transcript) {
+    return { label: 'Transcript', value: item.transcript };
+  }
+
+  return null;
+}
+
+function findSupportExampleAudioRef(example: ExampleSentence, choicePool: ListeningItem[]) {
+  const normalizedJapanese = normalizeSupportMatch(example.japanese);
+  const normalizedReading = normalizeSupportMatch(example.reading);
+  const normalizedEnglish = normalizeSupportMatch(example.english);
+  const match = choicePool.find((item) => {
+    return (
+      normalizeSupportMatch(item.transcript) === normalizedJapanese ||
+      normalizeSupportMatch(item.reading) === normalizedReading ||
+      normalizeSupportMatch(item.translation) === normalizedEnglish
+    );
+  });
+
+  return match?.audioRef;
+}
+
+function normalizeSupportMatch(value: string) {
+  return value.replace(/\s+/g, '').replace(/[。、,.!?？！「」]/g, '').toLowerCase();
+}
+
+function playAudioRef(audioRef: string) {
+  const audio = new Audio(audioRef);
+  void audio.play().catch(() => undefined);
 }
 
 function getAudioMimeType(audioRef: string) {

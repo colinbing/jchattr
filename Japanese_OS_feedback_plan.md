@@ -184,13 +184,82 @@ Observed:
 - Transcript hint, meaning hint, pattern hint occupy too much space.
 - Meaning hint is effectively the answer and should not be shown too early.
 - User has to scroll too much after checking.
+- The active listening task, hint controls, reveal content, and next/previous controls are split vertically, so the learner has to manage the page instead of staying in the drill.
+- Pattern support is useful, but when it is presented as listening support it should be actionable in the listening modality, including playback when an existing audio asset matches the support line.
 
 Fix direction:
 - Use a staged reveal order: transcript → pattern/focus → meaning.
 - After answer check, show compact feedback and a primary “Next line” action.
 - Keep hints collapsed unless requested.
+- Redesign listening around a focused active workspace: compact progress, audio, choices, progressive hint slot, feedback, and next action should live together.
+- Move prep/reference examples into an optional support surface, and make matched examples playable without changing content schemas.
 
 Priority: P1.
+
+---
+
+### U5a — Listening retry should remain audio-first
+
+Observed:
+- When a listening item is missed and later appears in Review, the retry surface shows the transcript first and does not offer the original audio.
+- This weakens the purpose of a listening retry because the learner is no longer retrying the same modality.
+
+Fix direction:
+- Short term: show the listening audio in the Review retry card when the item has an audio asset, with transcript hidden behind reveal.
+- Longer term: audit Review with the same single-focus mission-screen standard so listening retry, transcript reveal, focus support, choices, feedback, and next action sit in one intentional flow.
+
+Priority: P1.
+
+---
+
+### U5b — Listening may enter the path too early
+
+Question raised:
+- Listening is currently introduced as the second core mission, before a new learner has much pattern familiarity.
+- The content is technically beginner-safe, but the experience may feel like guessing if the learner has not first heard or practiced a few supported lines.
+
+Fix direction:
+- Keep the current local-first mission architecture for now.
+- Evaluate whether early listening should begin with a short "hear the pattern" prep step before graded checks.
+- Consider whether the first listening mission should be recommended after one more grammar/output exposure, or whether the listening mission itself should include a mandatory listen/practice screen before the quiz screen.
+
+Priority: P2.
+
+---
+
+### U8 — Mission screens need a stronger design north star
+
+Observed:
+- Several mission types still feel like long documents with drills embedded inside them.
+- Rich support content can become clutter when every explanation, status, and action is visible at once.
+- The intended learning rhythm should be learn → try → feedback → recap, but some screens still mix those states together.
+
+Fix direction:
+- Treat one focused mobile workspace as the default mission design target.
+- Keep one primary action visible at a time.
+- Put hints and support close to the active task, progressively revealed as the learner needs them.
+- Move recap, saved-progress detail, and skill-impact explanation to completion states.
+- Keep support content actionable in the modality being trained.
+
+Priority: P1/P2.
+
+---
+
+### U9 — Mission completion actions still duplicate inside grammar
+
+Observed:
+- The grammar completion state can show task-local actions like `Back to today` / `Edit answer`, section navigation like `Previous` / `Finish to Today`, and a separate `Ready for Today` completion card below.
+- This creates three competing exit surfaces after the learner has already finished the active drill.
+
+Fix direction:
+- Apply the single-focus mission-screen standard to grammar completion states.
+- Keep one primary completion CTA and at most one secondary action.
+- Move detailed completion/history information into a final recap surface only if it adds learner value.
+
+Priority: P1.
+
+Status:
+- Addressed in the Phase 4 grammar completion cleanup slice. Final grammar drill feedback now owns the completion moment with one primary `Finish to Today` action and one secondary `Edit answer` path; the competing section-level finish row and extra `Ready for Today` completion card no longer appear in the drills step.
 
 ---
 

@@ -21,7 +21,6 @@ import {
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
-import { MissionCompletionCard } from './MissionCompletionCard';
 import {
   buildMissionCompletionRouteState,
   selectMissionSessionItems,
@@ -87,6 +86,7 @@ export function GrammarMissionPlayer({
   const currentExample = sessionExamples[currentExampleIndex] ?? null;
   const currentMistake = lesson.commonMistakes[currentMistakeIndex] ?? null;
   const currentDrill = sessionDrills[currentDrillIndex] ?? null;
+  const completedDrillCount = Math.min(clearedDrillIds.length, sessionDrills.length);
 
   useEffect(() => {
     updateContinueState({
@@ -144,7 +144,7 @@ export function GrammarMissionPlayer({
       state: buildMissionCompletionRouteState(
         mission,
         sessionMode,
-        Math.min(clearedDrillIds.length, sessionDrills.length),
+        completedDrillCount,
         sessionDrills.length,
       ),
     });
@@ -365,7 +365,7 @@ export function GrammarMissionPlayer({
                   onCleared={handleDrillCleared}
                 />
                 <p className="list-meta">
-                  {clearedDrillIds.length}/{sessionDrills.length} drills done.
+                  {completedDrillCount}/{sessionDrills.length} drills done.
                 </p>
               </>
             ) : (
@@ -373,58 +373,46 @@ export function GrammarMissionPlayer({
             )
           ) : null}
 
-          <div className="mission-step-actions">
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
-              onClick={goToPreviousStep}
-              disabled={currentStepIndex === 0}
-            >
-              Previous
-            </button>
-            {currentStepIndex < sessionSteps.length - 1 ? (
+          {currentStep.id !== 'drills' ? (
+            <div className="mission-step-actions">
               <button
                 type="button"
-                className="mission-button"
-                onClick={goToNextStep}
+                className="mission-button mission-button--secondary"
+                onClick={goToPreviousStep}
+                disabled={currentStepIndex === 0}
               >
-                Next section
+                Previous
               </button>
-            ) : (
-              <button
-                type="button"
-                className="mission-button mission-button--link"
-                onClick={() =>
-                  navigate('/', {
-                    state: buildMissionCompletionRouteState(
-                      mission,
-                      sessionMode,
-                      Math.min(clearedDrillIds.length, sessionDrills.length),
-                      sessionDrills.length,
-                    ),
-                  })
-                }
-              >
-                Finish to Today
-              </button>
-            )}
-          </div>
+              {currentStepIndex < sessionSteps.length - 1 ? (
+                <button
+                  type="button"
+                  className="mission-button"
+                  onClick={goToNextStep}
+                >
+                  Next section
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="mission-button mission-button--link"
+                  onClick={() =>
+                    navigate('/', {
+                      state: buildMissionCompletionRouteState(
+                        mission,
+                        sessionMode,
+                        completedDrillCount,
+                        sessionDrills.length,
+                      ),
+                    })
+                  }
+                >
+                  Finish to Today
+                </button>
+              )}
+            </div>
+          ) : null}
         </div>
       </SurfaceCard>
-
-      <MissionCompletionCard
-        missionId={mission.id}
-        clearedCount={clearedDrillIds.length}
-        totalCount={sessionDrills.length}
-        unitLabel="drill"
-        sessionMode={sessionMode}
-        returnState={buildMissionCompletionRouteState(
-          mission,
-          sessionMode,
-          Math.min(clearedDrillIds.length, sessionDrills.length),
-          sessionDrills.length,
-        )}
-      />
     </div>
   );
 }
@@ -601,7 +589,7 @@ function DrillCard({
                 className="mission-button"
                 onClick={onAdvance}
               >
-                {hasNextDrill ? 'Next drill' : 'Back to today'}
+                {hasNextDrill ? 'Next drill' : 'Finish to Today'}
               </button>
               <button
                 type="button"

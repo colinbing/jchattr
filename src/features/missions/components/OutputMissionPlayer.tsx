@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
-import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
   ExampleSentence,
   GrammarLesson,
@@ -21,7 +20,6 @@ import {
 } from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
-import { MissionCompletionCard } from './MissionCompletionCard';
 import {
   buildMissionCompletionRouteState,
   selectMissionSessionItems,
@@ -78,6 +76,12 @@ export function OutputMissionPlayer({
   const currentResponse = responsesByTaskId[currentTask.id] ?? '';
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
+  const completionState = buildMissionCompletionRouteState(
+    mission,
+    sessionMode,
+    Math.min(clearedTaskIds.length, sessionTasks.length),
+    sessionTasks.length,
+  );
 
   useEffect(() => {
     updateContinueState({
@@ -117,74 +121,29 @@ export function OutputMissionPlayer({
     }));
   }
 
-  function resetTask(taskId: string) {
-    updateTaskResponse(taskId, '');
-    updateTaskFeedback(taskId, null);
-  }
-
   function goToNextTask() {
     if (currentTaskIndex < sessionTasks.length - 1) {
       setCurrentTaskIndex((index) => Math.min(sessionTasks.length - 1, index + 1));
       return;
     }
 
-    navigate('/', {
-      state: buildMissionCompletionRouteState(
-        mission,
-        sessionMode,
-        Math.min(clearedTaskIds.length, sessionTasks.length),
-        sessionTasks.length,
-      ),
-    });
+    navigate('/', { state: completionState });
   }
 
   return (
-    <div className="mission-player-shell">
-      <SurfaceCard
-        title={sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Mission overview'}
-        description={
-          sessionMode === 'reinforce'
-            ? 'Take a shorter output follow-up pass with a small rotated set of prompts.'
-            : 'Write short lines with linked grammar support nearby. Drafts stay task-local, and Enter can submit the current answer.'
-        }
-      >
-        <div className="mission-overview">
-          <div className="mission-overview__lesson">
-            <p className="mission-overview__eyebrow">Output mission</p>
-            <h2 className="mission-overview__lesson-title">{mission.title}</h2>
-            <p className="mission-overview__objective">
-              Use the prompt, check the support patterns, then type one clean beginner line.
+    <div className="mission-player-shell mission-player-shell--output">
+      <div className="output-workspace">
+        <div className="output-session-bar" aria-label="Output mission progress">
+          <div className="output-session-bar__copy">
+            <p className="mission-copy-block__eyebrow">
+              {sessionMode === 'reinforce' ? 'Short output pass' : 'Output mission'}
             </p>
+            <h2 className="output-session-bar__title">{mission.title}</h2>
           </div>
-
-          <dl className="mission-overview__stats">
-            <div className="mission-overview__stat">
-              <dt>Target skill</dt>
-              <dd>{formatTargetSkill(mission.targetSkill)}</dd>
-            </div>
-            <div className="mission-overview__stat">
-              <dt>Estimated time</dt>
-              <dd>{mission.estimatedMinutes} min</dd>
-            </div>
-            <div className="mission-overview__stat">
-              <dt>Output tasks</dt>
-              <dd>{sessionTasks.length}</dd>
-            </div>
-            <div className="mission-overview__stat">
-              <dt>Support examples</dt>
-              <dd>{sessionExamples.length}</dd>
-            </div>
-          </dl>
-
-          <div className="mission-progress">
-            <div className="mission-progress__meta">
-              <p className="mission-progress__label">
-                Task {currentTaskIndex + 1} of {sessionTasks.length}
-              </p>
-              <p className="mission-progress__step">
-                {sessionMode === 'reinforce' ? 'Short follow-up prompts' : 'Compose one short line'}
-              </p>
-            </div>
+          <div className="output-session-bar__progress">
+            <span>
+              {currentTaskIndex + 1}/{sessionTasks.length}
+            </span>
             <div
               className="mission-progress__track"
               role="progressbar"
@@ -193,137 +152,91 @@ export function OutputMissionPlayer({
               aria-valuemax={100}
               aria-valuenow={progressValue}
             >
-              <span
-                className="mission-progress__fill"
-                style={{ width: `${progressValue}%` }}
-              />
+              <span className="mission-progress__fill" style={{ width: `${progressValue}%` }} />
             </div>
           </div>
         </div>
-      </SurfaceCard>
 
-      <SurfaceCard
-        title={`Output task ${currentTaskIndex + 1}`}
-        description={
-          sessionMode === 'reinforce'
-            ? 'Keep the answer short and clean. This pass uses a smaller rotated prompt set.'
-            : 'Keep the answer short and clean. Evaluation stays local and rule-based, with task-local drafts and a direct check-to-next flow.'
-        }
-      >
-        <div className="mission-step-panel">
-          <OutputTaskCard
-            missionId={mission.id}
-            task={currentTask}
-            response={currentResponse}
-            feedback={currentFeedback}
-            onResponseChange={updateTaskResponse}
-            onFeedbackChange={updateTaskFeedback}
-            onCleared={handleTaskCleared}
-            onReset={resetTask}
-            onAdvance={goToNextTask}
-            hasNextTask={currentTaskIndex < sessionTasks.length - 1}
-          />
-          <p className="list-meta">
-            Cleared {clearedTaskIds.length} of {sessionTasks.length} output tasks in this pass.
-          </p>
+        <details className="output-session-details">
+          <summary className="mission-session-details__summary">Mission details</summary>
+          <dl className="output-session-details__grid">
+            <div>
+              <dt>Skill</dt>
+              <dd>{formatTargetSkill(mission.targetSkill)}</dd>
+            </div>
+            <div>
+              <dt>Time</dt>
+              <dd>{mission.estimatedMinutes} min</dd>
+            </div>
+            <div>
+              <dt>Prompts</dt>
+              <dd>{sessionTasks.length}</dd>
+            </div>
+            <div>
+              <dt>Support</dt>
+              <dd>{sessionExamples.length + sessionVocab.length}</dd>
+            </div>
+          </dl>
+        </details>
 
-          <div className="mission-step-actions">
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
-              onClick={() => setCurrentTaskIndex((index) => Math.max(0, index - 1))}
-              disabled={currentTaskIndex === 0}
-            >
-              Previous task
-            </button>
-            {!currentFeedback ? (
-              currentTaskIndex < sessionTasks.length - 1 ? (
-                <button
-                  type="button"
-                  className="mission-button"
-                  onClick={() =>
-                    setCurrentTaskIndex((index) => Math.min(sessionTasks.length - 1, index + 1))
-                  }
-                >
-                  Skip for now
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="mission-button mission-button--link"
-                  onClick={() =>
-                    navigate('/', {
-                      state: buildMissionCompletionRouteState(
-                        mission,
-                        sessionMode,
-                        Math.min(clearedTaskIds.length, sessionTasks.length),
-                        sessionTasks.length,
-                      ),
-                    })
-                  }
-                >
-                  Finish to Today
-                </button>
-              )
+        <OutputTaskCard
+          missionId={mission.id}
+          task={currentTask}
+          response={currentResponse}
+          feedback={currentFeedback}
+          currentTaskIndex={currentTaskIndex}
+          totalTasks={sessionTasks.length}
+          clearedCount={clearedTaskIds.length}
+          canGoPrevious={currentTaskIndex > 0}
+          hasNextTask={currentTaskIndex < sessionTasks.length - 1}
+          onPrevious={() => setCurrentTaskIndex((index) => Math.max(0, index - 1))}
+          onResponseChange={updateTaskResponse}
+          onFeedbackChange={updateTaskFeedback}
+          onCleared={handleTaskCleared}
+          onAdvance={goToNextTask}
+        />
+      </div>
+
+      {(relatedLessons.length > 0 || sessionExamples.length > 0 || sessionVocab.length > 0) ? (
+        <details className="output-support-drawer">
+          <summary className="output-support-drawer__summary">Pattern support</summary>
+          <div className="output-support-grid">
+            {relatedLessons.length > 0 ? (
+              <div className="output-support-grid__column">
+                {relatedLessons.map((lesson) => (
+                  <section key={lesson.id} className="mission-copy-block">
+                    <p className="mission-copy-block__eyebrow">Linked grammar lesson</p>
+                    <h3 className="listening-support__title">{lesson.title}</h3>
+                    <p className="mission-copy-block__body">{lesson.explanation}</p>
+                  </section>
+                ))}
+              </div>
+            ) : null}
+
+            {sessionExamples.length > 0 ? (
+              <div className="mission-example-list">
+                {sessionExamples.map((example) => (
+                  <article key={example.id} className="mission-example-card">
+                    <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
+                    <p className="mission-example-card__english">{example.english}</p>
+                  </article>
+                ))}
+              </div>
             ) : null}
           </div>
-        </div>
-      </SurfaceCard>
 
-      <SurfaceCard
-        title="Pattern support"
-        description="Use the linked lessons and examples as a compact guide before or after you type."
-      >
-        <div className="output-support-grid">
-          {relatedLessons.length > 0 ? (
-            <div className="output-support-grid__column">
-              {relatedLessons.map((lesson) => (
-                <section key={lesson.id} className="mission-copy-block">
-                  <p className="mission-copy-block__eyebrow">Linked grammar lesson</p>
-                  <h3 className="listening-support__title">{lesson.title}</h3>
-                  <p className="mission-copy-block__body">{lesson.explanation}</p>
-                </section>
-              ))}
-            </div>
-          ) : null}
-
-          {sessionExamples.length > 0 ? (
-            <div className="mission-example-list">
-              {sessionExamples.map((example) => (
-                <article key={example.id} className="mission-example-card">
-                  <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
-                  <p className="mission-example-card__english">{example.english}</p>
+          {sessionVocab.length > 0 ? (
+            <div className="output-vocab-strip">
+              {sessionVocab.map((item) => (
+                <article key={item.id} className="output-vocab-chip">
+                  <p className="output-vocab-chip__kana">{item.kana}</p>
+                  <p className="output-vocab-chip__meaning">{item.meaning}</p>
                 </article>
               ))}
             </div>
           ) : null}
-        </div>
-
-        {sessionVocab.length > 0 ? (
-          <div className="output-vocab-strip">
-            {sessionVocab.map((item) => (
-              <article key={item.id} className="output-vocab-chip">
-                <p className="output-vocab-chip__kana">{item.kana}</p>
-                <p className="output-vocab-chip__meaning">{item.meaning}</p>
-              </article>
-            ))}
-          </div>
-        ) : null}
-      </SurfaceCard>
-
-      <MissionCompletionCard
-        missionId={mission.id}
-        clearedCount={clearedTaskIds.length}
-        totalCount={sessionTasks.length}
-        unitLabel="output task"
-        sessionMode={sessionMode}
-        returnState={buildMissionCompletionRouteState(
-          mission,
-          sessionMode,
-          Math.min(clearedTaskIds.length, sessionTasks.length),
-          sessionTasks.length,
-        )}
-      />
+        </details>
+      ) : null}
     </div>
   );
 }
@@ -333,12 +246,16 @@ type OutputTaskCardProps = {
   task: OutputTask;
   response: string;
   feedback: OutputEvaluationResult | null;
+  currentTaskIndex: number;
+  totalTasks: number;
+  clearedCount: number;
+  canGoPrevious: boolean;
+  hasNextTask: boolean;
+  onPrevious: () => void;
   onResponseChange: (taskId: string, response: string) => void;
   onFeedbackChange: (taskId: string, feedback: OutputEvaluationResult | null) => void;
   onCleared: (taskId: string) => void;
-  onReset: (taskId: string) => void;
   onAdvance: () => void;
-  hasNextTask: boolean;
 };
 
 function OutputTaskCard({
@@ -346,12 +263,16 @@ function OutputTaskCard({
   task,
   response,
   feedback,
+  currentTaskIndex,
+  totalTasks,
+  clearedCount,
+  canGoPrevious,
+  hasNextTask,
+  onPrevious,
   onResponseChange,
   onFeedbackChange,
   onCleared,
-  onReset,
   onAdvance,
-  hasNextTask,
 }: OutputTaskCardProps) {
   function submitAnswer() {
     if (!response.trim()) {
@@ -374,17 +295,24 @@ function OutputTaskCard({
   }
 
   return (
-    <div className="output-task-card">
-      <div className="mission-copy-block">
-        <p className="mission-copy-block__eyebrow">Prompt</p>
-        <p className="output-task-card__prompt">{task.prompt}</p>
+    <div className="output-task-card output-focus-card">
+      <div className="output-focus-card__header">
+        <div>
+          <p className="mission-copy-block__eyebrow">
+            Prompt {currentTaskIndex + 1} of {totalTasks}
+          </p>
+          <p className="output-task-card__prompt">{task.prompt}</p>
+        </div>
+        <p className="output-focus-card__count">
+          {clearedCount}/{totalTasks}
+        </p>
       </div>
 
       {task.hint ? (
-        <div className="output-task-card__hint">
-          <p className="mission-copy-block__eyebrow">Hint</p>
+        <details className="output-task-card__hint">
+          <summary className="review-support-details__summary">Hint</summary>
           <p className="mission-copy-block__body">{task.hint}</p>
-        </div>
+        </details>
       ) : null}
 
       <KanaAssistTextarea
@@ -396,45 +324,6 @@ function OutputTaskCard({
         rows={3}
         placeholder="Type your line in Japanese. Press Enter to check, Shift+Enter for a new line."
       />
-
-      <div className="mission-drill-card__actions">
-        {feedback ? (
-          <>
-            <button
-              type="button"
-              className="mission-button"
-              onClick={onAdvance}
-            >
-              {hasNextTask ? 'Next task' : 'Back to today'}
-            </button>
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
-              onClick={() => onFeedbackChange(task.id, null)}
-            >
-              Edit answer
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              type="button"
-              className="mission-button"
-              onClick={submitAnswer}
-              disabled={!response.trim()}
-            >
-              Check answer
-            </button>
-            <button
-              type="button"
-              className="mission-button mission-button--secondary"
-              onClick={() => onReset(task.id)}
-            >
-              Reset
-            </button>
-          </>
-        )}
-      </div>
 
       {feedback ? (
         <div
@@ -450,6 +339,31 @@ function OutputTaskCard({
           </p>
         </div>
       ) : null}
+
+      <div className="output-focus-card__actions">
+        <button
+          type="button"
+          className="mission-button mission-button--secondary"
+          onClick={feedback ? () => onFeedbackChange(task.id, null) : onPrevious}
+          disabled={!feedback && !canGoPrevious}
+        >
+          {feedback ? 'Edit answer' : 'Previous'}
+        </button>
+        {feedback ? (
+          <button type="button" className="mission-button" onClick={onAdvance}>
+            {hasNextTask ? 'Next task' : 'Finish to Today'}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="mission-button"
+            onClick={submitAnswer}
+            disabled={!response.trim()}
+          >
+            Check answer
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -400,10 +400,28 @@ function ListeningReviewCard({
   return (
     <div className="review-retry-card">
       <div className="review-listening-stack">
-        <section className="listening-reveal-card listening-reveal-card--visible">
-          <p className="mission-copy-block__eyebrow">Transcript</p>
-          <p className="listening-reveal-card__value">{item.listeningItem.transcript}</p>
-        </section>
+        {item.listeningItem.audioRef ? (
+          <section className="listening-audio-card">
+            <div className="listening-audio-card__copy">
+              <p className="mission-copy-block__eyebrow">Audio retry</p>
+            </div>
+            <audio className="listening-audio-card__player" controls preload="none">
+              <source
+                src={item.listeningItem.audioRef}
+                type={getAudioMimeType(item.listeningItem.audioRef)}
+              />
+              Your browser does not support audio playback for this item.
+            </audio>
+          </section>
+        ) : null}
+
+        <details className="review-support-details">
+          <summary className="review-support-details__summary">Reveal transcript</summary>
+          <section className="listening-reveal-card listening-reveal-card--visible">
+            <p className="mission-copy-block__eyebrow">Transcript</p>
+            <p className="listening-reveal-card__value">{item.listeningItem.transcript}</p>
+          </section>
+        </details>
       </div>
 
       <details className="review-support-details">
@@ -455,6 +473,26 @@ function ListeningReviewCard({
       {feedback ? <ReviewFeedback result={feedback} answer={item.listeningItem.translation} /> : null}
     </div>
   );
+}
+
+function getAudioMimeType(audioRef: string) {
+  if (audioRef.endsWith('.wav')) {
+    return 'audio/wav';
+  }
+
+  if (audioRef.endsWith('.opus')) {
+    return 'audio/ogg; codecs=opus';
+  }
+
+  if (audioRef.endsWith('.aac')) {
+    return 'audio/aac';
+  }
+
+  if (audioRef.endsWith('.flac')) {
+    return 'audio/flac';
+  }
+
+  return 'audio/mpeg';
 }
 
 function OutputReviewCard({

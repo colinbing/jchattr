@@ -52,6 +52,13 @@ The MVP goal is to produce a daily-use tool that meaningfully improves beginner 
     - Desktop support is required, but mobile usability takes priority in MVP decisions.
     - Core flows should be easy to use one-handed, in short sessions, and in portrait orientation.
 
+10. **Single-focus learning screens**
+    - A mission screen should have one clear job at a time: learn, try, get feedback, or recap.
+    - The active task, its needed hint, and the next action should fit in one focused mobile workspace whenever practical.
+    - Support content should be progressive, actionable, and close to the task rather than a long reference block below it.
+    - Completion and skill-impact copy belongs after the task, not mixed into the working screen.
+    - Every visible line of text should earn its place by helping the learner act, understand feedback, or choose the next step.
+
 ---
 
 ## 3. Target User

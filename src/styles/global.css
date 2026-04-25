@@ -1302,19 +1302,135 @@ button {
   color: #7f4f21;
 }
 
+.mission-player-shell--listening,
+.listening-workspace,
 .listening-item-panel,
 .listening-support,
-.listening-reveal-stack,
 .listening-hint-panel,
-.listening-hint-panel__copy {
+.listening-hint-panel__copy,
+.listening-focus-card,
+.listening-support-example-list {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
+}
+
+.mission-player-shell--listening {
+  gap: var(--space-3);
+}
+
+.listening-workspace,
+.listening-support-drawer {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.listening-session-bar,
+.listening-focus-card__header,
+.listening-focus-card__actions,
+.listening-session-details__grid,
+.listening-support-example {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.listening-session-bar {
+  justify-content: space-between;
+}
+
+.listening-session-bar__copy {
+  min-width: 0;
+}
+
+.listening-session-bar__title,
+.listening-focus-card__prompt,
+.listening-focus-card__count,
+.listening-reveal-slot__empty,
+.listening-support-drawer__summary {
+  margin: 0;
+}
+
+.listening-session-bar__title {
+  font-size: clamp(1.05rem, 4vw, 1.35rem);
+}
+
+.listening-session-bar__progress {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 5.5rem;
+  text-align: right;
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.listening-session-details {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.listening-session-details__grid {
+  flex-wrap: wrap;
+  margin: 0;
+  padding-top: var(--space-2);
+}
+
+.listening-session-details__grid div {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 6rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-strong);
+}
+
+.listening-session-details__grid dt,
+.listening-session-details__grid dd {
+  margin: 0;
+}
+
+.listening-session-details__grid dt {
+  color: var(--color-ink-muted);
+  font-size: 0.78rem;
+}
+
+.listening-session-details__grid dd {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.listening-focus-card {
+  gap: var(--space-3);
+  min-height: min(34rem, calc(100svh - 9rem));
+}
+
+.listening-focus-card__header {
+  justify-content: space-between;
+  align-items: start;
+}
+
+.listening-focus-card__prompt {
+  font-size: 1.2rem;
+}
+
+.listening-focus-card__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 2.25rem;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 800;
 }
 
 .listening-audio-card,
-.listening-prompt-card,
 .listening-reveal-card {
-  padding: var(--space-4);
+  padding: var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid rgba(36, 84, 70, 0.08);
   background: var(--color-surface-strong);
@@ -1323,11 +1439,12 @@ button {
 .listening-audio-card,
 .listening-audio-card__copy {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .listening-audio-card__player {
   width: 100%;
+  height: 2.5rem;
 }
 
 .listening-audio-card__fallback,
@@ -1352,21 +1469,22 @@ button {
 .listening-reveal-controls {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .listening-reveal-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 3.25rem;
-  padding: 0 var(--space-4);
+  min-height: 2.65rem;
+  padding: 0 var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid rgba(36, 84, 70, 0.12);
   background: var(--color-surface);
   color: var(--color-ink);
   font-weight: 700;
   text-align: center;
+  font-size: 0.86rem;
 }
 
 .listening-reveal-button--complete {
@@ -1380,8 +1498,19 @@ button {
   opacity: 0.48;
 }
 
+.listening-reveal-slot {
+  min-height: 4.25rem;
+}
+
+.listening-reveal-slot__empty {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(36, 84, 70, 0.06);
+  color: var(--color-ink-muted);
+}
+
 .listening-reveal-card {
-  min-height: 6rem;
+  min-height: auto;
 }
 
 .listening-reveal-card--visible {
@@ -1397,7 +1526,7 @@ button {
 }
 
 .listening-reveal-card__value {
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.45;
 }
 
@@ -1405,7 +1534,185 @@ button {
   color: var(--color-ink-muted);
 }
 
+.listening-focus-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: auto;
+}
+
+.listening-focus-card__actions .mission-button {
+  width: 100%;
+}
+
+.listening-support-drawer__summary {
+  cursor: pointer;
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.listening-support-drawer[open] .listening-support {
+  padding-top: var(--space-3);
+}
+
+.listening-support-example {
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-strong);
+}
+
+.listening-support-example__text {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.listening-support-example__play {
+  flex: 0 0 auto;
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  border-radius: 999px;
+  border: 1px solid rgba(36, 84, 70, 0.16);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.mission-player-shell--output,
+.output-workspace,
+.output-session-details,
 .output-task-card,
+.output-support-grid,
+.output-support-grid__column,
+.output-vocab-strip {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.mission-player-shell--output {
+  gap: var(--space-3);
+}
+
+.output-workspace,
+.output-support-drawer {
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.output-session-bar,
+.output-focus-card__header,
+.output-focus-card__actions,
+.output-session-details__grid {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.output-session-bar {
+  justify-content: space-between;
+}
+
+.output-session-bar__copy {
+  min-width: 0;
+}
+
+.output-session-bar__title,
+.output-focus-card__count,
+.output-support-drawer__summary {
+  margin: 0;
+}
+
+.output-session-bar__title {
+  font-size: clamp(1.05rem, 4vw, 1.35rem);
+}
+
+.output-session-bar__progress {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 5.5rem;
+  text-align: right;
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.output-session-details__grid {
+  flex-wrap: wrap;
+  margin: 0;
+  padding-top: var(--space-2);
+}
+
+.output-session-details__grid div {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 6rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-strong);
+}
+
+.output-session-details__grid dt,
+.output-session-details__grid dd {
+  margin: 0;
+}
+
+.output-session-details__grid dt {
+  color: var(--color-ink-muted);
+  font-size: 0.78rem;
+}
+
+.output-session-details__grid dd {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.output-focus-card {
+  gap: var(--space-3);
+  min-height: min(34rem, calc(100svh - 9rem));
+}
+
+.output-focus-card__header {
+  justify-content: space-between;
+  align-items: start;
+}
+
+.output-focus-card__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 2.25rem;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.output-focus-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: auto;
+}
+
+.output-focus-card__actions .mission-button {
+  width: 100%;
+}
+
+.output-support-drawer__summary {
+  cursor: pointer;
+  color: var(--color-accent);
+  font-weight: 800;
+}
+
+.output-support-drawer[open] .output-support-grid,
+.output-support-drawer[open] .output-vocab-strip {
+  padding-top: var(--space-3);
+}
+
 .reading-check-card,
 .output-support-grid,
 .output-support-grid__column,
