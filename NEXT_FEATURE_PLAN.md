@@ -542,6 +542,26 @@ Next best prompt:
 Implement Feature 2D from NEXT_FEATURE_PLAN.md only after Feature 1 and Feature 2B/2C are complete: add a chapter recombination reinforce pass that reuses existing capstone or reading-check surfaces. Keep it optional and Today-friendly.
 ```
 
+#### 2E. Missions Open Again Reinforce State
+
+Acceptance criteria:
+
+- Completed mission `Open again` links from Missions open the mission in reinforce mode.
+- The supporting copy makes it clear that replay is a short reinforce pass, not a full first-pass rerun.
+- Today recommendation links and Review behavior remain unchanged.
+
+Implementation notes:
+
+- `MissionLibraryCard` now passes `state={{ sessionMode: 'reinforce' }}` for completed mission links.
+- Completed mission details now say `Open again starts a short reinforce pass.`
+- `MissionDetailPage` already reads route state and forwards `sessionMode` to every mission player.
+
+Next best prompt:
+
+```text
+Implement Feature 2E from NEXT_FEATURE_PLAN.md: make completed mission Open again links in Missions pass { sessionMode: 'reinforce' }, or change the label/status so the UX does not imply short replay from that surface. Run typecheck/build.
+```
+
 ---
 
 ## Feature 3: Mistake Explainer Drawer
@@ -1021,31 +1041,32 @@ This order maximizes learner value while reducing architecture risk:
 6. `2B` grammar/listening replay variants
 7. `2C` output/reading replay variants
 8. `2D` chapter recombination pass
-9. `1E` capstone content spine blueprint
-10. `1F` capstone breadth batch 1, chapters 2-4
-11. `1G` capstone breadth batch 2, chapters 5-7
-12. `1H` capstone breadth batch 3, chapters 8-10
-13. `1I` naturalized capstone layer, chapter 1
-14. `3A` feedback taxonomy
-15. `3B` grammar mistake drawer
-16. `3C` review mistake drawer
-17. `3D` other modality explanations
-18. `4A` gold star visual pass
-19. `4B` weekly shape copy
-20. `5A` preference store
-21. `5B` Today focus weighting
-22. `5C` Today focus control
-23. `6A` scenario model decision
-24. `6B` first scenario sim
-25. `6C` scenario pack set
-26. `7A` seen vocab derivation
-27. `7B` reading display mode
-28. `7C` known/unknown chips
-29. `8A` AI content drafting protocol
-30. `8B` capstone draft script
-31. `8C` optional AI explanation fallback
-32. `8D` optional typed output coach
-33. `8E` voice coach spike
+9. `2E` Missions Open again reinforce state
+10. `1E` capstone content spine blueprint
+11. `1F` capstone breadth batch 1, chapters 2-4
+12. `1G` capstone breadth batch 2, chapters 5-7
+13. `1H` capstone breadth batch 3, chapters 8-10
+14. `1I` naturalized capstone layer, chapter 1
+15. `3A` feedback taxonomy
+16. `3B` grammar mistake drawer
+17. `3C` review mistake drawer
+18. `3D` other modality explanations
+19. `4A` gold star visual pass
+20. `4B` weekly shape copy
+21. `5A` preference store
+22. `5B` Today focus weighting
+23. `5C` Today focus control
+24. `6A` scenario model decision
+25. `6B` first scenario sim
+26. `6C` scenario pack set
+27. `7A` seen vocab derivation
+28. `7B` reading display mode
+29. `7C` known/unknown chips
+30. `8A` AI content drafting protocol
+31. `8B` capstone draft script
+32. `8C` optional AI explanation fallback
+33. `8D` optional typed output coach
+34. `8E` voice coach spike
 
 Gold-star work can move earlier if motivation polish becomes the priority. AI work should not move earlier than deterministic capstones, capstone content-spine planning, and mistake explanations. Full capstone breadth can be batched around Feature 3 if implementation momentum requires it, but the 1E blueprint should happen before broad new content or AI drafting.
 
@@ -1071,6 +1092,7 @@ Use these states:
 | 2B Grammar/listening replay variants | Verified | Formalized deterministic replay variants with metadata, wired grammar and listening reinforce mode to the helper, preserved first-pass behavior and Review isolation, and kept output/reading on the compatibility selector for 2C. Verified with typecheck, build, helper smoke check, and standard content reports. |
 | 2C Output/reading replay variants | Verified | Wired output and reading reinforce mode to replay-variant metadata, preserved full first-pass lists and Review isolation, and updated Today reinforcement copy to describe short rotated passes. Verified with typecheck, build, helper smoke check, and standard content reports. |
 | 2D Chapter recombination pass | Verified | Added bonus-priority Today recombination recommendations for completed capstones, reused the capstone story player through `mode=recombination`, kept urgent Review suppression, and kept recombination out of the finite core Today plan. Verified with typecheck, build, smoke checks, and standard content reports. |
+| 2E Missions Open again reinforce state | Verified | Completed mission `Open again` links from Missions now pass `sessionMode: 'reinforce'`, and completed mission detail copy states that Open again starts a short reinforce pass. Verified with typecheck, build, and a link-state grep audit. |
 | 1E Capstone content spine blueprint | Verified | Added a typed chapter 1-10 capstone blueprint with scenarios, grammar focus, reuse focus, line/check targets, and quality risks. Content reports now show capstone chapter coverage as 1/10 with missing chapters visible. Verified with typecheck, build, and standard content reports. |
 | 1F Capstone breadth batch 1 | Verified | Added hand-reviewed chapter 2-4 capstones covering packs 6-20, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 4/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 1G Capstone breadth batch 2 | Verified | Added hand-reviewed chapter 5-7 capstones covering packs 21-35, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 7/10. Verified with typecheck, build, source-line audit, and standard content reports. |

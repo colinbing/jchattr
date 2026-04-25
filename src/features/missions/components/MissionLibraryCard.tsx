@@ -42,6 +42,9 @@ export function MissionLibraryCard({
   ]
     .filter(Boolean)
     .join(' ');
+  const missionLinkState = progress.isCompleted
+    ? { sessionMode: 'reinforce' as const }
+    : undefined;
 
   return (
     <article className={cardClassName}>
@@ -120,8 +123,13 @@ export function MissionLibraryCard({
       {isUnlocked ? (
         <Link
           to={`/mission/${mission.id}`}
+          state={missionLinkState}
           className="mission-card__cta"
-          aria-label={`Open ${mission.title}`}
+          aria-label={
+            progress.isCompleted
+              ? `Open ${mission.title} as a short reinforce pass`
+              : `Start ${mission.title}`
+          }
         >
           {progress.isCompleted ? 'Open again' : 'Start mission'}
         </Link>
@@ -177,8 +185,8 @@ export function formatTargetSkill(targetSkill: Mission['targetSkill']) {
 function buildProgressNote(progress: MissionProgressEntry, isUnlocked: boolean) {
   if (progress.isCompleted) {
     return progress.completionCount > 1
-      ? `Mission complete. Cleared ${progress.completionCount} times.`
-      : 'Mission complete.';
+      ? `Mission complete. Cleared ${progress.completionCount} times. Open again starts a short reinforce pass.`
+      : 'Mission complete. Open again starts a short reinforce pass.';
   }
 
   return isUnlocked ? 'Ready for a first clear.' : 'Locked until the earlier requirement is cleared.';
