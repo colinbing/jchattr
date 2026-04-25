@@ -15,6 +15,7 @@
 
 - Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup, the new Today-density cleanup, the new active Review-batch cleanup, the new Missions-surface cleanup, the new Progress-surface cleanup, the new Settings-surface cleanup, the new reinforce-and-completion-flow cleanup, the new reinforce-relatedness cleanup, the new reorder-drill shuffle cleanup, the new completion-handoff cleanup, the new listening single-workspace redesign, the new output single-workspace/review-audio cleanup, the new grammar completion cleanup, the new compact completion-recap cleanup, the new Today resume-precedence cleanup, the new grammar-focus highlighting cleanup, the new listening hint/scoring semantics cleanup, the new early-listening prep cleanup, the new guided Today-track handoff cleanup, the new guided-handoff audit cleanup, the new early-listening prep pacing audit cleanup, the new supported-exposure wording audit cleanup, the new grammar-highlight coverage audit cleanup, the mobile-loop review-start positioning cleanup, the Missions chapter-surface density cleanup, the Today personal-focus recommendation slice, the Today personalization-copy sanity pass, and static-host-ready SPA routing setup as the Phase 4 baseline, then continue with the next narrow personalization slice only after another concrete user-test or copy/layout issue is identified.
 - Process note: `Japanese_OS_feedback_plan.md` now owns the Phase 4 user-test feedback triage loop; `BUILD_STATUS.md` should stay limited to verified repo reality, completed slices, constraints, and the ordered implementation queue.
+- Documentation note: `N5_CURRICULUM_PLAN.md` and `PROMPTS/README.md` now separate historical Phase 1-3 build planning from current Phase 4 repo reality; they are no longer an implied active content-expansion or scaffold queue.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -441,7 +442,7 @@
 
 ## Next Recommended Slices
 
-1. Use the next concrete mobile-loop audit or user-test finding to choose the next narrow Phase 4 personalization slice; keep storage, schemas, and deterministic selection unchanged unless that slice explicitly requires otherwise.
+1. No active implementation slice is queued. Gather real usage feedback, then use the next concrete mobile-loop audit or user-test finding to choose a narrow Phase 4 slice; keep storage, schemas, and deterministic selection unchanged unless that slice explicitly requires otherwise.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

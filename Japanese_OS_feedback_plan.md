@@ -51,7 +51,7 @@ Current ordering:
 2. Addressed from the Missions chapter-surface density cleanup: the active chapter panel now reaches the next mission faster and distinguishes locked chapters from cleared chapters.
 3. Addressed in the first narrow personalization slice: Today mission cards now explain personal fit using existing local progress, weak points, target skills, and linked grammar tags.
 4. Addressed from the Today personalization-copy sanity pass: incomplete support missions are no longer described as `Light pass` / `short pass` reinforcement.
-5. Next, use a concrete mobile-loop audit or user-test finding to choose the next narrow Phase 4 personalization slice.
+5. No active implementation slice is queued. Next product work should come from a concrete mobile-loop audit or user-test finding rather than invented Phase 4 micro-work.
 
 ---
 
@@ -590,13 +590,15 @@ Triage:
 
 ---
 
-## 6. Recommended Next Slice
+## 6. Current Phase 4 Queue State
 
-### Slice name
+### Status
 
-Next narrow Phase 4 personalization slice, selected from the next concrete audit finding
+No active implementation slice is queued.
 
-### Scope
+The current Phase 4 cleanup baseline is good enough to gather real usage feedback before adding deeper personalization behavior.
+
+### Scope for the next accepted slice
 
 Include:
 - Start from a specific observed user-test or mobile-loop audit issue.
@@ -614,7 +616,12 @@ Exclude:
 
 ---
 
-## 7. Codex Prompt
+## 7. Historical Launch Prompt
+
+This prompt launched the first mobile core-loop friction cleanup.
+It is preserved for traceability, but it is not the current recommended next prompt.
+
+```md
 
 Context:
 This repo is Japanese OS, a local-first Japanese learning MVP. Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, and `BUILD_STATUS.md`. Preserve the current architecture. The repo is already in Phase 4 with a working local-first mission loop, content library, review loop, progress screen, and recommendation logic. This task is a narrow mobile UX/friction cleanup based on a real iPhone home-screen user test.
@@ -656,12 +663,14 @@ Acceptance criteria:
 
 Output:
 Summarize changed files, explain any tradeoffs, list verification commands run, and call out one recommended follow-up slice.
+```
 
 ---
 
-## 8. Recommended Follow-Up Slice After This
+## 8. Historical Follow-Up Slice
 
-After the cleanup slice, the next best slice should probably be:
+This follow-up slice was completed through later Phase 4 mobile mission-flow cleanup work.
+It is preserved as historical planning context, not as the active queue.
 
 Mission task-flow compacting v2
 

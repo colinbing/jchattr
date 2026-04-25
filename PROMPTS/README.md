@@ -14,7 +14,9 @@ Codex should be used as a constrained repo-aware engineer, not as an open-ended 
    - `constitution.md`
    - `PRODUCT_SPEC.md`
    - `ROADMAP.md`
-   - `N5_CURRICULUM_PLAN.md` for Phase 3 curriculum work
+   - `BUILD_STATUS.md`
+   - `Japanese_OS_feedback_plan.md` for active Phase 4 feedback triage
+   - `N5_CURRICULUM_PLAN.md` only when reopening curriculum/content expansion work
 
 2. Prompts should request:
    - one slice at a time
@@ -49,7 +51,9 @@ Use this structure:
 
 ### Context
 - This repo is for Japanese OS, a local-first Japanese learning MVP.
-- Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, and `N5_CURRICULUM_PLAN.md` when working on Phase 3 curriculum expansion.
+- Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, and `BUILD_STATUS.md`.
+- For active Phase 4 UX or personalization work, also follow `Japanese_OS_feedback_plan.md`.
+- For curriculum/content expansion work, also follow `N5_CURRICULUM_PLAN.md`.
 - Preserve the current architecture unless the request explicitly says otherwise.
 
 ### Task
@@ -99,7 +103,13 @@ Summarize changed files and note any assumptions.
 
 ---
 
-## Recommended Prompt Sequence
+## Historical Starter Prompt Sequence
+
+This sequence reflects the original foundation-build path.
+It is no longer the active project plan because the app shell, mission loop, persistence, review, progress, content expansion, and current Phase 4 mobile cleanup baseline already exist.
+
+For current work, start from verified repo reality in `BUILD_STATUS.md`.
+For Phase 4 product work, only choose a new slice from a concrete user-test, mobile-loop audit, or copy/layout finding.
 
 ### 01
 Scaffold the Vite + React + TypeScript app and set up the initial folder structure.
@@ -183,7 +193,8 @@ If a creative idea appears mid-build:
 A good Codex session:
 - has one narrow goal
 - preserves prior work
-- ends with a functioning increment
-- makes the next prompt obvious
+- ends with a functioning increment, a verified no-change audit, or a clear docs-only reality sync
+- makes the next prompt obvious when there is real evidence for one
+- does not invent micro-work just to keep the queue moving
 
 That is the standard.

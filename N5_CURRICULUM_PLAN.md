@@ -2,10 +2,18 @@
 
 ## Purpose
 
-This document operationalizes Phase 3 of Japanese OS.
+This document originally operationalized Phase 3 of Japanese OS.
 
 The roadmap already says "content expansion," but that phrase is too vague on its own.
 This file defines what "N5-comprehensive" should mean in this repo, how we get there without curriculum drift, how future content should be batched, and how local QA should keep the expansion honest.
+
+Phase 3 content expansion and the post-claim-gap remediation work are now complete. This document should therefore be read as:
+
+- the historical curriculum plan that got the repo to the current N5-scale content set
+- the durable curriculum-quality standard for any future content work
+- a set of historical prompt templates that should not be treated as the active implementation queue unless a new content expansion decision is made
+
+For current repo totals and active product direction, use `BUILD_STATUS.md` as the source of truth.
 
 This plan is intentionally:
 
@@ -20,17 +28,19 @@ It is a repo-specific plan for building a practical N5-scale curriculum that sti
 
 ---
 
-## Current Baseline
+## Current Repo Reality
 
-As of the current cleaned baseline:
+As of the current Phase 4 baseline:
 
-- `17` grammar/listening/output packs are shipped
-- `34` grammar lessons are shipped
-- `58` missions are shipped
-- `7` reading missions are shipped
-- `188` vocab items are shipped
-- `179` example sentences are shipped
-- `84` listening items are shipped
+- `50` grammar/listening/output packs are shipped
+- `100` grammar lessons are shipped
+- `199` missions are shipped
+- `49` reading missions are shipped
+- `550` vocab items are shipped
+- `731` example sentences are shipped
+- `349` listening items are shipped
+- `245` reading checks are shipped
+- listening audio manifest coverage is complete for the shipped `349` listening items
 
 What is already strong:
 
@@ -38,15 +48,13 @@ What is already strong:
 - grammar/listening/output all exist as real mission types
 - recommendation, review, and progress are already usable
 - content is explicit, inspectable, typed, and schema-validated
-- the recent packs form a coherent beginner lane around time, plans, transport, directions, invitations, and meeting places
+- the full pack set forms a coherent beginner lane across identity, locations, routines, transport, plans, shopping, time, te-form, descriptions, comparison, desire, ability, experience, health, weather, daily friction, plain-style recognition, and connected speech
 
-What is still weak:
+What remains intentionally limited or worth watching:
 
-- reading is still too small
-- the curriculum is still too concentrated around movement/planning scenarios
-- important N5 grammar families are still missing or only partially represented
-- the app does not yet have enough contrastive reinforcement to make the grammar feel durable
-- the repo has structural content validation, but not enough curriculum-level QA
+- reading is now substantial but still lighter than the total example corpus, so denser recombination remains optional future polish
+- content QA scripts cover structural and progression signals, but human review is still needed for naturalness and pedagogy
+- Phase 4 product work is now about mobile flow, clarity, and personalization, not reopening Phase 3 content coverage by default
 
 ---
 
@@ -166,9 +174,11 @@ It should not jump straight from zero exposure to open typing.
 
 ---
 
-## Grammar Families Still Needed
+## Original Phase 3 Grammar Gap List
 
-The current repo already covers:
+This section is historical. It records the major grammar families that were still needed when the Phase 3 plan was written.
+
+The current repo now covers the intended beginner families from this list across the shipped Pack `1-50` set:
 
 - polite statements and questions
 - basic particles and location patterns
@@ -181,7 +191,7 @@ The current repo already covers:
 - time, weekdays, transport, navigation
 - invitations and meeting coordination
 
-The major remaining families needed for a credible N5-scale curriculum are:
+The original remaining-family checklist was:
 
 - suggestions with `〜ませんか`
 - inclusive planning with `〜ましょう / 〜ましょうか`
@@ -210,34 +220,36 @@ The major remaining families needed for a credible N5-scale curriculum are:
 - light connected-speech handling in reading/listening
 - plain-style recognition for nouns, adjectives, and verbs
 
-This does not mean every possible N5 edge case must be turned into a separate pack.
-It means these families must be represented clearly enough that the learner is not blindsided by core beginner Japanese.
+This did not mean every possible N5 edge case needed a separate pack.
+It meant these families needed to be represented clearly enough that the learner would not be blindsided by core beginner Japanese.
 
 ---
 
 ## Roadmap Structure
 
-The recommended expansion from here is:
+The implemented Phase 3 expansion was:
 
-- `33` future packs
+- `33` additional packs beyond the then-current baseline
 - packs `18` through `50`
 - grouped into `11` three-pack implementation batches
 - audited every `5` packs
 - reinforced with `6` reading checkpoints, each adding `2` reading missions
 
-If this full plan lands, the repo should end roughly around:
+This plan has landed and was later followed by post-claim-gap reinforcement. The current repo now exceeds the original rough scale target in reading and total mission count:
 
 - `50` total packs
 - `100` grammar lessons
 - `150` grammar/listening/output missions
-- `19` reading missions
-- `169` total missions
+- `49` reading missions
+- `199` total missions
 
-That is the scale where a repo-level N5-comprehensive claim starts becoming defendable.
+That is the scale where the repo-level N5-comprehensive claim became defendable, subject to the limitations documented in `BUILD_STATUS.md`.
 
 ---
 
-## Future Pack Roadmap
+## Implemented Pack Roadmap
+
+This roadmap is historical. It documents the intended Phase 3 pack sequence that has now shipped.
 
 ### Batch 1: Packs 18-20
 
@@ -575,17 +587,16 @@ Final claim gate after Pack 50:
 
 ## Post-Claim-Gap Expansion Plan
 
-The final claim gate can fail cleanly without invalidating the curriculum.
-That is the current repo state.
+This section is historical. It documents the follow-on reinforcement plan that was created after the first Pack `50` claim gate.
 
-The repo is now broad, coherent, and structurally sound, but it still misses the repo-defined `N5-comprehensive` claim threshold in two concrete ways:
+At that time, the repo was broad, coherent, and structurally sound, but it still missed the repo-defined `N5-comprehensive` claim threshold in two concrete ways:
 
 - vocab breadth is too low
 - reading reuse density is still too light relative to total content volume
 
-This section defines a narrow follow-on plan for closing that gap without changing the app architecture or widening beyond N5.
+The follow-on plan closed that gap without changing the app architecture or widening beyond N5.
 
-### Verified Gap Snapshot
+### Historical Gap Snapshot
 
 As of the post-Pack-50 audit:
 
@@ -605,6 +616,22 @@ They are the under-reused earlier and mid-curriculum packs, especially:
 - zero-reuse packs: `6`, `7`, `9`, `10`
 - very light reuse packs: `13`, `15`, `19`, `20`
 
+### Current Outcome
+
+As of the current Phase 4 baseline:
+
+- `550` vocab items are shipped
+- `731` example sentences are shipped
+- `349` listening items are shipped
+- `49` reading missions are shipped
+- `245` reading checks are shipped
+- `232 / 731` example sentences are reused in reading
+- the latest pack set has no missing reading-reuse follow-up in the current report
+- listening audio manifest coverage is complete for the shipped listening set
+
+The post-claim-gap expansion plan should therefore not be treated as an active backlog.
+Future content work should start from a fresh audit and an explicit decision to reopen content expansion.
+
 ### Non-Goals
 
 This follow-on plan is intentionally narrow.
@@ -619,7 +646,7 @@ Do not use this phase to:
 - rewrite the pack architecture
 - dump large vocab lists without sentence-level integration
 
-### Success Threshold For This Phase
+### Historical Success Threshold For This Phase
 
 This follow-on phase is complete when all of the following are true:
 
@@ -635,7 +662,7 @@ This follow-on phase is complete when all of the following are true:
   - no single source pack should exceed `40%` of one reading mission
 - new listening additions remain manifest-synced as they ship
 
-### Execution Shape
+### Historical Execution Shape
 
 Do not start a new large grammar roadmap.
 Use the existing Pack `1-50` structure and densify it in controlled reinforcement blocks.
@@ -660,7 +687,7 @@ Why this shape:
 - the reading lane grows without requiring a new runtime surface
 - the work stays auditable and pack-native instead of turning into an uncontrolled appendix
 
-### Block Plan
+### Historical Block Plan
 
 #### Block A: Packs 1-10
 
@@ -787,16 +814,17 @@ Useful stop points are:
 
 ## Reading Expansion Policy
 
-Reading cannot remain seven missions while the rest of the app keeps growing.
+This policy was written when reading had only seven missions.
+It succeeded: the current repo has `49` reading missions and `245` reading checks.
 
-From this point onward:
+For future content expansion, keep the same principle:
 
-- after every `2` implementation batches, add `2` reading missions
+- reading must grow alongside new grammar/listening/output content
 - each reading mission should reuse only already-shipped example sentences
-- reading should recombine at least the previous `5-8` packs
+- reading should recombine nearby and earlier packs
 - reading should mix old and recent material instead of clustering only the newest examples
 
-Target by the end of this plan:
+Historical target by the end of the original plan:
 
 - `19` total reading missions
 - more domain variety
@@ -1039,7 +1067,8 @@ If the answer to any of these is "not really," fix that before adding another la
 
 ## Periodic Refactor Policy
 
-Refactors during Phase 3 should be curriculum refactors, not architecture rewrites.
+During Phase 3, refactors were curriculum refactors, not architecture rewrites.
+For future content work, keep the same rule unless the roadmap explicitly changes.
 
 Allowed periodic refactors:
 
@@ -1059,7 +1088,7 @@ Not allowed without an explicit separate decision:
 - turning output grading into AI evaluation
 - broad mission-player redesign
 
-Suggested refactor cadence:
+Historical suggested refactor cadence:
 
 - light refactor every `10` packs
 - small cleanup refactor whenever an audit reveals real drift
@@ -1067,13 +1096,16 @@ Suggested refactor cadence:
 
 ---
 
-## Prompt Templates
+## Historical Prompt Templates
 
-These are the prompt templates that should govern future expansion work.
+These templates governed Phase 3 curriculum expansion and post-claim-gap reinforcement.
+They are preserved as examples for future content work, but they are not the active Phase 4 implementation queue.
+
+For current Phase 4 product work, start from `BUILD_STATUS.md` and `Japanese_OS_feedback_plan.md`, then choose a narrow slice only from a concrete user-test or mobile-loop finding.
 
 ### 1. Implementation Batch Prompt
 
-Use this for a planned `2-3` pack batch.
+Use this only if content expansion is explicitly reopened for a planned `2-3` pack batch.
 
 ```md
 Context:
@@ -1143,7 +1175,7 @@ Output:
 
 ### 2. Five-Pack Audit Prompt
 
-Use this after every `5` newly landed packs.
+Use this only after newly landed content packs.
 
 ```md
 Context:
@@ -1191,7 +1223,7 @@ Output:
 
 ### 3. Periodic Refactor Prompt
 
-Use this after an audit shows drift or before a new major expansion block.
+Use this only after a content audit shows drift or before a new major expansion block.
 
 ```md
 Context:
@@ -1238,7 +1270,7 @@ Output:
 
 ### 4. Post-Claim-Gap Expansion Prompt
 
-Use this for one reinforcement block from the post-claim-gap plan.
+This prompt is historical. The post-claim-gap reinforcement work is complete.
 
 ```md
 Context:
@@ -1294,10 +1326,10 @@ Output:
 
 ---
 
-## Clean Stopping Points
+## Historical Clean Stopping Points
 
-The roadmap should not feel all-or-nothing.
-These are clean pause points where the curriculum would still feel coherent:
+The Phase 3 roadmap was intentionally not all-or-nothing.
+These were the clean pause points where the curriculum would still have felt coherent:
 
 - after Batch 2: strong social planning and scheduling beginner lane
 - after Batch 4: meaningful transaction depth plus real te-form foundations
@@ -1306,8 +1338,7 @@ These are clean pause points where the curriculum would still feel coherent:
 - after Batch 10: broader real-life friction handling plus plain-form prep
 - after Batch 11: final N5-comprehensive claim audit point
 
-If development pauses at one of these points, the curriculum still makes sense.
-That matters for a long-running AI-assisted build.
+Development has passed these points. The current clean stop is the completed Phase 3 / active Phase 4 boundary documented in `BUILD_STATUS.md`.
 
 ---
 
