@@ -22,6 +22,37 @@ The highest-value next move is a narrow mobile-first polish slice:
 
 ---
 
+## Phase 4 Operating Loop
+
+This plan is the intake and triage source for user-test feedback during Phase 4. It should capture new observations without forcing every observation into the active implementation slice.
+
+Document roles:
+- `Japanese_OS_feedback_plan.md` owns feedback intake, triage state, priority, and intended ordering.
+- `BUILD_STATUS.md` owns verified repo reality, completed slices, current constraints, and the next implementation queue.
+- `constitution.md` and `PRODUCT_SPEC.md` own durable product principles; only update them when feedback changes the product standard, not for every bug.
+- `ROADMAP.md` owns broad phase direction and should not churn for small UX slices unless the phase sequence changes.
+
+Triage states:
+- `Observed`: seen in user testing or visual QA, but not yet accepted as a planned change.
+- `Accepted`: fits the product principles and should be fixed when ordered.
+- `Next slice`: narrow enough and important enough to implement soon.
+- `Deferred`: valid, but blocked by larger design semantics, local progress-model implications, or lower priority.
+- `Addressed`: implemented and verified in the repo.
+
+Slice discipline:
+- Keep the active implementation slice narrow, mobile-first, local-first, and TypeScript-only.
+- Do not broaden recommendation logic, schemas, or progress semantics unless the slice explicitly requires it.
+- When user testing surfaces a detour, log it here first unless it is a clear bug in the active slice.
+- Prefer one source-of-truth update per pass: this plan for feedback state, `BUILD_STATUS.md` for verified build reality.
+- After implementation slices, run the required validation suite and update `BUILD_STATUS.md` in the same pass.
+
+Current ordering:
+1. Next implementation slice: compact completion recap that explains what was practiced and any weak-point/skill impact without becoming a second dashboard.
+2. Next accepted UX candidates: Today resume precedence/deduping and grammar focus highlighting in examples.
+3. Deferred design-semantic candidate: listening hint/scoring semantics, because final-hint behavior affects progress confidence and skill-state meaning.
+
+---
+
 ## 1. Confirmed Bugs / Likely Bugs
 
 ### B1 — Bottom navigation labels truncate badly on mobile
@@ -260,6 +291,64 @@ Priority: P1.
 
 Status:
 - Addressed in the Phase 4 grammar completion cleanup slice. Final grammar drill feedback now owns the completion moment with one primary `Finish to Today` action and one secondary `Edit answer` path; the competing section-level finish row and extra `Ready for Today` completion card no longer appear in the drills step.
+
+---
+
+### U10 — Grammar examples should spotlight the target grammar
+
+Observed:
+- In grammar lessons, examples show useful Japanese lines but do not visually call out the grammar being trained.
+- A new learner should not have to infer that `は`, `です`, `か`, or a target pattern chunk is the thing to watch.
+
+Fix direction:
+- Highlight target grammar inside example Japanese lines where practical.
+- Prefer deriving highlights from existing lesson tags, mission target skill, or narrow pattern metadata before hand-marking every content line.
+- Keep the highlight subtle and readable; it should guide attention, not turn examples into noisy annotated text.
+
+Priority: P1/P2.
+
+Triage:
+- Accepted.
+- Next-slice candidate after the compact completion recap, unless Today resume/deduping proves more disruptive in testing.
+
+---
+
+### U11 — Listening final hints should not award mastery
+
+Observed:
+- The final meaning hint effectively reveals the answer.
+- If the learner uses that hint, the app should not still present the same `Correct` moment or imply full mastery.
+
+Fix direction:
+- Treat early success without hints as the clearest mastery signal.
+- Treat transcript/focus support as supported completion or partial confidence.
+- Treat final meaning reveal as answer-revealed exposure: complete the item for flow, route onward with `Next line`, and consider recording it as lower confidence or review-worthy.
+- Preserve local-first progress; do not introduce backend analytics or broad scheduling.
+
+Priority: P1.
+
+Triage:
+- Accepted.
+- Deferred until after the compact completion recap because it touches the meaning of local attempt state, skill confidence, and weak-point impact.
+
+---
+
+### U12 — Continue mission should outrank and dedupe Today plan cards
+
+Observed:
+- If a learner leaves a mission in progress, `Pick up where you stopped` can appear below `Do this today`.
+- The same mission can also remain in the main Today recommendation stack, creating duplicate action paths.
+
+Fix direction:
+- If an active continue mission exists, place it above the main Today plan.
+- Remove or suppress that same mission from the lower recommendation list for that render.
+- Keep recommendation logic intact; this is presentation precedence and deduping, not a new scheduler.
+
+Priority: P1.
+
+Triage:
+- Accepted.
+- Next-slice candidate after the compact completion recap because it affects the daily entry point and can be fixed narrowly.
 
 ---
 

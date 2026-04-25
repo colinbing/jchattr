@@ -14,6 +14,7 @@
 ## Current Objective
 
 - Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup, the new Today-density cleanup, the new active Review-batch cleanup, the new Missions-surface cleanup, the new Progress-surface cleanup, the new Settings-surface cleanup, the new reinforce-and-completion-flow cleanup, the new reinforce-relatedness cleanup, the new reorder-drill shuffle cleanup, the new completion-handoff cleanup, the new listening single-workspace redesign, the new output single-workspace/review-audio cleanup, the new grammar completion cleanup, and static-host-ready SPA routing setup as the Phase 4 baseline, then deepen adaptive recommendation work without widening scope.
+- Process note: `Japanese_OS_feedback_plan.md` now owns the Phase 4 user-test feedback triage loop; `BUILD_STATUS.md` should stay limited to verified repo reality, completed slices, constraints, and the ordered implementation queue.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
 - Roadmap position: Phase 3 content expansion and claim-gate cleanup are complete. Phase 4 has now started with a product/UX transition slice that reorganizes the library and daily entry loop before adding stronger personalization logic.
 - Longer-term direction: keep Phase 4 focused on relevance, clarity, and personalization inside the existing local-first architecture rather than widening into backend, sync, or broad AI expansion.
@@ -432,8 +433,10 @@
 ## Next Recommended Slices
 
 1. Add a completion recap pass that explains what the learner practiced and how it affected weak-point/skill state without turning completion into a second dashboard.
-2. Revisit early listening placement and prep flow: decide whether listening should enter after one more exposure or include a short mandatory hear-the-pattern screen before checks.
-3. Deepen local-first personalization by making Today recommendations more sensitive to recent misses, repeated confidence, and skill-area balance without adding backend scheduling.
+2. Fix Today resume precedence and deduping so an active `Pick up where you stopped` mission appears above the daily plan and does not duplicate inside `Do this today`.
+3. Add subtle grammar-focus highlighting inside grammar examples so learners can see the target pattern or particle quickly without turning examples into heavy annotations.
+4. Design and then implement listening hint/scoring semantics so final answer reveals count as supported exposure rather than full mastery, while preserving local-first progress.
+5. Revisit early listening placement and prep flow: decide whether listening should enter after one more exposure or include a short mandatory hear-the-pattern screen before checks.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
@@ -444,6 +447,10 @@
 - Drill-type UX pass: grammar, listening, output, and reading drill flows should each get a focused interaction audit once the content footprint is stable.
 - Listening flow follow-up: the first pass is now guess-first with progressive hints, but we should still evaluate deeper audio-first scoring, whether meaning hints should unlock only after an answer attempt, and how much post-check support should surface automatically.
 - Output flow follow-up: task-local drafts, Enter-to-check, and check-to-next are now in place, but we should still evaluate whether the same flow should propagate into review mode and whether grammar/output should share more keyboard-forward affordances.
+- Feedback triage process: documented in `Japanese_OS_feedback_plan.md`; new user-test observations should be logged with `Observed`, `Accepted`, `Next slice`, `Deferred`, or `Addressed` before they displace the active implementation queue.
+- Grammar focus highlighting: accepted as a near-term UX candidate so examples can visually spotlight target particles or pattern chunks without broad content rewrites.
+- Today resume precedence and deduping: accepted as a near-term UX candidate so unfinished missions appear first and do not duplicate in the daily plan.
+- Listening hint/scoring semantics: accepted but deferred until a narrow local attempt-state design is chosen, because final answer reveals should not imply full mastery.
 - Navigation consolidation: completed in the Phase 4 entry slice by removing the duplicate shell-level page header so one navigation/context system owns the page structure.
 - End-to-end mission-flow audit: simulate each mission type as a learner, identify friction points, and tighten what the user sees, clicks, and expects at each step.
 
