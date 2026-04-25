@@ -6,7 +6,7 @@ export type MissionCompletionSummary = {
   missionId: string;
   missionTitle: string;
   missionType: MissionType;
-  targetSkill: string;
+  targetSkill: Mission['targetSkill'];
   sessionMode: MissionSessionMode;
   clearedCount: number;
   totalCount: number;

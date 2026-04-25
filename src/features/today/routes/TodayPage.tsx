@@ -15,7 +15,12 @@ import {
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
-import { useWeakPoints } from '../../../lib/progress/weakPoints';
+import { getWeakPointList, useWeakPoints } from '../../../lib/progress/weakPoints';
+import {
+  deriveProgressOverview,
+  formatSkillTierLabel,
+  type SkillAreaProgress,
+} from '../../../lib/progress/skillMap';
 import {
   deriveTodayRecommendations,
   type TodayRecommendation,
@@ -44,6 +49,8 @@ export function TodayPage() {
     weakPoints,
     reviewLoopProgress,
   );
+  const weakPointList = getWeakPointList(weakPoints);
+  const progressOverview = deriveProgressOverview(starterContent, missionProgress, weakPoints);
   const continueMission = resolveContinueMission(
     starterContent,
     missionProgress,
@@ -94,6 +101,15 @@ export function TodayPage() {
         { missionCount: 0, completedCount: 0 },
       )
     : null;
+  const missionCompletionSkill = missionCompletion
+    ? progressOverview.skillAreas.find(
+        (skillArea) => skillArea.id === missionCompletion.targetSkill,
+      ) ?? null
+    : null;
+  const missionCompletionWeakPointCount = missionCompletion
+    ? weakPointList.filter((weakPoint) => weakPoint.missionId === missionCompletion.missionId)
+        .length
+    : 0;
 
   useEffect(() => {
     const nextState = (location.state as TodayLocationState | null) ?? null;
@@ -152,6 +168,23 @@ export function TodayPage() {
               {formatTargetSkillLabel(missionCompletion.targetSkill)}
             </p>
 
+            <CompletionRecap
+              items={[
+                {
+                  label: 'Practiced',
+                  body: buildMissionPracticeRecap(missionCompletion),
+                },
+                {
+                  label: 'Skill signal',
+                  body: buildMissionSkillRecap(missionCompletionSkill, missionCompletion),
+                },
+                {
+                  label: 'Review impact',
+                  body: buildMissionReviewImpact(missionCompletionWeakPointCount),
+                },
+              ]}
+            />
+
             <div className="review-chip-row" aria-label="Returned mission summary">
               <span className="review-chip">
                 {missionCompletion.sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Core mission pass'}
@@ -206,6 +239,32 @@ export function TodayPage() {
                   } are waiting in Review.`
                 : 'No next review batch is queued right now.'}
             </p>
+
+            <CompletionRecap
+              items={[
+                {
+                  label: 'Practiced',
+                  body: `Retried ${reviewCompletion.attemptedCount} saved weak point${
+                    reviewCompletion.attemptedCount === 1 ? '' : 's'
+                  }.`,
+                },
+                {
+                  label: 'Skill signal',
+                  body: `${reviewCompletion.clearedCount} retry ${
+                    reviewCompletion.clearedCount === 1 ? 'item was' : 'items were'
+                  } cleared. The review queue is lighter now.`,
+                },
+                {
+                  label: 'Review impact',
+                  body:
+                    reviewCompletion.unresolvedCount > 0
+                      ? `${reviewCompletion.unresolvedCount} ${
+                          reviewCompletion.unresolvedCount === 1 ? 'item still needs' : 'items still need'
+                        } another pass.`
+                      : 'No item from that batch still needs a retry.',
+                },
+              ]}
+            />
 
             <div className="review-chip-row" aria-label="Returned review summary">
               <span className="review-chip">
@@ -405,13 +464,31 @@ type TodayReturnAction = {
   label: string;
 };
 
+type CompletionRecapItem = {
+  label: string;
+  body: string;
+};
+
+function CompletionRecap({ items }: { items: CompletionRecapItem[] }) {
+  return (
+    <div className="completion-recap" aria-label="Completion recap">
+      {items.map((item) => (
+        <div key={item.label} className="completion-recap__item">
+          <p className="completion-recap__label">{item.label}</p>
+          <p className="completion-recap__body">{item.body}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
   return recommendations.reduce((total, recommendation) => {
     if (recommendation.kind === 'review') {
       return total + Math.max(4, recommendation.batchSize * 2);
     }
 
-  return total + recommendation.mission.estimatedMinutes;
+    return total + recommendation.mission.estimatedMinutes;
   }, 0);
 }
 
@@ -432,6 +509,39 @@ function getPrimaryReturnAction(recommendations: TodayRecommendation[]): TodayRe
           : undefined,
     label: recommendation.ctaLabel,
   };
+}
+
+function buildMissionPracticeRecap(missionCompletion: TodayMissionCompletion) {
+  return `${missionCompletion.clearedCount}/${missionCompletion.totalCount} ${formatMissionUnitLabel(
+    missionCompletion.missionType,
+    missionCompletion.totalCount,
+  )} in ${formatTargetSkillLabel(missionCompletion.targetSkill)}.`;
+}
+
+function buildMissionSkillRecap(
+  skillArea: SkillAreaProgress | null,
+  missionCompletion: TodayMissionCompletion,
+) {
+  if (!skillArea) {
+    return `${formatTargetSkillLabel(missionCompletion.targetSkill)} got one more local practice signal.`;
+  }
+
+  const tierLabel = formatSkillTierLabel(skillArea.tier).toLowerCase();
+  const completionLabel = `${skillArea.completionCount} related completion${
+    skillArea.completionCount === 1 ? '' : 's'
+  }`;
+
+  return `${skillArea.label} is ${tierLabel}; ${completionLabel} on this device.`;
+}
+
+function buildMissionReviewImpact(missionWeakPointCount: number) {
+  if (missionWeakPointCount > 0) {
+    return `${missionWeakPointCount} item${
+      missionWeakPointCount === 1 ? '' : 's'
+    } from this mission still ${missionWeakPointCount === 1 ? 'needs' : 'need'} review.`;
+  }
+
+  return 'No open weak point from this mission right now.';
 }
 
 function resolveContinueMission(

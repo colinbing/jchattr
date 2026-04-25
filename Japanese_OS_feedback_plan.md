@@ -47,8 +47,8 @@ Slice discipline:
 - After implementation slices, run the required validation suite and update `BUILD_STATUS.md` in the same pass.
 
 Current ordering:
-1. Next implementation slice: compact completion recap that explains what was practiced and any weak-point/skill impact without becoming a second dashboard.
-2. Next accepted UX candidates: Today resume precedence/deduping and grammar focus highlighting in examples.
+1. Next implementation slice: Today resume precedence/deduping so unfinished work appears first and does not duplicate in the daily plan.
+2. Next accepted UX candidate: grammar focus highlighting in examples.
 3. Deferred design-semantic candidate: listening hint/scoring semantics, because final-hint behavior affects progress confidence and skill-state meaning.
 
 ---
@@ -309,7 +309,7 @@ Priority: P1/P2.
 
 Triage:
 - Accepted.
-- Next-slice candidate after the compact completion recap, unless Today resume/deduping proves more disruptive in testing.
+- Next-slice candidate after Today resume/deduping, unless example clarity becomes more disruptive in testing.
 
 ---
 
@@ -329,7 +329,7 @@ Priority: P1.
 
 Triage:
 - Accepted.
-- Deferred until after the compact completion recap because it touches the meaning of local attempt state, skill confidence, and weak-point impact.
+- Deferred until a narrow local attempt-state design is chosen because it touches the meaning of skill confidence and weak-point impact.
 
 ---
 
@@ -348,7 +348,27 @@ Priority: P1.
 
 Triage:
 - Accepted.
-- Next-slice candidate after the compact completion recap because it affects the daily entry point and can be fixed narrowly.
+- Next-slice candidate because it affects the daily entry point and can be fixed narrowly.
+
+---
+
+### U13 — Completion needs useful recap without becoming a dashboard
+
+Observed:
+- Completion should confirm what the learner practiced and whether it affected weak-point or skill signals.
+- The recap must stay lightweight; completion should not become a second Progress page.
+
+Fix direction:
+- Add a compact recap to Today mission/review return states.
+- Use existing local mission progress, skill-map heuristics, and weak-point state.
+- Keep it to practiced work, current local skill/queue signal, and weak-point impact.
+- Do not add new schemas, backend analytics, or scheduling.
+
+Priority: P1.
+
+Triage:
+- Addressed.
+- Implemented in the Phase 4 compact completion-recap cleanup slice.
 
 ---
 
