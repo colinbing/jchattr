@@ -36,7 +36,7 @@ type GrammarMissionPlayerProps = {
 };
 
 type MissionStep = {
-  id: 'intro' | 'examples' | 'mistakes' | 'drills';
+  id: 'intro' | 'examples' | 'drills';
   label: string;
   title: string;
   description: string;
@@ -70,7 +70,6 @@ export function GrammarMissionPlayer({
   const grammarFocusTerms = useMemo(() => getGrammarFocusTerms(lesson), [lesson]);
   const [clearedDrillIds, setClearedDrillIds] = useState<string[]>([]);
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
-  const [currentMistakeIndex, setCurrentMistakeIndex] = useState(0);
   const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(() => {
     return (
@@ -85,7 +84,6 @@ export function GrammarMissionPlayer({
   const currentStep = sessionSteps[currentStepIndex] ?? sessionSteps[0];
   const progressValue = ((currentStepIndex + 1) / sessionSteps.length) * 100;
   const currentExample = sessionExamples[currentExampleIndex] ?? null;
-  const currentMistake = lesson.commonMistakes[currentMistakeIndex] ?? null;
   const currentDrill = sessionDrills[currentDrillIndex] ?? null;
   const completedDrillCount = Math.min(clearedDrillIds.length, sessionDrills.length);
 
@@ -100,12 +98,6 @@ export function GrammarMissionPlayer({
   useEffect(() => {
     setCurrentExampleIndex((index) => Math.min(index, Math.max(0, sessionExamples.length - 1)));
   }, [sessionExamples.length]);
-
-  useEffect(() => {
-    setCurrentMistakeIndex((index) =>
-      Math.min(index, Math.max(0, lesson.commonMistakes.length - 1)),
-    );
-  }, [lesson.commonMistakes.length]);
 
   useEffect(() => {
     setCurrentDrillIndex((index) => Math.min(index, Math.max(0, sessionDrills.length - 1)));
@@ -245,8 +237,6 @@ export function GrammarMissionPlayer({
         description={getStepDescription(currentStep.id, {
           exampleCount: sessionExamples.length,
           currentExampleIndex,
-          mistakeCount: lesson.commonMistakes.length,
-          currentMistakeIndex,
           drillCount: sessionDrills.length,
           currentDrillIndex,
         })}
@@ -311,50 +301,23 @@ export function GrammarMissionPlayer({
             )
           ) : null}
 
-          {currentStep.id === 'mistakes' ? (
-            currentMistake ? (
-              <div className="mission-focus-card">
-                <p className="mission-focus-card__eyebrow">
-                  Guardrail {currentMistakeIndex + 1} of {lesson.commonMistakes.length}
-                </p>
-                <article className="mission-mistake-card mission-mistake-card--focus">
-                  {currentMistake}
-                </article>
-                {lesson.commonMistakes.length > 1 ? (
-                  <div className="mission-inline-actions">
-                    <button
-                      type="button"
-                      className="mission-button mission-button--secondary"
-                      onClick={() =>
-                        setCurrentMistakeIndex((index) => Math.max(0, index - 1))
-                      }
-                      disabled={currentMistakeIndex === 0}
-                    >
-                      Previous note
-                    </button>
-                    <button
-                      type="button"
-                      className="mission-button"
-                      onClick={() =>
-                        setCurrentMistakeIndex((index) =>
-                          Math.min(lesson.commonMistakes.length - 1, index + 1),
-                        )
-                      }
-                      disabled={currentMistakeIndex >= lesson.commonMistakes.length - 1}
-                    >
-                      Next note
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <p className="mission-session-details__body">No common mistakes are listed for this lesson yet.</p>
-            )
-          ) : null}
-
           {currentStep.id === 'drills' ? (
             currentDrill ? (
               <>
+                {lesson.commonMistakes.length > 0 ? (
+                  <details className="mission-guardrails-details">
+                    <summary className="mission-session-details__summary">
+                      Common mistakes
+                    </summary>
+                    <ul className="mission-mistakes-list mission-mistakes-list--compact">
+                      {lesson.commonMistakes.map((mistake) => (
+                        <li key={mistake} className="mission-mistake-card">
+                          {mistake}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
                 <DrillCard
                   key={currentDrill.id}
                   missionId={mission.id}
@@ -789,12 +752,6 @@ function getMissionSteps(
       description: 'See the pattern in short, useful beginner lines.',
     },
     {
-      id: 'mistakes',
-      label: 'Mistakes',
-      title: 'Common mistakes',
-      description: 'Use the confusion points as quick guardrails.',
-    },
-    {
       id: 'drills',
       label: 'Drills',
       title: 'Drills',
@@ -808,15 +765,11 @@ function getStepDescription(
   {
     exampleCount,
     currentExampleIndex,
-    mistakeCount,
-    currentMistakeIndex,
     drillCount,
     currentDrillIndex,
   }: {
     exampleCount: number;
     currentExampleIndex: number;
-    mistakeCount: number;
-    currentMistakeIndex: number;
     drillCount: number;
     currentDrillIndex: number;
   },
@@ -828,10 +781,6 @@ function getStepDescription(
       return exampleCount > 0
         ? `Example ${currentExampleIndex + 1} of ${exampleCount}`
         : 'No examples linked yet.';
-    case 'mistakes':
-      return mistakeCount > 0
-        ? `Guardrail ${currentMistakeIndex + 1} of ${mistakeCount}`
-        : 'No common mistakes listed yet.';
     case 'drills':
       return drillCount > 0
         ? `One active drill at a time · ${currentDrillIndex + 1} of ${drillCount}`

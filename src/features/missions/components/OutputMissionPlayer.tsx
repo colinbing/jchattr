@@ -182,6 +182,7 @@ export function OutputMissionPlayer({
         <OutputTaskCard
           missionId={mission.id}
           task={currentTask}
+          relatedVocab={relatedVocab}
           response={currentResponse}
           feedback={currentFeedback}
           currentTaskIndex={currentTaskIndex}
@@ -244,6 +245,7 @@ export function OutputMissionPlayer({
 type OutputTaskCardProps = {
   missionId: string;
   task: OutputTask;
+  relatedVocab: VocabItem[];
   response: string;
   feedback: OutputEvaluationResult | null;
   currentTaskIndex: number;
@@ -261,6 +263,7 @@ type OutputTaskCardProps = {
 function OutputTaskCard({
   missionId,
   task,
+  relatedVocab,
   response,
   feedback,
   currentTaskIndex,
@@ -274,6 +277,11 @@ function OutputTaskCard({
   onCleared,
   onAdvance,
 }: OutputTaskCardProps) {
+  const answerPieces = useMemo(
+    () => getOutputAnswerPieces(task, relatedVocab),
+    [relatedVocab, task],
+  );
+
   function submitAnswer() {
     if (!response.trim()) {
       return;
@@ -313,6 +321,25 @@ function OutputTaskCard({
           <summary className="review-support-details__summary">Hint</summary>
           <p className="mission-copy-block__body">{task.hint}</p>
         </details>
+      ) : null}
+
+      {answerPieces.length > 0 ? (
+        <div className="output-piece-strip" aria-label="Answer pieces">
+          <p className="mission-copy-block__eyebrow">Pieces</p>
+          <div className="output-piece-strip__items">
+            {answerPieces.map((piece, pieceIndex) => (
+              <article
+                key={`${task.id}-${piece.text}-${pieceIndex}`}
+                className="output-piece-chip"
+              >
+                <p className="output-piece-chip__text">{piece.text}</p>
+                {piece.meaning ? (
+                  <p className="output-piece-chip__meaning">{piece.meaning}</p>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </div>
       ) : null}
 
       <KanaAssistTextarea
@@ -370,4 +397,35 @@ function OutputTaskCard({
 
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {
   return targetSkill.replace(/-/g, ' ');
+}
+
+type OutputAnswerPiece = {
+  text: string;
+  meaning?: string;
+};
+
+const OUTPUT_TOKEN_MEANINGS = new Map<string, string>([
+  ['は', 'topic'],
+  ['が', 'subject'],
+  ['を', 'object'],
+  ['に', 'destination/time'],
+  ['で', 'action place'],
+  ['の', 'linker'],
+  ['か', 'question'],
+  ['です', 'polite ending'],
+  ['ます', 'polite verb ending'],
+  ['たなか', 'name'],
+]);
+
+function getOutputAnswerPieces(task: OutputTask, relatedVocab: VocabItem[]) {
+  const tokenPattern = task.evaluation?.tokenPatterns?.[0] ?? [];
+
+  return tokenPattern.map<OutputAnswerPiece>((token) => {
+    const vocabMatch = relatedVocab.find((item) => item.kana === token || item.kanji === token);
+
+    return {
+      text: token,
+      meaning: vocabMatch?.meaning ?? OUTPUT_TOKEN_MEANINGS.get(token),
+    };
+  });
 }

@@ -4,9 +4,9 @@ export const listeningItems = [
   {
     id: 'listening-self-intro',
     audioRef: '/audio/listening/listening-self-intro.mp3',
-    transcript: 'わたしはコリンです。',
-    reading: 'わたしはコリンです。',
-    translation: 'I am Colin.',
+    transcript: 'わたしはたなかです。',
+    reading: 'わたしはたなかです。',
+    translation: 'I am Tanaka.',
     focusPoint: 'Hear the topic marker は and the polite ending です.',
     difficulty: 'easy',
   },

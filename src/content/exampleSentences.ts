@@ -3,9 +3,9 @@ import type { ExampleSentence } from '../lib/content/types';
 export const exampleSentences = [
   {
     id: 'ex-colin-desu',
-    japanese: 'わたしはコリンです。',
-    reading: 'わたしはコリンです。',
-    english: 'I am Colin.',
+    japanese: 'わたしはたなかです。',
+    reading: 'わたしはたなかです。',
+    english: 'I am Tanaka.',
     grammarTags: ['topic', 'copula', 'self-introduction'],
     vocabTags: ['self', 'name'],
   },

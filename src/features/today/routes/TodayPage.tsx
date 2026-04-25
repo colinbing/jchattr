@@ -75,6 +75,7 @@ export function TodayPage() {
     recommendations.find((recommendation) => recommendation.kind === 'review') ?? null;
   const planState = resolveTodayPlanState({
     snapshot: todayPlanSnapshot,
+    starterContent,
     liveCoreRecommendations,
     liveRecommendationByKey,
     liveReviewRecommendation,
@@ -329,6 +330,7 @@ type TodayPlanState = {
 
 type ResolveTodayPlanStateParams = {
   snapshot: TodayPlanSnapshot;
+  starterContent: StarterContent;
   liveCoreRecommendations: TodayRecommendation[];
   liveRecommendationByKey: Map<string, TodayRecommendation>;
   liveReviewRecommendation: TodayRecommendation | null;
@@ -357,6 +359,7 @@ function CompletionRecap({ items }: { items: CompletionRecapItem[] }) {
 
 function resolveTodayPlanState({
   snapshot,
+  starterContent,
   liveCoreRecommendations,
   liveRecommendationByKey,
   liveReviewRecommendation,
@@ -379,22 +382,20 @@ function resolveTodayPlanState({
     liveReviewRecommendation && !hasReviewItem
       ? [createTodayPlanSnapshotItem(liveReviewRecommendation)]
       : [];
-  const planItems = [...baseItems, ...reviewPlanItem];
+  const planItems = [...baseItems, ...reviewPlanItem].map((item) => {
+    return hydrateTodayPlanItem(item, liveRecommendationByKey, starterContent);
+  });
   const summaryItems = planItems.map((item) => {
-    const liveRecommendation = liveRecommendationByKey.get(item.key);
-    const displayItem = liveRecommendation
-      ? createTodayPlanSnapshotItem(liveRecommendation)
-      : item;
     const isCompleted = isTodayPlanItemComplete(
-      displayItem,
+      item,
       missionProgress,
       liveReviewRecommendation,
     );
 
     return {
-      id: displayItem.key,
-      title: displayItem.title,
-      meta: formatTodayPlanItemMeta(displayItem, isCompleted),
+      id: item.key,
+      title: item.title,
+      meta: formatTodayPlanItemMeta(item, isCompleted),
       status: isCompleted ? 'done' : 'waiting',
     } satisfies SessionSummaryItem;
   });
@@ -456,6 +457,36 @@ function resolveTodayPlanState({
     remainingCount: remainingPlanItems.length + extraContinueCount,
     remainingMinutes,
     primaryAction,
+  };
+}
+
+function hydrateTodayPlanItem(
+  item: TodayPlanSnapshotItem,
+  liveRecommendationByKey: Map<string, TodayRecommendation>,
+  starterContent: StarterContent,
+) {
+  const liveRecommendation = liveRecommendationByKey.get(item.key);
+
+  if (liveRecommendation) {
+    return createTodayPlanSnapshotItem(liveRecommendation);
+  }
+
+  if (item.kind !== 'mission' || !item.missionId) {
+    return item;
+  }
+
+  const mission = starterContent.byId.missions[item.missionId];
+
+  if (!mission) {
+    return item;
+  }
+
+  return {
+    ...item,
+    title: mission.title,
+    minutes: mission.estimatedMinutes,
+    missionType: mission.type,
+    targetSkill: mission.targetSkill,
   };
 }
 

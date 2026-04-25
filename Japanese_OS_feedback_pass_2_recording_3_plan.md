@@ -59,7 +59,7 @@ Not:
 
 ## Working implementation tracker
 
-Status: active intake with V2.0 through V2.3 addressed.
+Status: active intake with V2.0 through V2.4 addressed.
 
 This pass is now the active Phase 4 feedback source. The goal is to turn the latest mobile-use feedback into bounded implementation slices without drifting into a full scheduler, new backend, new mission system, or broad content expansion.
 
@@ -83,7 +83,7 @@ The current repo shape supports a narrow first implementation path:
 | V2.1 finite Today lesson shell | Addressed | Today now presents one finite session-scoped core lesson card with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below. | No date-keyed daily-plan persistence; no new scheduler; no recommendation selection change. |
 | V2.2 review loop containment | Addressed | Review now separates queue landing, active retry, and post-batch handoff states; active retries use focused chrome and clearer local navigation; cleared Review return copy no longer implies Today should require another Review step. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
 | V2.3 early trust fixes | Addressed | Listening choices now use deterministic per-item/context shuffling with closer distractor scoring, output feedback no longer exposes internal accepted-pattern language, reorder prompts hide canonical chunk order and split target particles for relevant `に` lessons, and the narrow output-hint/progress spacing bugs are tightened. | No new mission type; no runtime AI distractor generation; no broad content rewrite. |
-| V2.4 early output and grammar pedagogy | Accepted for design, not first code slice | Audit early output prerequisites, consider word/chunk banks or stronger hints, and demote common mistakes from required pre-drill reading into contextual support. | No full vocab lesson system or new progress schema unless a later decision explicitly approves it. |
+| V2.4 early output and grammar pedagogy | Addressed | Early output tasks now show visible task-local answer pieces from existing token patterns and linked vocab, and grammar Common Mistakes moved out of the required section flow into optional collapsed drill support. | No full vocab lesson system, new mission type, new schema, or new progress schema. |
 | V2.5 content cleanup | Accepted as a small content slice | Replace hardcoded Colin examples with neutral/Japanese placeholder content and revisit early mission estimated minutes. | No broad personalization engine; no large content expansion. |
 | V2.6 stable daily session model | Deferred | Persist a date-keyed daily plan if the live recommendation model still feels feed-like after V2.1. | Not part of the first implementation pass. |
 | V2.7 larger learning-system upgrades | Deferred | SRS intervals, richer proficiency spacing, new mission structures, larger pack/content additions, and deeper skill reporting. | Do not fold into mobile daily-loop cleanup. |
@@ -273,6 +273,8 @@ Likely fix:
 ---
 
 ### 7. Output mission asks for production before enough input/scaffolding
+
+Status: Addressed in V2.4 for the early output path without new schemas. Output tasks now render a compact task-local `Pieces` strip from existing `evaluation.tokenPatterns` and linked vocabulary, with fallback labels for particles/endings; the first output mission now also links the existing `にほんご` vocab item it already requires.
 
 User struggled with:
 - “I study Japanese at home.”
@@ -632,6 +634,8 @@ Investigation prompt:
 
 ### K. Common mistakes should be moved from pre-drill lesson page into feedback
 
+Status: Addressed in V2.4 for the required grammar flow. Common Mistakes is no longer its own required mission section before drills; the same content remains available as an optional collapsed drawer inside the Drills section. Targeted wrong-answer mapping remains a later enhancement.
+
 User strongly questions showing `Common mistakes` before the user has done anything.
 
 Concern:
@@ -804,10 +808,10 @@ Codex should inspect current grammar mission model and propose a minimal path to
 
 ---
 
-## Current Recommended Next Codex Prompt — V2.4
+## Current Recommended Next Codex Prompt — V2.5
 
 ```md
-Implement V2.4 early output and grammar pedagogy. Preserve local-first storage, TypeScript-only code, current schemas, mission types, deterministic recommendation/review selection, and the V2.1/V2.2/V2.3 Today-Review-trust shell. Use a narrow iPhone-like viewport to audit the first output missions and grammar Common Mistakes placement. If the audit confirms friction, implement the smallest high-confidence support improvement using current content and schemas, such as clearer task-local hints or a narrow existing-data chunk/word support surface, and demote/collapse Common Mistakes only if it still interrupts the learner before drills. Keep Colin-specific content cleanup, estimate tuning, new mission types, and date-keyed daily sessions out of this slice unless directly touched. Update BUILD_STATUS.md and Japanese_OS_feedback_plan.md, then run typecheck, build, report:build-status-summary, report:progression-gaps, report:reading-reuse, and git diff --check.
+Implement V2.5 content cleanup. Preserve local-first storage, TypeScript-only code, current schemas, mission types, deterministic recommendation/review selection, and the V2.1-V2.4 Today-Review-trust/pedagogy shell. Use a narrow iPhone-like viewport to audit early grammar, listening, and output missions for hardcoded Colin/developer-specific examples and any early estimate copy that still makes the first loop feel heavier than it is. If the audit confirms friction, replace only the narrow early-flow examples/prompts/answers needed to make the app feel generic, using neutral or Japanese placeholder names compatible with current content and evaluation token patterns. Keep new mission types, date-keyed daily sessions, broader content expansion, and SRS changes out of this slice. Update BUILD_STATUS.md and Japanese_OS_feedback_plan.md, then run typecheck, build, report:build-status-summary, report:progression-gaps, report:reading-reuse, and git diff --check.
 ```
 
 ---

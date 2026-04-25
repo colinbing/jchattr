@@ -25,9 +25,9 @@ export const grammarLessons = [
       {
         id: 'drill-topic-1',
         type: 'multiple-choice',
-        prompt: 'Choose the natural sentence for "I am Colin."',
-        answer: 'わたしはコリンです。',
-        choices: ['わたしをコリンです。', 'わたしはコリンです。', 'コリンはわたしか。'],
+        prompt: 'Choose the natural sentence for "I am Tanaka."',
+        answer: 'わたしはたなかです。',
+        choices: ['わたしをたなかです。', 'わたしはたなかです。', 'たなかはわたしか。'],
       },
       {
         id: 'drill-topic-2',

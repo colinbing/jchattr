@@ -16,7 +16,7 @@ export const missions = [
         'ex-daigakusei-desu',
       ],
     },
-    estimatedMinutes: 7,
+    estimatedMinutes: 4,
   },
   {
     id: 'mission-listening-place-de',
@@ -39,7 +39,7 @@ export const missions = [
         'ex-shokudou-de-koohii-o-nomimasu',
       ],
     },
-    estimatedMinutes: 6,
+    estimatedMinutes: 5,
   },
   {
     id: 'mission-output-daily-lines',
@@ -51,6 +51,7 @@ export const missions = [
       vocabIds: [
         'vocab-watashi',
         'vocab-uchi',
+        'vocab-nihongo',
         'vocab-benkyoushimasu',
         'vocab-kafe',
         'vocab-daigakusei',
@@ -67,18 +68,18 @@ export const missions = [
         'ex-shokudou-de-koohii-o-nomimasu',
       ],
     },
-    estimatedMinutes: 8,
+    estimatedMinutes: 5,
     unlockRules: {
       requiredMissionIds: ['mission-grammar-topic-desu'],
     },
     outputTasks: [
       {
         id: 'output-self-intro',
-        prompt: 'Type a polite self-introduction line: "I am Colin."',
-        acceptableAnswers: ['わたしはコリンです。', 'わたしはコリンです'],
+        prompt: 'Type a polite self-introduction line: "I am Tanaka."',
+        acceptableAnswers: ['わたしはたなかです。', 'わたしはたなかです'],
         hint: 'Use は after the topic and finish with です.',
         evaluation: {
-          tokenPatterns: [['わたし', 'は', 'コリン', 'です']],
+          tokenPatterns: [['わたし', 'は', 'たなか', 'です']],
         },
       },
       {

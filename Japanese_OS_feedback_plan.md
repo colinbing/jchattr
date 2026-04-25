@@ -51,14 +51,15 @@ Current ordering:
 2. Addressed from the Missions chapter-surface density cleanup: the active chapter panel now reaches the next mission faster and distinguishes locked chapters from cleared chapters.
 3. Addressed in the first narrow personalization slice: Today mission cards now explain personal fit using existing local progress, weak points, target skills, and linked grammar tags.
 4. Addressed from the Today personalization-copy sanity pass: incomplete support missions are no longer described as `Light pass` / `short pass` reinforcement.
-5. Active intake: `Japanese_OS_feedback_pass_2_recording_3_plan.md` captures the next concrete mobile-use findings. V2.0 through V2.3 are addressed; continue with the remaining pedagogy/content issues only as bounded V2 slices.
+5. Active intake: `Japanese_OS_feedback_pass_2_recording_3_plan.md` captures the next concrete mobile-use findings. V2.0 through V2.4 are addressed; continue with the remaining content cleanup only as bounded V2 slices.
 
 Pass 2 working order:
 1. `V2.0 mobile audit and code-path confirmation` — Addressed. The audit confirmed the finite-Today/feed problem, duplicate Today sections, post-completion Mission Path distraction, Review-loop containment risk, and early trust/pedagogy issues for later slices.
 2. `V2.1 finite Today lesson shell` — Addressed. Today now snapshots the current core lesson for the browser session, shows remaining item count/time in the top card, marks completed core items, adds a Today Complete state after urgent Review clears, moves live recommendations into optional bonus, and removes Mission Path from Today-flow handoffs without date-keyed persistence.
 3. `V2.2 review loop containment` — Addressed. Review now separates queue landing, active retry, and post-batch states; active retries hide mobile bottom nav and keep local Today navigation; cleared Review copy explicitly says Today will not require Review again unless a new miss is saved.
 4. `V2.3 early trust fixes` — Addressed. Listening choices now shuffle with deterministic per-item/context seeds and prefer closer distractors, reorder drills hide canonical chunk order and split target particles for the relevant `に` lessons, output feedback uses learner-facing copy, and the narrow output-hint/progress spacing defects are tightened.
-5. `V2.4+ pedagogy/content follow-ups` — Accepted/deferred by size. Handle early output scaffolding, common-mistake placement, Colin-specific content, estimates, and any larger daily-session/SRS/content-model decisions as separate slices.
+5. `V2.4 early output and grammar pedagogy` — Addressed. Early output tasks now show task-local answer pieces derived from existing token patterns and linked vocab, the first output mission links the existing `にほんご` vocab support it already requires, and Common Mistakes is no longer a required grammar section before drills; it remains available as an optional collapsed drawer inside Drills.
+6. `V2.5+ content/model follow-ups` — Accepted/deferred by size. Handle Colin-specific content and estimate cleanup as a narrow content pass, and keep larger daily-session/SRS/content-model decisions as separate deferred slices.
 
 ---
 
@@ -601,20 +602,19 @@ Triage:
 
 ### Status
 
-Pass 2 is now the active feedback source. V2.0, V2.1, V2.2, and V2.3 are addressed.
+Pass 2 is now the active feedback source. V2.0, V2.1, V2.2, V2.3, and V2.4 are addressed.
 
-The next step should move into the remaining pedagogy/content follow-ups only if user testing still shows friction after the V2.3 trust fixes.
+The next step should move into the remaining content cleanup only if user testing still supports it after the V2.4 pedagogy fixes.
 
 ### Scope for the next accepted slice
 
 Include:
 - Start from `Japanese_OS_feedback_pass_2_recording_3_plan.md`.
-- Implement the V2.4 early output and grammar pedagogy slice in a mobile viewport.
-- Audit whether early output tasks still ask for production before enough input/scaffolding.
-- Decide the smallest local-first improvement for early output support, such as clearer task-local hints or a narrow chunk/word bank if existing schemas can support it cleanly.
-- Audit whether Common Mistakes still appears too early in grammar flow, and demote/collapse it only if it remains noisy after V2.1/V2.3.
+- Implement the V2.5 content cleanup slice in a mobile viewport.
+- Replace hardcoded Colin examples with neutral/Japanese placeholder content only where early output/grammar flow still feels too personalized to the developer.
+- Revisit early mission estimate copy only if the current finite Today shell still overstates effort.
 - Keep deterministic recommendation selection readable and local-first.
-- Prefer copy, hinting, and presentation clarity before adding new stored semantics.
+- Prefer content/copy clarity before adding new stored semantics.
 
 Exclude:
 - Full Today redesign or a persistent daily scheduler.
@@ -635,26 +635,24 @@ Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, `BUILD_STATUS.md`, `J
 Preserve the current architecture, local-first storage, TypeScript-only code, mission schemas, mission types, and deterministic recommendation/review selection.
 
 Task:
-Run and implement the V2.4 early output and grammar pedagogy slice.
+Run and implement the V2.5 content cleanup slice.
 
 Scope:
-1. Audit the first output missions on iPhone-width screens and identify where they still ask for production before enough input/scaffolding.
-2. Implement the smallest high-confidence support improvement using current local content and schemas, such as clearer task-local hints or a narrow chunk/word bank only if it fits existing data cleanly.
-3. Audit the grammar Common Mistakes placement after the recent compact mission-flow changes, and demote or collapse it only if it still interrupts the learner before drills.
-4. Keep any Colin-specific content or estimate cleanup as separate V2.5 work unless it is directly touched by this slice.
+1. Audit the early missions on iPhone-width screens for hardcoded Colin/developer-specific examples that make the product feel less reusable.
+2. Replace only the narrow early-flow examples/prompts/answers needed to make the app feel generic, using neutral or Japanese placeholder names already compatible with the current schemas.
+3. Revisit early mission estimate copy only if the finite Today shell still makes the first loop feel longer than it is.
+4. Keep new mission types, new scheduling semantics, and broad content rewrites out of this slice.
 
 Manual flow:
 - Use a narrow iPhone-like viewport.
-- Reset local progress if needed for first-run behavior.
-- Complete the first grammar mission through drills.
-- Open the first output mission from Today or Missions.
+- Open the first grammar, listening, and output missions from Today or Missions.
+- Confirm the first output mission still has task-local pieces after any content rename.
 - Attempt one wrong output answer and one supported/correct answer.
-- Confirm hints/support reduce guessing without turning the task into a new mission type.
 - Return to Today and confirm the finite Today shell still behaves as expected.
 - Check console errors.
 
 Output:
-Summarize files changed, behavior changes, docs changed, validation results, manual QA result, and the recommended V2.5 prompt.
+Summarize files changed, behavior changes, docs changed, validation results, manual QA result, and the recommended next prompt.
 ```
 
 ---
