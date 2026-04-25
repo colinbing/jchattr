@@ -321,6 +321,22 @@ Acceptance criteria:
 - Produce a short implementation note in this file or `BUILD_STATUS.md`.
 - No app behavior change required.
 
+Implementation notes:
+
+- Current shared behavior lives in `src/features/missions/lib/missionSession.ts`.
+- `selectMissionSessionItems(items, sessionMode, rotationSeed, maxItemCount)` already keeps first-pass missions unchanged and turns reinforce mode into a deterministic contiguous rotated subset when the source list is larger than the cap.
+- Rotation seed is each mission's local `completionCount`, captured at mission mount. A completed reinforce pass increments the same mission completion count through `useMissionAutoComplete`, so the next reinforce pass rotates again without adding state.
+- Current per-player reinforce caps:
+  - Grammar: 1 example, 2 drills; intro step is skipped when reinforce content exists.
+  - Listening: 2 listening items, 2 support examples; prep still appears when support examples exist.
+  - Output: 2 output tasks, 2 support examples, 4 vocab chips.
+  - Reading: 2 reading checks.
+- Review weak-point behavior is separate in `src/features/review/lib/reviewBatch.ts` and does not use mission `sessionMode`, so replay variants can avoid changing Review.
+- Smallest schema-free implementation for 2B/2C: replace or wrap the existing selector with a named deterministic replay-variant helper that returns both selected items and lightweight metadata (`variantId`, `startIndex`, `itemCount`, `sourceCount`). Keep existing caps and source arrays. Use metadata only for copy/audit at first.
+- For 2B, apply the helper to grammar drills/examples and listening checks/support examples, then verify first-pass item counts remain unchanged and Review still resolves from weak points.
+- For 2C, apply the same helper to output tasks/support and reading checks, then audit Today/reinforce copy so it describes a short rotated subset without implying new content was generated.
+- Defer schema work until we need authored alternate examples, difficulty bands, or hand-curated chapter recombination groups. Current content has enough ordered examples/checks/tasks to get useful variation through rotation alone.
+
 Next best prompt:
 
 ```text
@@ -336,6 +352,16 @@ Acceptance criteria:
 - First-pass missions remain unchanged.
 - Review weak-point behavior remains unchanged.
 
+Implementation notes:
+
+- Added `selectMissionReplayVariant` in `src/features/missions/lib/missionSession.ts`.
+- The helper preserves first-pass behavior by returning the full source list outside reinforce mode.
+- Reinforce mode uses the existing local mission `completionCount` seed to rotate a capped contiguous subset and now returns metadata: `variantId`, `startIndex`, `itemCount`, `sourceCount`, and `isSubset`.
+- `selectMissionSessionItems` remains as a compatibility wrapper for output/reading until Feature 2C.
+- Grammar now uses replay variants for lesson examples and drills, keeping the existing caps of 1 example and 2 drills.
+- Listening now uses replay variants for listening items and support examples, keeping the existing caps of 2 lines and 2 support examples.
+- Review remains unchanged because Review resolves weak points through `src/features/review/lib/reviewBatch.ts`, not mission `sessionMode`.
+
 Next best prompt:
 
 ```text
@@ -349,6 +375,14 @@ Acceptance criteria:
 - Reinforce output missions rotate task subsets where possible.
 - Reinforce reading missions rotate checks where possible.
 - Today's copy accurately describes short reinforcement.
+
+Implementation notes:
+
+- Output reinforce mode now uses `selectMissionReplayVariant` for prompts, support examples, and vocab chips while keeping the existing caps of 2 prompts, 2 examples, and 4 vocab items.
+- Reading reinforce mode now uses `selectMissionReplayVariant` for reading checks while keeping the existing cap of 2 checks.
+- Both players expose replay metadata in Mission details with the same `Replay` row format used by grammar/listening.
+- Today reinforcement reasons now describe these as `short rotated pass` / `short rotated follow-up pass` so the copy matches derived subsets instead of implying authored alternate content.
+- First-pass missions still receive full source lists, and Review weak-point batching remains isolated from mission replay variants.
 
 Next best prompt:
 
@@ -887,10 +921,10 @@ Use these states:
 | 1A Capstone data model | Verified | Added capstone story/line/check types, schemas, loader relation checks, report counts, and one minimal chapter 1 fixture. Verified with typecheck, build, and content reports. |
 | 1B Capstone player V1 | Verified | Added a mobile-first capstone route/player, local capstone progress store, Missions chapter card entry, and Settings reset support. Today recommendations remain unchanged. Verified with typecheck, build, and content reports. |
 | 1C First chapter capstone content | Verified | Expanded chapter 1 capstone to 11 existing pack 1-5 lines and 4 checks. Uses sourceExampleIds only from covered content, with no new Japanese lines or new grammar. Verified with typecheck, build, and content reports. |
-| 1D Capstone recommendation | Not started |  |
-| 2A Replay variant audit | Not started |  |
-| 2B Grammar/listening replay variants | Not started |  |
-| 2C Output/reading replay variants | Not started |  |
+| 1D Capstone recommendation | Verified | Today now includes incomplete capstones once their source chapter packs are complete, skips capstone insertion during urgent Review pressure, and hydrates/summarizes capstone items through the finite daily plan snapshot. Verified with typecheck, build, logic smoke checks, and content reports. |
+| 2A Replay variant audit | Verified | Audited reinforce mode across grammar, listening, output, and reading players. Existing deterministic subset rotation can be formalized without schema changes; Review remains separate from mission session mode. No app behavior changed. |
+| 2B Grammar/listening replay variants | Verified | Formalized deterministic replay variants with metadata, wired grammar and listening reinforce mode to the helper, preserved first-pass behavior and Review isolation, and kept output/reading on the compatibility selector for 2C. Verified with typecheck, build, helper smoke check, and standard content reports. |
+| 2C Output/reading replay variants | Verified | Wired output and reading reinforce mode to replay-variant metadata, preserved full first-pass lists and Review isolation, and updated Today reinforcement copy to describe short rotated passes. Verified with typecheck, build, helper smoke check, and standard content reports. |
 | 2D Chapter recombination pass | Not started | Depends on capstones |
 | 3A Feedback taxonomy | Not started |  |
 | 3B Grammar mistake drawer | Not started |  |

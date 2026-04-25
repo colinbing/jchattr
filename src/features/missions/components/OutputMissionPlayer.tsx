@@ -22,7 +22,8 @@ import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import {
   buildMissionCompletionRouteState,
-  selectMissionSessionItems,
+  formatMissionReplayVariant,
+  selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
@@ -49,18 +50,21 @@ export function OutputMissionPlayer({
   const [sessionRotation] = useState(() => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount;
   });
-  const sessionTasks = useMemo(
-    () => selectMissionSessionItems(tasks, sessionMode, sessionRotation, 2),
+  const sessionTaskVariant = useMemo(
+    () => selectMissionReplayVariant(tasks, sessionMode, sessionRotation, 2),
     [sessionMode, sessionRotation, tasks],
   );
-  const sessionExamples = useMemo(
-    () => selectMissionSessionItems(relatedExamples, sessionMode, sessionRotation, 2),
+  const sessionExampleVariant = useMemo(
+    () => selectMissionReplayVariant(relatedExamples, sessionMode, sessionRotation, 2),
     [relatedExamples, sessionMode, sessionRotation],
   );
-  const sessionVocab = useMemo(
-    () => selectMissionSessionItems(relatedVocab, sessionMode, sessionRotation, 4),
+  const sessionVocabVariant = useMemo(
+    () => selectMissionReplayVariant(relatedVocab, sessionMode, sessionRotation, 4),
     [relatedVocab, sessionMode, sessionRotation],
   );
+  const sessionTasks = sessionTaskVariant.items;
+  const sessionExamples = sessionExampleVariant.items;
+  const sessionVocab = sessionVocabVariant.items;
   const [clearedTaskIds, setClearedTaskIds] = useState<string[]>([]);
   const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
@@ -176,6 +180,12 @@ export function OutputMissionPlayer({
               <dt>Support</dt>
               <dd>{sessionExamples.length + sessionVocab.length}</dd>
             </div>
+            {sessionMode === 'reinforce' ? (
+              <div>
+                <dt>Replay</dt>
+                <dd>{formatMissionReplayVariant(sessionTaskVariant.meta, 'prompt')}</dd>
+              </div>
+            ) : null}
           </dl>
         </details>
 

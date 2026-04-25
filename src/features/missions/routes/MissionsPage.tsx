@@ -5,6 +5,7 @@ import {
   getMissionProgressEntry,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
+import { useCapstoneProgress } from '../../../lib/progress/capstoneProgress';
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import { getWeakPointList, useWeakPoints } from '../../../lib/progress/weakPoints';
 import { MissionLibraryCard, type MissionLibraryCardData } from '../components/MissionLibraryCard';
@@ -21,6 +22,7 @@ export function MissionsPage() {
   const navigate = useNavigate();
   const starterContent = getStarterContent();
   const missionProgress = useMissionProgress();
+  const capstoneProgress = useCapstoneProgress();
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const recommendations = deriveTodayRecommendations(
@@ -28,6 +30,7 @@ export function MissionsPage() {
     missionProgress,
     weakPoints,
     reviewLoopProgress,
+    capstoneProgress,
   );
   const reviewRecommendation =
     recommendations.find((recommendation) => recommendation.kind === 'review') ?? null;

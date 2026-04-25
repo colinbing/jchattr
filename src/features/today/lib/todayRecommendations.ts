@@ -1,8 +1,13 @@
-import type { Mission, StarterContent } from '../../../lib/content/types';
+import { contentPacks } from '../../../content/contentPacks';
+import type { CapstoneStory, Mission, StarterContent } from '../../../lib/content/types';
 import {
   getMissionProgressEntry,
   type MissionProgressRecord,
 } from '../../../lib/progress/missionProgress';
+import {
+  getCapstoneProgressEntry,
+  type CapstoneProgressRecord,
+} from '../../../lib/progress/capstoneProgress';
 import type { ReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import {
   type WeakPoint,
@@ -42,20 +47,36 @@ export type TodayRecommendation =
       mission: Mission;
       sessionMode: MissionSessionMode;
       personalFocus: string;
+    }
+  | {
+      id: string;
+      kind: 'capstone';
+      slotLabel: string;
+      title: string;
+      reason: string;
+      ctaLabel: string;
+      to: string;
+      capstoneStory: CapstoneStory;
+      lineCount: number;
+      checkCount: number;
+      estimatedMinutes: number;
+      personalFocus: string;
     };
 
 // Keep the heuristics intentionally small and readable:
 // 1. Recommend Review first when there are unresolved weak points.
 // 2. Mark review as urgent when weak points are fresh, repeated, or numerous.
 // 3. Recommend the next unlocked incomplete mission in starter order.
-// 4. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
-// 5. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
-// 6. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
+// 4. When a chapter is cleared, add its capstone as a closeout only if Review is not urgent.
+// 5. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
+// 6. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
+// 7. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
 export function deriveTodayRecommendations(
   starterContent: StarterContent,
   missionProgress: MissionProgressRecord,
   weakPoints: WeakPointStore,
   reviewLoopProgress: ReviewLoopProgress,
+  capstoneProgress?: CapstoneProgressRecord,
   limit = TODAY_RECOMMENDATION_LIMIT,
 ): TodayRecommendation[] {
   const recommendations: TodayRecommendation[] = [];
@@ -109,6 +130,17 @@ export function deriveTodayRecommendations(
       personalFocus: nextMissionPersonalization.focus,
     });
     selectedMissionIds.add(nextMission.id);
+  }
+
+  const capstoneRecommendation = getCapstoneRecommendation(
+    starterContent,
+    missionProgress,
+    capstoneProgress,
+    reviewAwareness,
+  );
+
+  if (capstoneRecommendation) {
+    recommendations.push(capstoneRecommendation);
   }
 
   const supportMission = selectSupportMission(
@@ -270,6 +302,85 @@ function getReviewRecommendation(
     weakPointCount: weakPointList.length,
     batchSize: reviewBatch.length,
   };
+}
+
+function getCapstoneRecommendation(
+  starterContent: StarterContent,
+  missionProgress: MissionProgressRecord,
+  capstoneProgress: CapstoneProgressRecord | undefined,
+  reviewAwareness: ReviewAwareness,
+): TodayRecommendation | null {
+  if (!capstoneProgress || reviewAwareness.isUrgent) {
+    return null;
+  }
+
+  const capstoneStory = starterContent.capstoneStories.find((story) => {
+    const progressEntry = getCapstoneProgressEntry(capstoneProgress, story.id);
+    const sourceMissionIds = getCapstoneSourceMissionIds(story);
+
+    return (
+      !progressEntry.isCompleted &&
+      sourceMissionIds.length > 0 &&
+      sourceMissionIds.every((missionId) => {
+        return getMissionProgressEntry(missionProgress, missionId).isCompleted;
+      })
+    );
+  });
+
+  if (!capstoneStory) {
+    return null;
+  }
+
+  const sourcePackLabel = formatCapstoneSourcePackLabel(capstoneStory.sourcePackIds);
+  const lineCount = capstoneStory.lineIds.length;
+  const checkCount = capstoneStory.checkIds.length;
+
+  return {
+    id: capstoneStory.id,
+    kind: 'capstone',
+    slotLabel: 'Chapter closeout',
+    title: capstoneStory.title,
+    reason: `${sourcePackLabel} ${
+      capstoneStory.sourcePackIds.length === 1 ? 'is' : 'are'
+    } clear. Wrap the chapter with one short story built from lines you have already practiced.`,
+    ctaLabel: 'Read capstone',
+    to: `/capstone/${capstoneStory.id}`,
+    capstoneStory,
+    lineCount,
+    checkCount,
+    estimatedMinutes: capstoneStory.estimatedMinutes,
+    personalFocus: `${lineCount} known-line story with ${checkCount} quick comprehension check${
+      checkCount === 1 ? '' : 's'
+    }.`,
+  };
+}
+
+function getCapstoneSourceMissionIds(story: CapstoneStory) {
+  const sourcePackIds = new Set(story.sourcePackIds);
+
+  return Array.from(
+    new Set(
+      contentPacks
+        .filter((pack) => sourcePackIds.has(pack.packNumber))
+        .flatMap((pack) => pack.missionIds),
+    ),
+  );
+}
+
+function formatCapstoneSourcePackLabel(sourcePackIds: number[]) {
+  if (sourcePackIds.length === 0) {
+    return 'The chapter packs';
+  }
+
+  const sortedPackIds = [...sourcePackIds].sort((left, right) => left - right);
+  const firstPackId = sortedPackIds[0];
+  const lastPackId = sortedPackIds[sortedPackIds.length - 1];
+
+  if (firstPackId === lastPackId) {
+    return `Pack ${firstPackId}`;
+  }
+
+  return `Packs ${firstPackId}-${lastPackId}`;
 }
 
 type ReviewAwareness = {
@@ -627,17 +738,17 @@ function buildReinforcementReason(
 
     if (relationAnchor?.source === 'next-step') {
       return relationSummary.targetSkillMatches && relationSummary.sharedTags.length > 0
-        ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it warms up the same lane as your next mission.`
+        ? `This short rotated pass stays on ${formatTargetSkill(mission.targetSkill)} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it warms up the same lane as your next mission.`
         : relationSummary.targetSkillMatches
-          ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)}, so it reinforces the same skill lane as your next mission without replaying it.`
-          : `This short pass overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same grammar lane as your next mission without replaying it.`;
+          ? `This short rotated pass stays on ${formatTargetSkill(mission.targetSkill)}, so it reinforces the same skill lane as your next mission without replaying the full mission.`
+          : `This short rotated pass overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same grammar lane as your next mission without replaying the full mission.`;
     }
 
     return relationSummary.targetSkillMatches && relationSummary.sharedTags.length > 0
-      ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same weak-point lane without replaying the mission that created it.`
+      ? `This short rotated pass stays on ${formatTargetSkill(mission.targetSkill)} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same weak-point lane without replaying the mission that created it.`
       : relationSummary.targetSkillMatches
-        ? `This short pass stays on ${formatTargetSkill(mission.targetSkill)}, so it reinforces the same weak-point lane without replaying the original mission.`
-        : `This short pass overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same weak-point grammar lane without replaying the original mission.`;
+        ? `This short rotated pass stays on ${formatTargetSkill(mission.targetSkill)}, so it reinforces the same weak-point lane without replaying the original mission.`
+        : `This short rotated pass overlaps ${formatTagList(relationSummary.sharedTags)}, so it reinforces the same weak-point grammar lane without replaying the original mission.`;
   }
 
   if (reviewAwareness.hasRecentReview && !reviewAwareness.isUrgent) {
@@ -645,10 +756,10 @@ function buildReinforcementReason(
   }
 
   if (progress.completionCount <= 1) {
-    return 'You have only cleared this once, so a short alternate follow-up pass should make it stick better.';
+    return 'You have only cleared this once, so a short rotated follow-up pass should make it stick better.';
   }
 
-  return 'This is already in rotation, but it still has a lighter practice count than the rest, so use a short pass instead of replaying the full mission.';
+  return 'This mission has a lighter practice count than the rest, so use a short rotated pass instead of replaying the full mission.';
 }
 
 function deriveReviewAwareness(

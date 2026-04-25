@@ -21,7 +21,8 @@ import {
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import {
   buildMissionCompletionRouteState,
-  selectMissionSessionItems,
+  formatMissionReplayVariant,
+  selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
@@ -48,14 +49,16 @@ export function ListeningMissionPlayer({
   const [sessionRotation] = useState(() => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount;
   });
-  const sessionItems = useMemo(
-    () => selectMissionSessionItems(listeningItems, sessionMode, sessionRotation, 2),
+  const sessionItemVariant = useMemo(
+    () => selectMissionReplayVariant(listeningItems, sessionMode, sessionRotation, 2),
     [listeningItems, sessionMode, sessionRotation],
   );
-  const sessionExamples = useMemo(
-    () => selectMissionSessionItems(relatedExamples, sessionMode, sessionRotation, 2),
+  const sessionExampleVariant = useMemo(
+    () => selectMissionReplayVariant(relatedExamples, sessionMode, sessionRotation, 2),
     [relatedExamples, sessionMode, sessionRotation],
   );
+  const sessionItems = sessionItemVariant.items;
+  const sessionExamples = sessionExampleVariant.items;
   const supportExamples = useMemo(
     () =>
       sessionExamples.map((example) => ({
@@ -160,6 +163,12 @@ export function ListeningMissionPlayer({
               <dt>Support</dt>
               <dd>{supportExamples.length}</dd>
             </div>
+            {sessionMode === 'reinforce' ? (
+              <div>
+                <dt>Replay</dt>
+                <dd>{formatMissionReplayVariant(sessionItemVariant.meta, 'line')}</dd>
+              </div>
+            ) : null}
           </dl>
         </details>
 

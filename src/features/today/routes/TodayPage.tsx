@@ -18,6 +18,10 @@ import {
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
 import {
+  getCapstoneProgressEntry,
+  useCapstoneProgress,
+} from '../../../lib/progress/capstoneProgress';
+import {
   getCurrentStudyDayKey,
   getStudyDayLabel,
   getWeekTrackerDays,
@@ -42,6 +46,7 @@ export function TodayPage() {
   const navigate = useNavigate();
   const starterContent = getStarterContent();
   const missionProgress = useMissionProgress();
+  const capstoneProgress = useCapstoneProgress();
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
@@ -61,6 +66,7 @@ export function TodayPage() {
     missionProgress,
     weakPoints,
     reviewLoopProgress,
+    capstoneProgress,
   );
   const progressOverview = deriveProgressOverview(starterContent, missionProgress, weakPoints);
   const continueMission = resolveContinueMission(
@@ -92,6 +98,7 @@ export function TodayPage() {
     liveRecommendationByKey,
     liveReviewRecommendation,
     missionProgress,
+    capstoneProgress,
     weakPointCount: weakPointList.length,
     continueMission,
   });
@@ -402,6 +409,9 @@ type TodayPlanSnapshotItem = {
   missionType?: Mission['type'];
   targetSkill?: Mission['targetSkill'];
   sessionMode?: 'default' | 'reinforce';
+  capstoneStoryId?: string;
+  capstoneLineCount?: number;
+  capstoneCheckCount?: number;
   batchSize?: number;
 };
 
@@ -422,6 +432,7 @@ type ResolveTodayPlanStateParams = {
   liveRecommendationByKey: Map<string, TodayRecommendation>;
   liveReviewRecommendation: TodayRecommendation | null;
   missionProgress: ReturnType<typeof useMissionProgress>;
+  capstoneProgress: ReturnType<typeof useCapstoneProgress>;
   weakPointCount: number;
   continueMission: ContinueMissionSummary | null;
 };
@@ -451,6 +462,7 @@ function resolveTodayPlanState({
   liveRecommendationByKey,
   liveReviewRecommendation,
   missionProgress,
+  capstoneProgress,
   weakPointCount,
   continueMission,
 }: ResolveTodayPlanStateParams): TodayPlanState {
@@ -458,6 +470,7 @@ function resolveTodayPlanState({
     snapshot,
     liveCoreRecommendations,
     missionProgress,
+    capstoneProgress,
     weakPointCount,
     continueMission,
   })
@@ -476,6 +489,7 @@ function resolveTodayPlanState({
     const isCompleted = isTodayPlanItemComplete(
       item,
       missionProgress,
+      capstoneProgress,
       liveReviewRecommendation,
     );
 
@@ -491,7 +505,12 @@ function resolveTodayPlanState({
         return (
           item.kind === 'mission' &&
           item.missionId === continueMission.mission.id &&
-          !isTodayPlanItemComplete(item, missionProgress, liveReviewRecommendation)
+          !isTodayPlanItemComplete(
+            item,
+            missionProgress,
+            capstoneProgress,
+            liveReviewRecommendation,
+          )
         );
       })
     : -1;
@@ -500,7 +519,12 @@ function resolveTodayPlanState({
   const activeIndex = hasContinuePlanItem ? continuePlanIndex : firstOpenIndex;
   const activeItem = firstOpenIndex >= 0 ? planItems[firstOpenIndex] : null;
   const remainingPlanItems = planItems.filter((item) => {
-    return !isTodayPlanItemComplete(item, missionProgress, liveReviewRecommendation);
+    return !isTodayPlanItemComplete(
+      item,
+      missionProgress,
+      capstoneProgress,
+      liveReviewRecommendation,
+    );
   });
   const shouldPromoteExtraContinue = Boolean(
     continueMission && !hasContinuePlanItem && remainingPlanItems.length > 0,
@@ -561,23 +585,35 @@ function hydrateTodayPlanItem(
     return createTodayPlanSnapshotItem(liveRecommendation);
   }
 
+  if (item.kind === 'capstone' && item.capstoneStoryId) {
+    const capstoneStory = starterContent.byId.capstoneStories[item.capstoneStoryId];
+
+    return capstoneStory
+      ? {
+          ...item,
+          title: capstoneStory.title,
+          minutes: capstoneStory.estimatedMinutes,
+          capstoneLineCount: capstoneStory.lineIds.length,
+          capstoneCheckCount: capstoneStory.checkIds.length,
+        }
+      : item;
+  }
+
   if (item.kind !== 'mission' || !item.missionId) {
     return item;
   }
 
   const mission = starterContent.byId.missions[item.missionId];
 
-  if (!mission) {
-    return item;
-  }
-
-  return {
-    ...item,
-    title: mission.title,
-    minutes: mission.estimatedMinutes,
-    missionType: mission.type,
-    targetSkill: mission.targetSkill,
-  };
+  return mission
+    ? {
+        ...item,
+        title: mission.title,
+        minutes: mission.estimatedMinutes,
+        missionType: mission.type,
+        targetSkill: mission.targetSkill,
+      }
+    : item;
 }
 
 function createTodayPlanSnapshot(recommendations: TodayRecommendation[]): TodayPlanSnapshot {
@@ -601,6 +637,19 @@ function createTodayPlanSnapshotItem(
     };
   }
 
+  if (recommendation.kind === 'capstone') {
+    return {
+      key: getRecommendationKey(recommendation),
+      kind: 'capstone',
+      title: recommendation.title,
+      to: recommendation.to,
+      minutes: recommendation.estimatedMinutes,
+      capstoneStoryId: recommendation.capstoneStory.id,
+      capstoneLineCount: recommendation.lineCount,
+      capstoneCheckCount: recommendation.checkCount,
+    };
+  }
+
   return {
     key: getRecommendationKey(recommendation),
     kind: 'mission',
@@ -618,12 +667,14 @@ function shouldRecreateTodayPlanSnapshot({
   snapshot,
   liveCoreRecommendations,
   missionProgress,
+  capstoneProgress,
   weakPointCount,
   continueMission,
 }: {
   snapshot: TodayPlanSnapshot;
   liveCoreRecommendations: TodayRecommendation[];
   missionProgress: ReturnType<typeof useMissionProgress>;
+  capstoneProgress: ReturnType<typeof useCapstoneProgress>;
   weakPointCount: number;
   continueMission: ContinueMissionSummary | null;
 }) {
@@ -632,6 +683,8 @@ function shouldRecreateTodayPlanSnapshot({
   const hasNoLocalStudyState =
     missionProgress.completedMissionIds.length === 0 &&
     Object.keys(missionProgress.completionCountsByMissionId).length === 0 &&
+    capstoneProgress.completedStoryIds.length === 0 &&
+    Object.keys(capstoneProgress.completionCountsByStoryId).length === 0 &&
     weakPointCount === 0 &&
     !continueMission;
 
@@ -651,16 +704,27 @@ function isValidTodayPlanItem(item: TodayPlanSnapshotItem) {
     return item.key === 'review-loop';
   }
 
+  if (item.kind === 'capstone') {
+    return Boolean(item.capstoneStoryId && item.to && item.title && item.minutes > 0);
+  }
+
   return Boolean(item.missionId && item.to && item.title && item.minutes > 0);
 }
 
 function isTodayPlanItemComplete(
   item: TodayPlanSnapshotItem,
   missionProgress: ReturnType<typeof useMissionProgress>,
+  capstoneProgress: ReturnType<typeof useCapstoneProgress>,
   liveReviewRecommendation: TodayRecommendation | null,
 ) {
   if (item.kind === 'review') {
     return !liveReviewRecommendation;
+  }
+
+  if (item.kind === 'capstone') {
+    return item.capstoneStoryId
+      ? getCapstoneProgressEntry(capstoneProgress, item.capstoneStoryId).isCompleted
+      : false;
   }
 
   return item.missionId
@@ -677,6 +741,13 @@ function buildTodayPlanAction(
       to: item.to,
       state: { returnTo: 'today' as const },
       label: isFirstOpenItem ? 'Start review' : 'Continue today',
+    };
+  }
+
+  if (item.kind === 'capstone') {
+    return {
+      to: item.to,
+      label: isFirstOpenItem ? 'Read capstone' : 'Continue today',
     };
   }
 
@@ -701,6 +772,16 @@ function formatTodayPlanItemMeta(item: TodayPlanSnapshotItem, isCompleted: boole
     } min`;
   }
 
+  if (item.kind === 'capstone') {
+    if (isCompleted) {
+      return 'Chapter closeout complete.';
+    }
+
+    return `${item.capstoneLineCount ?? 0} story lines · ${
+      item.capstoneCheckCount ?? 0
+    } checks · ${item.minutes} min`;
+  }
+
   const missionType = item.missionType ? formatMissionTypeLabel(item.missionType) : 'Mission';
   const targetSkill = item.targetSkill ? formatTargetSkillLabel(item.targetSkill) : 'practice';
   return `${missionType} · ${targetSkill} · ${item.minutes} min`;
@@ -716,9 +797,15 @@ function createRecommendationByKey(recommendations: TodayRecommendation[]) {
 }
 
 function getRecommendationKey(recommendation: TodayRecommendation) {
-  return recommendation.kind === 'review'
-    ? 'review-loop'
-    : `mission:${recommendation.mission.id}`;
+  if (recommendation.kind === 'review') {
+    return 'review-loop';
+  }
+
+  if (recommendation.kind === 'capstone') {
+    return `capstone:${recommendation.capstoneStory.id}`;
+  }
+
+  return `mission:${recommendation.mission.id}`;
 }
 
 function isTodayPlanSnapshot(value: unknown): value is TodayPlanSnapshot {
@@ -734,7 +821,7 @@ function isTodayPlanSnapshotItem(value: unknown): value is TodayPlanSnapshotItem
     return false;
   }
 
-  if (value.kind !== 'review' && value.kind !== 'mission') {
+  if (value.kind !== 'review' && value.kind !== 'mission' && value.kind !== 'capstone') {
     return false;
   }
 
@@ -754,6 +841,10 @@ function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
   return recommendations.reduce((total, recommendation) => {
     if (recommendation.kind === 'review') {
       return total + Math.max(4, recommendation.batchSize * 2);
+    }
+
+    if (recommendation.kind === 'capstone') {
+      return total + recommendation.estimatedMinutes;
     }
 
     return total + recommendation.mission.estimatedMinutes;

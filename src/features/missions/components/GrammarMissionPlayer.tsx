@@ -23,7 +23,8 @@ import {
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import {
   buildMissionCompletionRouteState,
-  selectMissionSessionItems,
+  formatMissionReplayVariant,
+  selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
@@ -55,14 +56,16 @@ export function GrammarMissionPlayer({
   const [sessionRotation] = useState(() => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount;
   });
-  const sessionExamples = useMemo(
-    () => selectMissionSessionItems(examples, sessionMode, sessionRotation, 1),
+  const sessionExampleVariant = useMemo(
+    () => selectMissionReplayVariant(examples, sessionMode, sessionRotation, 1),
     [examples, sessionMode, sessionRotation],
   );
-  const sessionDrills = useMemo(
-    () => selectMissionSessionItems(lesson.drills, sessionMode, sessionRotation, 2),
+  const sessionDrillVariant = useMemo(
+    () => selectMissionReplayVariant(lesson.drills, sessionMode, sessionRotation, 2),
     [lesson.drills, sessionMode, sessionRotation],
   );
+  const sessionExamples = sessionExampleVariant.items;
+  const sessionDrills = sessionDrillVariant.items;
   const sessionSteps = useMemo(
     () => getMissionSteps(sessionMode, sessionExamples.length, sessionDrills.length),
     [sessionDrills.length, sessionExamples.length, sessionMode],
@@ -223,6 +226,12 @@ export function GrammarMissionPlayer({
               <dt>Drills</dt>
               <dd>{sessionDrills.length}</dd>
             </div>
+            {sessionMode === 'reinforce' ? (
+              <div className="mission-overview__stat">
+                <dt>Replay</dt>
+                <dd>{formatMissionReplayVariant(sessionDrillVariant.meta, 'drill')}</dd>
+              </div>
+            ) : null}
           </dl>
           <p className="mission-session-details__body">
             {sessionMode === 'reinforce'

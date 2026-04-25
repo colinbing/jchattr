@@ -440,7 +440,8 @@
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
-- Today is now more review-aware, more personally explained, and date-keyed by local study day, but recommendation logic is still intentionally simple and deterministic rather than adaptive or SRS-scheduled
+- Today is now more review-aware, more personally explained, date-keyed by local study day, and able to surface completed-chapter capstones, but recommendation logic is still intentionally simple and deterministic rather than adaptive or SRS-scheduled
+- Grammar, listening, output, and reading reinforce missions now use a named deterministic replay-variant helper with metadata while first-pass missions still receive full source lists
 - Daily-session rollover uses the user's device clock with an America/New_York 3 AM study-day boundary; there is no server clock, account sync, or cross-device validation
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
@@ -450,8 +451,8 @@
 
 ## Next Recommended Slices
 
-1. Implement Feature 1D from `NEXT_FEATURE_PLAN.md`: add capstone recommendation logic after the relevant chapter is complete, without interrupting urgent Review or the finite Today shell.
-2. Keep broader capstone generation for later chapters deferred until the first capstone recommendation flow is validated.
+1. Implement Feature 2D from `NEXT_FEATURE_PLAN.md`: add an optional chapter recombination reinforce pass now that capstones and replay variants are in place.
+2. Keep broader capstone generation for later chapters deferred until the recombination pass and mistake-explanation basics are planned.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

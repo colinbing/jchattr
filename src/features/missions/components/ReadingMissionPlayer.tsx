@@ -16,7 +16,8 @@ import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 import {
   buildMissionCompletionRouteState,
-  selectMissionSessionItems,
+  formatMissionReplayVariant,
+  selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
@@ -41,10 +42,11 @@ export function ReadingMissionPlayer({
   const [sessionRotation] = useState(() => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount;
   });
-  const sessionChecks = useMemo(
-    () => selectMissionSessionItems(checks, sessionMode, sessionRotation, 2),
+  const sessionCheckVariant = useMemo(
+    () => selectMissionReplayVariant(checks, sessionMode, sessionRotation, 2),
     [checks, sessionMode, sessionRotation],
   );
+  const sessionChecks = sessionCheckVariant.items;
   const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
@@ -157,6 +159,12 @@ export function ReadingMissionPlayer({
               <dt>Source lines</dt>
               <dd>{sessionChecks.length}</dd>
             </div>
+            {sessionMode === 'reinforce' ? (
+              <div className="mission-overview__stat">
+                <dt>Replay</dt>
+                <dd>{formatMissionReplayVariant(sessionCheckVariant.meta, 'check')}</dd>
+              </div>
+            ) : null}
           </dl>
           <p className="mission-session-details__body">
             {sessionMode === 'reinforce'

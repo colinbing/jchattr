@@ -33,9 +33,7 @@ export function TodayRecommendationCard({
         <div className="mission-card__meta">
           <span className="mission-badge">{recommendation.slotLabel}</span>
           <span className="mission-card__minutes">
-            {recommendation.kind === 'review'
-              ? `${recommendation.batchSize} item${recommendation.batchSize === 1 ? '' : 's'}`
-              : `${recommendation.mission.estimatedMinutes} min`}
+            {formatRecommendationMeta(recommendation)}
           </span>
         </div>
         <h3 className="mission-card__title">{recommendation.title}</h3>
@@ -58,6 +56,9 @@ export function TodayRecommendationCard({
             {recommendation.weakPointCount} tracked weak point
             {recommendation.weakPointCount === 1 ? '' : 's'}
           </p>
+        ) : null}
+        {recommendation.kind === 'capstone' ? (
+          <p className="mission-card__progress">{recommendation.reason}</p>
         ) : null}
         {recommendation.kind === 'mission' ? (
           <p className="list-meta">
@@ -83,6 +84,18 @@ export function TodayRecommendationCard({
       </Link>
     </article>
   );
+}
+
+function formatRecommendationMeta(recommendation: TodayRecommendation) {
+  if (recommendation.kind === 'review') {
+    return `${recommendation.batchSize} item${recommendation.batchSize === 1 ? '' : 's'}`;
+  }
+
+  if (recommendation.kind === 'capstone') {
+    return `${recommendation.estimatedMinutes} min`;
+  }
+
+  return `${recommendation.mission.estimatedMinutes} min`;
 }
 
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {
