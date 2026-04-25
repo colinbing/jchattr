@@ -199,7 +199,7 @@ Every production capstone should include:
 
 ### 9. Capstone Spine For Packs 1-50
 
-This is the intended breadth plan for the capstone library. Chapters 1-10 are now implemented as production capstones across packs 1-50.
+This is the intended breadth plan for the capstone library. Chapters 1-10 are now implemented as production capstones across packs 1-50. Chapter 1 also has a gated naturalized bonus variant to prove the two-layer capstone model before broad rollout.
 
 | Chapter | Packs | Working Story Shape | Main Payoff |
 | --- | ---: | --- | --- |

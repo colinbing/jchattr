@@ -34,7 +34,8 @@ Before starting a slice, assume the current repo has:
 - `550` vocab items
 - `731` example sentences
 - `361` listening items with matched local audio assets
-- `10` chapter capstone stories covering packs `1-50`
+- `10` primary chapter capstone stories covering packs `1-50`
+- `1` naturalized bonus capstone variant for chapter 1
 
 Verify this baseline with:
 
@@ -389,6 +390,28 @@ Next best prompt:
 
 ```text
 Implement Feature 1H from NEXT_FEATURE_PLAN.md: add hand-reviewed chapter capstones for chapters 8-10 using the capstone spine. Keep plain-style content recognition-safe, avoid hidden N4+ grammar, and run typecheck/build plus standard content reports. Include a content audit.
+```
+
+#### 1I. Naturalized Capstone Layer
+
+Scope:
+
+- Add a second capstone variant for chapter 1 only.
+- Keep the source-exact capstone as the required first-pass closeout.
+- Naturalize only already-covered chapter 1 language into a short beginner-safe prose/dialogue pass.
+- Preserve source traceability through source examples and source capstone line IDs.
+
+Acceptance criteria:
+
+- The naturalized chapter 1 story unlocks only after the source-exact chapter 1 capstone is complete.
+- Today and Missions treat it as bonus story-mode/recombination content, not as the required chapter closeout.
+- Content reports keep primary chapter coverage at 10/10 and show the naturalized story as a bonus variant.
+- Content audit confirms no hidden N4+ grammar, no new required vocab, and traceability back to source examples/lines.
+
+Next best prompt:
+
+```text
+Implement Feature 1I from NEXT_FEATURE_PLAN.md: add a second capstone variant for chapter 1 only that rewrites the exact-source capstone into beginner-natural prose/dialogue while preserving grammar/vocab constraints and source traceability. Keep the exact-source capstone as the default first-pass version, and expose the naturalized version only after completion or as bonus reread content. Run typecheck/build plus standard content reports and include a content audit.
 ```
 
 ---
@@ -1002,26 +1025,27 @@ This order maximizes learner value while reducing architecture risk:
 10. `1F` capstone breadth batch 1, chapters 2-4
 11. `1G` capstone breadth batch 2, chapters 5-7
 12. `1H` capstone breadth batch 3, chapters 8-10
-13. `3A` feedback taxonomy
-14. `3B` grammar mistake drawer
-15. `3C` review mistake drawer
-16. `3D` other modality explanations
-17. `4A` gold star visual pass
-18. `4B` weekly shape copy
-19. `5A` preference store
-20. `5B` Today focus weighting
-21. `5C` Today focus control
-22. `6A` scenario model decision
-23. `6B` first scenario sim
-24. `6C` scenario pack set
-25. `7A` seen vocab derivation
-26. `7B` reading display mode
-27. `7C` known/unknown chips
-28. `8A` AI content drafting protocol
-29. `8B` capstone draft script
-30. `8C` optional AI explanation fallback
-31. `8D` optional typed output coach
-32. `8E` voice coach spike
+13. `1I` naturalized capstone layer, chapter 1
+14. `3A` feedback taxonomy
+15. `3B` grammar mistake drawer
+16. `3C` review mistake drawer
+17. `3D` other modality explanations
+18. `4A` gold star visual pass
+19. `4B` weekly shape copy
+20. `5A` preference store
+21. `5B` Today focus weighting
+22. `5C` Today focus control
+23. `6A` scenario model decision
+24. `6B` first scenario sim
+25. `6C` scenario pack set
+26. `7A` seen vocab derivation
+27. `7B` reading display mode
+28. `7C` known/unknown chips
+29. `8A` AI content drafting protocol
+30. `8B` capstone draft script
+31. `8C` optional AI explanation fallback
+32. `8D` optional typed output coach
+33. `8E` voice coach spike
 
 Gold-star work can move earlier if motivation polish becomes the priority. AI work should not move earlier than deterministic capstones, capstone content-spine planning, and mistake explanations. Full capstone breadth can be batched around Feature 3 if implementation momentum requires it, but the 1E blueprint should happen before broad new content or AI drafting.
 
@@ -1051,6 +1075,7 @@ Use these states:
 | 1F Capstone breadth batch 1 | Verified | Added hand-reviewed chapter 2-4 capstones covering packs 6-20, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 4/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 1G Capstone breadth batch 2 | Verified | Added hand-reviewed chapter 5-7 capstones covering packs 21-35, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 7/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 1H Capstone breadth batch 3 | Verified | Added hand-reviewed chapter 8-10 capstones covering packs 36-50, using exact existing example lines with sourceExampleIds, 11 lines per story, and 4 comprehension checks each. Chapter 10 keeps plain-style content recognition-safe. Content reports now show capstone chapter coverage as 10/10. Verified with typecheck, build, source-line audit, and standard content reports. |
+| 1I Naturalized capstone layer | Verified | Added a chapter 1 naturalized bonus story variant with source example IDs, source capstone line IDs, route locking behind the exact-source closeout, Missions bonus-story exposure, and Today story-mode bonus recommendations. Primary capstone coverage remains 10/10. Verified with typecheck, build, source-trace audit, and standard content reports. |
 | 3A Feedback taxonomy | Not started |  |
 | 3B Grammar mistake drawer | Not started |  |
 | 3C Review mistake drawer | Not started |  |

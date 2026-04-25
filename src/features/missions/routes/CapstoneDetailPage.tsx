@@ -2,6 +2,10 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
 import type { CapstoneCheck, CapstoneLine } from '../../../lib/content/types';
+import {
+  getCapstoneProgressEntry,
+  useCapstoneProgress,
+} from '../../../lib/progress/capstoneProgress';
 import { CapstoneStoryPlayer } from '../components/CapstoneStoryPlayer';
 
 export function CapstoneDetailPage() {
@@ -9,6 +13,7 @@ export function CapstoneDetailPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const starterContent = getStarterContent();
+  const capstoneProgress = useCapstoneProgress();
   const capstoneMode =
     searchParams.get('mode') === 'recombination' ? 'recombination' : 'closeout';
 
@@ -30,6 +35,22 @@ export function CapstoneDetailPage() {
         description="The requested capstone story id does not exist in starter content."
       />
     );
+  }
+
+  if (story.unlockAfterStoryId) {
+    const unlockProgress = getCapstoneProgressEntry(
+      capstoneProgress,
+      story.unlockAfterStoryId,
+    );
+
+    if (!unlockProgress.isCompleted) {
+      return (
+        <CapstoneFallbackState
+          title="Story mode locked"
+          description="Complete the chapter closeout first, then come back for this naturalized bonus reread."
+        />
+      );
+    }
   }
 
   const lines = story.lineIds
@@ -54,16 +75,28 @@ export function CapstoneDetailPage() {
 
   return (
     <PageShell
-      eyebrow={capstoneMode === 'recombination' ? 'Recombination' : 'Capstone'}
+      eyebrow={
+        story.variant === 'naturalized'
+          ? 'Story mode'
+          : capstoneMode === 'recombination'
+            ? 'Recombination'
+            : 'Capstone'
+      }
       title={story.title}
       description={
-        capstoneMode === 'recombination'
+        story.variant === 'naturalized'
+          ? 'Read a naturalized version after clearing the exact-source chapter closeout.'
+          : capstoneMode === 'recombination'
           ? 'Reread the completed chapter story as an optional recombination pass.'
           : 'Close the chapter with a short, supported reading pass.'
       }
       aside={
         <span className="status-chip">
-          {capstoneMode === 'recombination' ? 'Optional reread' : 'Chapter closeout'}
+          {story.variant === 'naturalized'
+            ? 'Bonus reread'
+            : capstoneMode === 'recombination'
+              ? 'Optional reread'
+              : 'Chapter closeout'}
         </span>
       }
       variant="compact"

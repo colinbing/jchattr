@@ -30,6 +30,7 @@ export function CapstoneStoryPlayer({
 }: CapstoneStoryPlayerProps) {
   const capstoneProgress = useCapstoneProgress();
   const completion = getCapstoneProgressEntry(capstoneProgress, story.id);
+  const isNaturalizedStory = story.variant === 'naturalized';
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [revealedLineIds, setRevealedLineIds] = useState<string[]>([]);
   const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
@@ -87,7 +88,9 @@ export function CapstoneStoryPlayer({
         className="mission-session-card"
         title={story.title}
         description={
-          mode === 'recombination'
+          isNaturalizedStory
+            ? 'Bonus story mode. Read the natural version after clearing the exact-source closeout.'
+            : mode === 'recombination'
             ? 'Optional recombination pass. Reread familiar lines and clear the checks again.'
             : 'Chapter closeout. Read one line, reveal support, then clear the checks.'
         }
@@ -160,7 +163,13 @@ export function CapstoneStoryPlayer({
             isCheckCleared={isCurrentCheckCleared}
             hasNextLine={currentLineIndex < lines.length - 1}
             isFinished={isFinished}
-            finishLabel={mode === 'recombination' ? 'Finish recombination' : 'Finish capstone'}
+            finishLabel={
+              isNaturalizedStory
+                ? 'Finish story mode'
+                : mode === 'recombination'
+                  ? 'Finish recombination'
+                  : 'Finish capstone'
+            }
             onReveal={revealCurrentLine}
             onCheckCleared={clearCheck}
             onAdvance={advance}
@@ -186,9 +195,17 @@ export function CapstoneStoryPlayer({
 
       {isFinished ? (
         <SurfaceCard
-          title={mode === 'recombination' ? 'Recombination complete' : 'Capstone complete'}
+          title={
+            isNaturalizedStory
+              ? 'Story mode complete'
+              : mode === 'recombination'
+                ? 'Recombination complete'
+                : 'Capstone complete'
+          }
           description={
-            mode === 'recombination'
+            isNaturalizedStory
+              ? 'This naturalized reread is saved locally as bonus capstone work.'
+              : mode === 'recombination'
               ? 'This optional reread is saved locally. Today core work stays unchanged.'
               : 'This chapter closeout is saved locally. Today recommendations are unchanged for now.'
           }
@@ -196,7 +213,9 @@ export function CapstoneStoryPlayer({
           <div className="mission-completion-card">
             <div className="mission-completion-card__summary">
               <p className="mission-completion-card__status">
-                {mode === 'recombination'
+                {isNaturalizedStory
+                  ? 'Naturalized story saved'
+                  : mode === 'recombination'
                   ? 'Recombination pass saved'
                   : 'Chapter closeout saved'}
               </p>
@@ -312,8 +331,14 @@ function CapstoneLineCard({
           <div className="reading-reveal-card__section">
             <p className="mission-copy-block__eyebrow">Source</p>
             <p className="mission-copy-block__body">
-              Built from {line.sourceExampleIds.join(', ')}.
+              {line.lineStyle === 'naturalized' ? 'Naturalized from' : 'Built from'}{' '}
+              {line.sourceExampleIds.join(', ')}.
             </p>
+            {line.sourceLineIds?.length ? (
+              <p className="mission-copy-block__body">
+                Traced to {line.sourceLineIds.join(', ')}.
+              </p>
+            ) : null}
           </div>
         </div>
       ) : null}

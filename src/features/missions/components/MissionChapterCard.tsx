@@ -10,7 +10,7 @@ import {
   MissionLibraryCard,
   type MissionLibraryCardData,
 } from './MissionLibraryCard';
-import type { StarterContent } from '../../../lib/content/types';
+import type { CapstoneStory, StarterContent } from '../../../lib/content/types';
 import type { MissionLibraryChapter } from '../lib/missionLibraryStructure';
 
 type MissionChapterCardProps = {
@@ -38,7 +38,9 @@ export function MissionChapterCard({
   const isChapterCleared = completedCount === items.length;
   const capstoneStories =
     chapter.kind === 'core'
-      ? starterContent.capstoneStories.filter((story) => story.chapterId === chapter.id)
+      ? starterContent.capstoneStories.filter((story) =>
+          shouldShowCapstoneStory(story, chapter.id, capstoneProgress),
+        )
       : [];
 
   return (
@@ -114,11 +116,14 @@ export function MissionChapterCard({
           <div className="mission-chapter__capstone-list" role="list" aria-label="Chapter capstones">
             {capstoneStories.map((story) => {
               const progress = getCapstoneProgressEntry(capstoneProgress, story.id);
+              const isNaturalizedStory = story.variant === 'naturalized';
 
               return (
                 <div key={story.id} className="mission-focus-card mission-chapter__capstone" role="listitem">
                   <div className="mission-chapter__focus-copy">
-                    <p className="mission-focus-card__eyebrow">Chapter capstone</p>
+                    <p className="mission-focus-card__eyebrow">
+                      {isNaturalizedStory ? 'Bonus story mode' : 'Chapter capstone'}
+                    </p>
                     <h4 className="mission-chapter__focus-title">{story.title}</h4>
                     <p className="mission-chapter__focus-body">
                       {story.summary}
@@ -131,7 +136,13 @@ export function MissionChapterCard({
                             : 'mission-state-pill mission-state-pill--ready'
                         }
                       >
-                        {progress.isCompleted ? 'Capstone cleared' : 'Ready'}
+                        {progress.isCompleted
+                          ? isNaturalizedStory
+                            ? 'Story mode cleared'
+                            : 'Capstone cleared'
+                          : isNaturalizedStory
+                            ? 'Bonus ready'
+                            : 'Ready'}
                       </span>
                       <span className="mission-state-pill mission-state-pill--ready">
                         {story.lineIds.length} lines
@@ -142,11 +153,21 @@ export function MissionChapterCard({
                     </div>
                   </div>
                   <Link
-                    to={`/capstone/${story.id}`}
+                    to={
+                      isNaturalizedStory
+                        ? `/capstone/${story.id}?mode=recombination`
+                        : `/capstone/${story.id}`
+                    }
                     className="inline-link"
                     aria-label={`Open ${story.title}`}
                   >
-                    {progress.isCompleted ? 'Open again' : 'Open capstone'}
+                    {isNaturalizedStory
+                      ? progress.isCompleted
+                        ? 'Read again'
+                        : 'Open story mode'
+                      : progress.isCompleted
+                        ? 'Open again'
+                        : 'Open capstone'}
                   </Link>
                 </div>
               );
@@ -164,4 +185,20 @@ export function MissionChapterCard({
       </div>
     </section>
   );
+}
+
+function shouldShowCapstoneStory(
+  story: CapstoneStory,
+  chapterId: string,
+  capstoneProgress: ReturnType<typeof useCapstoneProgress>,
+) {
+  if (story.chapterId !== chapterId) {
+    return false;
+  }
+
+  if (!story.unlockAfterStoryId) {
+    return true;
+  }
+
+  return getCapstoneProgressEntry(capstoneProgress, story.unlockAfterStoryId).isCompleted;
 }

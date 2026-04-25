@@ -409,7 +409,7 @@
   - 550 vocab items
   - 361 listening items
   - 199 missions
-  - 10 capstone stories with 108 capstone lines and 40 capstone checks, now reachable from Missions through a dedicated capstone player route
+  - 11 capstone stories with 116 capstone lines and 44 capstone checks, now reachable from Missions through a dedicated capstone player route
 - Mission auto-complete now works, but it is still pass-local: completion triggers when each drill or check has been cleared once in the current pass, and there is still no finer-grained saved per-item progress model inside a mission
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -443,6 +443,7 @@
 - Today is now more review-aware, more personally explained, date-keyed by local study day, and able to surface completed-chapter capstones, but recommendation logic is still intentionally simple and deterministic rather than adaptive or SRS-scheduled
 - Completed capstones can now surface as optional Today recombination rereads through the same capstone player without entering the finite core daily plan
 - Capstone content breadth now covers the full chapter spine: production capstone content covers chapters 1-10 / packs 1-50, with chapter 10 kept to recognition-safe plain-style comprehension
+- Chapter 1 now has one naturalized bonus capstone variant, gated behind the exact-source closeout and counted separately from primary chapter coverage
 - Grammar, listening, output, and reading reinforce missions now use a named deterministic replay-variant helper with metadata while first-pass missions still receive full source lists
 - Daily-session rollover uses the user's device clock with an America/New_York 3 AM study-day boundary; there is no server clock, account sync, or cross-device validation
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
@@ -489,6 +490,7 @@
 - Capstone breadth batch 1: completed in Feature 1F by adding hand-reviewed chapter 2-4 capstones for packs 6-20, all using exact existing source examples with 10-11 lines and 4 comprehension checks per story; content coverage now reports 4/10 capstone chapter coverage.
 - Capstone breadth batch 2: completed in Feature 1G by adding hand-reviewed chapter 5-7 capstones for packs 21-35, all using exact existing source examples with 10-11 lines and 4 comprehension checks per story; content coverage now reports 7/10 capstone chapter coverage.
 - Capstone breadth batch 3: completed in Feature 1H by adding hand-reviewed chapter 8-10 capstones for packs 36-50, all using exact existing source examples with 11 lines and 4 comprehension checks per story; chapter 10 keeps plain-style content recognition-safe, and content coverage now reports 10/10 capstone chapter coverage.
+- Naturalized capstone layer: completed in Feature 1I by adding a chapter 1 naturalized bonus story variant with source example and source capstone-line traceability, route locking behind the exact-source closeout, Missions bonus-story exposure, and Today bonus story-mode recommendations.
 - Navigation consolidation: completed in the Phase 4 entry slice by removing the duplicate shell-level page header so one navigation/context system owns the page structure.
 - End-to-end mission-flow audit: simulate each mission type as a learner, identify friction points, and tighten what the user sees, clicks, and expects at each step.
 

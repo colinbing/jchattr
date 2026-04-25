@@ -74,7 +74,7 @@ export type TodayRecommendation =
 // 2. Mark review as urgent when weak points are fresh, repeated, or numerous.
 // 3. Recommend the next unlocked incomplete mission in starter order.
 // 4. When a chapter is cleared, add its capstone as a closeout only if Review is not urgent.
-// 5. Once the capstone is complete, offer a bonus recombination reread through the same capstone surface.
+// 5. Once the capstone is complete, offer bonus story-mode or recombination rereads through the same capstone surface.
 // 6. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
 // 7. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
 // 8. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
@@ -334,6 +334,10 @@ function getCapstoneRecommendation(
   }
 
   const capstoneStory = starterContent.capstoneStories.find((story) => {
+    if (!isPrimaryCapstoneStory(story)) {
+      return false;
+    }
+
     const progressEntry = getCapstoneProgressEntry(capstoneProgress, story.id);
     const sourceMissionIds = getCapstoneSourceMissionIds(story);
 
@@ -382,11 +386,64 @@ function getCapstoneRecombinationRecommendation(
   reviewAwareness: ReviewAwareness,
   hasOpenCapstoneCloseout: boolean,
 ): TodayRecommendation | null {
-  if (!capstoneProgress || reviewAwareness.isUrgent || hasOpenCapstoneCloseout) {
+  if (!capstoneProgress || reviewAwareness.isUrgent) {
+    return null;
+  }
+
+  const naturalizedStory = starterContent.capstoneStories.find((story) => {
+    if (story.variant !== 'naturalized' || !story.unlockAfterStoryId) {
+      return false;
+    }
+
+    const unlockProgress = getCapstoneProgressEntry(
+      capstoneProgress,
+      story.unlockAfterStoryId,
+    );
+    const storyProgress = getCapstoneProgressEntry(capstoneProgress, story.id);
+    const sourceMissionIds = getCapstoneSourceMissionIds(story);
+
+    return (
+      unlockProgress.isCompleted &&
+      !storyProgress.isCompleted &&
+      sourceMissionIds.length > 0 &&
+      sourceMissionIds.every((missionId) => {
+        return getMissionProgressEntry(missionProgress, missionId).isCompleted;
+      })
+    );
+  });
+
+  if (naturalizedStory) {
+    const sourcePackLabel = formatCapstoneSourcePackLabel(naturalizedStory.sourcePackIds);
+    const lineCount = naturalizedStory.lineIds.length;
+    const checkCount = naturalizedStory.checkIds.length;
+
+    return {
+      id: `${naturalizedStory.id}-story-mode`,
+      kind: 'capstone',
+      slotLabel: 'Story mode',
+      title: naturalizedStory.title,
+      reason: `${sourcePackLabel} exact-source capstone is complete. Read the naturalized version as a bonus bridge from drills into beginner prose.`,
+      ctaLabel: 'Read story mode',
+      to: `/capstone/${naturalizedStory.id}?mode=recombination`,
+      capstoneStory: naturalizedStory,
+      capstoneMode: 'recombination',
+      lineCount,
+      checkCount,
+      estimatedMinutes: naturalizedStory.estimatedMinutes,
+      personalFocus: `${lineCount} naturalized story line${lineCount === 1 ? '' : 's'} traced back to the chapter closeout, with ${checkCount} comprehension check${checkCount === 1 ? '' : 's'}.`,
+      priority: 'bonus',
+    };
+  }
+
+  if (hasOpenCapstoneCloseout) {
     return null;
   }
 
   const capstoneStory = starterContent.capstoneStories.find((story) => {
+    if (!isPrimaryCapstoneStory(story)) {
+      return false;
+    }
+
     const progressEntry = getCapstoneProgressEntry(capstoneProgress, story.id);
     const sourceMissionIds = getCapstoneSourceMissionIds(story);
 
@@ -437,6 +494,10 @@ function getCapstoneSourceMissionIds(story: CapstoneStory) {
         .flatMap((pack) => pack.missionIds),
     ),
   );
+}
+
+function isPrimaryCapstoneStory(story: CapstoneStory) {
+  return story.variant !== 'naturalized' && !story.unlockAfterStoryId;
 }
 
 function formatCapstoneSourcePackLabel(sourcePackIds: number[]) {

@@ -40,13 +40,17 @@ snapshot.capstoneCoverageSummaries.forEach((chapter) => {
   const status = chapter.isCovered ? 'covered' : 'missing';
   const storyLabel =
     chapter.storyIds.length > 0 ? ` | stories ${chapter.storyIds.join(', ')}` : '';
+  const variantStoryLabel =
+    chapter.variantStoryIds.length > 0
+      ? ` | bonus variants ${chapter.variantStoryIds.join(', ')}`
+      : '';
   const productionPackLabel =
     chapter.productionPackIds.length > 0
       ? ` | production packs ${chapter.productionPackIds.join(', ')}`
       : '';
 
   console.log(
-    `- ${chapter.chapterLabel} (${chapter.sourcePackIds[0]}-${chapter.sourcePackIds.at(-1)}): ${status} | ${chapter.workingTitle} | target ${chapter.expectedLineCount.min}-${chapter.expectedLineCount.max} lines, ${chapter.expectedCheckCount.min}-${chapter.expectedCheckCount.max} checks | current ${chapter.lineCount} lines, ${chapter.checkCount} checks${storyLabel}${productionPackLabel}`,
+    `- ${chapter.chapterLabel} (${chapter.sourcePackIds[0]}-${chapter.sourcePackIds.at(-1)}): ${status} | ${chapter.workingTitle} | target ${chapter.expectedLineCount.min}-${chapter.expectedLineCount.max} lines, ${chapter.expectedCheckCount.min}-${chapter.expectedCheckCount.max} checks | current ${chapter.lineCount} lines, ${chapter.checkCount} checks${storyLabel}${variantStoryLabel}${productionPackLabel}`,
   );
 });
 

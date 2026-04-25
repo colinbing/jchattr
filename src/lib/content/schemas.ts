@@ -11,6 +11,8 @@ const targetSkillSchema = z.enum([
   'output-confidence',
 ]);
 const listeningDifficultySchema = z.enum(['easy', 'medium']);
+const capstoneLineStyleSchema = z.enum(['source-exact', 'naturalized']);
+const capstoneStoryVariantSchema = z.enum(['source-exact', 'naturalized']);
 const vocabPartOfSpeechSchema = z.enum([
   'pronoun',
   'noun',
@@ -108,9 +110,11 @@ export const capstoneLineSchema = z.object({
   japanese: nonEmptyStringSchema,
   reading: nonEmptyStringSchema,
   english: nonEmptyStringSchema,
+  lineStyle: capstoneLineStyleSchema.optional(),
   grammarTags: z.array(nonEmptyStringSchema),
   vocabTags: z.array(nonEmptyStringSchema),
   sourceExampleIds: z.array(idSchema).min(1),
+  sourceLineIds: z.array(idSchema).min(1).optional(),
   audioRef: nonEmptyStringSchema.optional(),
 });
 
@@ -133,6 +137,9 @@ export const capstoneStorySchema = z.object({
   chapterId: idSchema,
   title: nonEmptyStringSchema,
   summary: nonEmptyStringSchema,
+  variant: capstoneStoryVariantSchema.optional(),
+  baseStoryId: idSchema.optional(),
+  unlockAfterStoryId: idSchema.optional(),
   estimatedMinutes: z.number().int().positive(),
   sourcePackIds: z.array(z.number().int().positive()).min(1),
   lineIds: z.array(idSchema).min(1),

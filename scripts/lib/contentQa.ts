@@ -64,20 +64,24 @@ export function getContentQaSnapshot() {
   const readingExampleIdSet = new Set(readingExampleIds);
   const capstoneCoverageSummaries = capstoneStoryBlueprints.map((blueprint) => {
     const stories = content.capstoneStories.filter((story) => story.chapterId === blueprint.chapterId);
+    const primaryStories = stories.filter((story) => story.variant !== 'naturalized');
+    const variantStories = stories.filter((story) => story.variant === 'naturalized');
     const productionPackIds = Array.from(
-      new Set(stories.flatMap((story) => story.sourcePackIds)),
+      new Set(primaryStories.flatMap((story) => story.sourcePackIds)),
     ).sort((left, right) => left - right);
-    const lineCount = stories.reduce((total, story) => total + story.lineIds.length, 0);
-    const checkCount = stories.reduce((total, story) => total + story.checkIds.length, 0);
+    const lineCount = primaryStories.reduce((total, story) => total + story.lineIds.length, 0);
+    const checkCount = primaryStories.reduce((total, story) => total + story.checkIds.length, 0);
 
     return {
       ...blueprint,
-      storyCount: stories.length,
-      storyIds: stories.map((story) => story.id),
+      storyCount: primaryStories.length,
+      storyIds: primaryStories.map((story) => story.id),
+      variantStoryCount: variantStories.length,
+      variantStoryIds: variantStories.map((story) => story.id),
       productionPackIds,
       lineCount,
       checkCount,
-      isCovered: stories.length > 0,
+      isCovered: primaryStories.length > 0,
     };
   });
   const coveredCapstoneChapterCount = capstoneCoverageSummaries.filter(

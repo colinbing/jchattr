@@ -45,6 +45,7 @@ function validateRelations(content: ContentCollection) {
   const missionRecord = createRecordById(content.missions);
   const capstoneLineRecord = createRecordById(content.capstoneLines);
   const capstoneCheckRecord = createRecordById(content.capstoneChecks);
+  const capstoneStoryRecord = createRecordById(content.capstoneStories);
 
   content.grammarLessons.forEach((lesson) => {
     assertIdsExist(`Grammar lesson ${lesson.id}`, 'example', lesson.exampleIds, exampleRecord);
@@ -112,6 +113,19 @@ function validateRelations(content: ContentCollection) {
       line.sourceExampleIds,
       exampleRecord,
     );
+
+    if (line.sourceLineIds) {
+      assertIdsExist(
+        `Capstone line ${line.id}`,
+        'source capstone line',
+        line.sourceLineIds,
+        capstoneLineRecord,
+      );
+
+      if (line.sourceLineIds.includes(line.id)) {
+        throw new Error(`Capstone line ${line.id} cannot reference itself as a source line.`);
+      }
+    }
   });
 
   content.capstoneChecks.forEach((check) => {
@@ -124,6 +138,32 @@ function validateRelations(content: ContentCollection) {
   });
 
   content.capstoneStories.forEach((story) => {
+    if (story.baseStoryId) {
+      assertIdsExist(
+        `Capstone story ${story.id}`,
+        'base capstone story',
+        [story.baseStoryId],
+        capstoneStoryRecord,
+      );
+
+      if (story.baseStoryId === story.id) {
+        throw new Error(`Capstone story ${story.id} cannot use itself as a base story.`);
+      }
+    }
+
+    if (story.unlockAfterStoryId) {
+      assertIdsExist(
+        `Capstone story ${story.id}`,
+        'unlock capstone story',
+        [story.unlockAfterStoryId],
+        capstoneStoryRecord,
+      );
+
+      if (story.unlockAfterStoryId === story.id) {
+        throw new Error(`Capstone story ${story.id} cannot unlock after itself.`);
+      }
+    }
+
     assertIdsExist(
       `Capstone story ${story.id}`,
       'capstone line',

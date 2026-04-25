@@ -98,9 +98,11 @@ export interface CapstoneLine {
   japanese: string;
   reading: string;
   english: string;
+  lineStyle?: 'source-exact' | 'naturalized';
   grammarTags: string[];
   vocabTags: string[];
   sourceExampleIds: string[];
+  sourceLineIds?: string[];
   audioRef?: string;
 }
 
@@ -118,6 +120,9 @@ export interface CapstoneStory {
   chapterId: string;
   title: string;
   summary: string;
+  variant?: 'source-exact' | 'naturalized';
+  baseStoryId?: string;
+  unlockAfterStoryId?: string;
   estimatedMinutes: number;
   sourcePackIds: number[];
   lineIds: string[];

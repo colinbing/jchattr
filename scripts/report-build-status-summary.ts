@@ -39,8 +39,15 @@ console.log('');
 console.log('Capstone coverage summary:');
 snapshot.capstoneCoverageSummaries.forEach((chapter) => {
   const status = chapter.isCovered ? 'covered' : 'missing';
+  const variantLabel =
+    chapter.variantStoryCount > 0
+      ? `, ${chapter.variantStoryCount} bonus variant${chapter.variantStoryCount === 1 ? '' : 's'}`
+      : '';
+  const primaryStoryLabel = `${chapter.storyCount} primary ${
+    chapter.storyCount === 1 ? 'story' : 'stories'
+  }`;
   console.log(
-    `- ${chapter.chapterLabel} packs ${chapter.sourcePackIds[0]}-${chapter.sourcePackIds.at(-1)}: ${status} (${chapter.storyCount} stories)`,
+    `- ${chapter.chapterLabel} packs ${chapter.sourcePackIds[0]}-${chapter.sourcePackIds.at(-1)}: ${status} (${primaryStoryLabel}${variantLabel})`,
   );
 });
 
