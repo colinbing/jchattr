@@ -11,6 +11,9 @@ console.log(`- grammar lessons: ${snapshot.content.summary.grammarLessonCount}`)
 console.log(`- vocab items: ${snapshot.content.summary.vocabCount}`);
 console.log(`- example sentences: ${snapshot.content.summary.exampleCount}`);
 console.log(`- listening items: ${snapshot.content.summary.listeningCount}`);
+console.log(`- capstone stories: ${snapshot.content.summary.capstoneStoryCount}`);
+console.log(`- capstone lines: ${snapshot.content.summary.capstoneLineCount}`);
+console.log(`- capstone checks: ${snapshot.content.summary.capstoneCheckCount}`);
 console.log(`- reading missions: ${snapshot.readingMissions.length}`);
 console.log(`- reading checks: ${snapshot.readingCheckCount}`);
 

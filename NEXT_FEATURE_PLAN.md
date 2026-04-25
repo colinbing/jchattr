@@ -884,9 +884,9 @@ Use these states:
 
 | Slice | Status | Notes |
 | --- | --- | --- |
-| 1A Capstone data model | Not started |  |
-| 1B Capstone player V1 | Not started |  |
-| 1C First chapter capstone content | Not started |  |
+| 1A Capstone data model | Verified | Added capstone story/line/check types, schemas, loader relation checks, report counts, and one minimal chapter 1 fixture. Verified with typecheck, build, and content reports. |
+| 1B Capstone player V1 | Verified | Added a mobile-first capstone route/player, local capstone progress store, Missions chapter card entry, and Settings reset support. Today recommendations remain unchanged. Verified with typecheck, build, and content reports. |
+| 1C First chapter capstone content | Verified | Expanded chapter 1 capstone to 11 existing pack 1-5 lines and 4 checks. Uses sourceExampleIds only from covered content, with no new Japanese lines or new grammar. Verified with typecheck, build, and content reports. |
 | 1D Capstone recommendation | Not started |  |
 | 2A Replay variant audit | Not started |  |
 | 2B Grammar/listening replay variants | Not started |  |
@@ -956,4 +956,3 @@ Pause and ask for product direction if:
 - the UI becomes noticeably denser on mobile
 - the implementation requires a broad content schema rewrite
 - QA reports expose a content or progression regression
-

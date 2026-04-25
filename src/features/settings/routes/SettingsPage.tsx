@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getListeningAudioStatus } from '../../../lib/audio/listeningAudioAssets';
 import { getStarterContent } from '../../../lib/content/loader';
+import { useCapstoneProgress } from '../../../lib/progress/capstoneProgress';
 import { useContinueState } from '../../../lib/progress/continueState';
 import { useMissionProgress } from '../../../lib/progress/missionProgress';
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
@@ -22,6 +23,7 @@ type ResetActionConfig = {
 export function SettingsPage() {
   const starterContent = getStarterContent();
   const missionProgress = useMissionProgress();
+  const capstoneProgress = useCapstoneProgress();
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
@@ -31,6 +33,9 @@ export function SettingsPage() {
   const audioStatus = getListeningAudioStatus();
   const totalCompletionCount = Object.values(
     missionProgress.completionCountsByMissionId,
+  ).reduce((sum, count) => sum + count, 0);
+  const totalCapstoneCompletionCount = Object.values(
+    capstoneProgress.completionCountsByStoryId,
   ).reduce((sum, count) => sum + count, 0);
   const resetActions = useMemo<ResetActionConfig[]>(() => {
     return [
@@ -43,6 +48,18 @@ export function SettingsPage() {
           missionProgress.completedMissionIds.length === 1 ? '' : 's'
         } and ${totalCompletionCount} total completion tap${
           totalCompletionCount === 1 ? '' : 's'
+        } saved locally.`,
+        kind: 'routine',
+      },
+      {
+        id: 'capstone-progress',
+        title: 'Reset capstone progress',
+        description:
+          'Clear saved chapter closeout completions for this device.',
+        summary: `${capstoneProgress.completedStoryIds.length} completed capstone${
+          capstoneProgress.completedStoryIds.length === 1 ? '' : 's'
+        } and ${totalCapstoneCompletionCount} total capstone clear${
+          totalCapstoneCompletionCount === 1 ? '' : 's'
         } saved locally.`,
         kind: 'routine',
       },
@@ -78,7 +95,7 @@ export function SettingsPage() {
         id: 'all-study-data',
         title: 'Reset all local study data',
         description:
-          'Clear mission progress, weak points, review-loop history, and continue state on this device.',
+          'Clear mission progress, capstone progress, weak points, review-loop history, daily tracker data, and continue state on this device.',
         summary:
           'Use this only when you want a full local reset of the current MVP study state.',
         kind: 'destructive',
@@ -86,10 +103,12 @@ export function SettingsPage() {
     ];
   }, [
     continueState.lastActiveMissionId,
+    capstoneProgress.completedStoryIds.length,
     missionProgress.completedMissionIds.length,
     reviewLoopProgress.completedBatchCount,
     starterContent.byId.missions,
     totalCompletionCount,
+    totalCapstoneCompletionCount,
     weakPointList.length,
   ]);
   const routineResetActions = resetActions.filter((action) => action.kind === 'routine');
@@ -113,6 +132,10 @@ export function SettingsPage() {
           <div className="settings-summary-grid__stat">
             <dt>Completed missions</dt>
             <dd>{missionProgress.completedMissionIds.length}</dd>
+          </div>
+          <div className="settings-summary-grid__stat">
+            <dt>Capstones</dt>
+            <dd>{capstoneProgress.completedStoryIds.length}</dd>
           </div>
           <div className="settings-summary-grid__stat">
             <dt>Weak points</dt>

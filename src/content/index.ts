@@ -1,4 +1,5 @@
 import { exampleSentences } from './exampleSentences';
+import { capstoneChecks, capstoneLines, capstoneStories } from './capstoneStories';
 import { grammarLessons } from './grammarLessons';
 import { listeningItems } from './listeningItems';
 import { missions } from './missions';
@@ -10,4 +11,7 @@ export const starterContentModules = {
   exampleSentences,
   listeningItems,
   missions,
+  capstoneLines,
+  capstoneChecks,
+  capstoneStories,
 };

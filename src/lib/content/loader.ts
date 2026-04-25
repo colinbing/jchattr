@@ -2,6 +2,9 @@ import { starterContentModules } from '../../content';
 import { contentCollectionSchema } from './schemas';
 import type {
   ContentCollection,
+  CapstoneCheck,
+  CapstoneLine,
+  CapstoneStory,
   GrammarLesson,
   ListeningItem,
   Mission,
@@ -40,6 +43,8 @@ function validateRelations(content: ContentCollection) {
   const vocabRecord = createRecordById(content.vocabItems);
   const listeningRecord = createRecordById(content.listeningItems);
   const missionRecord = createRecordById(content.missions);
+  const capstoneLineRecord = createRecordById(content.capstoneLines);
+  const capstoneCheckRecord = createRecordById(content.capstoneChecks);
 
   content.grammarLessons.forEach((lesson) => {
     assertIdsExist(`Grammar lesson ${lesson.id}`, 'example', lesson.exampleIds, exampleRecord);
@@ -99,6 +104,49 @@ function validateRelations(content: ContentCollection) {
       );
     }
   });
+
+  content.capstoneLines.forEach((line) => {
+    assertIdsExist(
+      `Capstone line ${line.id}`,
+      'source example',
+      line.sourceExampleIds,
+      exampleRecord,
+    );
+  });
+
+  content.capstoneChecks.forEach((check) => {
+    assertIdsExist(
+      `Capstone check ${check.id}`,
+      'capstone line',
+      [check.lineId],
+      capstoneLineRecord,
+    );
+  });
+
+  content.capstoneStories.forEach((story) => {
+    assertIdsExist(
+      `Capstone story ${story.id}`,
+      'capstone line',
+      story.lineIds,
+      capstoneLineRecord,
+    );
+    assertIdsExist(
+      `Capstone story ${story.id}`,
+      'capstone check',
+      story.checkIds,
+      capstoneCheckRecord,
+    );
+
+    story.checkIds.forEach((checkId) => {
+      const check = capstoneCheckRecord[checkId];
+
+      if (check && !story.lineIds.includes(check.lineId)) {
+        throw new Error(
+          `Capstone story ${story.id} references capstone check "${checkId}" for line "${check.lineId}" outside its lineIds.`,
+        );
+      }
+    });
+  });
 }
 
 function createStarterContent(content: ContentCollection): StarterContent {
@@ -108,6 +156,9 @@ function createStarterContent(content: ContentCollection): StarterContent {
     exampleSentences: createRecordById<ExampleSentence>(content.exampleSentences),
     listeningItems: createRecordById<ListeningItem>(content.listeningItems),
     missions: createRecordById<Mission>(content.missions),
+    capstoneLines: createRecordById<CapstoneLine>(content.capstoneLines),
+    capstoneChecks: createRecordById<CapstoneCheck>(content.capstoneChecks),
+    capstoneStories: createRecordById<CapstoneStory>(content.capstoneStories),
   };
 
   return {
@@ -123,6 +174,9 @@ function createStarterContent(content: ContentCollection): StarterContent {
       vocabCount: content.vocabItems.length,
       exampleCount: content.exampleSentences.length,
       listeningCount: content.listeningItems.length,
+      capstoneStoryCount: content.capstoneStories.length,
+      capstoneLineCount: content.capstoneLines.length,
+      capstoneCheckCount: content.capstoneChecks.length,
     },
   };
 }

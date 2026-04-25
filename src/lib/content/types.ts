@@ -93,6 +93,37 @@ export interface ReadingCheck {
   support?: string;
 }
 
+export interface CapstoneLine {
+  id: string;
+  japanese: string;
+  reading: string;
+  english: string;
+  grammarTags: string[];
+  vocabTags: string[];
+  sourceExampleIds: string[];
+  audioRef?: string;
+}
+
+export interface CapstoneCheck {
+  id: string;
+  lineId: string;
+  prompt: string;
+  choices: string[];
+  answer: string;
+  support?: string;
+}
+
+export interface CapstoneStory {
+  id: string;
+  chapterId: string;
+  title: string;
+  summary: string;
+  estimatedMinutes: number;
+  sourcePackIds: number[];
+  lineIds: string[];
+  checkIds: string[];
+}
+
 export interface MissionContentRefs {
   grammarLessonIds?: string[];
   vocabIds?: string[];
@@ -118,6 +149,9 @@ export interface ContentCollection {
   exampleSentences: ExampleSentence[];
   listeningItems: ListeningItem[];
   missions: Mission[];
+  capstoneLines: CapstoneLine[];
+  capstoneChecks: CapstoneCheck[];
+  capstoneStories: CapstoneStory[];
 }
 
 export interface StarterContent extends ContentCollection {
@@ -127,6 +161,9 @@ export interface StarterContent extends ContentCollection {
     exampleSentences: Record<string, ExampleSentence>;
     listeningItems: Record<string, ListeningItem>;
     missions: Record<string, Mission>;
+    capstoneLines: Record<string, CapstoneLine>;
+    capstoneChecks: Record<string, CapstoneCheck>;
+    capstoneStories: Record<string, CapstoneStory>;
   };
   summary: {
     missionCount: number;
@@ -135,5 +172,8 @@ export interface StarterContent extends ContentCollection {
     vocabCount: number;
     exampleCount: number;
     listeningCount: number;
+    capstoneStoryCount: number;
+    capstoneLineCount: number;
+    capstoneCheckCount: number;
   };
 }

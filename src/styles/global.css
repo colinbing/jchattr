@@ -611,7 +611,8 @@ button {
 
 .mission-library-card__state-row,
 .mission-library-card__quick-row,
-.mission-library-card__detail-stack {
+.mission-library-card__detail-stack,
+.mission-chapter__capstone-list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
@@ -715,6 +716,17 @@ button {
 .mission-chapter-list {
   display: grid;
   gap: var(--space-3);
+}
+
+.mission-chapter__capstone-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: var(--space-1);
+}
+
+.mission-chapter__capstone {
+  border-color: rgba(197, 139, 77, 0.2);
+  background: rgba(255, 248, 235, 0.72);
 }
 
 .mission-library-switcher,
@@ -1952,6 +1964,8 @@ button {
 }
 
 .reading-check-card,
+.capstone-check-panel,
+.capstone-tag-stack,
 .output-support-grid,
 .output-support-grid__column,
 .output-vocab-strip {

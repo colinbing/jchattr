@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
+import { CapstoneDetailPage } from '../features/missions/routes/CapstoneDetailPage';
 import { MissionDetailPage } from '../features/missions/routes/MissionDetailPage';
 import { MissionsPage } from '../features/missions/routes/MissionsPage';
 import { ProgressPage } from '../features/progress/routes/ProgressPage';
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
       {
         path: 'mission/:missionId',
         element: <MissionDetailPage />,
+      },
+      {
+        path: 'capstone/:storyId',
+        element: <CapstoneDetailPage />,
       },
       {
         path: 'progress',

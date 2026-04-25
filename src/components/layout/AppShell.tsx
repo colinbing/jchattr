@@ -4,7 +4,8 @@ import { AppNav } from './AppNav';
 
 export function AppShell() {
   const location = useLocation();
-  const isMissionDetailRoute = location.pathname.startsWith('/mission/');
+  const isMissionDetailRoute =
+    location.pathname.startsWith('/mission/') || location.pathname.startsWith('/capstone/');
   const preserveScroll = Boolean(
     (location.state as { preserveScroll?: boolean } | null)?.preserveScroll,
   );

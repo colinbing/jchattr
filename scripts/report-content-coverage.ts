@@ -13,6 +13,9 @@ console.log(`Listening items: ${snapshot.content.summary.listeningCount}`);
 console.log(`Missions: ${snapshot.content.summary.missionCount}`);
 console.log(`Reading missions: ${snapshot.readingMissions.length}`);
 console.log(`Reading checks: ${snapshot.readingCheckCount}`);
+console.log(`Capstone stories: ${snapshot.content.summary.capstoneStoryCount}`);
+console.log(`Capstone lines: ${snapshot.content.summary.capstoneLineCount}`);
+console.log(`Capstone checks: ${snapshot.content.summary.capstoneCheckCount}`);
 
 console.log('');
 console.log('Mission type totals:');

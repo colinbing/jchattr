@@ -103,6 +103,42 @@ export const readingCheckSchema = z
     'Reading check answer must match one of the provided choices.',
   );
 
+export const capstoneLineSchema = z.object({
+  id: idSchema,
+  japanese: nonEmptyStringSchema,
+  reading: nonEmptyStringSchema,
+  english: nonEmptyStringSchema,
+  grammarTags: z.array(nonEmptyStringSchema),
+  vocabTags: z.array(nonEmptyStringSchema),
+  sourceExampleIds: z.array(idSchema).min(1),
+  audioRef: nonEmptyStringSchema.optional(),
+});
+
+export const capstoneCheckSchema = z
+  .object({
+    id: idSchema,
+    lineId: idSchema,
+    prompt: nonEmptyStringSchema,
+    choices: z.array(nonEmptyStringSchema).min(2),
+    answer: nonEmptyStringSchema,
+    support: nonEmptyStringSchema.optional(),
+  })
+  .refine(
+    (value) => value.choices.includes(value.answer),
+    'Capstone check answer must match one of the provided choices.',
+  );
+
+export const capstoneStorySchema = z.object({
+  id: idSchema,
+  chapterId: idSchema,
+  title: nonEmptyStringSchema,
+  summary: nonEmptyStringSchema,
+  estimatedMinutes: z.number().int().positive(),
+  sourcePackIds: z.array(z.number().int().positive()).min(1),
+  lineIds: z.array(idSchema).min(1),
+  checkIds: z.array(idSchema).min(1),
+});
+
 export const missionContentRefsSchema = z
   .object({
     grammarLessonIds: z.array(idSchema).min(1).optional(),
@@ -155,4 +191,7 @@ export const contentCollectionSchema = z.object({
   exampleSentences: z.array(exampleSentenceSchema).min(1),
   listeningItems: z.array(listeningItemSchema).min(1),
   missions: z.array(missionSchema).min(1),
+  capstoneLines: z.array(capstoneLineSchema),
+  capstoneChecks: z.array(capstoneCheckSchema),
+  capstoneStories: z.array(capstoneStorySchema),
 });

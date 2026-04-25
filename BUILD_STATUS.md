@@ -409,6 +409,7 @@
   - 550 vocab items
   - 361 listening items
   - 199 missions
+  - 1 capstone story with 11 capstone lines and 4 capstone checks, now reachable from Missions through a dedicated capstone player route
 - Mission auto-complete now works, but it is still pass-local: completion triggers when each drill or check has been cleared once in the current pass, and there is still no finer-grained saved per-item progress model inside a mission
 - Continue state restores mission/step only, not in-progress answers
 - Output evaluation is still intentionally narrow; it now supports explicit token-pattern checks and close-answer feedback, but it still does not do broad semantic grading or AI feedback
@@ -449,8 +450,8 @@
 
 ## Next Recommended Slices
 
-1. Run a V2.6 mobile rollover/tracker acceptance audit before adding more implementation work: reset progress, complete Today, confirm the weekly check, simulate or inspect a new study-day plan, then verify Today, first grammar/listening/output missions, Review, Progress, and Missions still work together.
-2. Keep new mission types, richer SRS intervals, and broader content-model changes deferred unless more real-use feedback explicitly accepts that larger model change.
+1. Implement Feature 1D from `NEXT_FEATURE_PLAN.md`: add capstone recommendation logic after the relevant chapter is complete, without interrupting urgent Review or the finite Today shell.
+2. Keep broader capstone generation for later chapters deferred until the first capstone recommendation flow is validated.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
@@ -478,6 +479,9 @@
 - Missions chapter-surface density: completed by removing repeated active-chapter framing before the next-mission card while keeping the current chapter tabs, hash-based chapter switching, locked/unlocked state, and mission cards intact.
 - Today personal-focus recommendation copy: completed by adding mission-level `Personal focus` lines derived from current local progress, open weak points, target skills, and linked grammar tags, without adding storage, schemas, sync, accounts, analytics, or AI behavior.
 - Today personalization-copy sanity pass: completed across empty, in-progress, weak-point, and recently-reviewed local states; the only accepted fix was copy semantics for incomplete support missions, which now use `Keep moving` and open-mission wording instead of short-pass reinforcement language.
+- Capstone story data model: completed in Feature 1A by adding typed capstone stories, lines, and checks; Zod validation; loader relation checks for source examples, line IDs, and check IDs; report counts; and one minimal chapter 1 fixture without adding UI or Today behavior.
+- Capstone story player: completed in Feature 1B by adding a dedicated `/capstone/:storyId` route, a single-focus capstone player, local capstone completion progress, Missions chapter-card entry points, Settings reset support, and mobile-nav hiding for capstone routes without changing Today recommendations.
+- First chapter capstone content: completed in Feature 1C by expanding the chapter 1 closeout to 11 pack 1-5 lines and 4 comprehension checks, all copied from existing source examples with no new grammar or new Japanese lines.
 - Navigation consolidation: completed in the Phase 4 entry slice by removing the duplicate shell-level page header so one navigation/context system owns the page structure.
 - End-to-end mission-flow audit: simulate each mission type as a learner, identify friction points, and tighten what the user sees, clicks, and expects at each step.
 

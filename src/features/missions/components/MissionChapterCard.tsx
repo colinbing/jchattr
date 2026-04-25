@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom';
 import {
+  getCapstoneProgressEntry,
+  useCapstoneProgress,
+} from '../../../lib/progress/capstoneProgress';
+import {
   buildContentNote,
   formatMissionType,
   formatTargetSkill,
@@ -20,6 +24,7 @@ export function MissionChapterCard({
   items,
   starterContent,
 }: MissionChapterCardProps) {
+  const capstoneProgress = useCapstoneProgress();
   const completedCount = items.filter((item) => item.progress.isCompleted).length;
   const unlockedCount = items.filter((item) => item.isUnlocked).length;
   const recommendedCount = items.filter((item) => item.isRecommended).length;
@@ -31,6 +36,10 @@ export function MissionChapterCard({
     (item) => item.isUnlocked && item.progress.completionCount === 0,
   );
   const isChapterCleared = completedCount === items.length;
+  const capstoneStories =
+    chapter.kind === 'core'
+      ? starterContent.capstoneStories.filter((story) => story.chapterId === chapter.id)
+      : [];
 
   return (
     <section className="mission-chapter" id={chapter.id}>
@@ -100,6 +109,50 @@ export function MissionChapterCard({
             ) : null}
           </div>
         </details>
+
+        {capstoneStories.length > 0 ? (
+          <div className="mission-chapter__capstone-list" role="list" aria-label="Chapter capstones">
+            {capstoneStories.map((story) => {
+              const progress = getCapstoneProgressEntry(capstoneProgress, story.id);
+
+              return (
+                <div key={story.id} className="mission-focus-card mission-chapter__capstone" role="listitem">
+                  <div className="mission-chapter__focus-copy">
+                    <p className="mission-focus-card__eyebrow">Chapter capstone</p>
+                    <h4 className="mission-chapter__focus-title">{story.title}</h4>
+                    <p className="mission-chapter__focus-body">
+                      {story.summary}
+                    </p>
+                    <div className="mission-chapter__state-row" aria-label={`${story.title} state`}>
+                      <span
+                        className={
+                          progress.isCompleted
+                            ? 'mission-state-pill mission-state-pill--completed'
+                            : 'mission-state-pill mission-state-pill--ready'
+                        }
+                      >
+                        {progress.isCompleted ? 'Capstone cleared' : 'Ready'}
+                      </span>
+                      <span className="mission-state-pill mission-state-pill--ready">
+                        {story.lineIds.length} lines
+                      </span>
+                      <span className="mission-state-pill mission-state-pill--ready">
+                        {story.checkIds.length} checks
+                      </span>
+                    </div>
+                  </div>
+                  <Link
+                    to={`/capstone/${story.id}`}
+                    className="inline-link"
+                    aria-label={`Open ${story.title}`}
+                  >
+                    {progress.isCompleted ? 'Open again' : 'Open capstone'}
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
 
         <div className="mission-list" role="list" aria-label={chapter.title}>
           {items.map((item) => (
