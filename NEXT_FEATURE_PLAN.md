@@ -34,6 +34,7 @@ Before starting a slice, assume the current repo has:
 - `550` vocab items
 - `731` example sentences
 - `361` listening items with matched local audio assets
+- `10` chapter capstone stories covering packs `1-50`
 
 Verify this baseline with:
 
@@ -141,8 +142,30 @@ Content audit:
 - Grammar scope:
 - Vocab scope:
 - New/old sentence ratio:
+- Capstone/source reuse:
 - Known risks:
 ```
+
+### Capstone Content Spine Rules
+
+Capstone stories should be designed as payoff artifacts for five-pack chapters, not as unrelated graded-reader content.
+
+Use this rule of thumb:
+
+- `60-75%` previously learned grammar and vocab
+- `20-35%` current chapter grammar/vocab carrying the main comprehension load
+- `0-5%` preview grammar only when intentionally marked, explained, and safe to ignore
+
+This keeps later capstones readable while still making the newest chapter matter. Later stories should naturally reuse earlier N5 material; they should not try to isolate only the newest grammar.
+
+Before adding a production capstone, verify:
+
+- It has a clear scenario and communicative payoff.
+- It is beginner-natural and Genki-style in quality: short, explicit, polite-form safe unless plain recognition is the point, and not machine-translated prose.
+- Each line has `sourceExampleIds` unless the line is a deliberately reviewed recombination.
+- Any recombined line uses only introduced grammar/vocab, or the exception is documented in the content audit.
+- Checks test comprehension of the story, not obscure grammar trivia.
+- The capstone feels like a bow on the prior five packs.
 
 ---
 
@@ -282,6 +305,90 @@ Next best prompt:
 
 ```text
 Implement Feature 1D from NEXT_FEATURE_PLAN.md: add capstone recommendation logic after a chapter is complete. Preserve Review-first behavior and the finite Today lesson shell. Run typecheck/build and the standard reports.
+```
+
+#### 1E. Capstone Content Spine Blueprint
+
+Scope:
+
+- Plan capstone story coverage for all `10` five-pack chapters before broad content generation.
+- Do not add production story content yet unless a tiny fixture is needed for schema/report work.
+- Document chapter theme, scenario, grammar focus, source pack range, expected line/check count, and quality risks.
+- Add or update a report surface so missing capstone coverage by chapter is visible.
+
+Acceptance criteria:
+
+- `NEXT_FEATURE_PLAN.md` and/or `N5_CURRICULUM_PLAN.md` includes a chapter-by-chapter capstone spine for packs `1-50`.
+- The plan treats capstones as spiral review: mostly known language, current chapter as the main challenge.
+- A future Codex chat can implement one capstone batch without re-deciding the full strategy.
+- Reports or documentation clearly state current production coverage: only chapter 1 until more capstones land.
+
+Next best prompt:
+
+```text
+Implement Feature 1E from NEXT_FEATURE_PLAN.md: create the capstone content spine blueprint for chapters 1-10 and add a lightweight coverage signal for missing chapter capstones. Do not add broad story content yet. Preserve current app behavior and run typecheck/build plus content reports if code changes.
+```
+
+#### 1F. Capstone Breadth Batch 1, Chapters 2-4
+
+Scope:
+
+- Add hand-reviewed capstone stories for packs `6-20`.
+- Use the chapter spine from 1E.
+- Keep each story short, supported, and schema-auditable.
+
+Acceptance criteria:
+
+- Chapter 2, 3, and 4 each have one production capstone.
+- Each capstone has `8-14` short lines and `3-5` checks.
+- Every line has source references or a documented recombination rationale.
+- Content audit covers grammar scope, vocab scope, source reuse, and known naturalness risks.
+- Typecheck, build, and all standard content reports pass.
+
+Next best prompt:
+
+```text
+Implement Feature 1F from NEXT_FEATURE_PLAN.md: add hand-reviewed chapter capstones for chapters 2-4 using the capstone spine. Use existing grammar/vocab and sourceExampleIds, keep the content Genki-quality and beginner-natural, and run typecheck/build plus content coverage, reading reuse, progression gaps, and content overlap reports. Include a content audit.
+```
+
+#### 1G. Capstone Breadth Batch 2, Chapters 5-7
+
+Scope:
+
+- Add hand-reviewed capstone stories for packs `21-35`.
+- Emphasize practical recombination across time/date, shopping, te-form, descriptions, comparisons, frequency, and reasons.
+
+Acceptance criteria:
+
+- Chapter 5, 6, and 7 each have one production capstone.
+- Stories reuse earlier grammar naturally instead of trying to isolate only new structures.
+- Current-chapter grammar carries the main comprehension load.
+- Content audit and standard reports pass.
+
+Next best prompt:
+
+```text
+Implement Feature 1G from NEXT_FEATURE_PLAN.md: add hand-reviewed chapter capstones for chapters 5-7 using the capstone spine. Keep stories short, practical, source-auditable, and Genki-quality. Run typecheck/build plus standard content reports and include a content audit.
+```
+
+#### 1H. Capstone Breadth Batch 3, Chapters 8-10
+
+Scope:
+
+- Add hand-reviewed capstone stories for packs `36-50`.
+- Cover desire, ability, experience, choices, health/weather, travel friction, plain recognition, connected flow, and flexible listing.
+
+Acceptance criteria:
+
+- Chapter 8, 9, and 10 each have one production capstone.
+- Plain-style material stays recognition-safe unless the curriculum explicitly supports production.
+- Checks remain beginner-comprehension focused.
+- Content audit and standard reports pass.
+
+Next best prompt:
+
+```text
+Implement Feature 1H from NEXT_FEATURE_PLAN.md: add hand-reviewed chapter capstones for chapters 8-10 using the capstone spine. Keep plain-style content recognition-safe, avoid hidden N4+ grammar, and run typecheck/build plus standard content reports. Include a content audit.
 ```
 
 ---
@@ -890,28 +997,33 @@ This order maximizes learner value while reducing architecture risk:
 5. `2A` replay variant audit
 6. `2B` grammar/listening replay variants
 7. `2C` output/reading replay variants
-8. `3A` feedback taxonomy
-9. `3B` grammar mistake drawer
-10. `3C` review mistake drawer
-11. `3D` other modality explanations
-12. `4A` gold star visual pass
-13. `4B` weekly shape copy
-14. `5A` preference store
-15. `5B` Today focus weighting
-16. `5C` Today focus control
-17. `6A` scenario model decision
-18. `6B` first scenario sim
-19. `6C` scenario pack set
-20. `7A` seen vocab derivation
-21. `7B` reading display mode
-22. `7C` known/unknown chips
-23. `8A` AI content drafting protocol
-24. `8B` capstone draft script
-25. `8C` optional AI explanation fallback
-26. `8D` optional typed output coach
-27. `8E` voice coach spike
+8. `2D` chapter recombination pass
+9. `1E` capstone content spine blueprint
+10. `1F` capstone breadth batch 1, chapters 2-4
+11. `1G` capstone breadth batch 2, chapters 5-7
+12. `1H` capstone breadth batch 3, chapters 8-10
+13. `3A` feedback taxonomy
+14. `3B` grammar mistake drawer
+15. `3C` review mistake drawer
+16. `3D` other modality explanations
+17. `4A` gold star visual pass
+18. `4B` weekly shape copy
+19. `5A` preference store
+20. `5B` Today focus weighting
+21. `5C` Today focus control
+22. `6A` scenario model decision
+23. `6B` first scenario sim
+24. `6C` scenario pack set
+25. `7A` seen vocab derivation
+26. `7B` reading display mode
+27. `7C` known/unknown chips
+28. `8A` AI content drafting protocol
+29. `8B` capstone draft script
+30. `8C` optional AI explanation fallback
+31. `8D` optional typed output coach
+32. `8E` voice coach spike
 
-Gold-star work can move earlier if motivation polish becomes the priority. AI work should not move earlier than deterministic capstones and mistake explanations.
+Gold-star work can move earlier if motivation polish becomes the priority. AI work should not move earlier than deterministic capstones, capstone content-spine planning, and mistake explanations. Full capstone breadth can be batched around Feature 3 if implementation momentum requires it, but the 1E blueprint should happen before broad new content or AI drafting.
 
 ---
 
@@ -935,6 +1047,10 @@ Use these states:
 | 2B Grammar/listening replay variants | Verified | Formalized deterministic replay variants with metadata, wired grammar and listening reinforce mode to the helper, preserved first-pass behavior and Review isolation, and kept output/reading on the compatibility selector for 2C. Verified with typecheck, build, helper smoke check, and standard content reports. |
 | 2C Output/reading replay variants | Verified | Wired output and reading reinforce mode to replay-variant metadata, preserved full first-pass lists and Review isolation, and updated Today reinforcement copy to describe short rotated passes. Verified with typecheck, build, helper smoke check, and standard content reports. |
 | 2D Chapter recombination pass | Verified | Added bonus-priority Today recombination recommendations for completed capstones, reused the capstone story player through `mode=recombination`, kept urgent Review suppression, and kept recombination out of the finite core Today plan. Verified with typecheck, build, smoke checks, and standard content reports. |
+| 1E Capstone content spine blueprint | Verified | Added a typed chapter 1-10 capstone blueprint with scenarios, grammar focus, reuse focus, line/check targets, and quality risks. Content reports now show capstone chapter coverage as 1/10 with missing chapters visible. Verified with typecheck, build, and standard content reports. |
+| 1F Capstone breadth batch 1 | Verified | Added hand-reviewed chapter 2-4 capstones covering packs 6-20, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 4/10. Verified with typecheck, build, source-line audit, and standard content reports. |
+| 1G Capstone breadth batch 2 | Verified | Added hand-reviewed chapter 5-7 capstones covering packs 21-35, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 7/10. Verified with typecheck, build, source-line audit, and standard content reports. |
+| 1H Capstone breadth batch 3 | Verified | Added hand-reviewed chapter 8-10 capstones covering packs 36-50, using exact existing example lines with sourceExampleIds, 11 lines per story, and 4 comprehension checks each. Chapter 10 keeps plain-style content recognition-safe. Content reports now show capstone chapter coverage as 10/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 3A Feedback taxonomy | Not started |  |
 | 3B Grammar mistake drawer | Not started |  |
 | 3C Review mistake drawer | Not started |  |

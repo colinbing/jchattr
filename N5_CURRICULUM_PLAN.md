@@ -172,6 +172,50 @@ For trickier areas like plain-form exposure, the app should move from:
 
 It should not jump straight from zero exposure to open typing.
 
+### 8. Capstones Are The Five-Pack Payoff
+
+Each five-pack chapter should eventually end with one short capstone story, dialogue, or message thread. The capstone is not a separate reading curriculum. It is the payoff artifact that proves the learner can recombine the chapter's mission practice into a small coherent scene.
+
+The right density is spiral review:
+
+- mostly already-learned language, so the story remains readable
+- current-chapter grammar as the main comprehension challenge
+- no hidden future grammar unless the line is explicitly recognition-only and documented
+
+For production quality, capstones should feel like Genki-quality beginner material: natural enough to be worth reading, short enough for a mobile session, explicit enough that a beginner can parse it, and conservative about grammar that has not been taught.
+
+Recommended ratio per capstone:
+
+- `60-75%` earlier grammar/vocab
+- `20-35%` current five-pack grammar/vocab
+- `0-5%` intentional preview or stretch material
+
+Every production capstone should include:
+
+- `8-14` short lines
+- `3-5` comprehension checks
+- source references through `sourceExampleIds` wherever possible
+- a content audit covering grammar scope, vocab scope, source reuse, and known risks
+
+### 9. Capstone Spine For Packs 1-50
+
+This is the intended breadth plan for the capstone library. Chapters 1-10 are now implemented as production capstones across packs 1-50.
+
+| Chapter | Packs | Working Story Shape | Main Payoff |
+| --- | ---: | --- | --- |
+| 1 | 1-5 | First day basics in class | identity, questions, destinations, existence, preferences, place answers |
+| 2 | 6-10 | Home and daily routine | possession, daily verbs, adjectives, past actions, requests/permission |
+| 3 | 11-15 | Errand run through town | shopping basics, time, weekdays, transport, directions |
+| 4 | 16-20 | Making and adjusting a meetup plan | invitations, meeting places, waiting/status, suggestions, proposals |
+| 5 | 21-25 | Scheduling and paying for a simple outing | time ranges, dates, appointments, quantities, prices |
+| 6 | 26-30 | Store request and follow-up actions | availability, te-form requests, action sequence, ongoing state, adjective negatives |
+| 7 | 31-35 | Choosing where to go and explaining why | adjective past, comparisons, superlatives, frequency, reasons |
+| 8 | 36-40 | Talking about wants, ability, experience, and company | desire, object desire, ability, experience, with whom/how |
+| 9 | 41-45 | Handling choices, health, weather, travel, and delay | choices, condition, weather/clothing, travel steps, contacting others |
+| 10 | 46-50 | Late N5 flow and recognition wrap-up | before/after, plain recognition, connected flow, flexible listing |
+
+Future capstone batches should not try to write only with the newest grammar. Earlier grammar is the floor; the newest chapter is the point of tension.
+
 ---
 
 ## Original Phase 3 Grammar Gap List

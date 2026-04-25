@@ -14,6 +14,9 @@ console.log(`- listening items: ${snapshot.content.summary.listeningCount}`);
 console.log(`- capstone stories: ${snapshot.content.summary.capstoneStoryCount}`);
 console.log(`- capstone lines: ${snapshot.content.summary.capstoneLineCount}`);
 console.log(`- capstone checks: ${snapshot.content.summary.capstoneCheckCount}`);
+console.log(
+  `- capstone chapter coverage: ${snapshot.coveredCapstoneChapterCount}/${snapshot.expectedCapstoneChapterCount}`,
+);
 console.log(`- reading missions: ${snapshot.readingMissions.length}`);
 console.log(`- reading checks: ${snapshot.readingCheckCount}`);
 
@@ -31,6 +34,15 @@ console.log(`- shipped packs: ${snapshot.contentPacks.length}`);
 if (latestPack) {
   console.log(`- latest pack: ${latestPack.packNumber} (${latestPack.title})`);
 }
+
+console.log('');
+console.log('Capstone coverage summary:');
+snapshot.capstoneCoverageSummaries.forEach((chapter) => {
+  const status = chapter.isCovered ? 'covered' : 'missing';
+  console.log(
+    `- ${chapter.chapterLabel} packs ${chapter.sourcePackIds[0]}-${chapter.sourcePackIds.at(-1)}: ${status} (${chapter.storyCount} stories)`,
+  );
+});
 
 console.log('');
 console.log('Listening audio summary:');

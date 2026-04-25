@@ -16,6 +16,9 @@ console.log(`Reading checks: ${snapshot.readingCheckCount}`);
 console.log(`Capstone stories: ${snapshot.content.summary.capstoneStoryCount}`);
 console.log(`Capstone lines: ${snapshot.content.summary.capstoneLineCount}`);
 console.log(`Capstone checks: ${snapshot.content.summary.capstoneCheckCount}`);
+console.log(
+  `Capstone chapter coverage: ${snapshot.coveredCapstoneChapterCount}/${snapshot.expectedCapstoneChapterCount}`,
+);
 
 console.log('');
 console.log('Mission type totals:');
@@ -28,6 +31,22 @@ console.log('Pack-linked coverage:');
 snapshot.packSummaries.forEach((pack) => {
   console.log(
     `- Pack ${pack.packNumber}: ${pack.title} | lessons ${pack.linkedGrammarLessonCount}, vocab ${pack.linkedVocabCount}, examples ${pack.linkedExampleCount}, listening ${pack.linkedListeningCount}, missions ${pack.linkedMissionCount}`,
+  );
+});
+
+console.log('');
+console.log('Capstone chapter coverage:');
+snapshot.capstoneCoverageSummaries.forEach((chapter) => {
+  const status = chapter.isCovered ? 'covered' : 'missing';
+  const storyLabel =
+    chapter.storyIds.length > 0 ? ` | stories ${chapter.storyIds.join(', ')}` : '';
+  const productionPackLabel =
+    chapter.productionPackIds.length > 0
+      ? ` | production packs ${chapter.productionPackIds.join(', ')}`
+      : '';
+
+  console.log(
+    `- ${chapter.chapterLabel} (${chapter.sourcePackIds[0]}-${chapter.sourcePackIds.at(-1)}): ${status} | ${chapter.workingTitle} | target ${chapter.expectedLineCount.min}-${chapter.expectedLineCount.max} lines, ${chapter.expectedCheckCount.min}-${chapter.expectedCheckCount.max} checks | current ${chapter.lineCount} lines, ${chapter.checkCount} checks${storyLabel}${productionPackLabel}`,
   );
 });
 

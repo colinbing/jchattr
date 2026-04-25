@@ -1,4 +1,5 @@
 import { contentPacks } from '../../src/content/contentPacks';
+import { capstoneStoryBlueprints } from '../../src/content/capstoneStoryBlueprints';
 import { getStarterContent } from '../../src/lib/content/loader';
 import { getListeningAudioStatus } from '../../src/lib/audio/listeningAudioAssets';
 
@@ -61,6 +62,27 @@ export function getContentQaSnapshot() {
     ),
   );
   const readingExampleIdSet = new Set(readingExampleIds);
+  const capstoneCoverageSummaries = capstoneStoryBlueprints.map((blueprint) => {
+    const stories = content.capstoneStories.filter((story) => story.chapterId === blueprint.chapterId);
+    const productionPackIds = Array.from(
+      new Set(stories.flatMap((story) => story.sourcePackIds)),
+    ).sort((left, right) => left - right);
+    const lineCount = stories.reduce((total, story) => total + story.lineIds.length, 0);
+    const checkCount = stories.reduce((total, story) => total + story.checkIds.length, 0);
+
+    return {
+      ...blueprint,
+      storyCount: stories.length,
+      storyIds: stories.map((story) => story.id),
+      productionPackIds,
+      lineCount,
+      checkCount,
+      isCovered: stories.length > 0,
+    };
+  });
+  const coveredCapstoneChapterCount = capstoneCoverageSummaries.filter(
+    (summary) => summary.isCovered,
+  ).length;
   const packSummaries = contentPacks.map((pack) => {
     const reusedExampleIds = pack.exampleIds.filter((exampleId) => readingExampleIdSet.has(exampleId));
 
@@ -88,6 +110,9 @@ export function getContentQaSnapshot() {
     readingCheckCount,
     readingExampleIds,
     readingExampleIdSet,
+    capstoneCoverageSummaries,
+    coveredCapstoneChapterCount,
+    expectedCapstoneChapterCount: capstoneStoryBlueprints.length,
     packSummaries,
     introducedGrammarTagCounts: countBy(contentPacks.flatMap((pack) => pack.introducedGrammarTags)),
     reinforcedGrammarTagCounts: countBy(contentPacks.flatMap((pack) => pack.reinforcedGrammarTags)),
