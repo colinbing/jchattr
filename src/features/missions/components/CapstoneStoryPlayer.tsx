@@ -17,6 +17,7 @@ type CapstoneStoryPlayerProps = {
   story: CapstoneStory;
   lines: CapstoneLine[];
   checksByLineId: Record<string, CapstoneCheck[]>;
+  mode?: 'closeout' | 'recombination';
 };
 
 type CheckFeedback = 'correct' | 'incorrect' | null;
@@ -25,13 +26,14 @@ export function CapstoneStoryPlayer({
   story,
   lines,
   checksByLineId,
+  mode = 'closeout',
 }: CapstoneStoryPlayerProps) {
   const capstoneProgress = useCapstoneProgress();
   const completion = getCapstoneProgressEntry(capstoneProgress, story.id);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [revealedLineIds, setRevealedLineIds] = useState<string[]>([]);
   const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
-  const [isFinished, setIsFinished] = useState(completion.isCompleted);
+  const [isFinished, setIsFinished] = useState(mode === 'closeout' && completion.isCompleted);
   const currentLine = lines[currentLineIndex];
   const currentChecks = checksByLineId[currentLine.id] ?? [];
   const currentCheck = currentChecks[0] ?? null;
@@ -84,7 +86,11 @@ export function CapstoneStoryPlayer({
       <SurfaceCard
         className="mission-session-card"
         title={story.title}
-        description="Chapter closeout. Read one line, reveal support, then clear the checks."
+        description={
+          mode === 'recombination'
+            ? 'Optional recombination pass. Reread familiar lines and clear the checks again.'
+            : 'Chapter closeout. Read one line, reveal support, then clear the checks.'
+        }
       >
         <div className="mission-session-card__meta-row">
           <p className="mission-session-card__meta">
@@ -116,7 +122,9 @@ export function CapstoneStoryPlayer({
         </div>
 
         <details className="mission-session-details">
-          <summary className="mission-session-details__summary">Capstone details</summary>
+          <summary className="mission-session-details__summary">
+            {mode === 'recombination' ? 'Recombination details' : 'Capstone details'}
+          </summary>
           <div className="capstone-tag-stack">
             <p className="mission-session-details__body">{story.summary}</p>
             <div className="review-chip-row" aria-label="Capstone source packs">
@@ -152,6 +160,7 @@ export function CapstoneStoryPlayer({
             isCheckCleared={isCurrentCheckCleared}
             hasNextLine={currentLineIndex < lines.length - 1}
             isFinished={isFinished}
+            finishLabel={mode === 'recombination' ? 'Finish recombination' : 'Finish capstone'}
             onReveal={revealCurrentLine}
             onCheckCleared={clearCheck}
             onAdvance={advance}
@@ -177,12 +186,20 @@ export function CapstoneStoryPlayer({
 
       {isFinished ? (
         <SurfaceCard
-          title="Capstone complete"
-          description="This chapter closeout is saved locally. Today recommendations are unchanged for now."
+          title={mode === 'recombination' ? 'Recombination complete' : 'Capstone complete'}
+          description={
+            mode === 'recombination'
+              ? 'This optional reread is saved locally. Today core work stays unchanged.'
+              : 'This chapter closeout is saved locally. Today recommendations are unchanged for now.'
+          }
         >
           <div className="mission-completion-card">
             <div className="mission-completion-card__summary">
-              <p className="mission-completion-card__status">Chapter closeout saved</p>
+              <p className="mission-completion-card__status">
+                {mode === 'recombination'
+                  ? 'Recombination pass saved'
+                  : 'Chapter closeout saved'}
+              </p>
               <div className="review-chip-row review-chip-row--active" aria-label="Capstone summary">
                 <span className="review-chip">
                   {lines.length} story line{lines.length === 1 ? '' : 's'}
@@ -227,6 +244,7 @@ type CapstoneLineCardProps = {
   isCheckCleared: boolean;
   hasNextLine: boolean;
   isFinished: boolean;
+  finishLabel: string;
   onReveal: () => void;
   onCheckCleared: (checkId: string) => void;
   onAdvance: () => void;
@@ -239,6 +257,7 @@ function CapstoneLineCard({
   isCheckCleared,
   hasNextLine,
   isFinished,
+  finishLabel,
   onReveal,
   onCheckCleared,
   onAdvance,
@@ -332,7 +351,7 @@ function CapstoneLineCard({
                 onClick={onAdvance}
                 disabled={!canAdvance}
               >
-                {hasNextLine ? 'Next line' : 'Finish capstone'}
+                {hasNextLine ? 'Next line' : finishLabel}
               </button>
             ) : hasSubmitted ? (
               <>
@@ -342,7 +361,7 @@ function CapstoneLineCard({
                   onClick={onAdvance}
                   disabled={!canAdvance}
                 >
-                  {hasNextLine ? 'Next line' : 'Finish capstone'}
+                  {hasNextLine ? 'Next line' : finishLabel}
                 </button>
                 <button
                   type="button"
@@ -386,7 +405,7 @@ function CapstoneLineCard({
             onClick={onAdvance}
             disabled={!canAdvance}
           >
-            {hasNextLine ? 'Next line' : 'Finish capstone'}
+            {hasNextLine ? 'Next line' : finishLabel}
           </button>
         </div>
       ) : null}

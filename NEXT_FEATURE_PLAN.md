@@ -397,6 +397,15 @@ Acceptance criteria:
 - After capstones exist, completed chapter missions can recommend a recombination pass.
 - This should reuse capstone/review surfaces when practical.
 
+Implementation notes:
+
+- Recombination reuses the capstone story surface instead of adding a new mission schema.
+- Completed capstones can now produce a bonus-priority Today recommendation with `mode=recombination`.
+- Today filters bonus-priority recommendations out of the finite core lesson plan, so recombination appears in optional bonus practice rather than adding required work.
+- The capstone route reads `?mode=recombination` and lets completed capstones be reread instead of immediately showing the completed state.
+- Finishing a recombination reread still saves through capstone progress, incrementing the existing local completion count without creating a separate progress store.
+- Urgent Review suppresses recombination recommendations, preserving Review-first behavior.
+
 Next best prompt:
 
 ```text
@@ -925,7 +934,7 @@ Use these states:
 | 2A Replay variant audit | Verified | Audited reinforce mode across grammar, listening, output, and reading players. Existing deterministic subset rotation can be formalized without schema changes; Review remains separate from mission session mode. No app behavior changed. |
 | 2B Grammar/listening replay variants | Verified | Formalized deterministic replay variants with metadata, wired grammar and listening reinforce mode to the helper, preserved first-pass behavior and Review isolation, and kept output/reading on the compatibility selector for 2C. Verified with typecheck, build, helper smoke check, and standard content reports. |
 | 2C Output/reading replay variants | Verified | Wired output and reading reinforce mode to replay-variant metadata, preserved full first-pass lists and Review isolation, and updated Today reinforcement copy to describe short rotated passes. Verified with typecheck, build, helper smoke check, and standard content reports. |
-| 2D Chapter recombination pass | Not started | Depends on capstones |
+| 2D Chapter recombination pass | Verified | Added bonus-priority Today recombination recommendations for completed capstones, reused the capstone story player through `mode=recombination`, kept urgent Review suppression, and kept recombination out of the finite core Today plan. Verified with typecheck, build, smoke checks, and standard content reports. |
 | 3A Feedback taxonomy | Not started |  |
 | 3B Grammar mistake drawer | Not started |  |
 | 3C Review mistake drawer | Not started |  |

@@ -78,10 +78,11 @@ export function TodayPage() {
     recommendations,
     continueMission?.mission.id ?? null,
   );
+  const coreEligibleRecommendations = visibleRecommendations.filter(isCoreRecommendation);
   const liveCoreRecommendations =
-    visibleRecommendations.length > 2
-      ? visibleRecommendations.slice(0, 2)
-      : visibleRecommendations;
+    coreEligibleRecommendations.length > 2
+      ? coreEligibleRecommendations.slice(0, 2)
+      : coreEligibleRecommendations;
   const [todayPlanSnapshot, setTodayPlanSnapshot] = useState<TodayPlanSnapshot>(() => {
     const storedPlan = dailySessionRecord.plansByStudyDay[studyDayKey];
     return isTodayPlanSnapshot(storedPlan)
@@ -410,6 +411,7 @@ type TodayPlanSnapshotItem = {
   targetSkill?: Mission['targetSkill'];
   sessionMode?: 'default' | 'reinforce';
   capstoneStoryId?: string;
+  capstoneMode?: 'closeout' | 'recombination';
   capstoneLineCount?: number;
   capstoneCheckCount?: number;
   batchSize?: number;
@@ -645,6 +647,7 @@ function createTodayPlanSnapshotItem(
       to: recommendation.to,
       minutes: recommendation.estimatedMinutes,
       capstoneStoryId: recommendation.capstoneStory.id,
+      capstoneMode: recommendation.capstoneMode,
       capstoneLineCount: recommendation.lineCount,
       capstoneCheckCount: recommendation.checkCount,
     };
@@ -747,7 +750,12 @@ function buildTodayPlanAction(
   if (item.kind === 'capstone') {
     return {
       to: item.to,
-      label: isFirstOpenItem ? 'Read capstone' : 'Continue today',
+      label:
+        item.capstoneMode === 'recombination'
+          ? 'Start recombination'
+          : isFirstOpenItem
+            ? 'Read capstone'
+            : 'Continue today',
     };
   }
 
@@ -773,6 +781,10 @@ function formatTodayPlanItemMeta(item: TodayPlanSnapshotItem, isCompleted: boole
   }
 
   if (item.kind === 'capstone') {
+    if (item.capstoneMode === 'recombination') {
+      return `${item.capstoneLineCount ?? 0} familiar story lines · optional`;
+    }
+
     if (isCompleted) {
       return 'Chapter closeout complete.';
     }
@@ -802,7 +814,9 @@ function getRecommendationKey(recommendation: TodayRecommendation) {
   }
 
   if (recommendation.kind === 'capstone') {
-    return `capstone:${recommendation.capstoneStory.id}`;
+    return recommendation.capstoneMode === 'recombination'
+      ? `capstone-recombination:${recommendation.capstoneStory.id}`
+      : `capstone:${recommendation.capstoneStory.id}`;
   }
 
   return `mission:${recommendation.mission.id}`;
@@ -865,6 +879,10 @@ function filterContinueMissionRecommendation(
       recommendation.mission.id !== continueMissionId
     );
   });
+}
+
+function isCoreRecommendation(recommendation: TodayRecommendation) {
+  return recommendation.priority !== 'bonus';
 }
 
 function buildMissionPracticeRecap(missionCompletion: TodayMissionCompletion) {

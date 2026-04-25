@@ -24,6 +24,8 @@ const RECENT_MISSION_COMPLETION_WINDOW_MS = 12 * 60 * 60 * 1000;
 const URGENT_WEAK_POINT_COUNT = 3;
 const REPEATED_MISS_THRESHOLD = 2;
 
+export type TodayRecommendationPriority = 'core' | 'bonus';
+
 export type TodayRecommendation =
   | {
       id: 'review-loop';
@@ -35,6 +37,7 @@ export type TodayRecommendation =
       to: '/review';
       weakPointCount: number;
       batchSize: number;
+      priority?: TodayRecommendationPriority;
     }
   | {
       id: string;
@@ -47,6 +50,7 @@ export type TodayRecommendation =
       mission: Mission;
       sessionMode: MissionSessionMode;
       personalFocus: string;
+      priority?: TodayRecommendationPriority;
     }
   | {
       id: string;
@@ -57,10 +61,12 @@ export type TodayRecommendation =
       ctaLabel: string;
       to: string;
       capstoneStory: CapstoneStory;
+      capstoneMode: 'closeout' | 'recombination';
       lineCount: number;
       checkCount: number;
       estimatedMinutes: number;
       personalFocus: string;
+      priority?: TodayRecommendationPriority;
     };
 
 // Keep the heuristics intentionally small and readable:
@@ -68,9 +74,10 @@ export type TodayRecommendation =
 // 2. Mark review as urgent when weak points are fresh, repeated, or numerous.
 // 3. Recommend the next unlocked incomplete mission in starter order.
 // 4. When a chapter is cleared, add its capstone as a closeout only if Review is not urgent.
-// 5. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
-// 6. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
-// 7. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
+// 5. Once the capstone is complete, offer a bonus recombination reread through the same capstone surface.
+// 6. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
+// 7. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
+// 8. If slots remain, fill them with the next least-practiced unlocked missions, while lightly de-prioritizing just-reviewed missions.
 export function deriveTodayRecommendations(
   starterContent: StarterContent,
   missionProgress: MissionProgressRecord,
@@ -141,6 +148,18 @@ export function deriveTodayRecommendations(
 
   if (capstoneRecommendation) {
     recommendations.push(capstoneRecommendation);
+  }
+
+  const recombinationRecommendation = getCapstoneRecombinationRecommendation(
+    starterContent,
+    missionProgress,
+    capstoneProgress,
+    reviewAwareness,
+    Boolean(capstoneRecommendation),
+  );
+
+  if (recombinationRecommendation) {
+    recommendations.push(recombinationRecommendation);
   }
 
   const supportMission = selectSupportMission(
@@ -346,12 +365,65 @@ function getCapstoneRecommendation(
     ctaLabel: 'Read capstone',
     to: `/capstone/${capstoneStory.id}`,
     capstoneStory,
+    capstoneMode: 'closeout',
     lineCount,
     checkCount,
     estimatedMinutes: capstoneStory.estimatedMinutes,
     personalFocus: `${lineCount} known-line story with ${checkCount} quick comprehension check${
       checkCount === 1 ? '' : 's'
     }.`,
+  };
+}
+
+function getCapstoneRecombinationRecommendation(
+  starterContent: StarterContent,
+  missionProgress: MissionProgressRecord,
+  capstoneProgress: CapstoneProgressRecord | undefined,
+  reviewAwareness: ReviewAwareness,
+  hasOpenCapstoneCloseout: boolean,
+): TodayRecommendation | null {
+  if (!capstoneProgress || reviewAwareness.isUrgent || hasOpenCapstoneCloseout) {
+    return null;
+  }
+
+  const capstoneStory = starterContent.capstoneStories.find((story) => {
+    const progressEntry = getCapstoneProgressEntry(capstoneProgress, story.id);
+    const sourceMissionIds = getCapstoneSourceMissionIds(story);
+
+    return (
+      progressEntry.isCompleted &&
+      sourceMissionIds.length > 0 &&
+      sourceMissionIds.every((missionId) => {
+        return getMissionProgressEntry(missionProgress, missionId).isCompleted;
+      })
+    );
+  });
+
+  if (!capstoneStory) {
+    return null;
+  }
+
+  const sourcePackLabel = formatCapstoneSourcePackLabel(capstoneStory.sourcePackIds);
+  const lineCount = capstoneStory.lineIds.length;
+  const checkCount = capstoneStory.checkIds.length;
+
+  return {
+    id: `${capstoneStory.id}-recombination`,
+    kind: 'capstone',
+    slotLabel: 'Recombine',
+    title: `${capstoneStory.title} reread`,
+    reason: `${sourcePackLabel} capstone is already complete. Use this optional reread to recombine the same known lines without adding new work to Today.`,
+    ctaLabel: 'Reread story',
+    to: `/capstone/${capstoneStory.id}?mode=recombination`,
+    capstoneStory,
+    capstoneMode: 'recombination',
+    lineCount,
+    checkCount,
+    estimatedMinutes: capstoneStory.estimatedMinutes,
+    personalFocus: `Optional recombination pass through ${lineCount} familiar story line${
+      lineCount === 1 ? '' : 's'
+    } and ${checkCount} check${checkCount === 1 ? '' : 's'}.`,
+    priority: 'bonus',
   };
 }
 

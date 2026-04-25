@@ -441,6 +441,7 @@
 - Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
 - Today is now more review-aware, more personally explained, date-keyed by local study day, and able to surface completed-chapter capstones, but recommendation logic is still intentionally simple and deterministic rather than adaptive or SRS-scheduled
+- Completed capstones can now surface as optional Today recombination rereads through the same capstone player without entering the finite core daily plan
 - Grammar, listening, output, and reading reinforce missions now use a named deterministic replay-variant helper with metadata while first-pass missions still receive full source lists
 - Daily-session rollover uses the user's device clock with an America/New_York 3 AM study-day boundary; there is no server clock, account sync, or cross-device validation
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
@@ -451,8 +452,8 @@
 
 ## Next Recommended Slices
 
-1. Implement Feature 2D from `NEXT_FEATURE_PLAN.md`: add an optional chapter recombination reinforce pass now that capstones and replay variants are in place.
-2. Keep broader capstone generation for later chapters deferred until the recombination pass and mistake-explanation basics are planned.
+1. Implement Feature 3A from `NEXT_FEATURE_PLAN.md`: define the feedback taxonomy for mistake explanations without changing answer behavior yet.
+2. Keep broader capstone generation for later chapters deferred until mistake-explanation basics are planned.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

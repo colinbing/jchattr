@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
 import type { CapstoneCheck, CapstoneLine } from '../../../lib/content/types';
@@ -6,8 +6,11 @@ import { CapstoneStoryPlayer } from '../components/CapstoneStoryPlayer';
 
 export function CapstoneDetailPage() {
   const { storyId } = useParams<{ storyId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const starterContent = getStarterContent();
+  const capstoneMode =
+    searchParams.get('mode') === 'recombination' ? 'recombination' : 'closeout';
 
   if (!storyId) {
     return (
@@ -51,14 +54,27 @@ export function CapstoneDetailPage() {
 
   return (
     <PageShell
-      eyebrow="Capstone"
+      eyebrow={capstoneMode === 'recombination' ? 'Recombination' : 'Capstone'}
       title={story.title}
-      description="Close the chapter with a short, supported reading pass."
-      aside={<span className="status-chip">Chapter closeout</span>}
+      description={
+        capstoneMode === 'recombination'
+          ? 'Reread the completed chapter story as an optional recombination pass.'
+          : 'Close the chapter with a short, supported reading pass.'
+      }
+      aside={
+        <span className="status-chip">
+          {capstoneMode === 'recombination' ? 'Optional reread' : 'Chapter closeout'}
+        </span>
+      }
       variant="compact"
     >
       <CapstoneRouteBar onGoBack={() => handleGoBack(navigate)} />
-      <CapstoneStoryPlayer story={story} lines={lines} checksByLineId={checksByLineId} />
+      <CapstoneStoryPlayer
+        story={story}
+        lines={lines}
+        checksByLineId={checksByLineId}
+        mode={capstoneMode}
+      />
     </PageShell>
   );
 }
