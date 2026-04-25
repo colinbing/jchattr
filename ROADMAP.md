@@ -248,3 +248,21 @@ Long term, Japanese OS may include:
 - more advanced personalization
 
 But none of that is required for the MVP to be a success.
+
+---
+
+## Active Next-Feature Plan
+
+After the finite Today loop, daily tracker, and Phase 4 mobile-loop cleanup baseline, the active next-feature sequence is tracked in `NEXT_FEATURE_PLAN.md`.
+
+That plan covers:
+- chapter capstone stories
+- mission replay variants
+- mistake explanation drawers
+- gold-star and weekly-shape polish
+- personal focus tuning
+- scenario sim micro-missions
+- known/seen text display
+- AI lesson-coach support
+
+Use `NEXT_FEATURE_PLAN.md` for granular patch order, QA gates, content-audit rules, and continuation prompts.

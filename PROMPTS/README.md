@@ -15,6 +15,7 @@ Codex should be used as a constrained repo-aware engineer, not as an open-ended 
    - `PRODUCT_SPEC.md`
    - `ROADMAP.md`
    - `BUILD_STATUS.md`
+   - `NEXT_FEATURE_PLAN.md` for the active next-feature implementation sequence
    - `Japanese_OS_feedback_plan.md` for active Phase 4 feedback triage
    - `N5_CURRICULUM_PLAN.md` only when reopening curriculum/content expansion work
 
@@ -53,6 +54,7 @@ Use this structure:
 - This repo is for Japanese OS, a local-first Japanese learning MVP.
 - Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, and `BUILD_STATUS.md`.
 - For active Phase 4 UX or personalization work, also follow `Japanese_OS_feedback_plan.md`.
+- For capstones, replay variants, mistake explanations, gold-star polish, focus tuning, scenario sims, known-content display, or AI coaching work, also follow `NEXT_FEATURE_PLAN.md`.
 - For curriculum/content expansion work, also follow `N5_CURRICULUM_PLAN.md`.
 - Preserve the current architecture unless the request explicitly says otherwise.
 
@@ -109,7 +111,8 @@ This sequence reflects the original foundation-build path.
 It is no longer the active project plan because the app shell, mission loop, persistence, review, progress, content expansion, and current Phase 4 mobile cleanup baseline already exist.
 
 For current work, start from verified repo reality in `BUILD_STATUS.md`.
-For Phase 4 product work, only choose a new slice from a concrete user-test, mobile-loop audit, or copy/layout finding.
+For Phase 4 feedback cleanup, only choose a new slice from a concrete user-test, mobile-loop audit, or copy/layout finding.
+For the next feature phase, choose one slice at a time from `NEXT_FEATURE_PLAN.md`.
 
 ### 01
 Scaffold the Vite + React + TypeScript app and set up the initial folder structure.
