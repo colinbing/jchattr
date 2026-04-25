@@ -1113,6 +1113,15 @@ button {
   font-weight: 700;
 }
 
+.japanese-text-pair__focus {
+  padding: 0.02em 0.16em 0.08em;
+  border-radius: 0.32em;
+  background: rgba(233, 190, 108, 0.28);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  color: inherit;
+}
+
 .mission-mistakes-list {
   list-style: none;
 }
@@ -1297,6 +1306,11 @@ button {
   color: #8c5a1d;
 }
 
+.mission-feedback--supported {
+  background: rgba(233, 190, 108, 0.18);
+  color: #7a551d;
+}
+
 .mission-feedback--incorrect {
   background: rgba(197, 139, 77, 0.12);
   color: #7f4f21;
@@ -1305,6 +1319,9 @@ button {
 .mission-player-shell--listening,
 .listening-workspace,
 .listening-item-panel,
+.listening-prep-card,
+.listening-prep-card__header,
+.listening-prep-lines,
 .listening-support,
 .listening-hint-panel,
 .listening-hint-panel__copy,
@@ -1331,6 +1348,7 @@ button {
 .listening-focus-card__header,
 .listening-focus-card__actions,
 .listening-session-details__grid,
+.listening-prep-line,
 .listening-support-example {
   display: flex;
   align-items: center;
@@ -1348,6 +1366,8 @@ button {
 .listening-session-bar__title,
 .listening-focus-card__prompt,
 .listening-focus-card__count,
+.listening-prep-card__title,
+.listening-prep-card__body,
 .listening-reveal-slot__empty,
 .listening-support-drawer__summary {
   margin: 0;
@@ -1464,6 +1484,48 @@ button {
 
 .listening-audio-card__fallback-title {
   font-weight: 700;
+}
+
+.listening-prep-card {
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.96), rgba(220, 233, 226, 0.7)),
+    var(--color-surface-strong);
+}
+
+.listening-prep-card__body {
+  color: var(--color-ink-muted);
+  line-height: 1.5;
+}
+
+.listening-prep-line {
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: var(--color-surface);
+}
+
+.listening-prep-line__copy {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.listening-prep-line__play {
+  flex: 0 0 auto;
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  border-radius: 999px;
+  border: 1px solid rgba(36, 84, 70, 0.16);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-weight: 800;
 }
 
 .listening-reveal-controls {
@@ -1966,6 +2028,91 @@ button {
   color: var(--color-ink);
   font-size: 0.92rem;
   line-height: 1.45;
+}
+
+.today-track-handoff {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.94), rgba(220, 233, 226, 0.58)),
+    var(--color-surface-strong);
+}
+
+.today-track-handoff__header {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.today-track-handoff__body,
+.today-track-list,
+.today-track-list__copy,
+.today-track-list__copy span {
+  margin: 0;
+}
+
+.today-track-handoff__body {
+  color: var(--color-ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.today-track-list {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.today-track-list__item {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: rgba(255, 253, 247, 0.72);
+}
+
+.today-track-list__item--next {
+  border-color: rgba(36, 84, 70, 0.18);
+  background: var(--color-surface);
+}
+
+.today-track-list__item--done {
+  opacity: 0.78;
+}
+
+.today-track-list__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.today-track-list__copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  color: var(--color-ink);
+  font-size: 0.94rem;
+  line-height: 1.35;
+}
+
+.today-track-list__copy span {
+  color: var(--color-ink-muted);
+  font-size: 0.84rem;
 }
 
 .review-current-item__body {

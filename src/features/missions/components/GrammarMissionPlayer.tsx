@@ -67,6 +67,7 @@ export function GrammarMissionPlayer({
     () => getMissionSteps(sessionMode, sessionExamples.length, sessionDrills.length),
     [sessionDrills.length, sessionExamples.length, sessionMode],
   );
+  const grammarFocusTerms = useMemo(() => getGrammarFocusTerms(lesson), [lesson]);
   const [clearedDrillIds, setClearedDrillIds] = useState<string[]>([]);
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
   const [currentMistakeIndex, setCurrentMistakeIndex] = useState(0);
@@ -274,6 +275,7 @@ export function GrammarMissionPlayer({
                   <JapaneseTextPair
                     japanese={currentExample.japanese}
                     reading={currentExample.reading}
+                    highlightTerms={grammarFocusTerms}
                   />
                   <p className="mission-example-card__english">{currentExample.english}</p>
                 </article>
@@ -638,6 +640,90 @@ function DrillCard({
         ) : null}
       </div>
     </article>
+  );
+}
+
+const GRAMMAR_FOCUS_RULES: Array<{ pattern: RegExp; terms: string[] }> = [
+  { pattern: /topic-desu/, terms: ['は', 'です'] },
+  { pattern: /place-de|transport-de|meeting-place-de/, terms: ['で'] },
+  { pattern: /destination-ni|time-ni|weekdays-ni/, terms: ['に'] },
+  { pattern: /question-nan/, terms: ['なんですか'] },
+  { pattern: /existence/, terms: ['あります', 'います'] },
+  { pattern: /position-no|possession-no|family-possession|noun-linking/, terms: ['の'] },
+  { pattern: /preference/, terms: ['が', 'すきです', 'きらいです', 'すきですか'] },
+  { pattern: /where|navigation-place/, terms: ['どこですか'] },
+  { pattern: /masendeshita/, terms: ['ませんでした'] },
+  { pattern: /mashita/, terms: ['ました'] },
+  { pattern: /masen|amari-masen/, terms: ['ません'] },
+  { pattern: /masu-routine/, terms: ['ます'] },
+  { pattern: /permission/, terms: ['てもいいですか'] },
+  { pattern: /request-te-kudasai/, terms: ['てください'] },
+  { pattern: /shopping-o-kudasai|quantity-request/, terms: ['をください'] },
+  { pattern: /shopping-kaimasu/, terms: ['をかいます'] },
+  { pattern: /time-nanji/, terms: ['なんじですか'] },
+  { pattern: /destination-made/, terms: ['まで'] },
+  { pattern: /navigation-migi-hidari/, terms: ['みぎ', 'ひだり', 'まっすぐ'] },
+  { pattern: /suggestion-masenka/, terms: ['ませんか'] },
+  { pattern: /mashou-plan-proposals/, terms: ['ましょう'] },
+  { pattern: /mashou-plan-questions/, terms: ['ましょうか'] },
+  { pattern: /time-ranges-kara-made/, terms: ['から', 'まで'] },
+  { pattern: /quantity-ikutsu/, terms: ['いくつ'] },
+  { pattern: /price-ikura/, terms: ['いくらですか'] },
+  { pattern: /availability/, terms: ['ありますか'] },
+  { pattern: /action-sequence-te-sorekara/, terms: ['て', 'それから'] },
+  { pattern: /action-sequence-tekara/, terms: ['てから'] },
+  { pattern: /progressive|teimasu/, terms: ['ています'] },
+  { pattern: /adjective-negatives-i/, terms: ['くないです'] },
+  { pattern: /adjective-negatives-na/, terms: ['じゃないです'] },
+  { pattern: /adjective-past-i/, terms: ['かったです'] },
+  { pattern: /adjective-past-na/, terms: ['でした'] },
+  { pattern: /comparison/, terms: ['より', 'のほうが'] },
+  { pattern: /superlative/, terms: ['いちばん'] },
+  { pattern: /frequency-adverbs-routine/, terms: ['いつも', 'よく', 'ときどき'] },
+  { pattern: /reasons-kara/, terms: ['から'] },
+  { pattern: /desire-tai/, terms: ['たいです'] },
+  { pattern: /hoshii/, terms: ['ほしいです'] },
+  { pattern: /ability/, terms: ['ことができます'] },
+  { pattern: /experience/, terms: ['たことがあります'] },
+  { pattern: /companions/, terms: ['だれと', 'と'] },
+  { pattern: /methods/, terms: ['どうやって', 'で'] },
+  { pattern: /choice-dore-dono/, terms: ['どれ', 'どの'] },
+  { pattern: /choice-dochira/, terms: ['どちら'] },
+  { pattern: /before-after-maeni/, terms: ['のまえに'] },
+  { pattern: /before-after-atode/, terms: ['のあとで'] },
+  { pattern: /plain-style-recognition-copula/, terms: ['だ', 'じゃない'] },
+  { pattern: /connected-speech-soshite/, terms: ['そして', 'それから'] },
+  { pattern: /connected-speech-demo/, terms: ['でも', 'だから'] },
+  { pattern: /listing-to/, terms: ['と'] },
+  { pattern: /listing-ya/, terms: ['や'] },
+];
+
+function getGrammarFocusTerms(lesson: GrammarLesson) {
+  return normalizeGrammarFocusTerms([
+    ...extractJapaneseTerms(lesson.title),
+    ...GRAMMAR_FOCUS_RULES.flatMap((rule) =>
+      rule.pattern.test(lesson.id) ? rule.terms : [],
+    ),
+  ]);
+}
+
+function extractJapaneseTerms(value: string) {
+  return value.match(/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}ー]+/gu) ?? [];
+}
+
+function normalizeGrammarFocusTerms(terms: string[]) {
+  const uniqueTerms = new Set<string>();
+
+  terms.forEach((term) => {
+    const nextTerm = term.trim();
+
+    if (nextTerm.length > 0) {
+      uniqueTerms.add(nextTerm);
+    }
+  });
+
+  return Array.from(uniqueTerms).sort(
+    (left, right) => right.length - left.length || left.localeCompare(right),
   );
 }
 

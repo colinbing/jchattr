@@ -47,9 +47,9 @@ Slice discipline:
 - After implementation slices, run the required validation suite and update `BUILD_STATUS.md` in the same pass.
 
 Current ordering:
-1. Next implementation slice: grammar focus highlighting in examples.
-2. Next accepted UX candidate: listening hint/scoring semantics, because final-hint behavior affects progress confidence and skill-state meaning.
-3. Product-direction candidate: guided Today lesson track, because it could improve daily momentum but needs session-flow design before implementation.
+1. Follow-up audit candidate: listening prep-screen pacing after user testing.
+2. Follow-up audit candidate: listening supported-exposure wording and weak-point impact after user testing.
+3. Follow-up audit candidate: grammar-focus highlight coverage after more user testing.
 
 ---
 
@@ -256,6 +256,10 @@ Fix direction:
 
 Priority: P2.
 
+Triage:
+- Addressed for the current Phase 4 slice.
+- Chosen direction: keep listening in the early path, but add a short hear-the-pattern prep screen before the first check using existing support examples and audio where available. This avoids changing unlock/recommendation semantics while making beginner listening less cold.
+
 ---
 
 ### U8 — Mission screens need a stronger design north star
@@ -308,8 +312,8 @@ Fix direction:
 Priority: P1/P2.
 
 Triage:
-- Accepted.
-- Next-slice candidate after Today resume/deduping, unless example clarity becomes more disruptive in testing.
+- Addressed.
+- Implemented in the Phase 4 grammar-focus highlighting slice using existing lesson titles/ids to derive subtle inline example highlights without changing content schemas. The follow-up cleanup removed the redundant focus-chip row so the highlight itself owns the cue.
 
 ---
 
@@ -328,8 +332,8 @@ Fix direction:
 Priority: P1.
 
 Triage:
-- Accepted.
-- Deferred until a narrow local attempt-state design is chosen because it touches the meaning of skill confidence and weak-point impact.
+- Addressed.
+- Implemented in the Phase 4 listening hint/scoring semantics slice. Revealing the final answer now counts as supported exposure for flow, records or preserves review pressure, and does not present the result as full mastery.
 
 ---
 
@@ -483,8 +487,9 @@ Candid read:
 Priority: P2.
 
 Triage:
-- Accepted as product-direction candidate.
-- Deferred until after near-term clarity fixes like grammar focus highlighting and listening hint/scoring semantics.
+- Addressed for the current Phase 4 slice.
+- Implemented as a narrow presentation layer: Today completion return cards now show an ordered Today-track handoff using the already-visible continue/recommendation actions. This intentionally avoids backend scheduling, schema changes, or recommendation-logic changes.
+- Follow-up audit addressed: the completion handoff now stays to Done/Next only, trims unresolved-review repetition, and removes duplicate Review secondary actions.
 
 ---
 

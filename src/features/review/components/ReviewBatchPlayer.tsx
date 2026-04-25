@@ -239,6 +239,8 @@ type ReviewCardProps = {
   onReviewed: (result: ReviewResult) => void;
 };
 
+type ListeningReviewFeedback = ReviewResult | 'supported';
+
 function GrammarReviewCard({
   item,
   onReviewed,
@@ -378,7 +380,8 @@ function ListeningReviewCard({
   avoidTranslations: string[];
 }) {
   const [selectedChoice, setSelectedChoice] = useState('');
-  const [feedback, setFeedback] = useState<ReviewResult | null>(null);
+  const [feedback, setFeedback] = useState<ListeningReviewFeedback | null>(null);
+  const [answerRevealed, setAnswerRevealed] = useState(false);
   const translationChoices = getListeningReviewChoices(
     item.listeningItem,
     item.choicePool,
@@ -395,6 +398,13 @@ function ListeningReviewCard({
 
     setFeedback(result);
     onReviewed(result);
+  }
+
+  function revealAnswer() {
+    setSelectedChoice('');
+    setAnswerRevealed(true);
+    setFeedback('supported');
+    onReviewed('incorrect');
   }
 
   return (
@@ -431,6 +441,28 @@ function ListeningReviewCard({
         </div>
       </details>
 
+      <details className="review-support-details">
+        <summary className="review-support-details__summary">Need the answer?</summary>
+        <div className="review-support-note">
+          <p className="review-support-details__body">
+            Revealing the answer keeps this retry unresolved, but lets you move on.
+          </p>
+          <button
+            type="button"
+            className="mission-button mission-button--secondary"
+            onClick={revealAnswer}
+            disabled={answerRevealed}
+          >
+            Reveal answer
+          </button>
+          {answerRevealed ? (
+            <p className="review-support-details__body">
+              Correct answer: {item.listeningItem.translation}
+            </p>
+          ) : null}
+        </div>
+      </details>
+
       <div className="mission-choice-grid">
         {translationChoices.map((choice) => (
           <button
@@ -439,6 +471,7 @@ function ListeningReviewCard({
             className={`mission-choice${
               selectedChoice === choice ? ' mission-choice--selected' : ''
             }`}
+            disabled={answerRevealed}
             onClick={() => {
               setSelectedChoice(choice);
               setFeedback(null);
@@ -454,7 +487,7 @@ function ListeningReviewCard({
           type="button"
           className="mission-button"
           onClick={submitAnswer}
-          disabled={!selectedChoice}
+          disabled={!selectedChoice || answerRevealed}
         >
           Check answer
         </button>
@@ -464,13 +497,18 @@ function ListeningReviewCard({
           onClick={() => {
             setSelectedChoice('');
             setFeedback(null);
+            setAnswerRevealed(false);
           }}
         >
           Reset
         </button>
       </div>
 
-      {feedback ? <ReviewFeedback result={feedback} answer={item.listeningItem.translation} /> : null}
+      {feedback === 'supported' ? (
+        <SupportedExposureFeedback />
+      ) : feedback ? (
+        <ReviewFeedback result={feedback} answer={item.listeningItem.translation} />
+      ) : null}
     </div>
   );
 }
@@ -698,6 +736,21 @@ function ReviewFeedback({
       </p>
       <p className="mission-feedback__body">
         {result === 'correct' ? 'Retry recorded for this item.' : `Expected answer: ${answer}`}
+      </p>
+    </div>
+  );
+}
+
+function SupportedExposureFeedback() {
+  return (
+    <div
+      className="mission-feedback mission-feedback--supported"
+      role="status"
+      aria-live="polite"
+    >
+      <p className="mission-feedback__title">Answer revealed.</p>
+      <p className="mission-feedback__body">
+        This counts as supported exposure, not a cleared retry. The item stays in Review.
       </p>
     </div>
   );

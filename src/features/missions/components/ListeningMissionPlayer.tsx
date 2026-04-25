@@ -64,19 +64,22 @@ export function ListeningMissionPlayer({
       })),
     [choicePool, sessionExamples],
   );
-  const [clearedItemIds, setClearedItemIds] = useState<string[]>([]);
-  const [currentItemIndex, setCurrentItemIndex] = useState(() => {
-    return (
+  const initialContinueStepIndex = useMemo(
+    () =>
       resolveContinueStepIndex(
         readContinueState(),
         mission.id,
         mission.type,
         sessionItems.length - 1,
-      ) ?? 0
-    );
-  });
+      ),
+    [mission.id, mission.type, sessionItems.length],
+  );
+  const [clearedItemIds, setClearedItemIds] = useState<string[]>([]);
+  const [currentItemIndex, setCurrentItemIndex] = useState(() => initialContinueStepIndex ?? 0);
+  const [hasCompletedPrep, setHasCompletedPrep] = useState(() => initialContinueStepIndex !== null);
   const currentItem = sessionItems[currentItemIndex];
-  const progressValue = ((currentItemIndex + 1) / sessionItems.length) * 100;
+  const showPrep = !hasCompletedPrep && supportExamples.length > 0;
+  const progressValue = showPrep ? 0 : ((currentItemIndex + 1) / sessionItems.length) * 100;
   const completionState = buildMissionCompletionRouteState(
     mission,
     sessionMode,
@@ -123,7 +126,7 @@ export function ListeningMissionPlayer({
           </div>
           <div className="listening-session-bar__progress">
             <span>
-              {currentItemIndex + 1}/{sessionItems.length}
+              {showPrep ? 'Prep' : `${currentItemIndex + 1}/${sessionItems.length}`}
             </span>
             <div
               className="mission-progress__track"
@@ -133,7 +136,7 @@ export function ListeningMissionPlayer({
               aria-valuemax={100}
               aria-valuenow={progressValue}
             >
-              <span className="mission-progress__fill" style={{ width: `${progressValue}%` }} />
+            <span className="mission-progress__fill" style={{ width: `${progressValue}%` }} />
             </div>
           </div>
         </div>
@@ -160,26 +163,35 @@ export function ListeningMissionPlayer({
           </dl>
         </details>
 
-        <ListeningItemPanel
-          key={currentItem.id}
-          missionId={mission.id}
-          item={currentItem}
-          choicePool={choicePool}
-          avoidTranslations={sessionItems
-            .slice(Math.max(0, currentItemIndex - 2), currentItemIndex)
-            .map((listeningItem) => listeningItem.translation)}
-          currentItemIndex={currentItemIndex}
-          totalItems={sessionItems.length}
-          clearedCount={clearedItemIds.length}
-          canGoPrevious={currentItemIndex > 0}
-          isLastItem={currentItemIndex === sessionItems.length - 1}
-          onCleared={handleItemCleared}
-          onPrevious={() => setCurrentItemIndex((index) => Math.max(0, index - 1))}
-          onNext={() =>
-            setCurrentItemIndex((index) => Math.min(sessionItems.length - 1, index + 1))
-          }
-          onFinish={() => navigate('/', { state: completionState })}
-        />
+        {showPrep ? (
+          <ListeningPrepPanel
+            missionTitle={mission.title}
+            primaryLesson={primaryLesson}
+            supportExamples={supportExamples}
+            onStart={() => setHasCompletedPrep(true)}
+          />
+        ) : (
+          <ListeningItemPanel
+            key={currentItem.id}
+            missionId={mission.id}
+            item={currentItem}
+            choicePool={choicePool}
+            avoidTranslations={sessionItems
+              .slice(Math.max(0, currentItemIndex - 2), currentItemIndex)
+              .map((listeningItem) => listeningItem.translation)}
+            currentItemIndex={currentItemIndex}
+            totalItems={sessionItems.length}
+            clearedCount={clearedItemIds.length}
+            canGoPrevious={currentItemIndex > 0}
+            isLastItem={currentItemIndex === sessionItems.length - 1}
+            onCleared={handleItemCleared}
+            onPrevious={() => setCurrentItemIndex((index) => Math.max(0, index - 1))}
+            onNext={() =>
+              setCurrentItemIndex((index) => Math.min(sessionItems.length - 1, index + 1))
+            }
+            onFinish={() => navigate('/', { state: completionState })}
+          />
+        )}
       </div>
 
       {(primaryLesson || supportExamples.length > 0) ? (
@@ -222,6 +234,65 @@ export function ListeningMissionPlayer({
   );
 }
 
+type ListeningSupportExample = {
+  example: ExampleSentence;
+  audioRef: string | undefined;
+};
+
+type ListeningPrepPanelProps = {
+  missionTitle: string;
+  primaryLesson: GrammarLesson | undefined;
+  supportExamples: ListeningSupportExample[];
+  onStart: () => void;
+};
+
+function ListeningPrepPanel({
+  missionTitle,
+  primaryLesson,
+  supportExamples,
+  onStart,
+}: ListeningPrepPanelProps) {
+  return (
+    <section className="listening-prep-card" aria-labelledby="listening-prep-title">
+      <div className="listening-prep-card__header">
+        <p className="mission-copy-block__eyebrow">Hear the pattern first</p>
+        <h3 id="listening-prep-title" className="listening-prep-card__title">
+          {primaryLesson ? primaryLesson.title : missionTitle}
+        </h3>
+        <p className="listening-prep-card__body">
+          Listen to the model lines once, then start the checks without needing to scroll for
+          support.
+        </p>
+      </div>
+
+      <div className="listening-prep-lines">
+        {supportExamples.map(({ example, audioRef }, index) => (
+          <article key={example.id} className="listening-prep-line">
+            <div className="listening-prep-line__copy">
+              <p className="mission-copy-block__eyebrow">Model {index + 1}</p>
+              <JapaneseTextPair japanese={example.japanese} reading={example.reading} />
+              <p className="mission-example-card__english">{example.english}</p>
+            </div>
+            {audioRef ? (
+              <button
+                type="button"
+                className="listening-prep-line__play"
+                onClick={() => playAudioRef(audioRef)}
+              >
+                Listen
+              </button>
+            ) : null}
+          </article>
+        ))}
+      </div>
+
+      <button type="button" className="mission-button" onClick={onStart}>
+        Start listening checks
+      </button>
+    </section>
+  );
+}
+
 type ListeningItemPanelProps = {
   missionId: string;
   item: ListeningItem;
@@ -238,7 +309,7 @@ type ListeningItemPanelProps = {
   onFinish: () => void;
 };
 
-type ListeningFeedback = 'correct' | 'incorrect' | null;
+type ListeningFeedback = 'correct' | 'incorrect' | 'supported' | null;
 type RevealKey = 'transcript' | 'reading' | 'translation' | 'focus';
 
 function ListeningItemPanel({
@@ -269,8 +340,21 @@ function ListeningItemPanel({
     avoidTranslations,
   });
   const latestVisibleHint = getLatestVisibleHint(item, revealed, readingMatchesTranscript);
+  const isAnswerRevealed = revealed.translation;
 
   function reveal(step: RevealKey) {
+    if (step === 'translation' && !revealed.translation && !feedback) {
+      recordWeakPoint({
+        itemId: item.id,
+        itemType: 'listening-check',
+        missionId,
+        contentId: item.id,
+      });
+      setSelectedChoice('');
+      setFeedback('supported');
+      onCleared(item.id);
+    }
+
     setRevealed((current) => ({ ...current, [step]: true }));
   }
 
@@ -319,6 +403,7 @@ function ListeningItemPanel({
               key={choice}
               type="button"
               className={`mission-choice${isSelected ? ' mission-choice--selected' : ''}`}
+              disabled={isAnswerRevealed}
               onClick={() => {
                 setSelectedChoice(choice);
                 setFeedback(null);
@@ -369,9 +454,9 @@ function ListeningItemPanel({
               revealed.translation ? ' listening-reveal-button--complete' : ''
             }`}
             onClick={() => reveal('translation')}
-            disabled={!revealed.focus}
+            disabled={!revealed.focus || revealed.translation || Boolean(feedback)}
           >
-            Reveal meaning hint
+            Reveal answer
           </button>
         </div>
       </div>
@@ -393,14 +478,10 @@ function ListeningItemPanel({
           aria-live="polite"
         >
           <p className="mission-feedback__title">
-            {feedback === 'correct' ? 'Correct.' : 'Not quite.'}
+            {getListeningFeedbackTitle(feedback)}
           </p>
           <p className="mission-feedback__body">
-            {feedback === 'correct'
-              ? revealed.translation || revealed.focus || revealed.transcript
-                ? 'Good recovery. You used the support and got the meaning.'
-                : 'Clean first-pass recognition.'
-              : `Correct answer: ${item.translation}`}
+            {getListeningFeedbackBody(feedback, item, revealed)}
           </p>
         </div>
       ) : null}
@@ -487,6 +568,34 @@ function RevealBlock({ label, value }: RevealBlockProps) {
       <p className="listening-reveal-card__value">{value}</p>
     </section>
   );
+}
+
+function getListeningFeedbackTitle(feedback: Exclude<ListeningFeedback, null>) {
+  switch (feedback) {
+    case 'correct':
+      return 'Correct.';
+    case 'supported':
+      return 'Answer revealed.';
+    case 'incorrect':
+      return 'Not quite.';
+  }
+}
+
+function getListeningFeedbackBody(
+  feedback: Exclude<ListeningFeedback, null>,
+  item: ListeningItem,
+  revealed: Record<RevealKey, boolean>,
+) {
+  switch (feedback) {
+    case 'correct':
+      return revealed.focus || revealed.transcript
+        ? 'Good recovery. Support helped you reach the meaning.'
+        : 'Clean first-pass recognition.';
+    case 'supported':
+      return 'This line counts as completed exposure, not mastery. It stays review-worthy.';
+    case 'incorrect':
+      return `Correct answer: ${item.translation}`;
+  }
 }
 
 function getLatestVisibleHint(

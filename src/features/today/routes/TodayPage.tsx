@@ -66,7 +66,8 @@ export function TodayPage() {
       : visibleRecommendations;
   const bonusRecommendations =
     visibleRecommendations.length > 2 ? visibleRecommendations.slice(2) : [];
-  const primaryReturnAction = getPrimaryReturnAction(requiredRecommendations, continueMission);
+  const todayTrackActions = buildTodayTrackActions(requiredRecommendations, continueMission);
+  const primaryReturnAction = todayTrackActions[0] ?? null;
   const requiredSessionCount =
     requiredRecommendations.length + (continueMission ? 1 : 0);
   const requiredSessionMinutes =
@@ -196,12 +197,14 @@ export function TodayPage() {
               ]}
             />
 
-            <div className="review-chip-row" aria-label="Returned mission summary">
-              <span className="review-chip">
-                {missionCompletion.sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Core mission pass'}
-              </span>
-              <span className="review-chip">Today is ready with the next step</span>
-            </div>
+            <TodayTrackHandoff
+              completedLabel={
+                missionCompletion.sessionMode === 'reinforce'
+                  ? 'Short reinforce pass complete'
+                  : 'Mission complete'
+              }
+              actions={todayTrackActions}
+            />
 
             {primaryReturnAction ? (
               <div className="mission-step-actions review-card-actions">
@@ -210,7 +213,7 @@ export function TodayPage() {
                   state={primaryReturnAction.state}
                   className="mission-button mission-button--link"
                 >
-                  {primaryReturnAction.label}
+                  {primaryReturnAction.ctaLabel}
                 </Link>
                 <Link
                   to="/missions"
@@ -230,7 +233,7 @@ export function TodayPage() {
           title="Review finished"
           description={
             reviewCompletion.nextBatchSize > 0
-              ? 'The queue is lighter. Keep moving with Today first.'
+              ? 'Review pass done. Today will show whether to retry or move on.'
               : 'The review queue is clear. Move straight into Today.'
           }
         >
@@ -239,16 +242,7 @@ export function TodayPage() {
               {reviewCompletion.clearedCount}/{reviewCompletion.attemptedCount} retries cleared
             </p>
             <p className="review-launch-card__body">
-              {reviewCompletion.unresolvedCount > 0
-                ? `${reviewCompletion.unresolvedCount} item${
-                    reviewCompletion.unresolvedCount === 1 ? '' : 's'
-                  } still need another pass.`
-                : 'That batch is fully cleared.'}{' '}
-              {reviewCompletion.nextBatchSize > 0
-                ? `${reviewCompletion.nextBatchSize} more item${
-                    reviewCompletion.nextBatchSize === 1 ? '' : 's'
-                  } are waiting in Review.`
-                : 'No next review batch is queued right now.'}
+              {buildReviewCompletionBody(reviewCompletion)}
             </p>
 
             <CompletionRecap
@@ -261,9 +255,7 @@ export function TodayPage() {
                 },
                 {
                   label: 'Skill signal',
-                  body: `${reviewCompletion.clearedCount} retry ${
-                    reviewCompletion.clearedCount === 1 ? 'item was' : 'items were'
-                  } cleared. The review queue is lighter now.`,
+                  body: buildReviewSkillSignal(reviewCompletion),
                 },
                 {
                   label: 'Review impact',
@@ -277,17 +269,10 @@ export function TodayPage() {
               ]}
             />
 
-            <div className="review-chip-row" aria-label="Returned review summary">
-              <span className="review-chip">
-                {reviewCompletion.remainingWeakPointCount} weak point
-                {reviewCompletion.remainingWeakPointCount === 1 ? '' : 's'} left
-              </span>
-              <span className="review-chip">
-                {reviewCompletion.nextBatchSize > 0
-                  ? `${reviewCompletion.nextBatchSize} ready in Review`
-                  : 'Queue clear for now'}
-              </span>
-            </div>
+            <TodayTrackHandoff
+              completedLabel="Review batch complete"
+              actions={todayTrackActions}
+            />
 
             {primaryReturnAction ? (
               <div className="mission-step-actions review-card-actions">
@@ -296,23 +281,14 @@ export function TodayPage() {
                   state={primaryReturnAction.state}
                   className="mission-button mission-button--link"
                 >
-                  {primaryReturnAction.label}
+                  {primaryReturnAction.ctaLabel}
                 </Link>
-                {reviewCompletion.nextBatchSize > 0 ? (
-                  <Link
-                    to="/review"
-                    className="mission-button mission-button--secondary mission-button--link"
-                  >
-                    Review again later
-                  </Link>
-                ) : (
-                  <Link
-                    to="/missions"
-                    className="mission-button mission-button--secondary mission-button--link"
-                  >
-                    Mission path
-                  </Link>
-                )}
+                <Link
+                  to="/missions"
+                  className="mission-button mission-button--secondary mission-button--link"
+                >
+                  Mission path
+                </Link>
               </div>
             ) : null}
           </div>
@@ -472,7 +448,9 @@ type TodayLocationState = {
 type TodayReturnAction = {
   to: string;
   state?: unknown;
-  label: string;
+  title: string;
+  meta: string;
+  ctaLabel: string;
 };
 
 type ContinueMissionSummary = {
@@ -495,6 +473,51 @@ function CompletionRecap({ items }: { items: CompletionRecapItem[] }) {
         </div>
       ))}
     </div>
+  );
+}
+
+function TodayTrackHandoff({
+  completedLabel,
+  actions,
+}: {
+  completedLabel: string;
+  actions: TodayReturnAction[];
+}) {
+  const visibleActions = actions.slice(0, 1);
+
+  return (
+    <section className="today-track-handoff" aria-label="Today track handoff">
+      <div className="today-track-handoff__header">
+        <p className="completion-recap__label">Today track</p>
+        <p className="today-track-handoff__body">
+          {visibleActions.length > 0
+            ? 'Keep following the visible Today plan from here.'
+            : 'No required Today step is waiting right now.'}
+        </p>
+      </div>
+      <ol className="today-track-list">
+        <li className="today-track-list__item today-track-list__item--done">
+          <span className="today-track-list__marker">Done</span>
+          <span className="today-track-list__copy">{completedLabel}</span>
+        </li>
+        {visibleActions.map((action, index) => (
+          <li
+            key={`${action.to}-${action.title}`}
+            className={`today-track-list__item${
+              index === 0 ? ' today-track-list__item--next' : ''
+            }`}
+          >
+            <span className="today-track-list__marker">
+              {index === 0 ? 'Next' : 'Then'}
+            </span>
+            <span className="today-track-list__copy">
+              <strong>{action.title}</strong>
+              <span>{action.meta}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }
 
@@ -524,34 +547,50 @@ function filterContinueMissionRecommendation(
   });
 }
 
-function getPrimaryReturnAction(
+function buildTodayTrackActions(
   recommendations: TodayRecommendation[],
   continueMission: ContinueMissionSummary | null,
-): TodayReturnAction | null {
+): TodayReturnAction[] {
+  const actions: TodayReturnAction[] = [];
+
   if (continueMission) {
-    return {
+    actions.push({
       to: `/mission/${continueMission.mission.id}`,
       state: { preserveScroll: true },
-      label: 'Continue mission',
-    };
+      title: continueMission.mission.title,
+      meta: 'Pick up where you stopped.',
+      ctaLabel: 'Continue mission',
+    });
   }
 
-  const recommendation = recommendations[0];
+  recommendations.forEach((recommendation) => {
+    actions.push({
+      to: recommendation.to,
+      state:
+        recommendation.kind === 'review'
+          ? { returnTo: 'today' as const }
+          : recommendation.sessionMode === 'reinforce'
+            ? { sessionMode: 'reinforce' as const }
+            : undefined,
+      title: recommendation.title,
+      meta: formatTrackActionMeta(recommendation),
+      ctaLabel: recommendation.ctaLabel,
+    });
+  });
 
-  if (!recommendation) {
-    return null;
+  return actions;
+}
+
+function formatTrackActionMeta(recommendation: TodayRecommendation) {
+  if (recommendation.kind === 'review') {
+    return `${recommendation.batchSize} retry item${
+      recommendation.batchSize === 1 ? '' : 's'
+    } from Review.`;
   }
 
-  return {
-    to: recommendation.to,
-    state:
-      recommendation.kind === 'review'
-        ? { returnTo: 'today' as const }
-        : recommendation.sessionMode === 'reinforce'
-          ? { sessionMode: 'reinforce' as const }
-          : undefined,
-    label: recommendation.ctaLabel,
-  };
+  return `${formatMissionTypeLabel(recommendation.mission.type)} · ${formatTargetSkillLabel(
+    recommendation.mission.targetSkill,
+  )} · ${recommendation.mission.estimatedMinutes} min.`;
 }
 
 function buildMissionPracticeRecap(missionCompletion: TodayMissionCompletion) {
@@ -585,6 +624,34 @@ function buildMissionReviewImpact(missionWeakPointCount: number) {
   }
 
   return 'No open weak point from this mission right now.';
+}
+
+function buildReviewCompletionBody(reviewCompletion: TodayReviewCompletion) {
+  if (reviewCompletion.unresolvedCount > 0) {
+    return 'This pass is done. Anything unresolved stays visible in Today and Review.';
+  }
+
+  const unresolvedCopy =
+    'That batch is fully cleared.';
+
+  const nextBatchCopy =
+    reviewCompletion.nextBatchSize > 0
+      ? `${formatCountedNoun(reviewCompletion.nextBatchSize, 'item')} ${
+          reviewCompletion.nextBatchSize === 1 ? 'is' : 'are'
+        } waiting in Review.`
+      : 'No next review batch is queued right now.';
+
+  return `${unresolvedCopy} ${nextBatchCopy}`;
+}
+
+function buildReviewSkillSignal(reviewCompletion: TodayReviewCompletion) {
+  if (reviewCompletion.clearedCount === 0) {
+    return 'No retry cleared yet, so the item stays queued for another pass.';
+  }
+
+  return `${formatCountedNoun(reviewCompletion.clearedCount, 'retry item')} ${
+    reviewCompletion.clearedCount === 1 ? 'was' : 'were'
+  } cleared.`;
 }
 
 function resolveContinueMission(
@@ -673,6 +740,10 @@ function formatMissionTypeLabel(type: TodayMissionCompletion['missionType']) {
 
 function formatTargetSkillLabel(targetSkill: TodayMissionCompletion['targetSkill']) {
   return targetSkill.replace(/-/g, ' ');
+}
+
+function formatCountedNoun(count: number, noun: string) {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
 
 function formatMissionUnitLabel(

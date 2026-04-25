@@ -226,8 +226,14 @@ function getReviewRecommendation(
   const reviewReason = reviewAwareness.isUrgent
     ? buildUrgentReviewReason(reviewAwareness, repeatedWeakPointCount)
     : reviewAwareness.lastReviewAt
-      ? `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} are still open after your last review pass, so start by retrying them.`
-      : `${weakPointList.length} weak point${weakPointList.length === 1 ? '' : 's'} are waiting for a retry, so lead with a short review batch.`;
+      ? `${formatWeakPointCount(weakPointList.length)} ${
+          weakPointList.length === 1 ? 'is' : 'are'
+        } still open after your last review pass, so start by retrying ${
+          weakPointList.length === 1 ? 'it' : 'them'
+        }.`
+      : `${formatWeakPointCount(weakPointList.length)} ${
+          weakPointList.length === 1 ? 'is' : 'are'
+        } waiting for a retry, so lead with a short review batch.`;
 
   return {
     id: 'review-loop',
@@ -508,14 +514,26 @@ function buildUrgentReviewReason(
   const weakPointCount = reviewAwareness.weakPointList.length;
 
   if (repeatedWeakPointCount > 0 && reviewAwareness.hasFreshWeakPoints) {
-    return `${weakPointCount} weak point${weakPointCount === 1 ? '' : 's'} are open, including ${repeatedWeakPointCount} with repeated misses and fresh errors since your last review.`;
+    return `${formatWeakPointCount(weakPointCount)} ${
+      weakPointCount === 1 ? 'is' : 'are'
+    } open, including ${repeatedWeakPointCount} with repeated misses and fresh errors since your last review.`;
   }
 
   if (repeatedWeakPointCount > 0) {
-    return `${weakPointCount} weak point${weakPointCount === 1 ? '' : 's'} are still open, and ${repeatedWeakPointCount} already have repeated misses.`;
+    return `${formatWeakPointCount(weakPointCount)} ${
+      weakPointCount === 1 ? 'is' : 'are'
+    } still open, and ${repeatedWeakPointCount} already ${
+      repeatedWeakPointCount === 1 ? 'has' : 'have'
+    } repeated misses.`;
   }
 
-  return `${weakPointCount} weak point${weakPointCount === 1 ? '' : 's'} are open and still fresh, so retry them before taking on something broader.`;
+  return `${formatWeakPointCount(weakPointCount)} ${
+    weakPointCount === 1 ? 'is' : 'are'
+  } open and still fresh, so retry ${weakPointCount === 1 ? 'it' : 'them'} before taking on something broader.`;
+}
+
+function formatWeakPointCount(count: number) {
+  return `${count} weak point${count === 1 ? '' : 's'}`;
 }
 
 function buildStabilizeReason(topWeakPoint: WeakPoint | null) {
