@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import type { Mission, StarterContent } from '../../../lib/content/types';
-import { ContinueMissionCard } from '../components/ContinueMissionCard';
-import { SessionSummary } from '../components/SessionSummary';
+import {
+  SessionSummary,
+  type SessionSummaryAction,
+  type SessionSummaryItem,
+} from '../components/SessionSummary';
 import { TodayRecommendationCard } from '../components/TodayRecommendationCard';
 import { getStarterContent } from '../../../lib/content/loader';
 import {
@@ -24,10 +27,10 @@ import {
 import {
   deriveTodayRecommendations,
   type TodayRecommendation,
-  isMissionUnlocked,
 } from '../lib/todayRecommendations';
-import { missionLibraryChapters } from '../../missions/lib/missionLibraryStructure';
 import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
+
+const TODAY_PLAN_SESSION_STORAGE_KEY = 'japanese-os.today-plan.v1';
 
 export function TodayPage() {
   const location = useLocation();
@@ -37,6 +40,7 @@ export function TodayPage() {
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
+  const weakPointList = getWeakPointList(weakPoints);
   const [missionCompletion, setMissionCompletion] = useState<TodayMissionCompletion | null>(() => {
     return ((location.state as TodayLocationState | null)?.missionCompletion ?? null);
   });
@@ -49,7 +53,6 @@ export function TodayPage() {
     weakPoints,
     reviewLoopProgress,
   );
-  const weakPointList = getWeakPointList(weakPoints);
   const progressOverview = deriveProgressOverview(starterContent, missionProgress, weakPoints);
   const continueMission = resolveContinueMission(
     starterContent,
@@ -60,59 +63,29 @@ export function TodayPage() {
     recommendations,
     continueMission?.mission.id ?? null,
   );
-  const requiredRecommendations =
+  const liveCoreRecommendations =
     visibleRecommendations.length > 2
       ? visibleRecommendations.slice(0, 2)
       : visibleRecommendations;
+  const [todayPlanSnapshot, setTodayPlanSnapshot] = useState<TodayPlanSnapshot>(() => {
+    return readTodayPlanSnapshot() ?? createTodayPlanSnapshot(liveCoreRecommendations);
+  });
+  const liveRecommendationByKey = createRecommendationByKey(visibleRecommendations);
+  const liveReviewRecommendation =
+    recommendations.find((recommendation) => recommendation.kind === 'review') ?? null;
+  const planState = resolveTodayPlanState({
+    snapshot: todayPlanSnapshot,
+    liveCoreRecommendations,
+    liveRecommendationByKey,
+    liveReviewRecommendation,
+    missionProgress,
+    weakPointCount: weakPointList.length,
+    continueMission,
+  });
   const bonusRecommendations =
-    visibleRecommendations.length > 2 ? visibleRecommendations.slice(2) : [];
-  const todayTrackActions = buildTodayTrackActions(requiredRecommendations, continueMission);
-  const primaryReturnAction = todayTrackActions[0] ?? null;
-  const requiredSessionCount =
-    requiredRecommendations.length + (continueMission ? 1 : 0);
-  const requiredSessionMinutes =
-    getRecommendationMinuteTotal(requiredRecommendations) +
-    (continueMission?.mission.estimatedMinutes ?? 0);
-  const currentCoreChapter =
-    missionLibraryChapters
-      .filter((chapter) => chapter.kind === 'core')
-      .map((chapter) => {
-        const chapterMissions = chapter.missionIds.map(
-          (missionId) => starterContent.byId.missions[missionId],
-        );
-        const completedCount = chapterMissions.filter((mission) =>
-          getMissionProgressEntry(missionProgress, mission.id).isCompleted,
-        ).length;
-        const nextMission =
-          chapterMissions.find((mission) => {
-            const progress = getMissionProgressEntry(missionProgress, mission.id);
-            return isMissionUnlocked(mission, missionProgress) && progress.completionCount === 0;
-          }) ?? null;
-
-        return {
-          chapter,
-          missionCount: chapterMissions.length,
-          completedCount,
-          nextMission,
-        };
-      })
-      .find((entry) => entry.nextMission) ??
-    null;
-  const readingChapter = missionLibraryChapters.find(
-    (chapter) => chapter.kind === 'reading',
-  );
-  const readingCounts = readingChapter
-    ? readingChapter.missionIds.reduce(
-        (summary, missionId) => {
-          const progress = getMissionProgressEntry(missionProgress, missionId);
-          return {
-            missionCount: summary.missionCount + 1,
-            completedCount: summary.completedCount + (progress.isCompleted ? 1 : 0),
-          };
-        },
-        { missionCount: 0, completedCount: 0 },
-      )
-    : null;
+    visibleRecommendations.filter((recommendation) => {
+      return !planState.planKeys.has(getRecommendationKey(recommendation));
+    });
   const missionCompletionSkill = missionCompletion
     ? progressOverview.skillAreas.find(
         (skillArea) => skillArea.id === missionCompletion.targetSkill,
@@ -143,6 +116,14 @@ export function TodayPage() {
     navigate(location.pathname, { replace: true });
   }, [location.pathname, location.state, navigate]);
 
+  useEffect(() => {
+    writeTodayPlanSnapshot(planState.snapshot);
+
+    if (planState.snapshot !== todayPlanSnapshot) {
+      setTodayPlanSnapshot(planState.snapshot);
+    }
+  }, [planState.snapshot, todayPlanSnapshot]);
+
   return (
     <PageShell
       variant="compact"
@@ -152,12 +133,13 @@ export function TodayPage() {
       aside={<span className="status-chip">Daily loop</span>}
     >
       <SessionSummary
-        missionCount={starterContent.summary.missionCount}
-        chapterCount={missionLibraryChapters.length}
-        requiredCount={requiredSessionCount}
-        requiredMinutes={requiredSessionMinutes}
+        items={planState.summaryItems}
+        completedCount={planState.completedCount}
+        remainingCount={planState.remainingCount}
+        remainingMinutes={planState.remainingMinutes}
         bonusCount={bonusRecommendations.length}
         bonusMinutes={getRecommendationMinuteTotal(bonusRecommendations)}
+        primaryAction={planState.primaryAction}
       />
 
       {missionCompletion ? (
@@ -197,32 +179,11 @@ export function TodayPage() {
               ]}
             />
 
-            <TodayTrackHandoff
-              completedLabel={
-                missionCompletion.sessionMode === 'reinforce'
-                  ? 'Short reinforce pass complete'
-                  : 'Mission complete'
-              }
-              actions={todayTrackActions}
-            />
-
-            {primaryReturnAction ? (
-              <div className="mission-step-actions review-card-actions">
-                <Link
-                  to={primaryReturnAction.to}
-                  state={primaryReturnAction.state}
-                  className="mission-button mission-button--link"
-                >
-                  {primaryReturnAction.ctaLabel}
-                </Link>
-                <Link
-                  to="/missions"
-                  className="mission-button mission-button--secondary mission-button--link"
-                >
-                  Mission path
-                </Link>
-              </div>
-            ) : null}
+            <p className="review-launch-card__body">
+              {planState.remainingCount > 0
+                ? 'Use the Today lesson card above for the next step.'
+                : 'Today core work is complete. Bonus practice is optional.'}
+            </p>
           </div>
         </SurfaceCard>
       ) : null}
@@ -269,71 +230,23 @@ export function TodayPage() {
               ]}
             />
 
-            <TodayTrackHandoff
-              completedLabel="Review batch complete"
-              actions={todayTrackActions}
-            />
-
-            {primaryReturnAction ? (
-              <div className="mission-step-actions review-card-actions">
-                <Link
-                  to={primaryReturnAction.to}
-                  state={primaryReturnAction.state}
-                  className="mission-button mission-button--link"
-                >
-                  {primaryReturnAction.ctaLabel}
-                </Link>
-                <Link
-                  to="/missions"
-                  className="mission-button mission-button--secondary mission-button--link"
-                >
-                  Mission path
-                </Link>
-              </div>
-            ) : null}
+            <p className="review-launch-card__body">
+              {planState.remainingCount > 0
+                ? 'Use the Today lesson card above for the next step.'
+                : 'Today core work is complete. Bonus practice is optional.'}
+            </p>
           </div>
         </SurfaceCard>
       ) : null}
 
-      {continueMission ? (
-        <SurfaceCard
-          className="today-support-card"
-          title="Pick up where you stopped"
-          description="Resume the unfinished mission first, then come back to the daily plan."
-        >
-          <ContinueMissionCard
-            mission={continueMission.mission}
-            detail={continueMission.detail}
-            lastVisitedAt={continueState.lastVisitedAt}
-          />
-        </SurfaceCard>
-      ) : null}
-
-      <SurfaceCard
-        title="Do this today"
-        description="Do the core plan first. Keep it short."
-      >
-        <div className="mission-list" role="list" aria-label="Do this today">
-          {requiredRecommendations.map((recommendation) => (
-            <div key={recommendation.id} role="listitem">
-              <TodayRecommendationCard
-                recommendation={recommendation}
-                missionProgress={missionProgress}
-                linkState={
-                  recommendation.kind === 'review'
-                    ? { returnTo: 'today' }
-                    : undefined
-                }
-              />
-            </div>
-          ))}
-        </div>
-      </SurfaceCard>
-
       <SurfaceCard
         className="today-support-card"
-        title="Bonus later"
-        description="Open this only if you want more after the main plan."
+        title={planState.remainingCount === 0 ? 'Optional bonus practice' : 'Bonus later'}
+        description={
+          planState.remainingCount === 0
+            ? 'Today is complete. Open this only if you want extra practice.'
+            : 'Open this only if you want more after the main plan.'
+        }
       >
         <details className="today-details">
           <summary className="today-details__summary">
@@ -362,70 +275,6 @@ export function TodayPage() {
           )}
         </details>
       </SurfaceCard>
-
-      <SurfaceCard
-        className="today-support-card"
-        title="More context"
-        description="Open this only when you want the path view or loop notes."
-      >
-        <details className="today-details">
-          <summary className="today-details__summary">Path and loop notes</summary>
-
-          <div className="path-summary">
-            <div className="path-summary__card">
-              <p className="path-summary__label">Current core chapter</p>
-              <h3 className="path-summary__title">
-                {currentCoreChapter ? currentCoreChapter.chapter.title : 'Core path complete'}
-              </h3>
-              <p className="path-summary__body">
-                {currentCoreChapter
-                  ? `${currentCoreChapter.completedCount} of ${currentCoreChapter.missionCount} missions cleared.`
-                  : 'Every core chapter is cleared on this device.'}
-              </p>
-              {currentCoreChapter?.nextMission ? (
-                <p className="path-summary__meta">
-                  Next mission: {currentCoreChapter.nextMission.title}
-                </p>
-              ) : null}
-              <Link
-                to={
-                  currentCoreChapter
-                    ? `/missions#${currentCoreChapter.chapter.id}`
-                    : '/missions'
-                }
-                className="inline-link"
-              >
-                Open mission path
-              </Link>
-            </div>
-
-            {readingCounts ? (
-              <div className="path-summary__card">
-                <p className="path-summary__label">Reading lane</p>
-                <h3 className="path-summary__title">
-                  {readingChapter?.title ?? 'Reading checkpoints'}
-                </h3>
-                <p className="path-summary__body">
-                  {readingCounts.completedCount} of {readingCounts.missionCount} reading missions
-                  cleared.
-                </p>
-                <p className="path-summary__meta">
-                  Use this lane to recombine prior content after the core path keeps moving.
-                </p>
-                <Link to="/missions#chapter-reading-path" className="inline-link">
-                  Open reading path
-                </Link>
-              </div>
-            ) : null}
-          </div>
-
-          <ul className="simple-list">
-            <li>Do the core plan first: review when needed, then the cleanest next mission.</li>
-            <li>Use the bonus lane only if you want more while momentum is still good.</li>
-            <li>Browse the full path on Missions instead of using Today as a backlog screen.</li>
-          </ul>
-        </details>
-      </SurfaceCard>
     </PageShell>
   );
 }
@@ -445,17 +294,47 @@ type TodayLocationState = {
   reviewCompletion?: TodayReviewCompletion;
 };
 
-type TodayReturnAction = {
-  to: string;
-  state?: unknown;
-  title: string;
-  meta: string;
-  ctaLabel: string;
-};
-
 type ContinueMissionSummary = {
   mission: Mission;
   detail: string;
+};
+
+type TodayPlanSnapshot = {
+  version: 1;
+  items: TodayPlanSnapshotItem[];
+};
+
+type TodayPlanSnapshotItem = {
+  key: string;
+  kind: TodayRecommendation['kind'];
+  title: string;
+  to: string;
+  minutes: number;
+  missionId?: string;
+  missionType?: Mission['type'];
+  targetSkill?: Mission['targetSkill'];
+  sessionMode?: 'default' | 'reinforce';
+  batchSize?: number;
+};
+
+type TodayPlanState = {
+  snapshot: TodayPlanSnapshot;
+  planKeys: Set<string>;
+  summaryItems: SessionSummaryItem[];
+  completedCount: number;
+  remainingCount: number;
+  remainingMinutes: number;
+  primaryAction: SessionSummaryAction | null;
+};
+
+type ResolveTodayPlanStateParams = {
+  snapshot: TodayPlanSnapshot;
+  liveCoreRecommendations: TodayRecommendation[];
+  liveRecommendationByKey: Map<string, TodayRecommendation>;
+  liveReviewRecommendation: TodayRecommendation | null;
+  missionProgress: ReturnType<typeof useMissionProgress>;
+  weakPointCount: number;
+  continueMission: ContinueMissionSummary | null;
 };
 
 type CompletionRecapItem = {
@@ -476,49 +355,308 @@ function CompletionRecap({ items }: { items: CompletionRecapItem[] }) {
   );
 }
 
-function TodayTrackHandoff({
-  completedLabel,
-  actions,
+function resolveTodayPlanState({
+  snapshot,
+  liveCoreRecommendations,
+  liveRecommendationByKey,
+  liveReviewRecommendation,
+  missionProgress,
+  weakPointCount,
+  continueMission,
+}: ResolveTodayPlanStateParams): TodayPlanState {
+  const safeSnapshot = shouldRecreateTodayPlanSnapshot({
+    snapshot,
+    liveCoreRecommendations,
+    missionProgress,
+    weakPointCount,
+    continueMission,
+  })
+    ? createTodayPlanSnapshot(liveCoreRecommendations)
+    : snapshot;
+  const baseItems = safeSnapshot.items.filter((item) => isValidTodayPlanItem(item));
+  const hasReviewItem = baseItems.some((item) => item.key === 'review-loop');
+  const reviewPlanItem =
+    liveReviewRecommendation && !hasReviewItem
+      ? [createTodayPlanSnapshotItem(liveReviewRecommendation)]
+      : [];
+  const planItems = [...baseItems, ...reviewPlanItem];
+  const summaryItems = planItems.map((item) => {
+    const liveRecommendation = liveRecommendationByKey.get(item.key);
+    const displayItem = liveRecommendation
+      ? createTodayPlanSnapshotItem(liveRecommendation)
+      : item;
+    const isCompleted = isTodayPlanItemComplete(
+      displayItem,
+      missionProgress,
+      liveReviewRecommendation,
+    );
+
+    return {
+      id: displayItem.key,
+      title: displayItem.title,
+      meta: formatTodayPlanItemMeta(displayItem, isCompleted),
+      status: isCompleted ? 'done' : 'waiting',
+    } satisfies SessionSummaryItem;
+  });
+  const continuePlanIndex = continueMission
+    ? planItems.findIndex((item) => {
+        return (
+          item.kind === 'mission' &&
+          item.missionId === continueMission.mission.id &&
+          !isTodayPlanItemComplete(item, missionProgress, liveReviewRecommendation)
+        );
+      })
+    : -1;
+  const hasContinuePlanItem = continuePlanIndex >= 0;
+  const firstOpenIndex = summaryItems.findIndex((item) => item.status !== 'done');
+  const activeIndex = hasContinuePlanItem ? continuePlanIndex : firstOpenIndex;
+  const activeItem = firstOpenIndex >= 0 ? planItems[firstOpenIndex] : null;
+  const remainingPlanItems = planItems.filter((item) => {
+    return !isTodayPlanItemComplete(item, missionProgress, liveReviewRecommendation);
+  });
+  const extraContinueCount = continueMission && !hasContinuePlanItem ? 1 : 0;
+  const remainingMinutes =
+    remainingPlanItems.reduce((total, item) => total + item.minutes, 0) +
+    (continueMission && !hasContinuePlanItem ? continueMission.mission.estimatedMinutes : 0);
+  const primaryAction = continueMission
+    ? {
+        to: `/mission/${continueMission.mission.id}`,
+        state: { preserveScroll: true },
+        label: 'Continue mission',
+      }
+    : activeItem
+      ? buildTodayPlanAction(activeItem, firstOpenIndex === 0)
+      : null;
+
+  const continueSummaryItems: SessionSummaryItem[] =
+    continueMission && !hasContinuePlanItem
+      ? [
+          {
+            id: `continue:${continueMission.mission.id}`,
+            title: continueMission.mission.title,
+            meta: `Resume unfinished mission · ${continueMission.mission.estimatedMinutes} min`,
+            status: 'current',
+          },
+        ]
+      : [];
+  const decoratedPlanItems: SessionSummaryItem[] = summaryItems.map((item, index) => ({
+    ...item,
+    status: index === activeIndex ? 'current' : item.status,
+  }));
+  const renderedSummaryItems = [
+    ...continueSummaryItems,
+    ...decoratedPlanItems,
+  ];
+
+  return {
+    snapshot: safeSnapshot,
+    planKeys: new Set(planItems.map((item) => item.key)),
+    summaryItems: renderedSummaryItems,
+    completedCount: renderedSummaryItems.filter((item) => item.status === 'done').length,
+    remainingCount: remainingPlanItems.length + extraContinueCount,
+    remainingMinutes,
+    primaryAction,
+  };
+}
+
+function createTodayPlanSnapshot(recommendations: TodayRecommendation[]): TodayPlanSnapshot {
+  return {
+    version: 1,
+    items: recommendations.map(createTodayPlanSnapshotItem),
+  };
+}
+
+function createTodayPlanSnapshotItem(
+  recommendation: TodayRecommendation,
+): TodayPlanSnapshotItem {
+  if (recommendation.kind === 'review') {
+    return {
+      key: getRecommendationKey(recommendation),
+      kind: 'review',
+      title: recommendation.title,
+      to: recommendation.to,
+      minutes: getRecommendationMinuteTotal([recommendation]),
+      batchSize: recommendation.batchSize,
+    };
+  }
+
+  return {
+    key: getRecommendationKey(recommendation),
+    kind: 'mission',
+    title: recommendation.title,
+    to: recommendation.to,
+    minutes: recommendation.mission.estimatedMinutes,
+    missionId: recommendation.mission.id,
+    missionType: recommendation.mission.type,
+    targetSkill: recommendation.mission.targetSkill,
+    sessionMode: recommendation.sessionMode,
+  };
+}
+
+function shouldRecreateTodayPlanSnapshot({
+  snapshot,
+  liveCoreRecommendations,
+  missionProgress,
+  weakPointCount,
+  continueMission,
 }: {
-  completedLabel: string;
-  actions: TodayReturnAction[];
+  snapshot: TodayPlanSnapshot;
+  liveCoreRecommendations: TodayRecommendation[];
+  missionProgress: ReturnType<typeof useMissionProgress>;
+  weakPointCount: number;
+  continueMission: ContinueMissionSummary | null;
 }) {
-  const visibleActions = actions.slice(0, 1);
+  const liveCoreKeys = liveCoreRecommendations.map(getRecommendationKey);
+  const snapshotKeys = snapshot.items.map((item) => item.key);
+  const hasNoLocalStudyState =
+    missionProgress.completedMissionIds.length === 0 &&
+    Object.keys(missionProgress.completionCountsByMissionId).length === 0 &&
+    weakPointCount === 0 &&
+    !continueMission;
+
+  if (snapshot.items.length === 0 || snapshot.items.some((item) => !isValidTodayPlanItem(item))) {
+    return true;
+  }
+
+  if (hasNoLocalStudyState && snapshotKeys.join('|') !== liveCoreKeys.join('|')) {
+    return true;
+  }
+
+  return false;
+}
+
+function isValidTodayPlanItem(item: TodayPlanSnapshotItem) {
+  if (item.kind === 'review') {
+    return item.key === 'review-loop';
+  }
+
+  return Boolean(item.missionId && item.to && item.title && item.minutes > 0);
+}
+
+function isTodayPlanItemComplete(
+  item: TodayPlanSnapshotItem,
+  missionProgress: ReturnType<typeof useMissionProgress>,
+  liveReviewRecommendation: TodayRecommendation | null,
+) {
+  if (item.kind === 'review') {
+    return !liveReviewRecommendation;
+  }
+
+  return item.missionId
+    ? getMissionProgressEntry(missionProgress, item.missionId).isCompleted
+    : false;
+}
+
+function buildTodayPlanAction(
+  item: TodayPlanSnapshotItem,
+  isFirstOpenItem: boolean,
+): SessionSummaryAction {
+  if (item.kind === 'review') {
+    return {
+      to: item.to,
+      state: { returnTo: 'today' as const },
+      label: isFirstOpenItem ? 'Start review' : 'Continue today',
+    };
+  }
+
+  return {
+    to: item.to,
+    state:
+      item.sessionMode === 'reinforce'
+        ? { sessionMode: 'reinforce' as const }
+        : undefined,
+    label: isFirstOpenItem ? "Start today's lesson" : 'Continue today',
+  };
+}
+
+function formatTodayPlanItemMeta(item: TodayPlanSnapshotItem, isCompleted: boolean) {
+  if (item.kind === 'review') {
+    if (isCompleted) {
+      return 'Review clear.';
+    }
+
+    return `${item.batchSize ?? 1} retry item${(item.batchSize ?? 1) === 1 ? '' : 's'} · about ${
+      item.minutes
+    } min`;
+  }
+
+  const missionType = item.missionType ? formatMissionTypeLabel(item.missionType) : 'Mission';
+  const targetSkill = item.targetSkill ? formatTargetSkillLabel(item.targetSkill) : 'practice';
+  return `${missionType} · ${targetSkill} · ${item.minutes} min`;
+}
+
+function createRecommendationByKey(recommendations: TodayRecommendation[]) {
+  return new Map(
+    recommendations.map((recommendation) => [
+      getRecommendationKey(recommendation),
+      recommendation,
+    ]),
+  );
+}
+
+function getRecommendationKey(recommendation: TodayRecommendation) {
+  return recommendation.kind === 'review'
+    ? 'review-loop'
+    : `mission:${recommendation.mission.id}`;
+}
+
+function readTodayPlanSnapshot(): TodayPlanSnapshot | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  try {
+    const rawSnapshot = window.sessionStorage.getItem(TODAY_PLAN_SESSION_STORAGE_KEY);
+    if (!rawSnapshot) {
+      return null;
+    }
+
+    const parsedSnapshot = JSON.parse(rawSnapshot);
+    if (!isTodayPlanSnapshot(parsedSnapshot)) {
+      return null;
+    }
+
+    return parsedSnapshot;
+  } catch {
+    return null;
+  }
+}
+
+function writeTodayPlanSnapshot(snapshot: TodayPlanSnapshot) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.sessionStorage.setItem(TODAY_PLAN_SESSION_STORAGE_KEY, JSON.stringify(snapshot));
+}
+
+function isTodayPlanSnapshot(value: unknown): value is TodayPlanSnapshot {
+  if (!isRecord(value) || value.version !== 1 || !Array.isArray(value.items)) {
+    return false;
+  }
+
+  return value.items.every(isTodayPlanSnapshotItem);
+}
+
+function isTodayPlanSnapshotItem(value: unknown): value is TodayPlanSnapshotItem {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  if (value.kind !== 'review' && value.kind !== 'mission') {
+    return false;
+  }
 
   return (
-    <section className="today-track-handoff" aria-label="Today track handoff">
-      <div className="today-track-handoff__header">
-        <p className="completion-recap__label">Today track</p>
-        <p className="today-track-handoff__body">
-          {visibleActions.length > 0
-            ? 'Keep following the visible Today plan from here.'
-            : 'No required Today step is waiting right now.'}
-        </p>
-      </div>
-      <ol className="today-track-list">
-        <li className="today-track-list__item today-track-list__item--done">
-          <span className="today-track-list__marker">Done</span>
-          <span className="today-track-list__copy">{completedLabel}</span>
-        </li>
-        {visibleActions.map((action, index) => (
-          <li
-            key={`${action.to}-${action.title}`}
-            className={`today-track-list__item${
-              index === 0 ? ' today-track-list__item--next' : ''
-            }`}
-          >
-            <span className="today-track-list__marker">
-              {index === 0 ? 'Next' : 'Then'}
-            </span>
-            <span className="today-track-list__copy">
-              <strong>{action.title}</strong>
-              <span>{action.meta}</span>
-            </span>
-          </li>
-        ))}
-      </ol>
-    </section>
+    typeof value.key === 'string' &&
+    typeof value.title === 'string' &&
+    typeof value.to === 'string' &&
+    typeof value.minutes === 'number'
   );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
 }
 
 function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
@@ -545,52 +683,6 @@ function filterContinueMissionRecommendation(
       recommendation.mission.id !== continueMissionId
     );
   });
-}
-
-function buildTodayTrackActions(
-  recommendations: TodayRecommendation[],
-  continueMission: ContinueMissionSummary | null,
-): TodayReturnAction[] {
-  const actions: TodayReturnAction[] = [];
-
-  if (continueMission) {
-    actions.push({
-      to: `/mission/${continueMission.mission.id}`,
-      state: { preserveScroll: true },
-      title: continueMission.mission.title,
-      meta: 'Pick up where you stopped.',
-      ctaLabel: 'Continue mission',
-    });
-  }
-
-  recommendations.forEach((recommendation) => {
-    actions.push({
-      to: recommendation.to,
-      state:
-        recommendation.kind === 'review'
-          ? { returnTo: 'today' as const }
-          : recommendation.sessionMode === 'reinforce'
-            ? { sessionMode: 'reinforce' as const }
-            : undefined,
-      title: recommendation.title,
-      meta: formatTrackActionMeta(recommendation),
-      ctaLabel: recommendation.ctaLabel,
-    });
-  });
-
-  return actions;
-}
-
-function formatTrackActionMeta(recommendation: TodayRecommendation) {
-  if (recommendation.kind === 'review') {
-    return `${recommendation.batchSize} retry item${
-      recommendation.batchSize === 1 ? '' : 's'
-    } from Review.`;
-  }
-
-  return `${formatMissionTypeLabel(recommendation.mission.type)} · ${formatTargetSkillLabel(
-    recommendation.mission.targetSkill,
-  )} · ${recommendation.mission.estimatedMinutes} min.`;
 }
 
 function buildMissionPracticeRecap(missionCompletion: TodayMissionCompletion) {

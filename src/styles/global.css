@@ -301,6 +301,66 @@ button {
   font-weight: 700;
 }
 
+.session-summary__items {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.session-summary__item {
+  display: grid;
+  grid-template-columns: 3.8rem minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.08);
+  background: rgba(255, 253, 247, 0.74);
+}
+
+.session-summary__item--current {
+  border-color: rgba(36, 84, 70, 0.2);
+  background: var(--color-surface);
+}
+
+.session-summary__item--done {
+  opacity: 0.72;
+}
+
+.session-summary__item-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.session-summary__item-copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  font-size: 0.94rem;
+  line-height: 1.35;
+}
+
+.session-summary__item-copy span {
+  color: var(--color-ink-muted);
+  font-size: 0.84rem;
+}
+
+.session-summary__cta {
+  width: 100%;
+}
+
 .session-summary__details,
 .today-details {
   display: grid;

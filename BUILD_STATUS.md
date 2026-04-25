@@ -13,7 +13,7 @@
 
 ## Current Objective
 
-- Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup, the new Today-density cleanup, the new active Review-batch cleanup, the new Missions-surface cleanup, the new Progress-surface cleanup, the new Settings-surface cleanup, the new reinforce-and-completion-flow cleanup, the new reinforce-relatedness cleanup, the new reorder-drill shuffle cleanup, the new completion-handoff cleanup, the new listening single-workspace redesign, the new output single-workspace/review-audio cleanup, the new grammar completion cleanup, the new compact completion-recap cleanup, the new Today resume-precedence cleanup, the new grammar-focus highlighting cleanup, the new listening hint/scoring semantics cleanup, the new early-listening prep cleanup, the new guided Today-track handoff cleanup, the new guided-handoff audit cleanup, the new early-listening prep pacing audit cleanup, the new supported-exposure wording audit cleanup, the new grammar-highlight coverage audit cleanup, the mobile-loop review-start positioning cleanup, the Missions chapter-surface density cleanup, the Today personal-focus recommendation slice, the Today personalization-copy sanity pass, and static-host-ready SPA routing setup as the Phase 4 baseline, then continue with the next narrow personalization slice only after another concrete user-test or copy/layout issue is identified.
+- Immediate objective: use the mission-path structure, explicit Today-vs-bonus split, mission auto-complete, single-active-chapter Missions view, listening/output drill flow, the new mobile core-loop friction cleanup v1, the compact grammar/reading mission-flow pass, the new Today/review handoff cleanup, the new Today-density cleanup, the new active Review-batch cleanup, the new Missions-surface cleanup, the new Progress-surface cleanup, the new Settings-surface cleanup, the new reinforce-and-completion-flow cleanup, the new reinforce-relatedness cleanup, the new reorder-drill shuffle cleanup, the new completion-handoff cleanup, the new listening single-workspace redesign, the new output single-workspace/review-audio cleanup, the new grammar completion cleanup, the new compact completion-recap cleanup, the new Today resume-precedence cleanup, the new grammar-focus highlighting cleanup, the new listening hint/scoring semantics cleanup, the new early-listening prep cleanup, the new guided Today-track handoff cleanup, the new guided-handoff audit cleanup, the new early-listening prep pacing audit cleanup, the new supported-exposure wording audit cleanup, the new grammar-highlight coverage audit cleanup, the mobile-loop review-start positioning cleanup, the Missions chapter-surface density cleanup, the Today personal-focus recommendation slice, the Today personalization-copy sanity pass, the V2.1 finite Today lesson shell, and static-host-ready SPA routing setup as the Phase 4 baseline, then continue with the V2.2 review-loop containment slice from the confirmed pass-2 feedback.
 - Process note: `Japanese_OS_feedback_plan.md` now owns the Phase 4 user-test feedback triage loop; `BUILD_STATUS.md` should stay limited to verified repo reality, completed slices, constraints, and the ordered implementation queue.
 - Documentation note: `N5_CURRICULUM_PLAN.md` and `PROMPTS/README.md` now separate historical Phase 1-3 build planning from current Phase 4 repo reality; they are no longer an implied active content-expansion or scaffold queue.
 - Claim-gate verdict: the repo still credibly clears its documented `N5-comprehensive` threshold. The new work in this phase is product shaping, not a reopened content-coverage remediation loop.
@@ -177,26 +177,26 @@
 - Phase 4 Missions chapter-surface density cleanup that keeps the single-active-chapter switcher but removes the duplicated chapter header/stat block before the next mission, shortens the active toolbar, moves chapter description and pack details behind `Chapter details`, and labels locked no-ready chapters as `Locked for now` instead of `Chapter cleared`
 - Phase 4 Today personal-focus recommendation slice that keeps the existing 3-slot deterministic Today plan but adds a compact mission-specific focus line based on local same-skill completions, open weak-point pressure, and linked grammar tags, while tightening one fresh-review copy edge case
 - Phase 4 Today personalization-copy sanity pass that checked empty, in-progress, weak-point, and recently-reviewed recommendation states, then corrected incomplete support missions so they are labeled as open path work instead of `Light pass` / `short pass`
+- Phase 4 V2.1 finite Today lesson shell that keeps deterministic recommendation selection but snapshots the current core Today lesson for the browser session, shows remaining count/time and a single Start/Continue CTA in the top card, marks completed core items, adds Today Complete after core work and urgent Review are clear, moves live extra recommendations into optional bonus, removes Today path details, and removes Mission Path from Today-flow completion handoffs without date-keyed scheduling
 
 ## Current App Capabilities
 
-- User can open Today and get up to 3 recommendations:
+- User can open Today and get up to 3 live recommendation candidates:
   - review first if weak points exist
   - next unlocked incomplete mission
   - one support slot that stabilizes urgent weak-point missions or falls back to reinforcement / light pass
-- Today now frames those recommendations as:
-  - "Do this today" for the core daily plan
-  - "Bonus if you want more" for the optional support slot
-  - a compact mission-path summary instead of a second full mission backlog
+- Today now frames those recommendations through a session-scoped lesson shell:
+  - the top Today card owns the current core lesson, remaining count, remaining estimated time, completed core items, and one Start/Continue CTA
+  - Today Complete appears after the session's core items are complete and no urgent Review recommendation remains
+  - bonus practice stays below the lesson card and is clearly optional
+  - Missions owns path/library browsing instead of Today showing path details
   - learner-facing path position and target-skill context instead of internal unlock/save wording on Today mission cards
   - compact `Personal focus` copy on mission cards that uses local same-skill completions, open weak points, and linked grammar tags without adding new storage
-  - a more compact top-of-page summary with path totals hidden behind details instead of always-visible stats
-  - the required plan before the continue card so the first core action lands earlier on mobile
-  - collapsed bonus and extra context sections so Today behaves more like a daily plan than a dashboard dump
+  - a more compact top-of-page summary with current lesson items instead of repeated Today/path sections
   - short reinforce passes for completed-mission recommendations instead of always replaying the full mission flow
   - avoidance of immediately reusing just-completed missions for reinforce when alternate completed options exist
   - reinforce-slot preference for alternate missions that match the current anchor mission's target skill and linked grammar tags when available
-  - a compact `Mission finished` return state after mission completion so the handoff back into Today feels intentional
+  - compact `Mission finished` and `Review finished` return states that defer the next action to the top lesson card and no longer include Mission Path
 - User can open Missions and see all current missions with:
   - a compact top shell and active chapter first instead of leading with summary/explainer cards
   - a horizontal chapter switcher that selects one active chapter at a time
@@ -280,8 +280,7 @@
   - restores audio-first listening retries when the missed listening item has audio, with transcript hidden behind reveal
   - moves optional listening focus support and output hints behind lightweight details so each retry stays centered on one active check
   - reuses the same deterministic reorder-chunk shuffle as grammar missions so reorder retries do not open in solved order
-- Today now shows compact `Mission finished` and `Review finished` states with direct CTA routing into the next Today recommendation instead of only passive completion summaries
-- Today mission/review return states now include a compact completion recap for what was practiced, the current local skill or queue signal, and whether weak points remain
+- Today now shows compact `Mission finished` and `Review finished` states with completion recaps for what was practiced, the current local skill or queue signal, and whether weak points remain; the top lesson card owns the next required action
 - Today heuristics currently:
   - mark review as more urgent when weak points are fresh, repeated, or numerous
   - keep the same small 3-slot plan: review, next step, then one support slot
@@ -442,8 +441,8 @@
 
 ## Next Recommended Slices
 
-1. Run `V2.0 mobile audit and code-path confirmation` from `Japanese_OS_feedback_pass_2_recording_3_plan.md` before coding. The latest real usage feedback points at Today feeling like a live feed instead of a finite lesson, review competing with the core loop, and several early trust/pedagogy issues around listening choices, reorder prompts, output feedback, and hardcoded Colin content.
-2. If V2.0 confirms the findings, implement the next accepted slices in order: finite Today lesson shell, review loop containment, early trust fixes, then pedagogy/content follow-ups. Keep storage, schemas, mission types, and deterministic recommendation selection unchanged unless a later slice explicitly approves a broader model change.
+1. Implement `V2.2 review loop containment` from `Japanese_OS_feedback_pass_2_recording_3_plan.md`: tighten Review page copy/chrome, keep active retries focused on mobile, and clarify remaining weak-point behavior after a batch returns to Today.
+2. Then implement `V2.3 early trust fixes`: listening choice/distractor behavior, reorder prompt leakage, learner-facing output feedback copy, and narrow spacing defects. Keep storage, schemas, mission types, and deterministic selection unchanged unless a later slice explicitly approves a broader model change.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
@@ -459,6 +458,7 @@
 - Today resume precedence and deduping: completed in the Phase 4 Today resume-precedence cleanup by promoting unfinished missions above the daily plan and suppressing duplicate mission recommendations for the current render.
 - Guided Today lesson track: completed as a narrow Phase 4 presentation slice by showing an ordered Today-track handoff inside mission/review completion return cards, using only the already-visible continue/recommendation actions and without changing scheduling or recommendation semantics.
 - Guided Today-track audit: completed in the follow-up Phase 4 handoff audit cleanup by trimming completion handoffs to Done/Next, fixing unresolved-review wording, and avoiding duplicate Review actions in the same return card.
+- Finite Today lesson shell: completed in V2.1 by replacing the live-feed presentation with a session-scoped core lesson card, remaining count/time, Today Complete state, optional bonus below, and no Mission Path handoff inside the daily loop; this does not add date-keyed persistence or alter deterministic recommendation selection.
 - Listening hint/scoring semantics: completed in the Phase 4 listening semantics cleanup by treating answer reveals as supported exposure that preserves flow while keeping or adding review pressure instead of clearing mastery; follow-up wording audit tightened mission and Review retry feedback so answer-revealed lines say they move the pass forward but remain open in Review.
 - Early listening prep flow: completed in the Phase 4 early-listening prep cleanup by keeping listening early in the path but adding a hear-the-pattern screen before first-run checks using existing support examples and audio; follow-up pacing audit confirmed no delayed placement is needed yet and tightened prep copy toward hear, notice, then try.
 - Review start positioning: completed in the mobile loop sanity pass by moving the active Review batch into view after `Start review`, without changing weak-point selection, batch sizing, or retry scoring.

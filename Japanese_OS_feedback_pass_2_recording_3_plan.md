@@ -79,9 +79,9 @@ The current repo shape supports a narrow first implementation path:
 
 | Slice | Status | Scope | Explicit non-goals |
 | --- | --- | --- | --- |
-| V2.0 mobile audit and code-path confirmation | Next slice | Reproduce the pass-2 feedback in a phone viewport, inspect console/state, confirm which items are bugs vs design friction, and produce exact file targets. | No code changes unless a one-line typo or doc correction is discovered. |
-| V2.1 finite Today lesson shell | Accepted, blocked by V2.0 | Make Today present one finite core lesson card with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below. | No date-keyed daily-plan persistence yet; no new scheduler; no new recommendation storage. |
-| V2.2 review loop containment | Accepted, blocked by V2.0 | Reduce Review page copy, prevent cleared review from hijacking Today, make active review use focused chrome like missions, and clarify remaining weak-point copy. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
+| V2.0 mobile audit and code-path confirmation | Addressed | Reproduced the pass-2 feedback in a phone viewport, inspected console/state, confirmed which items are bugs vs design friction, and produced exact file targets. | No code changes were made in the audit pass. |
+| V2.1 finite Today lesson shell | Addressed | Today now presents one finite session-scoped core lesson card with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below. | No date-keyed daily-plan persistence; no new scheduler; no recommendation selection change. |
+| V2.2 review loop containment | Next slice | Reduce Review page copy, prevent cleared review from hijacking Today, make active review use focused chrome like missions, and clarify remaining weak-point copy. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
 | V2.3 early trust fixes | Accepted, can follow V2.0 | Improve listening attempt order/distractor behavior, remove internal output feedback language, make reorder prompts avoid exposing the answer, and fix narrow spacing bugs. | No new mission type; no runtime AI distractor generation; no broad content rewrite. |
 | V2.4 early output and grammar pedagogy | Accepted for design, not first code slice | Audit early output prerequisites, consider word/chunk banks or stronger hints, and demote common mistakes from required pre-drill reading into contextual support. | No full vocab lesson system or new progress schema unless a later decision explicitly approves it. |
 | V2.5 content cleanup | Accepted as a small content slice | Replace hardcoded Colin examples with neutral/Japanese placeholder content and revisit early mission estimated minutes. | No broad personalization engine; no large content expansion. |
@@ -122,6 +122,8 @@ Every product-flow slice should also include a manual phone-width pass:
 
 ### 1. Today's plan time/count does not visibly decrement after completion
 
+Status: Addressed in V2.1 with a session-scoped Today plan snapshot and remaining-only count/time in the top lesson card.
+
 User repeatedly says Today still shows something like:
 - `Core plan 2 items`
 - `Bonus lane +8 minutes`
@@ -148,6 +150,8 @@ Likely fix:
 ---
 
 ### 2. Today loop has no satisfying completed state
+
+Status: Addressed in V2.1. Today now shows `Today complete` after the session's core items are complete and no urgent Review recommendation remains.
 
 User says there is no “gold star” / “you finished today” moment.
 
@@ -364,6 +368,8 @@ Likely fix:
 
 ### A. Today page should be the plan, not a feed
 
+Status: Addressed in V2.1. The top Today card now owns the finite core lesson, while live extra recommendations are clearly optional bonus practice below it.
+
 User wants:
 - One top card above the fold.
 - “Today's lesson”
@@ -423,6 +429,8 @@ You finished 2 missions and cleared 1 review item.
 
 ### B. `Path details` dropdown feels useless on Today
 
+Status: Addressed in V2.1 by removing Today path details and leaving library/path browsing to Missions.
+
 User specifically calls out:
 - `11 chapters and 199 missions are available...`
 as useless in the Today context.
@@ -435,6 +443,8 @@ Recommendation:
 ---
 
 ### C. Post-mission completion screen offers too many next actions
+
+Status: Addressed in V2.1. Today-flow completion cards no longer show Mission Path or duplicate next-action buttons; the top Today lesson card owns the next required action.
 
 User sees:
 - Done / mission complete
@@ -467,6 +477,8 @@ Codex investigation:
 ---
 
 ### D. Today state is lost/confusing after visiting Mission Path
+
+Status: Addressed for the V2.1 Today-flow path. Mission Path is no longer offered from Today-flow completion cards, and the session-scoped Today plan survives route changes in the current browser session.
 
 User says they clicked Mission Path, returned to Today, and lost the intermediary Today plan flow.
 

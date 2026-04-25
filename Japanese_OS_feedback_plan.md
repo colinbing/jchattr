@@ -51,12 +51,12 @@ Current ordering:
 2. Addressed from the Missions chapter-surface density cleanup: the active chapter panel now reaches the next mission faster and distinguishes locked chapters from cleared chapters.
 3. Addressed in the first narrow personalization slice: Today mission cards now explain personal fit using existing local progress, weak points, target skills, and linked grammar tags.
 4. Addressed from the Today personalization-copy sanity pass: incomplete support missions are no longer described as `Light pass` / `short pass` reinforcement.
-5. Active intake: `Japanese_OS_feedback_pass_2_recording_3_plan.md` captures the next concrete mobile-use findings. Start with an investigation-only mobile audit, then implement the confirmed issues in bounded V2 slices.
+5. Active intake: `Japanese_OS_feedback_pass_2_recording_3_plan.md` captures the next concrete mobile-use findings. V2.0 and V2.1 are addressed; continue with the confirmed issues in bounded V2 slices, starting with V2.2 review loop containment.
 
 Pass 2 working order:
-1. `V2.0 mobile audit and code-path confirmation` — Next slice. Reproduce the pass-2 Today/review/early-mission feedback in a narrow viewport and confirm exact file targets before coding.
-2. `V2.1 finite Today lesson shell` — Accepted, blocked by V2.0. Make Today feel like one finite lesson with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below.
-3. `V2.2 review loop containment` — Accepted, blocked by V2.0. Reduce review chrome/copy, prevent cleared review from hijacking Today, and make active Review use focused chrome like missions.
+1. `V2.0 mobile audit and code-path confirmation` — Addressed. The audit confirmed the finite-Today/feed problem, duplicate Today sections, post-completion Mission Path distraction, Review-loop containment risk, and early trust/pedagogy issues for later slices.
+2. `V2.1 finite Today lesson shell` — Addressed. Today now snapshots the current core lesson for the browser session, shows remaining item count/time in the top card, marks completed core items, adds a Today Complete state after urgent Review clears, moves live recommendations into optional bonus, and removes Mission Path from Today-flow handoffs without date-keyed persistence.
+3. `V2.2 review loop containment` — Next slice. Reduce review chrome/copy, prevent cleared review from hijacking Today, and make active Review use focused chrome like missions.
 4. `V2.3 early trust fixes` — Accepted, can follow V2.0. Address listening choice behavior, reorder prompt leakage, output feedback language, and narrow mobile spacing defects.
 5. `V2.4+ pedagogy/content follow-ups` — Accepted/deferred by size. Handle early output scaffolding, common-mistake placement, Colin-specific content, estimates, and any larger daily-session/SRS/content-model decisions as separate slices.
 
@@ -601,21 +601,21 @@ Triage:
 
 ### Status
 
-Pass 2 is now the active feedback source.
+Pass 2 is now the active feedback source. V2.0 and V2.1 are addressed; V2.2 is the next narrow implementation slice.
 
-The next step is investigation-first: confirm the latest mobile-use findings against actual app behavior and code paths before implementing. Do not jump directly into a broad Today redesign or scheduler.
+The next step should continue from the confirmed audit findings, not invent a broad Today redesign or scheduler.
 
 ### Scope for the next accepted slice
 
 Include:
 - Start from `Japanese_OS_feedback_pass_2_recording_3_plan.md`.
-- Reproduce the Today, Review, listening, output, and reorder issues in a mobile viewport.
-- Report confirmed bugs, UX friction, pedagogy/content issues, unclear fragments, relevant files, and the top implementation slice.
+- Implement the V2.2 review loop containment slice in a mobile viewport.
+- Reduce Review copy/chrome, keep active retry focus tight, and make cleared-review return behavior easy to understand.
 - Keep deterministic recommendation selection readable and local-first.
-- Prefer copy, presentation, or weighting clarity before adding new stored semantics.
+- Prefer copy and presentation clarity before adding new stored semantics.
 
 Exclude:
-- Full Today redesign.
+- Full Today redesign or a persistent daily scheduler.
 - New SRS scheduling.
 - New mission types.
 - AI features.
@@ -629,39 +629,28 @@ Exclude:
 Context:
 This repo is Japanese OS, a local-first React + TypeScript Japanese learning MVP.
 Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, `BUILD_STATUS.md`, `Japanese_OS_feedback_plan.md`, and `Japanese_OS_feedback_pass_2_recording_3_plan.md`.
-Preserve the current architecture. Do not implement yet.
+Preserve the current architecture, local-first storage, TypeScript-only code, mission schemas, mission types, and deterministic recommendation/review selection.
 
 Task:
-Run the V2.0 mobile audit and code-path confirmation pass for the latest pass-2 feedback.
+Implement V2.2 review loop containment.
 
-Audit targets:
-1. Today as finite lesson vs live feed.
-2. Today remaining count/time after completing one core mission.
-3. Today complete state after core items and urgent review are cleared.
-4. Duplicate Today sections such as Today's plan, Do this today, Bonus, More context, and Path details.
-5. Post-mission completion actions, especially Mission Path inside the daily loop.
-6. Review immediately reappearing after successful retry.
-7. Review page copy density and active-review route chrome.
-8. Listening answer order, hint/reveal flow, and distractor quality.
-9. Output mission difficulty, hint spacing, and feedback copy.
-10. Grammar progress/header spacing and reorder prompt/chunk behavior.
-11. Hardcoded Colin examples.
+Scope:
+1. Tighten Review landing copy so it reads as one queue/start surface on phone width.
+2. Make active Review retry screens feel as focused as mission screens, with secondary mission context collapsed or demoted.
+3. Clarify remaining weak-point copy after a batch so cleared Review does not appear to hijack Today.
+4. Confirm Today returns after a Today-launched Review batch still land on the finite Today lesson shell.
 
 Manual flow:
 - Use a narrow iPhone-like viewport.
 - Reset local progress.
-- Complete the first grammar mission.
-- Complete or inspect the first listening mission.
-- Intentionally miss at least one listening or output item.
+- Complete the first grammar mission and first listening mission.
+- Intentionally miss one listening item.
 - Complete Review from Today.
-- Inspect the first output mission.
-- Inspect the destination-with-に reorder drill.
-- Return to Today after each major flow.
+- Return to Today after the batch.
 - Check console errors.
 
 Output:
-Return a structured report with confirmed bugs, UX friction, pedagogy/content issues, unclear fragments and best guesses, likely files/components, top 5 fixes, and the recommended V2.1 implementation prompt.
-Do not edit files.
+Summarize files changed, behavior changes, docs changed, validation results, manual QA result, and the recommended V2.3 prompt.
 ```
 
 ---
