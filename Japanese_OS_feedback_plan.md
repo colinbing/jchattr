@@ -51,7 +51,14 @@ Current ordering:
 2. Addressed from the Missions chapter-surface density cleanup: the active chapter panel now reaches the next mission faster and distinguishes locked chapters from cleared chapters.
 3. Addressed in the first narrow personalization slice: Today mission cards now explain personal fit using existing local progress, weak points, target skills, and linked grammar tags.
 4. Addressed from the Today personalization-copy sanity pass: incomplete support missions are no longer described as `Light pass` / `short pass` reinforcement.
-5. No active implementation slice is queued. Next product work should come from a concrete mobile-loop audit or user-test finding rather than invented Phase 4 micro-work.
+5. Active intake: `Japanese_OS_feedback_pass_2_recording_3_plan.md` captures the next concrete mobile-use findings. Start with an investigation-only mobile audit, then implement the confirmed issues in bounded V2 slices.
+
+Pass 2 working order:
+1. `V2.0 mobile audit and code-path confirmation` — Next slice. Reproduce the pass-2 Today/review/early-mission feedback in a narrow viewport and confirm exact file targets before coding.
+2. `V2.1 finite Today lesson shell` — Accepted, blocked by V2.0. Make Today feel like one finite lesson with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below.
+3. `V2.2 review loop containment` — Accepted, blocked by V2.0. Reduce review chrome/copy, prevent cleared review from hijacking Today, and make active Review use focused chrome like missions.
+4. `V2.3 early trust fixes` — Accepted, can follow V2.0. Address listening choice behavior, reorder prompt leakage, output feedback language, and narrow mobile spacing defects.
+5. `V2.4+ pedagogy/content follow-ups` — Accepted/deferred by size. Handle early output scaffolding, common-mistake placement, Colin-specific content, estimates, and any larger daily-session/SRS/content-model decisions as separate slices.
 
 ---
 
@@ -594,14 +601,16 @@ Triage:
 
 ### Status
 
-No active implementation slice is queued.
+Pass 2 is now the active feedback source.
 
-The current Phase 4 cleanup baseline is good enough to gather real usage feedback before adding deeper personalization behavior.
+The next step is investigation-first: confirm the latest mobile-use findings against actual app behavior and code paths before implementing. Do not jump directly into a broad Today redesign or scheduler.
 
 ### Scope for the next accepted slice
 
 Include:
-- Start from a specific observed user-test or mobile-loop audit issue.
+- Start from `Japanese_OS_feedback_pass_2_recording_3_plan.md`.
+- Reproduce the Today, Review, listening, output, and reorder issues in a mobile viewport.
+- Report confirmed bugs, UX friction, pedagogy/content issues, unclear fragments, relevant files, and the top implementation slice.
 - Keep deterministic recommendation selection readable and local-first.
 - Prefer copy, presentation, or weighting clarity before adding new stored semantics.
 
@@ -613,6 +622,47 @@ Exclude:
 - Backend/cloud sync.
 - Broad content rewrite.
 - Large visual redesign.
+
+### Next prompt
+
+```md
+Context:
+This repo is Japanese OS, a local-first React + TypeScript Japanese learning MVP.
+Follow `constitution.md`, `PRODUCT_SPEC.md`, `ROADMAP.md`, `BUILD_STATUS.md`, `Japanese_OS_feedback_plan.md`, and `Japanese_OS_feedback_pass_2_recording_3_plan.md`.
+Preserve the current architecture. Do not implement yet.
+
+Task:
+Run the V2.0 mobile audit and code-path confirmation pass for the latest pass-2 feedback.
+
+Audit targets:
+1. Today as finite lesson vs live feed.
+2. Today remaining count/time after completing one core mission.
+3. Today complete state after core items and urgent review are cleared.
+4. Duplicate Today sections such as Today's plan, Do this today, Bonus, More context, and Path details.
+5. Post-mission completion actions, especially Mission Path inside the daily loop.
+6. Review immediately reappearing after successful retry.
+7. Review page copy density and active-review route chrome.
+8. Listening answer order, hint/reveal flow, and distractor quality.
+9. Output mission difficulty, hint spacing, and feedback copy.
+10. Grammar progress/header spacing and reorder prompt/chunk behavior.
+11. Hardcoded Colin examples.
+
+Manual flow:
+- Use a narrow iPhone-like viewport.
+- Reset local progress.
+- Complete the first grammar mission.
+- Complete or inspect the first listening mission.
+- Intentionally miss at least one listening or output item.
+- Complete Review from Today.
+- Inspect the first output mission.
+- Inspect the destination-with-に reorder drill.
+- Return to Today after each major flow.
+- Check console errors.
+
+Output:
+Return a structured report with confirmed bugs, UX friction, pedagogy/content issues, unclear fragments and best guesses, likely files/components, top 5 fixes, and the recommended V2.1 implementation prompt.
+Do not edit files.
+```
 
 ---
 

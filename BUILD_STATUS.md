@@ -442,7 +442,8 @@
 
 ## Next Recommended Slices
 
-1. No active implementation slice is queued. Gather real usage feedback, then use the next concrete mobile-loop audit or user-test finding to choose a narrow Phase 4 slice; keep storage, schemas, and deterministic selection unchanged unless that slice explicitly requires otherwise.
+1. Run `V2.0 mobile audit and code-path confirmation` from `Japanese_OS_feedback_pass_2_recording_3_plan.md` before coding. The latest real usage feedback points at Today feeling like a live feed instead of a finite lesson, review competing with the core loop, and several early trust/pedagogy issues around listening choices, reorder prompts, output feedback, and hardcoded Colin content.
+2. If V2.0 confirms the findings, implement the next accepted slices in order: finite Today lesson shell, review loop containment, early trust fixes, then pedagogy/content follow-ups. Keep storage, schemas, mission types, and deterministic recommendation selection unchanged unless a later slice explicitly approves a broader model change.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

@@ -57,6 +57,67 @@ Not:
 
 ---
 
+## Working implementation tracker
+
+Status: intake accepted, implementation not started.
+
+This pass is now the active Phase 4 feedback source. The goal is to turn the latest mobile-use feedback into bounded implementation slices without drifting into a full scheduler, new backend, new mission system, or broad content expansion.
+
+### Repo inspection anchors
+
+The current repo shape supports a narrow first implementation path:
+
+- Today is rendered in `src/features/today/routes/TodayPage.tsx`, with live recommendations from `src/features/today/lib/todayRecommendations.ts`.
+- Review is rendered in `src/features/review/routes/ReviewPage.tsx` and `src/features/review/components/ReviewBatchPlayer.tsx`.
+- Mission route chrome is controlled by `src/components/layout/AppShell.tsx` and currently hides mobile nav only on `/mission/*`.
+- Listening choice order and distractor scoring live in `src/lib/listeningChoices.ts`.
+- Reorder chip extraction/shuffling lives in `src/lib/reorderDrill.ts`; exact solved-order opening is already guarded, but drill prompts can still expose the canonical order.
+- Output feedback copy lives in `src/lib/outputEvaluation.ts`; it still contains internal `accepted answer patterns` wording.
+- Early hardcoded Colin content is in `src/content/missions.ts` and related content files.
+
+### Slice status table
+
+| Slice | Status | Scope | Explicit non-goals |
+| --- | --- | --- | --- |
+| V2.0 mobile audit and code-path confirmation | Next slice | Reproduce the pass-2 feedback in a phone viewport, inspect console/state, confirm which items are bugs vs design friction, and produce exact file targets. | No code changes unless a one-line typo or doc correction is discovered. |
+| V2.1 finite Today lesson shell | Accepted, blocked by V2.0 | Make Today present one finite core lesson card with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below. | No date-keyed daily-plan persistence yet; no new scheduler; no new recommendation storage. |
+| V2.2 review loop containment | Accepted, blocked by V2.0 | Reduce Review page copy, prevent cleared review from hijacking Today, make active review use focused chrome like missions, and clarify remaining weak-point copy. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
+| V2.3 early trust fixes | Accepted, can follow V2.0 | Improve listening attempt order/distractor behavior, remove internal output feedback language, make reorder prompts avoid exposing the answer, and fix narrow spacing bugs. | No new mission type; no runtime AI distractor generation; no broad content rewrite. |
+| V2.4 early output and grammar pedagogy | Accepted for design, not first code slice | Audit early output prerequisites, consider word/chunk banks or stronger hints, and demote common mistakes from required pre-drill reading into contextual support. | No full vocab lesson system or new progress schema unless a later decision explicitly approves it. |
+| V2.5 content cleanup | Accepted as a small content slice | Replace hardcoded Colin examples with neutral/Japanese placeholder content and revisit early mission estimated minutes. | No broad personalization engine; no large content expansion. |
+| V2.6 stable daily session model | Deferred | Persist a date-keyed daily plan if the live recommendation model still feels feed-like after V2.1. | Not part of the first implementation pass. |
+| V2.7 larger learning-system upgrades | Deferred | SRS intervals, richer proficiency spacing, new mission structures, larger pack/content additions, and deeper skill reporting. | Do not fold into mobile daily-loop cleanup. |
+
+### QA gates for every implementation slice
+
+Every code-changing slice should run:
+
+- `npm run typecheck`
+- `npm run build`
+- `npm run report:build-status-summary`
+- `npm run report:progression-gaps`
+- `npm run report:reading-reuse`
+- `git diff --check`
+
+Run the broader content reports when content changes:
+
+- `npm run report:content-coverage`
+- `npm run report:content-overlap`
+
+Every product-flow slice should also include a manual phone-width pass:
+
+- reset local progress
+- start Today
+- complete the first grammar mission
+- complete or inspect the first listening mission
+- intentionally miss at least one item
+- complete Review
+- inspect the first output mission
+- return to Today after each flow
+- check console errors
+
+---
+
 ## Confirmed / high-confidence bugs and defects
 
 ### 1. Today's plan time/count does not visibly decrement after completion
