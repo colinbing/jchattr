@@ -56,11 +56,22 @@ export function TodayPage() {
     missionProgress,
     continueState,
   );
+  const visibleRecommendations = filterContinueMissionRecommendation(
+    recommendations,
+    continueMission?.mission.id ?? null,
+  );
   const requiredRecommendations =
-    recommendations.length > 2 ? recommendations.slice(0, 2) : recommendations;
+    visibleRecommendations.length > 2
+      ? visibleRecommendations.slice(0, 2)
+      : visibleRecommendations;
   const bonusRecommendations =
-    recommendations.length > 2 ? recommendations.slice(2) : [];
-  const primaryReturnAction = getPrimaryReturnAction(requiredRecommendations);
+    visibleRecommendations.length > 2 ? visibleRecommendations.slice(2) : [];
+  const primaryReturnAction = getPrimaryReturnAction(requiredRecommendations, continueMission);
+  const requiredSessionCount =
+    requiredRecommendations.length + (continueMission ? 1 : 0);
+  const requiredSessionMinutes =
+    getRecommendationMinuteTotal(requiredRecommendations) +
+    (continueMission?.mission.estimatedMinutes ?? 0);
   const currentCoreChapter =
     missionLibraryChapters
       .filter((chapter) => chapter.kind === 'core')
@@ -142,8 +153,8 @@ export function TodayPage() {
       <SessionSummary
         missionCount={starterContent.summary.missionCount}
         chapterCount={missionLibraryChapters.length}
-        requiredCount={requiredRecommendations.length}
-        requiredMinutes={getRecommendationMinuteTotal(requiredRecommendations)}
+        requiredCount={requiredSessionCount}
+        requiredMinutes={requiredSessionMinutes}
         bonusCount={bonusRecommendations.length}
         bonusMinutes={getRecommendationMinuteTotal(bonusRecommendations)}
       />
@@ -308,6 +319,20 @@ export function TodayPage() {
         </SurfaceCard>
       ) : null}
 
+      {continueMission ? (
+        <SurfaceCard
+          className="today-support-card"
+          title="Pick up where you stopped"
+          description="Resume the unfinished mission first, then come back to the daily plan."
+        >
+          <ContinueMissionCard
+            mission={continueMission.mission}
+            detail={continueMission.detail}
+            lastVisitedAt={continueState.lastVisitedAt}
+          />
+        </SurfaceCard>
+      ) : null}
+
       <SurfaceCard
         title="Do this today"
         description="Do the core plan first. Keep it short."
@@ -328,20 +353,6 @@ export function TodayPage() {
           ))}
         </div>
       </SurfaceCard>
-
-      {continueMission ? (
-        <SurfaceCard
-          className="today-support-card"
-          title="Pick up where you stopped"
-          description="Use this only if you want to resume the unfinished mission before browsing elsewhere."
-        >
-          <ContinueMissionCard
-            mission={continueMission.mission}
-            detail={continueMission.detail}
-            lastVisitedAt={continueState.lastVisitedAt}
-          />
-        </SurfaceCard>
-      ) : null}
 
       <SurfaceCard
         className="today-support-card"
@@ -464,6 +475,11 @@ type TodayReturnAction = {
   label: string;
 };
 
+type ContinueMissionSummary = {
+  mission: Mission;
+  detail: string;
+};
+
 type CompletionRecapItem = {
   label: string;
   body: string;
@@ -492,7 +508,34 @@ function getRecommendationMinuteTotal(recommendations: TodayRecommendation[]) {
   }, 0);
 }
 
-function getPrimaryReturnAction(recommendations: TodayRecommendation[]): TodayReturnAction | null {
+function filterContinueMissionRecommendation(
+  recommendations: TodayRecommendation[],
+  continueMissionId: string | null,
+) {
+  if (!continueMissionId) {
+    return recommendations;
+  }
+
+  return recommendations.filter((recommendation) => {
+    return (
+      recommendation.kind !== 'mission' ||
+      recommendation.mission.id !== continueMissionId
+    );
+  });
+}
+
+function getPrimaryReturnAction(
+  recommendations: TodayRecommendation[],
+  continueMission: ContinueMissionSummary | null,
+): TodayReturnAction | null {
+  if (continueMission) {
+    return {
+      to: `/mission/${continueMission.mission.id}`,
+      state: { preserveScroll: true },
+      label: 'Continue mission',
+    };
+  }
+
   const recommendation = recommendations[0];
 
   if (!recommendation) {

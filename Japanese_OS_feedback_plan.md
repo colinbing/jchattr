@@ -47,9 +47,9 @@ Slice discipline:
 - After implementation slices, run the required validation suite and update `BUILD_STATUS.md` in the same pass.
 
 Current ordering:
-1. Next implementation slice: Today resume precedence/deduping so unfinished work appears first and does not duplicate in the daily plan.
-2. Next accepted UX candidate: grammar focus highlighting in examples.
-3. Deferred design-semantic candidate: listening hint/scoring semantics, because final-hint behavior affects progress confidence and skill-state meaning.
+1. Next implementation slice: grammar focus highlighting in examples.
+2. Next accepted UX candidate: listening hint/scoring semantics, because final-hint behavior affects progress confidence and skill-state meaning.
+3. Product-direction candidate: guided Today lesson track, because it could improve daily momentum but needs session-flow design before implementation.
 
 ---
 
@@ -347,8 +347,8 @@ Fix direction:
 Priority: P1.
 
 Triage:
-- Accepted.
-- Next-slice candidate because it affects the daily entry point and can be fixed narrowly.
+- Addressed.
+- Implemented in the Phase 4 Today resume precedence/deduping slice by promoting the active continue card above the daily plan and suppressing that same mission from lower recommendation cards for the current render.
 
 ---
 
@@ -465,6 +465,26 @@ Possible improvement:
 - Avoid fake precision; keep tiering simple but inspectable.
 
 Priority: P3.
+
+---
+
+### F6 — Guided Today lesson track could turn daily work into a cohesive run
+
+Idea:
+- Today could offer a single guided entry point for a small planned lesson run rather than asking the learner to interpret separate cards.
+- A run might sequence two or three coherent missions, show a compact recap after each mission, then route into review at the end if weak points are waiting.
+- Completion recaps could become the handoff moment: `Next mission`, `Start review`, or `Back to Today`.
+
+Candid read:
+- This is directionally strong for engagement because it answers “what do I do now?” and reduces decision fatigue.
+- It should not be implemented as a broad scheduler rewrite yet. It introduces session-run semantics, daily chunk sizing, and review-routing behavior that need a narrow design pass.
+- The safest path is incremental: keep current recommendations, then later add a Today-run presentation layer that chains the already-selected visible actions.
+
+Priority: P2.
+
+Triage:
+- Accepted as product-direction candidate.
+- Deferred until after near-term clarity fixes like grammar focus highlighting and listening hint/scoring semantics.
 
 ---
 
