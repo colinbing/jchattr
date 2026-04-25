@@ -260,8 +260,7 @@ function ListeningPrepPanel({
           {primaryLesson ? primaryLesson.title : missionTitle}
         </h3>
         <p className="listening-prep-card__body">
-          Listen to the model lines once, then start the checks without needing to scroll for
-          support.
+          Play each model line once. Notice the pattern, then try the listening checks.
         </p>
       </div>
 
@@ -575,7 +574,7 @@ function getListeningFeedbackTitle(feedback: Exclude<ListeningFeedback, null>) {
     case 'correct':
       return 'Correct.';
     case 'supported':
-      return 'Answer revealed.';
+      return 'Supported exposure.';
     case 'incorrect':
       return 'Not quite.';
   }
@@ -589,10 +588,10 @@ function getListeningFeedbackBody(
   switch (feedback) {
     case 'correct':
       return revealed.focus || revealed.transcript
-        ? 'Good recovery. Support helped you reach the meaning.'
+        ? 'Support helped. This moves the line forward, but it is a lighter listening signal.'
         : 'Clean first-pass recognition.';
     case 'supported':
-      return 'This line counts as completed exposure, not mastery. It stays review-worthy.';
+      return 'You saw the meaning, so this moves the pass forward but keeps the item in Review.';
     case 'incorrect':
       return `Correct answer: ${item.translation}`;
   }

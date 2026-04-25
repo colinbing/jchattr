@@ -748,9 +748,9 @@ function SupportedExposureFeedback() {
       role="status"
       aria-live="polite"
     >
-      <p className="mission-feedback__title">Answer revealed.</p>
+      <p className="mission-feedback__title">Supported exposure.</p>
       <p className="mission-feedback__body">
-        This counts as supported exposure, not a cleared retry. The item stays in Review.
+        You saw the answer, so this pass can continue but the retry stays open.
       </p>
     </div>
   );

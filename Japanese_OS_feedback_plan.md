@@ -259,6 +259,7 @@ Priority: P2.
 Triage:
 - Addressed for the current Phase 4 slice.
 - Chosen direction: keep listening in the early path, but add a short hear-the-pattern prep screen before the first check using existing support examples and audio where available. This avoids changing unlock/recommendation semantics while making beginner listening less cold.
+- Follow-up audit: no delayed placement is needed yet. The current first-run listening prep gives enough audio-first runway after the first grammar mission, but prep copy should stay learner-facing and focused on hear → notice → try rather than layout mechanics.
 
 ---
 
@@ -334,6 +335,7 @@ Priority: P1.
 Triage:
 - Addressed.
 - Implemented in the Phase 4 listening hint/scoring semantics slice. Revealing the final answer now counts as supported exposure for flow, records or preserves review pressure, and does not present the result as full mastery.
+- Follow-up audit: addressed in the supported-exposure wording cleanup. Mission and Review retry feedback now says the learner saw the answer, can keep the pass moving, and the item remains open in Review instead of using mastery-like or implementation-facing wording.
 
 ---
 
