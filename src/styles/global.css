@@ -254,6 +254,96 @@ button {
   box-shadow: 0 14px 30px var(--color-shadow);
 }
 
+.session-summary__masthead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.session-summary__brand {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.session-summary__date {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}
+
+.session-summary__reset-note {
+  flex: 0 0 auto;
+  max-width: 8rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(36, 84, 70, 0.08);
+  color: var(--color-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.week-tracker {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-tracker__day {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.week-tracker__label {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.week-tracker__marker {
+  display: inline-flex;
+  width: 1.55rem;
+  height: 1.55rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(36, 84, 70, 0.16);
+  background: rgba(255, 253, 247, 0.72);
+  color: var(--color-surface);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.week-tracker__day--current {
+  color: var(--color-accent);
+}
+
+.week-tracker__day--current .week-tracker__marker {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(36, 84, 70, 0.12);
+}
+
+.week-tracker__day--complete .week-tracker__marker {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
 .session-summary__eyebrow,
 .mission-card__skill-label {
   margin: 0;

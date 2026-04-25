@@ -86,7 +86,7 @@ The current repo shape supports a narrow first implementation path:
 | V2.4 early output and grammar pedagogy | Addressed | Early output tasks now show visible task-local answer pieces from existing token patterns and linked vocab, and grammar Common Mistakes moved out of the required section flow into optional collapsed drill support. | No full vocab lesson system, new mission type, new schema, or new progress schema. |
 | V2.5 content cleanup | Addressed | Replaced early learner-facing Colin/コリン content with Tanaka/たなか, tightened first-loop estimates, and hydrated Today session-plan display items from current local content so stale estimate copy does not survive a content update. | No broad personalization engine; no large content expansion; no date-keyed scheduler. |
 | Listening prep audio coverage | Addressed | Added matching local listening items and generated checked-in audio for the 12 prep/model examples that lacked Listen buttons, regenerated the Tanaka self-introduction audio, and synced the manifest to the current 361-item audio set. | No runtime audio generation; no schema change; no recommendation/review selection change. |
-| V2.6 stable daily session model | Deferred | Persist a date-keyed daily plan if the live recommendation model still feels feed-like after V2.1. | Not part of the first implementation pass. |
+| V2.6 date-keyed daily session and weekly tracker | Addressed | Today now persists the finite core lesson by local study-day date, rolls the study day at 3 AM America/New_York using the device clock, shows JCHATTR/date/week completion context in the top Today card, and keeps optional in-progress bonus work from reopening the completed core count. | No backend, sync, account, analytics, online clock validation, SRS intervals, schema change, or recommendation selection change. |
 | V2.7 larger learning-system upgrades | Deferred | SRS intervals, richer proficiency spacing, new mission structures, larger pack/content additions, and deeper skill reporting. | Do not fold into mobile daily-loop cleanup. |
 
 ### QA gates for every implementation slice
@@ -986,9 +986,15 @@ Possible implementation:
 Goal:
 - Prevent Today from behaving like an infinite live feed.
 
-Possible implementation:
-- Persist a daily plan ID/list in localStorage keyed by date.
-- Recompute only when date changes or user resets progress.
-- Keep bonus recommendations live but separate.
+Status: Addressed in V2.6.
 
-This may be Phase 4+, not first cleanup.
+Implemented:
+- Persist the finite Today core lesson in localStorage keyed by a study-day date.
+- Roll the study day at 3 AM America/New_York using the device clock.
+- Keep persistent mission/review progress intact while creating a fresh finite core plan when the study day changes.
+- Keep bonus recommendations live and separate below the lesson shell.
+- Add JCHATTR branding, current study date, and a compact Sunday-Saturday completion tracker to Today.
+- Keep unfinished optional bonus practice resumable below the completed lesson shell instead of counting it as required daily work.
+
+Still excluded:
+- Server clock validation, backend, sync, accounts, analytics, SRS intervals, new mission types, and recommendation selection changes.

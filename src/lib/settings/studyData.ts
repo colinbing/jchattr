@@ -1,4 +1,5 @@
 import { clearContinueState } from '../progress/continueState';
+import { resetDailySessionProgress } from '../progress/dailySession';
 import { resetMissionProgress } from '../progress/missionProgress';
 import { resetReviewLoopProgress } from '../progress/reviewLoop';
 import { resetWeakPoints } from '../progress/weakPoints';
@@ -24,6 +25,7 @@ export function resetStudyDataStore(storeId: StudyDataStoreId) {
       resetMissionProgress();
       resetWeakPoints();
       resetReviewLoopProgress();
+      resetDailySessionProgress();
       return clearContinueState();
   }
 }

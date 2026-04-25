@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import type { Mission, StarterContent } from '../../../lib/content/types';
 import {
@@ -17,6 +17,13 @@ import {
   getMissionProgressEntry,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
+import {
+  getCurrentStudyDayKey,
+  getStudyDayLabel,
+  getWeekTrackerDays,
+  readDailySessionRecord,
+  writeDailySessionPlan,
+} from '../../../lib/progress/dailySession';
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import { getWeakPointList, useWeakPoints } from '../../../lib/progress/weakPoints';
 import {
@@ -30,8 +37,6 @@ import {
 } from '../lib/todayRecommendations';
 import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
 
-const TODAY_PLAN_SESSION_STORAGE_KEY = 'japanese-os.today-plan.v1';
-
 export function TodayPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,6 +45,10 @@ export function TodayPage() {
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
+  const [studyDayKey, setStudyDayKey] = useState(() => getCurrentStudyDayKey());
+  const [dailySessionRecord, setDailySessionRecord] = useState(() =>
+    readDailySessionRecord(studyDayKey),
+  );
   const weakPointList = getWeakPointList(weakPoints);
   const [missionCompletion, setMissionCompletion] = useState<TodayMissionCompletion | null>(() => {
     return ((location.state as TodayLocationState | null)?.missionCompletion ?? null);
@@ -68,7 +77,10 @@ export function TodayPage() {
       ? visibleRecommendations.slice(0, 2)
       : visibleRecommendations;
   const [todayPlanSnapshot, setTodayPlanSnapshot] = useState<TodayPlanSnapshot>(() => {
-    return readTodayPlanSnapshot() ?? createTodayPlanSnapshot(liveCoreRecommendations);
+    const storedPlan = dailySessionRecord.plansByStudyDay[studyDayKey];
+    return isTodayPlanSnapshot(storedPlan)
+      ? storedPlan
+      : createTodayPlanSnapshot(liveCoreRecommendations);
   });
   const liveRecommendationByKey = createRecommendationByKey(visibleRecommendations);
   const liveReviewRecommendation =
@@ -87,6 +99,12 @@ export function TodayPage() {
     visibleRecommendations.filter((recommendation) => {
       return !planState.planKeys.has(getRecommendationKey(recommendation));
     });
+  const optionalContinueMission =
+    continueMission &&
+    !planState.planKeys.has(`mission:${continueMission.mission.id}`) &&
+    planState.remainingCount === 0
+      ? continueMission
+      : null;
   const missionCompletionSkill = missionCompletion
     ? progressOverview.skillAreas.find(
         (skillArea) => skillArea.id === missionCompletion.targetSkill,
@@ -96,6 +114,11 @@ export function TodayPage() {
     ? weakPointList.filter((weakPoint) => weakPoint.missionId === missionCompletion.missionId)
         .length
     : 0;
+  const studyDateLabel = getStudyDayLabel(studyDayKey);
+  const weekTrackerDays = getWeekTrackerDays(
+    studyDayKey,
+    dailySessionRecord.completedStudyDayKeys,
+  );
 
   useEffect(() => {
     const nextState = (location.state as TodayLocationState | null) ?? null;
@@ -118,12 +141,49 @@ export function TodayPage() {
   }, [location.pathname, location.state, navigate]);
 
   useEffect(() => {
-    writeTodayPlanSnapshot(planState.snapshot);
+    const nextRecord = writeDailySessionPlan(
+      studyDayKey,
+      planState.snapshot,
+      planState.remainingCount === 0,
+    );
+    setDailySessionRecord(nextRecord);
 
     if (planState.snapshot !== todayPlanSnapshot) {
       setTodayPlanSnapshot(planState.snapshot);
     }
-  }, [planState.snapshot, todayPlanSnapshot]);
+  }, [planState.snapshot, planState.remainingCount, studyDayKey, todayPlanSnapshot]);
+
+  useEffect(() => {
+    function refreshStudyDay() {
+      const nextStudyDayKey = getCurrentStudyDayKey();
+
+      if (nextStudyDayKey === studyDayKey) {
+        return;
+      }
+
+      const nextRecord = readDailySessionRecord(nextStudyDayKey);
+      const storedPlan = nextRecord.plansByStudyDay[nextStudyDayKey];
+
+      setStudyDayKey(nextStudyDayKey);
+      setDailySessionRecord(nextRecord);
+      setTodayPlanSnapshot(
+        isTodayPlanSnapshot(storedPlan)
+          ? storedPlan
+          : createTodayPlanSnapshot(liveCoreRecommendations),
+      );
+    }
+
+    window.addEventListener('focus', refreshStudyDay);
+    document.addEventListener('visibilitychange', refreshStudyDay);
+
+    const intervalId = window.setInterval(refreshStudyDay, 60_000);
+
+    return () => {
+      window.removeEventListener('focus', refreshStudyDay);
+      document.removeEventListener('visibilitychange', refreshStudyDay);
+      window.clearInterval(intervalId);
+    };
+  }, [liveCoreRecommendations, studyDayKey]);
 
   return (
     <PageShell
@@ -134,6 +194,9 @@ export function TodayPage() {
       aside={<span className="status-chip">Daily loop</span>}
     >
       <SessionSummary
+        brandName="JCHATTR"
+        studyDateLabel={studyDateLabel}
+        weekDays={weekTrackerDays}
         items={planState.summaryItems}
         completedCount={planState.completedCount}
         remainingCount={planState.remainingCount}
@@ -142,6 +205,30 @@ export function TodayPage() {
         bonusMinutes={getRecommendationMinuteTotal(bonusRecommendations)}
         primaryAction={planState.primaryAction}
       />
+
+      {optionalContinueMission ? (
+        <SurfaceCard
+          className="today-support-card"
+          title="Optional in-progress practice"
+          description="Today is complete. Resume this only if you want extra practice."
+        >
+          <div className="review-return-card">
+            <p className="review-launch-card__title">
+              {optionalContinueMission.mission.title}
+            </p>
+            <p className="review-launch-card__body">
+              {optionalContinueMission.detail}
+            </p>
+            <Link
+              to={`/mission/${optionalContinueMission.mission.id}`}
+              state={{ preserveScroll: true }}
+              className="mission-button mission-button--link"
+            >
+              Continue bonus
+            </Link>
+          </div>
+        </SurfaceCard>
+      ) : null}
 
       {missionCompletion ? (
         <SurfaceCard
@@ -415,11 +502,14 @@ function resolveTodayPlanState({
   const remainingPlanItems = planItems.filter((item) => {
     return !isTodayPlanItemComplete(item, missionProgress, liveReviewRecommendation);
   });
-  const extraContinueCount = continueMission && !hasContinuePlanItem ? 1 : 0;
+  const shouldPromoteExtraContinue = Boolean(
+    continueMission && !hasContinuePlanItem && remainingPlanItems.length > 0,
+  );
+  const extraContinueCount = shouldPromoteExtraContinue ? 1 : 0;
   const remainingMinutes =
     remainingPlanItems.reduce((total, item) => total + item.minutes, 0) +
-    (continueMission && !hasContinuePlanItem ? continueMission.mission.estimatedMinutes : 0);
-  const primaryAction = continueMission
+    (shouldPromoteExtraContinue ? continueMission?.mission.estimatedMinutes ?? 0 : 0);
+  const primaryAction = continueMission && (hasContinuePlanItem || shouldPromoteExtraContinue)
     ? {
         to: `/mission/${continueMission.mission.id}`,
         state: { preserveScroll: true },
@@ -430,7 +520,7 @@ function resolveTodayPlanState({
       : null;
 
   const continueSummaryItems: SessionSummaryItem[] =
-    continueMission && !hasContinuePlanItem
+    continueMission && shouldPromoteExtraContinue
       ? [
           {
             id: `continue:${continueMission.mission.id}`,
@@ -629,36 +719,6 @@ function getRecommendationKey(recommendation: TodayRecommendation) {
   return recommendation.kind === 'review'
     ? 'review-loop'
     : `mission:${recommendation.mission.id}`;
-}
-
-function readTodayPlanSnapshot(): TodayPlanSnapshot | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  try {
-    const rawSnapshot = window.sessionStorage.getItem(TODAY_PLAN_SESSION_STORAGE_KEY);
-    if (!rawSnapshot) {
-      return null;
-    }
-
-    const parsedSnapshot = JSON.parse(rawSnapshot);
-    if (!isTodayPlanSnapshot(parsedSnapshot)) {
-      return null;
-    }
-
-    return parsedSnapshot;
-  } catch {
-    return null;
-  }
-}
-
-function writeTodayPlanSnapshot(snapshot: TodayPlanSnapshot) {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  window.sessionStorage.setItem(TODAY_PLAN_SESSION_STORAGE_KEY, JSON.stringify(snapshot));
 }
 
 function isTodayPlanSnapshot(value: unknown): value is TodayPlanSnapshot {

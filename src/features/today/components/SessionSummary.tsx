@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import type { WeekTrackerDay } from '../../../lib/progress/dailySession';
 
 export type SessionSummaryItem = {
   id: string;
@@ -14,6 +15,9 @@ export type SessionSummaryAction = {
 };
 
 type SessionSummaryProps = {
+  brandName: string;
+  studyDateLabel: string;
+  weekDays: WeekTrackerDay[];
   items: SessionSummaryItem[];
   completedCount: number;
   remainingCount: number;
@@ -24,6 +28,9 @@ type SessionSummaryProps = {
 };
 
 export function SessionSummary({
+  brandName,
+  studyDateLabel,
+  weekDays,
   items,
   completedCount,
   remainingCount,
@@ -37,6 +44,34 @@ export function SessionSummary({
 
   return (
     <section className="session-summary" aria-label="Daily session summary">
+      <div className="session-summary__masthead">
+        <div>
+          <p className="session-summary__brand">{brandName}</p>
+          <p className="session-summary__date">{studyDateLabel}</p>
+        </div>
+        <span className="session-summary__reset-note">3 AM ET reset</span>
+      </div>
+
+      <ol className="week-tracker" aria-label="Weekly study tracker">
+        {weekDays.map((day) => (
+          <li
+            key={day.key}
+            className={`week-tracker__day${day.isCurrent ? ' week-tracker__day--current' : ''}${
+              day.isComplete ? ' week-tracker__day--complete' : ''
+            }`}
+            aria-current={day.isCurrent ? 'date' : undefined}
+            aria-label={`${day.dateLabel}${day.isCurrent ? ', current study day' : ''}${
+              day.isComplete ? ', complete' : ''
+            }`}
+          >
+            <span className="week-tracker__label">{day.dayLabel}</span>
+            <span className="week-tracker__marker" aria-hidden="true">
+              {day.isComplete ? '✓' : ''}
+            </span>
+          </li>
+        ))}
+      </ol>
+
       <div className="session-summary__content">
         <p className="session-summary__eyebrow">
           {isComplete ? 'Today complete' : "Today's lesson"}
