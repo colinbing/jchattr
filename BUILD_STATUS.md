@@ -180,6 +180,7 @@
 - Phase 4 V2.1 finite Today lesson shell that keeps deterministic recommendation selection but snapshots the current core Today lesson for the browser session, shows remaining count/time and a single Start/Continue CTA in the top card, marks completed core items, adds Today Complete after core work and urgent Review are clear, moves live extra recommendations into optional bonus, removes Today path details, and removes Mission Path from Today-flow completion handoffs without date-keyed scheduling
 - Phase 4 V2.2 review loop containment that keeps the same deterministic Review queue but separates queue landing, active retry, and post-batch handoff states, hides mobile bottom nav only during active Review batches, adds local Today navigation in the retry workspace, and clarifies cleared-versus-remaining weak-point copy when Review returns to Today
 - Phase 4 V2.6 date-keyed daily session and weekly tracker that keeps the same deterministic Today plan inputs but stores the finite core lesson in localStorage by study-day date, rolls the study day at 3 AM America/New_York using the device clock, adds JCHATTR branding plus the current study date to Today, renders a compact Sunday-Saturday completion tracker, and keeps optional in-progress bonus work from reopening the completed daily core count without adding backend, sync, accounts, analytics, or online clock validation
+- Feature 3A feedback taxonomy that adds a shared typed mistake-explanation model and deterministic grammar helper utilities for particle-focused misses plus common grammar drill fallbacks, without wiring new UI yet
 
 ## Current App Capabilities
 
@@ -454,8 +455,8 @@
 
 ## Next Recommended Slices
 
-1. Implement Feature 3A from `NEXT_FEATURE_PLAN.md`: define a typed mistake-explanation model and deterministic local helper utilities for particles and common grammar drill types.
-2. Keep Feature 3B ready after the taxonomy lands so grammar mission misses can show compact explanations without changing Review queue semantics yet.
+1. Implement Feature 3B from `NEXT_FEATURE_PLAN.md`: add the mistake explainer drawer to grammar missions using deterministic explanations where available.
+2. Keep Feature 3C ready after grammar mission wiring lands so Review retries can reuse the same explanation drawer without changing Review queue semantics.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

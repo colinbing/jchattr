@@ -1098,7 +1098,7 @@ Use these states:
 | 1G Capstone breadth batch 2 | Verified | Added hand-reviewed chapter 5-7 capstones covering packs 21-35, using exact existing example lines with sourceExampleIds, 10-11 lines per story, and 4 comprehension checks each. Content reports now show capstone chapter coverage as 7/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 1H Capstone breadth batch 3 | Verified | Added hand-reviewed chapter 8-10 capstones covering packs 36-50, using exact existing example lines with sourceExampleIds, 11 lines per story, and 4 comprehension checks each. Chapter 10 keeps plain-style content recognition-safe. Content reports now show capstone chapter coverage as 10/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 1I Naturalized capstone layer | Verified | Added a chapter 1 naturalized bonus story variant with source example IDs, source capstone line IDs, route locking behind the exact-source closeout, Missions bonus-story exposure, and Today story-mode bonus recommendations. Primary capstone coverage remains 10/10. Verified with typecheck, build, source-trace audit, and standard content reports. |
-| 3A Feedback taxonomy | Not started |  |
+| 3A Feedback taxonomy | Verified | Added a shared typed `MistakeExplanation` model plus deterministic grammar helper utilities for particle-focused misses and common grammar drill fallbacks. No mission/review UI wiring changed. Verified with typecheck, build, and a helper smoke check. |
 | 3B Grammar mistake drawer | Not started |  |
 | 3C Review mistake drawer | Not started |  |
 | 3D Other modality explanations | Not started |  |
