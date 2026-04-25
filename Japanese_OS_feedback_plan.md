@@ -50,7 +50,8 @@ Current ordering:
 1. Addressed from the mobile loop sanity pass: starting a Review batch now moves the active retry into view instead of leaving the learner on the queue card.
 2. Addressed from the Missions chapter-surface density cleanup: the active chapter panel now reaches the next mission faster and distinguishes locked chapters from cleared chapters.
 3. Addressed in the first narrow personalization slice: Today mission cards now explain personal fit using existing local progress, weak points, target skills, and linked grammar tags.
-4. Next, run a mobile Today personalization-copy sanity pass across a few local states before widening personalization further.
+4. Addressed from the Today personalization-copy sanity pass: incomplete support missions are no longer described as `Light pass` / `short pass` reinforcement.
+5. Next, use a concrete mobile-loop audit or user-test finding to choose the next narrow Phase 4 personalization slice.
 
 ---
 
@@ -582,26 +583,25 @@ Triage:
 Triage:
 - Item 19 is Addressed for the current Phase 4 slice. Today keeps the same local deterministic recommendation model, but mission cards now include a compact `Personal focus` line based on same-skill completions, direct or related weak-point pressure, target skills, and linked grammar tags. No schemas, backend, sync, accounts, analytics, or AI behavior were added.
 
+20. Incomplete Today support missions should not be called light/short passes.
+
+Triage:
+- Item 20 is Addressed. The sanity pass across empty, in-progress, weak-point, and recently-reviewed states found one narrow copy mismatch: an unlocked incomplete support mission could be labeled `Light pass` and explained as a short pass even though it opened as a normal first-run mission. The fix preserves deterministic selection but reserves `Light pass` / `short pass` wording for completed reinforcement missions.
+
 ---
 
 ## 6. Recommended Next Slice
 
 ### Slice name
 
-Today personalization-copy sanity pass
-
-### Why this slice first
-
-The first Today personalization slice now changes what the learner sees on recommendation cards. Before adding deeper scheduling or progress semantics, verify that the new personal-focus copy stays short, truthful, and useful across empty, in-progress, weak-point, and recently-reviewed local states.
+Next narrow Phase 4 personalization slice, selected from the next concrete audit finding
 
 ### Scope
 
 Include:
-- iPhone-width Today check with empty or reset local progress.
-- Today check after a few completed missions in the same target skill.
-- Today check with at least one open weak point and one urgent repeated weak point.
-- Today check after a recent Review completion state.
-- Only tune copy or layout if the pass exposes a narrow high-confidence issue.
+- Start from a specific observed user-test or mobile-loop audit issue.
+- Keep deterministic recommendation selection readable and local-first.
+- Prefer copy, presentation, or weighting clarity before adding new stored semantics.
 
 Exclude:
 - Full Today redesign.

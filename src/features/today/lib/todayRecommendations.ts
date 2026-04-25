@@ -559,25 +559,55 @@ function selectSupportMission(
     return null;
   }
 
+  const progress = getMissionProgressEntry(missionProgress, mission.id);
+  const isCompleted = progress.completionCount > 0;
+
   return {
     mission,
-    slotLabel: 'Light pass',
-    reason: buildReinforcementReason(
-      mission,
-      missionProgress,
-      reviewAwareness,
-      missionContextById,
-      anchor,
-    ),
+    slotLabel: isCompleted ? 'Light pass' : 'Keep moving',
+    reason: isCompleted
+      ? buildReinforcementReason(
+          mission,
+          missionProgress,
+          reviewAwareness,
+          missionContextById,
+          anchor,
+        )
+      : buildOpenSupportReason(mission, anchor, missionContextById),
     ctaLabel:
-      getMissionProgressEntry(missionProgress, mission.id).completionCount > 0
-        ? 'Open short pass'
-        : 'Open mission',
-    sessionMode:
-      getMissionProgressEntry(missionProgress, mission.id).completionCount > 0
-        ? 'reinforce'
-        : 'default',
+      isCompleted ? 'Open short pass' : 'Open mission',
+    sessionMode: isCompleted ? 'reinforce' : 'default',
   };
+}
+
+function buildOpenSupportReason(
+  mission: Mission,
+  anchor: ReinforcementAnchor | null,
+  missionContextById: Record<string, MissionRecommendationContext>,
+) {
+  const relationSummary = anchor
+    ? getMissionRelationSummary(mission, anchor, missionContextById)
+    : null;
+
+  if (!relationSummary) {
+    return 'This is another unlocked mission if you want to keep the path moving.';
+  }
+
+  if (relationSummary.targetSkillMatches && relationSummary.sharedTags.length > 0) {
+    return `This unlocked mission stays on ${formatTargetSkill(
+      mission.targetSkill,
+    )} and overlaps ${formatTagList(relationSummary.sharedTags)}, so it supports the same path lane.`;
+  }
+
+  if (relationSummary.targetSkillMatches) {
+    return `This unlocked mission stays on ${formatTargetSkill(
+      mission.targetSkill,
+    )}, so it supports the same skill lane.`;
+  }
+
+  return `This unlocked mission overlaps ${formatTagList(
+    relationSummary.sharedTags,
+  )}, so it gives the next mission more context.`;
 }
 
 function buildReinforcementReason(
