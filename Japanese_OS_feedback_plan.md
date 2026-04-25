@@ -315,6 +315,7 @@ Priority: P1/P2.
 Triage:
 - Addressed.
 - Implemented in the Phase 4 grammar-focus highlighting slice using existing lesson titles/ids to derive subtle inline example highlights without changing content schemas. The follow-up cleanup removed the redundant focus-chip row so the highlight itself owns the cue.
+- Follow-up audit: addressed in the grammar-highlight coverage cleanup. The issue was sparse coverage and one over-broad derived match, not noisy per-example highlighting, so the fix stayed in the existing derived-rule table and did not add schema metadata.
 
 ---
 
