@@ -655,6 +655,7 @@ button {
 .mission-library-switcher__actions {
   display: grid;
   gap: var(--space-2);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .path-summary__card,
@@ -734,10 +735,14 @@ button {
   font-weight: 700;
 }
 
-.mission-chapter__body {
+.mission-chapter__body,
+.mission-chapter__detail-stack {
   display: grid;
   gap: var(--space-3);
-  padding: 0 var(--space-3) var(--space-3);
+}
+
+.mission-chapter__body {
+  padding: var(--space-3);
 }
 
 .mission-chapter__state-row {

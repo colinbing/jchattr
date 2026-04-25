@@ -165,7 +165,7 @@ export function MissionsPage() {
       <SurfaceCard
         className="mission-library-page__section"
         title="Mission path"
-        description="Open the current chapter, start the next required mission, then move on."
+        description="Pick a chapter, then start the next mission."
       >
         <div className="mission-library-switcher">
           <div className="mission-library-switcher__track" role="tablist" aria-label="Mission chapters">
@@ -208,13 +208,10 @@ export function MissionsPage() {
             >
               <div className="mission-library-switcher__toolbar">
                 <div className="mission-library-switcher__toolbar-copy">
-                  <p className="mission-library-switcher__eyebrow">
-                    {activeSection.chapter.packRangeLabel ?? activeSection.chapter.label}
-                  </p>
-                  <h3 className="mission-library-switcher__title">
-                    {activeSection.chapter.title}
-                  </h3>
                   <div className="mission-library-switcher__summary-row" aria-label="Active chapter summary">
+                    <span className="mission-library-switcher__summary-chip">
+                      {activeSection.chapter.packRangeLabel ?? activeSection.chapter.label}
+                    </span>
                     {activeChapterProgress ? (
                       <span className="mission-library-switcher__summary-chip">
                         {activeChapterProgress}
@@ -234,16 +231,18 @@ export function MissionsPage() {
                     className="mission-button mission-button--secondary"
                     onClick={() => previousSection && openChapter(previousSection.chapter.id)}
                     disabled={!previousSection}
+                    aria-label="Previous chapter"
                   >
-                    Previous chapter
+                    Previous
                   </button>
                   <button
                     type="button"
                     className="mission-button"
                     onClick={() => nextSection && openChapter(nextSection.chapter.id)}
                     disabled={!nextSection}
+                    aria-label="Next chapter"
                   >
-                    Next chapter
+                    Next
                   </button>
                 </div>
               </div>

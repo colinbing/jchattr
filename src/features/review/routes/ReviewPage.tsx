@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
@@ -66,7 +66,16 @@ export function ReviewPage() {
   );
   const [activeBatch, setActiveBatch] = useState<ReviewBatchItem[] | null>(null);
   const [lastBatchSummary, setLastBatchSummary] = useState<LastBatchSummary | null>(null);
+  const activeBatchRef = useRef<HTMLDivElement | null>(null);
   const returnToToday = (location.state as ReviewRouteState | null)?.returnTo === 'today';
+
+  useEffect(() => {
+    if (!activeBatch || activeBatch.length === 0) {
+      return;
+    }
+
+    activeBatchRef.current?.scrollIntoView({ block: 'start' });
+  }, [activeBatch]);
 
   return (
     <PageShell
@@ -194,46 +203,49 @@ export function ReviewPage() {
       ) : null}
 
       {activeBatch && activeBatch.length > 0 ? (
-        <ReviewBatchPlayer
-          items={activeBatch}
-          onSuccessfulRetry={(itemId) => {
-            resolveWeakPointSuccess(itemId);
-          }}
-          onComplete={(itemIds, resultsByItemId) => {
-            markReviewBatchComplete(itemIds);
-            const latestWeakPointStore = readWeakPoints();
-            const remainingWeakPoints = getWeakPointList(latestWeakPointStore);
-            const nextBatch = selectReviewBatch(latestWeakPointStore, starterContent);
-            const clearedCount = itemIds.filter((itemId) => resultsByItemId[itemId] === 'correct')
-              .length;
+        <div ref={activeBatchRef}>
+          <ReviewBatchPlayer
+            items={activeBatch}
+            onSuccessfulRetry={(itemId) => {
+              resolveWeakPointSuccess(itemId);
+            }}
+            onComplete={(itemIds, resultsByItemId) => {
+              markReviewBatchComplete(itemIds);
+              const latestWeakPointStore = readWeakPoints();
+              const remainingWeakPoints = getWeakPointList(latestWeakPointStore);
+              const nextBatch = selectReviewBatch(latestWeakPointStore, starterContent);
+              const clearedCount = itemIds.filter(
+                (itemId) => resultsByItemId[itemId] === 'correct',
+              ).length;
 
-            if (returnToToday) {
-              setActiveBatch(null);
-              navigate('/', {
-                replace: true,
-                state: {
-                  reviewCompletion: {
-                    attemptedCount: itemIds.length,
-                    clearedCount,
-                    unresolvedCount: itemIds.length - clearedCount,
-                    remainingWeakPointCount: remainingWeakPoints.length,
-                    nextBatchSize: nextBatch.length,
-                  },
-                } satisfies ReviewCompletionRouteState,
+              if (returnToToday) {
+                setActiveBatch(null);
+                navigate('/', {
+                  replace: true,
+                  state: {
+                    reviewCompletion: {
+                      attemptedCount: itemIds.length,
+                      clearedCount,
+                      unresolvedCount: itemIds.length - clearedCount,
+                      remainingWeakPointCount: remainingWeakPoints.length,
+                      nextBatchSize: nextBatch.length,
+                    },
+                  } satisfies ReviewCompletionRouteState,
+                });
+                return;
+              }
+
+              setLastBatchSummary({
+                attemptedCount: itemIds.length,
+                clearedCount,
+                unresolvedCount: itemIds.length - clearedCount,
+                remainingWeakPointCount: remainingWeakPoints.length,
+                nextBatchSize: nextBatch.length,
               });
-              return;
-            }
-
-            setLastBatchSummary({
-              attemptedCount: itemIds.length,
-              clearedCount,
-              unresolvedCount: itemIds.length - clearedCount,
-              remainingWeakPointCount: remainingWeakPoints.length,
-              nextBatchSize: nextBatch.length,
-            });
-            setActiveBatch(null);
-          }}
-        />
+              setActiveBatch(null);
+            }}
+          />
+        </div>
       ) : null}
 
       <SurfaceCard

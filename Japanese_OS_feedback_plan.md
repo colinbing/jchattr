@@ -47,9 +47,10 @@ Slice discipline:
 - After implementation slices, run the required validation suite and update `BUILD_STATUS.md` in the same pass.
 
 Current ordering:
-1. Follow-up audit candidate: listening prep-screen pacing after user testing.
-2. Follow-up audit candidate: listening supported-exposure wording and weak-point impact after user testing.
-3. Follow-up audit candidate: grammar-focus highlight coverage after more user testing.
+1. Addressed from the mobile loop sanity pass: starting a Review batch now moves the active retry into view instead of leaving the learner on the queue card.
+2. Addressed from the Missions chapter-surface density cleanup: the active chapter panel now reaches the next mission faster and distinguishes locked chapters from cleared chapters.
+3. Addressed in the first narrow personalization slice: Today mission cards now explain personal fit using existing local progress, weak points, target skills, and linked grammar tags.
+4. Next, run a mobile Today personalization-copy sanity pass across a few local states before widening personalization further.
 
 ---
 
@@ -379,6 +380,43 @@ Triage:
 
 ---
 
+### U14 — Starting Review should land on the active retry
+
+Observed:
+- On iPhone-width audit, tapping `Start review` activated the batch but left the old queue card in view.
+- The learner had to scroll before seeing the actual retry task, which worked against the single-focus Review standard.
+
+Fix direction:
+- When a batch starts, move the active `Review batch` workspace into view.
+- Keep the existing Review queue semantics and local-first retry logic unchanged.
+
+Priority: P1.
+
+Triage:
+- Addressed.
+- Implemented in the mobile loop sanity pass by scrolling the active batch anchor into view when `activeBatch` starts.
+
+---
+
+### U15 — Missions chapter surface still repeats context before the next action
+
+Observed:
+- The selected chapter tab, active chapter summary, and chapter detail card repeat similar chapter title/progress information.
+- On a narrow iPhone viewport, this pushes the next required mission below the fold even though the page copy says to start the next required mission fast.
+
+Fix direction:
+- Keep the single-active-chapter model.
+- Reduce repeated chapter framing before the next-mission card.
+- Preserve the chapter switcher and mission-library semantics.
+
+Priority: P2.
+
+Triage:
+- Addressed.
+- Implemented in the Missions chapter-surface density cleanup by removing the duplicate chapter header/stat block before the next-mission card, shortening the active chapter toolbar, moving chapter description/pack details behind `Chapter details`, and correcting no-ready locked chapters from `Chapter cleared` to `Locked for now`.
+
+---
+
 ### U6 — Review completion should probably return to Today
 
 Observed: finishing review batch returns to Review page, which then shows a lot of zeros.
@@ -539,6 +577,10 @@ Triage:
 16. Particle-specific tracking.
 17. Listening recognition lane.
 18. SRS-like scheduling.
+19. Today recommendation copy that explains why a mission fits the learner's actual local progress.
+
+Triage:
+- Item 19 is Addressed for the current Phase 4 slice. Today keeps the same local deterministic recommendation model, but mission cards now include a compact `Personal focus` line based on same-skill completions, direct or related weak-point pressure, target skills, and linked grammar tags. No schemas, backend, sync, accounts, analytics, or AI behavior were added.
 
 ---
 
@@ -546,22 +588,20 @@ Triage:
 
 ### Slice name
 
-Mobile core-loop friction cleanup v1
+Today personalization-copy sanity pass
 
 ### Why this slice first
 
-This targets issues that make the product feel broken or noisy before changing recommendation logic or adding features. It should improve the daily experience without altering the content model or architecture.
+The first Today personalization slice now changes what the learner sees on recommendation cards. Before adding deeper scheduling or progress semantics, verify that the new personal-focus copy stays short, truthful, and useful across empty, in-progress, weak-point, and recently-reviewed local states.
 
 ### Scope
 
 Include:
-- Mobile bottom nav label fix.
-- Hide or compact global nav on mission routes.
-- Suppress duplicate Japanese/reading lines when identical.
-- Shuffle listening choices so answer is not always last.
-- Reset review answer state between retry items.
-- Scroll to top on route changes into mission/review flows.
-- Light Today copy cleanup for the first mission card.
+- iPhone-width Today check with empty or reset local progress.
+- Today check after a few completed missions in the same target skill.
+- Today check with at least one open weak point and one urgent repeated weak point.
+- Today check after a recent Review completion state.
+- Only tune copy or layout if the pass exposes a narrow high-confidence issue.
 
 Exclude:
 - Full Today redesign.

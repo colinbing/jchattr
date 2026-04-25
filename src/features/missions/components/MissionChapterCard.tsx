@@ -30,59 +30,11 @@ export function MissionChapterCard({
   const nextMission = items.find(
     (item) => item.isUnlocked && item.progress.completionCount === 0,
   );
+  const isChapterCleared = completedCount === items.length;
 
   return (
     <section className="mission-chapter" id={chapter.id}>
-      <div className="mission-chapter__summary">
-        <div className="mission-chapter__copy">
-          <p className="mission-chapter__eyebrow">
-            {chapter.packRangeLabel ?? chapter.label}
-          </p>
-          <h3 className="mission-chapter__title">{chapter.title}</h3>
-          <p className="mission-chapter__description">{chapter.description}</p>
-          {chapter.packTitles?.length ? (
-            <details className="mission-session-details">
-              <summary className="mission-session-details__summary">Pack list</summary>
-              <p className="mission-session-details__body">
-                {chapter.packTitles.join(' · ')}
-              </p>
-            </details>
-          ) : null}
-        </div>
-
-        <dl className="mission-chapter__stats">
-          <div>
-            <dt>Ready now</dt>
-            <dd>{readyCount}</dd>
-          </div>
-          <div>
-            <dt>Cleared</dt>
-            <dd>{completedCount}</dd>
-          </div>
-          <div>
-            <dt>Needs review</dt>
-            <dd>{weakPointCount}</dd>
-          </div>
-        </dl>
-      </div>
-
       <div className="mission-chapter__body">
-        <div className="mission-chapter__state-row" aria-label="Chapter state">
-          {recommendedCount > 0 ? (
-            <span className="mission-state-pill mission-state-pill--recommended">
-              {recommendedCount} recommended today
-            </span>
-          ) : null}
-          <span className="mission-state-pill mission-state-pill--ready">
-            {unlockedCount}/{items.length} unlocked
-          </span>
-          {!nextMission ? (
-            <span className="mission-state-pill mission-state-pill--completed">
-              Chapter cleared
-            </span>
-          ) : null}
-        </div>
-
         {nextMission ? (
           <div className="mission-focus-card mission-chapter__focus">
             <div className="mission-chapter__focus-copy">
@@ -103,6 +55,51 @@ export function MissionChapterCard({
             </Link>
           </div>
         ) : null}
+
+        <div className="mission-chapter__state-row" aria-label="Chapter state">
+          {recommendedCount > 0 ? (
+            <span className="mission-state-pill mission-state-pill--recommended">
+              {recommendedCount} recommended today
+            </span>
+          ) : null}
+          <span className="mission-state-pill mission-state-pill--ready">
+            {readyCount} ready now
+          </span>
+          <span className="mission-state-pill mission-state-pill--ready">
+            {unlockedCount}/{items.length} unlocked
+          </span>
+          <span className="mission-state-pill mission-state-pill--completed">
+            {completedCount}/{items.length} cleared
+          </span>
+          {weakPointCount > 0 ? (
+            <span className="mission-state-pill mission-state-pill--review">
+              {weakPointCount} need review
+            </span>
+          ) : null}
+          {!nextMission ? (
+            <span
+              className={
+                isChapterCleared
+                  ? 'mission-state-pill mission-state-pill--completed'
+                  : 'mission-state-pill mission-state-pill--locked'
+              }
+            >
+              {isChapterCleared ? 'Chapter cleared' : 'Locked for now'}
+            </span>
+          ) : null}
+        </div>
+
+        <details className="mission-session-details">
+          <summary className="mission-session-details__summary">Chapter details</summary>
+          <div className="mission-chapter__detail-stack">
+            <p className="mission-session-details__body">{chapter.description}</p>
+            {chapter.packTitles?.length ? (
+              <p className="mission-session-details__body">
+                {chapter.packTitles.join(' · ')}
+              </p>
+            ) : null}
+          </div>
+        </details>
 
         <div className="mission-list" role="list" aria-label={chapter.title}>
           {items.map((item) => (

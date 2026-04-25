@@ -41,6 +41,7 @@ export type TodayRecommendation =
       to: string;
       mission: Mission;
       sessionMode: MissionSessionMode;
+      personalFocus: string;
     };
 
 // Keep the heuristics intentionally small and readable:
@@ -83,20 +84,29 @@ export function deriveTodayRecommendations(
   });
 
   if (nextMission) {
+    const nextMissionPersonalization = buildMissionPersonalization(
+      starterContent,
+      nextMission,
+      missionProgress,
+      reviewAwareness,
+      missionContextById,
+    );
+
     recommendations.push({
       id: nextMission.id,
       kind: 'mission',
       slotLabel: 'Next up',
       title: nextMission.title,
-      reason: reviewRecommendation
-        ? 'This is the cleanest next step once the retry pass is done.'
-        : reviewAwareness.hasRecentReview
-          ? 'You just cleared review, so this keeps the path moving without extra noise.'
-          : 'This keeps the core path moving with one fresh mission.',
+      reason: buildNextMissionReason(
+        Boolean(reviewRecommendation),
+        reviewAwareness,
+        nextMissionPersonalization,
+      ),
       ctaLabel: 'Open mission',
       to: `/mission/${nextMission.id}`,
       mission: nextMission,
       sessionMode: 'default',
+      personalFocus: nextMissionPersonalization.focus,
     });
     selectedMissionIds.add(nextMission.id);
   }
@@ -127,6 +137,13 @@ export function deriveTodayRecommendations(
       to: `/mission/${supportMission.mission.id}`,
       mission: supportMission.mission,
       sessionMode: supportMission.sessionMode,
+      personalFocus: buildMissionPersonalization(
+        starterContent,
+        supportMission.mission,
+        missionProgress,
+        reviewAwareness,
+        missionContextById,
+      ).focus,
     });
     selectedMissionIds.add(supportMission.mission.id);
   }
@@ -190,6 +207,13 @@ export function deriveTodayRecommendations(
       to: `/mission/${mission.id}`,
       mission,
       sessionMode: progress.completionCount > 0 ? 'reinforce' : 'default',
+      personalFocus: buildMissionPersonalization(
+        starterContent,
+        mission,
+        missionProgress,
+        reviewAwareness,
+        missionContextById,
+      ).focus,
     });
   });
 
@@ -278,6 +302,169 @@ type MissionRecommendationContext = {
   targetSkill: Mission['targetSkill'];
   grammarTags: Set<string>;
 };
+
+type MissionPersonalization = {
+  focus: string;
+  directWeakPointCount: number;
+  relatedWeakPointCount: number;
+  completedSameSkillCount: number;
+  sharedWeakPointTags: string[];
+};
+
+function buildMissionPersonalization(
+  starterContent: StarterContent,
+  mission: Mission,
+  missionProgress: MissionProgressRecord,
+  reviewAwareness: ReviewAwareness,
+  missionContextById: Record<string, MissionRecommendationContext>,
+): MissionPersonalization {
+  const context = missionContextById[mission.id];
+  const relatedWeakPointSummary = getRelatedWeakPointSummary(
+    mission,
+    reviewAwareness.weakPointList,
+    missionContextById,
+  );
+  const completedSameSkillCount = starterContent.missions.filter((candidate) => {
+    return (
+      candidate.id !== mission.id &&
+      candidate.targetSkill === mission.targetSkill &&
+      getMissionProgressEntry(missionProgress, candidate.id).isCompleted
+    );
+  }).length;
+  const ownTags = context
+    ? getPersonalizationTags([...context.grammarTags], mission.targetSkill).slice(0, 2)
+    : [];
+
+  if (relatedWeakPointSummary.directWeakPointCount > 0) {
+    return {
+      ...relatedWeakPointSummary,
+      completedSameSkillCount,
+      focus: `${formatWeakPointCount(relatedWeakPointSummary.directWeakPointCount)} ${
+        relatedWeakPointSummary.directWeakPointCount === 1 ? 'is' : 'are'
+      } still tied to this mission.`,
+    };
+  }
+
+  if (
+    relatedWeakPointSummary.relatedWeakPointCount > 0 &&
+    relatedWeakPointSummary.sharedWeakPointTags.length > 0
+  ) {
+    return {
+      ...relatedWeakPointSummary,
+      completedSameSkillCount,
+      focus: `${formatFocusTargetSkill(mission.targetSkill)} linked to ${formatTagList(
+        relatedWeakPointSummary.sharedWeakPointTags,
+      )} review pressure.`,
+    };
+  }
+
+  if (relatedWeakPointSummary.relatedWeakPointCount > 0) {
+    return {
+      ...relatedWeakPointSummary,
+      completedSameSkillCount,
+      focus: `${formatFocusTargetSkill(mission.targetSkill)} while ${formatWeakPointCount(
+        relatedWeakPointSummary.relatedWeakPointCount,
+      )} in that lane ${
+        relatedWeakPointSummary.relatedWeakPointCount === 1 ? 'is' : 'are'
+      } open.`,
+    };
+  }
+
+  if (completedSameSkillCount > 0) {
+    return {
+      ...relatedWeakPointSummary,
+      completedSameSkillCount,
+      focus: `${formatFocusTargetSkill(mission.targetSkill)} after ${completedSameSkillCount} completed ${
+        completedSameSkillCount === 1 ? 'mission' : 'missions'
+      } in this skill.`,
+    };
+  }
+
+  if (ownTags.length > 0) {
+    return {
+      ...relatedWeakPointSummary,
+      completedSameSkillCount,
+      focus: `${formatFocusTargetSkill(mission.targetSkill)} with ${formatTagList(ownTags)}.`,
+    };
+  }
+
+  return {
+    ...relatedWeakPointSummary,
+    completedSameSkillCount,
+    focus: `${formatFocusTargetSkill(mission.targetSkill)} practice.`,
+  };
+}
+
+function getRelatedWeakPointSummary(
+  mission: Mission,
+  weakPointList: WeakPoint[],
+  missionContextById: Record<string, MissionRecommendationContext>,
+) {
+  const context = missionContextById[mission.id];
+  const sharedWeakPointTags = new Set<string>();
+  let directWeakPointCount = 0;
+  let relatedWeakPointCount = 0;
+
+  weakPointList.forEach((weakPoint) => {
+    if (weakPoint.missionId === mission.id) {
+      directWeakPointCount += 1;
+      return;
+    }
+
+    const weakPointContext = missionContextById[weakPoint.missionId];
+
+    if (!context || !weakPointContext) {
+      return;
+    }
+
+    const sharedTags = getPersonalizationTags(
+      [...context.grammarTags],
+      mission.targetSkill,
+    ).filter((tag) => weakPointContext.grammarTags.has(tag));
+    const targetSkillMatches = context.targetSkill === weakPointContext.targetSkill;
+
+    if (!targetSkillMatches && sharedTags.length === 0) {
+      return;
+    }
+
+    relatedWeakPointCount += 1;
+    sharedTags.forEach((tag) => sharedWeakPointTags.add(tag));
+  });
+
+  return {
+    directWeakPointCount,
+    relatedWeakPointCount,
+    sharedWeakPointTags: [...sharedWeakPointTags].slice(0, 2),
+  };
+}
+
+function buildNextMissionReason(
+  hasReviewRecommendation: boolean,
+  reviewAwareness: ReviewAwareness,
+  personalization: MissionPersonalization,
+) {
+  if (personalization.directWeakPointCount > 0) {
+    return 'This is the next unlocked step and it also cleans up pressure already tied to this mission.';
+  }
+
+  if (personalization.relatedWeakPointCount > 0) {
+    return 'This advances the path while staying close to the skill or grammar lane currently showing review pressure.';
+  }
+
+  if (personalization.completedSameSkillCount > 0) {
+    return 'This keeps the path moving by building on skill work you have already cleared locally.';
+  }
+
+  if (hasReviewRecommendation) {
+    return 'This is the cleanest next step once the retry pass is done.';
+  }
+
+  if (reviewAwareness.hasRecentReview) {
+    return 'You just cleared review, so this keeps the path moving without extra noise.';
+  }
+
+  return 'This keeps the core path moving with one fresh mission.';
+}
 
 function selectSupportMission(
   unlockedMissions: Mission[],
@@ -514,9 +701,13 @@ function buildUrgentReviewReason(
   const weakPointCount = reviewAwareness.weakPointList.length;
 
   if (repeatedWeakPointCount > 0 && reviewAwareness.hasFreshWeakPoints) {
+    const freshnessContext = reviewAwareness.lastReviewAt
+      ? 'fresh errors since your last review'
+      : 'fresh errors from this local session';
+
     return `${formatWeakPointCount(weakPointCount)} ${
       weakPointCount === 1 ? 'is' : 'are'
-    } open, including ${repeatedWeakPointCount} with repeated misses and fresh errors since your last review.`;
+    } open, including ${repeatedWeakPointCount} with repeated misses and ${freshnessContext}.`;
   }
 
   if (repeatedWeakPointCount > 0) {
@@ -654,11 +845,24 @@ function getMissionRelationSummary(
 }
 
 function isLowSignalGrammarTag(tag: string) {
-  return tag === 'daily-conversation' || tag === 'daily-routine';
+  return tag === 'daily-conversation' || tag === 'daily-routine' || tag === 'n5';
+}
+
+function getHighSignalTags(tags: string[]) {
+  return tags.filter((tag) => !isLowSignalGrammarTag(tag));
+}
+
+function getPersonalizationTags(tags: string[], targetSkill: Mission['targetSkill']) {
+  return getHighSignalTags(tags).filter((tag) => tag !== targetSkill);
 }
 
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {
   return targetSkill.replace(/-/g, ' ');
+}
+
+function formatFocusTargetSkill(targetSkill: Mission['targetSkill']) {
+  const label = formatTargetSkill(targetSkill);
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 function formatTagList(tags: string[]) {

@@ -43,12 +43,12 @@ export function TodayRecommendationCard({
 
       <div className="mission-card__details">
         <p className="mission-card__skill-label">
-          {recommendation.kind === 'review' ? 'Why now' : 'Path focus'}
+          {recommendation.kind === 'review' ? 'Why now' : 'Personal focus'}
         </p>
         <p className="mission-card__skill-value">
           {recommendation.kind === 'review'
             ? recommendation.reason
-            : formatMissionPathContext(recommendation.mission)}
+            : recommendation.personalFocus}
         </p>
         {recommendation.kind === 'mission' && progress ? (
           <p className="mission-card__progress">{recommendation.reason}</p>
@@ -67,7 +67,8 @@ export function TodayRecommendationCard({
                   progress.completionCount === 1 ? '' : 's'
                 } on this device. `
               : ''}
-            Target skill: {formatTargetSkill(recommendation.mission.targetSkill)}
+            {formatMissionPathContext(recommendation.mission)} · Target skill:{' '}
+            {formatTargetSkill(recommendation.mission.targetSkill)}
           </p>
         ) : null}
       </div>
