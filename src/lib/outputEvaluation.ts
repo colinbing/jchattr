@@ -26,7 +26,7 @@ export function evaluateOutputResponse(
       isAccepted: true,
       tone: 'correct',
       title: 'Correct.',
-      message: 'Your line matches one of the accepted answer patterns.',
+      message: 'That line works for this prompt.',
       expectedAnswer: task.acceptableAnswers[0],
     };
   }
@@ -40,7 +40,7 @@ export function evaluateOutputResponse(
       isAccepted: false,
       tone: 'incorrect',
       title: 'Not quite.',
-      message: 'Expected one of the accepted answer patterns.',
+      message: 'Try the target pattern for this prompt.',
       expectedAnswer: task.acceptableAnswers[0],
     };
   }
@@ -56,7 +56,7 @@ export function evaluateOutputResponse(
       isAccepted: true,
       tone: 'correct',
       title: 'Correct.',
-      message: 'Your line matches one of the accepted answer patterns.',
+      message: 'That line works for this prompt.',
       expectedAnswer: task.acceptableAnswers[0],
     };
   }
@@ -68,7 +68,7 @@ export function evaluateOutputResponse(
       isAccepted: false,
       tone: 'incorrect',
       title: 'Not quite.',
-      message: 'Expected one of the accepted answer patterns.',
+      message: 'Try the target pattern for this prompt.',
       expectedAnswer: task.acceptableAnswers[0],
     };
   }
@@ -137,7 +137,7 @@ export function evaluateOutputResponse(
     isAccepted: false,
     tone: 'incorrect',
     title: 'Not quite.',
-    message: 'Expected one of the accepted answer patterns.',
+    message: 'Try the target pattern for this prompt.',
     expectedAnswer: task.acceptableAnswers[0],
   };
 }

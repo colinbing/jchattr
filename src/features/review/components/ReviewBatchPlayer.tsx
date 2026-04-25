@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { SurfaceCard } from '../../../components/layout/PageShell';
@@ -52,10 +53,19 @@ export function ReviewBatchPlayer({
 
   return (
     <div className="review-batch-player">
+      <nav className="mission-route-bar review-route-bar" aria-label="Review navigation">
+        <Link to="/" className="mission-route-bar__link">
+          Today
+        </Link>
+        <span className="mission-route-bar__link mission-route-bar__link--secondary">
+          Focused retry
+        </span>
+      </nav>
+
       <SurfaceCard
         className="mission-session-card review-session-card"
-        title="Review batch"
-        description="One active retry at a time."
+        title="Retry batch"
+        description="Stay with the current saved miss."
       >
         <div className="mission-session-card__meta-row">
           <p className="mission-session-card__meta">
@@ -247,7 +257,9 @@ function GrammarReviewCard({
 }: ReviewCardProps & {
   item: Extract<ReviewBatchItem, { type: 'grammar-drill' }>;
 }) {
-  const reorderTokens = getReorderTokens(item.drill.prompt, item.drill.id);
+  const reorderTokens = getReorderTokens(item.drill.prompt, item.drill.id, {
+    focusId: item.lesson.id,
+  });
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
   const [assembledTokenIndexes, setAssembledTokenIndexes] = useState<number[]>([]);
@@ -614,7 +626,7 @@ function OutputReviewFeedback({
       <p className="mission-feedback__body">
         {feedback.isAccepted
           ? 'Retry recorded for this item.'
-          : `${feedback.message} Expected pattern: ${feedback.expectedAnswer}`}
+          : `${feedback.message} Try: ${feedback.expectedAnswer}`}
       </p>
     </div>
   );

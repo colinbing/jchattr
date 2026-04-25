@@ -3,6 +3,7 @@ import type { ListeningItem } from './content/types';
 type ListeningChoiceOptions = {
   avoidTranslations?: string[];
   distractorCount?: number;
+  shuffleSeed?: string;
 };
 
 type ListeningCandidate = {
@@ -55,7 +56,8 @@ export function getListeningTranslationChoices(
 
   return shuffleWithSeed(
     [item.translation, ...distractors.map((candidate) => candidate.item.translation)],
-    item.id,
+    `${item.id}:${options.shuffleSeed ?? 'default'}`,
+    item.translation,
   );
 }
 
@@ -86,6 +88,14 @@ function scoreDistractorCandidate(
   const candidateIsQuestion = candidate.translation.trim().endsWith('?');
   const itemWordCount = countWords(item.translation);
   const candidateWordCount = countWords(candidate.translation);
+  const sharedTranslationWords = countSharedValues(
+    getMeaningfulTranslationWords(item.translation),
+    getMeaningfulTranslationWords(candidate.translation),
+  );
+  const sharedJapaneseSignals = countSharedValues(
+    getJapaneseSignals(item.reading || item.transcript),
+    getJapaneseSignals(candidate.reading || candidate.transcript),
+  );
 
   let score = 0;
 
@@ -98,9 +108,11 @@ function scoreDistractorCandidate(
   }
 
   score -= Math.abs(candidateWordCount - itemWordCount);
+  score += Math.min(sharedTranslationWords, 3) * 5;
+  score += Math.min(sharedJapaneseSignals, 4) * 2;
 
   if (avoidTranslations.has(candidate.translation)) {
-    score -= 6;
+    score -= 20;
   }
 
   return score;
@@ -110,7 +122,7 @@ function countWords(value: string) {
   return value.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function shuffleWithSeed(values: string[], seed: string) {
+function shuffleWithSeed(values: string[], seed: string, correctAnswer: string) {
   const random = createSeededRandom(seed);
   const shuffled = [...values];
 
@@ -121,7 +133,59 @@ function shuffleWithSeed(values: string[], seed: string) {
     shuffled[swapIndex] = currentValue;
   }
 
+  const currentCorrectIndex = shuffled.indexOf(correctAnswer);
+  const targetCorrectIndex = hashString(`${seed}:answer-position`) % shuffled.length;
+
+  if (currentCorrectIndex >= 0 && currentCorrectIndex !== targetCorrectIndex) {
+    const targetValue = shuffled[targetCorrectIndex];
+    shuffled[targetCorrectIndex] = correctAnswer;
+    shuffled[currentCorrectIndex] = targetValue;
+  }
+
   return shuffled;
+}
+
+function getMeaningfulTranslationWords(value: string) {
+  const stopWords = new Set([
+    'a',
+    'an',
+    'am',
+    'are',
+    'at',
+    'be',
+    'do',
+    'does',
+    'i',
+    'in',
+    'is',
+    'it',
+    'my',
+    'of',
+    'the',
+    'this',
+    'to',
+    'we',
+    'will',
+    'you',
+  ]);
+
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word.length > 2 && !stopWords.has(word));
+}
+
+function getJapaneseSignals(value: string) {
+  return Array.from(new Set(value.replace(/[、。？！\s]/g, '').split(''))).filter((char) => {
+    return !['は', 'が', 'を', 'に', 'で', 'の', 'か', '。'].includes(char);
+  });
+}
+
+function countSharedValues(leftValues: string[], rightValues: string[]) {
+  const rightSet = new Set(rightValues);
+
+  return Array.from(new Set(leftValues)).filter((value) => rightSet.has(value)).length;
 }
 
 function createSeededRandom(seed: string) {

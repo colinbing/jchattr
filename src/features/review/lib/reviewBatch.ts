@@ -12,6 +12,7 @@ import type { WeakPoint, WeakPointStore } from '../../../lib/progress/weakPoints
 import { getWeakPointList } from '../../../lib/progress/weakPoints';
 import { getListeningTranslationChoices } from '../../../lib/listeningChoices';
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
+import { formatReorderPrompt } from '../../../lib/reorderDrill';
 
 export const REVIEW_BATCH_SIZE = 3;
 
@@ -74,7 +75,10 @@ export function getReviewBatchSummary(item: ReviewBatchItem) {
     case 'grammar-drill':
       return {
         eyebrow: item.lesson.title,
-        title: item.drill.prompt,
+        title:
+          item.drill.type === 'reorder'
+            ? formatReorderPrompt(item.drill.prompt)
+            : item.drill.prompt,
         body: item.drill.support ?? 'Retry the grammar pattern and submit one answer.',
         missionTitle: item.mission.title,
       };
@@ -109,6 +113,7 @@ export function getListeningReviewChoices(
 ) {
   return getListeningTranslationChoices(item, choicePool, {
     avoidTranslations,
+    shuffleSeed: `review:${item.id}`,
   });
 }
 

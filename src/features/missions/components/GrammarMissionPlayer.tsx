@@ -15,7 +15,7 @@ import {
   updateContinueState,
 } from '../../../lib/progress/continueState';
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
-import { getReorderTokens } from '../../../lib/reorderDrill';
+import { formatReorderPrompt, getReorderTokens } from '../../../lib/reorderDrill';
 import {
   getMissionProgressEntry,
   useMissionProgress,
@@ -440,7 +440,7 @@ function DrillCard({
   onAdvance,
   onCleared,
 }: DrillCardProps) {
-  const reorderTokens = getReorderTokens(drill.prompt, drill.id);
+  const reorderTokens = getReorderTokens(drill.prompt, drill.id, { focusId: lessonId });
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
   const [assembledTokenIndexes, setAssembledTokenIndexes] = useState<number[]>([]);
@@ -491,7 +491,7 @@ function DrillCard({
         <p className="mission-drill-card__eyebrow">
           Drill {index + 1} of {totalCount} · {formatDrillType(drill.type)}
         </p>
-        <h3 className="mission-drill-card__prompt">{drill.prompt}</h3>
+        <h3 className="mission-drill-card__prompt">{formatDrillPrompt(drill)}</h3>
       </div>
 
       <div className="mission-drill-card__body">
@@ -880,4 +880,8 @@ function formatDrillType(type: GrammarDrill['type']) {
     case 'fill-in':
       return 'Fill in';
   }
+}
+
+function formatDrillPrompt(drill: GrammarDrill) {
+  return drill.type === 'reorder' ? formatReorderPrompt(drill.prompt) : drill.prompt;
 }

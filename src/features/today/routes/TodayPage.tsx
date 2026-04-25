@@ -719,21 +719,23 @@ function buildMissionReviewImpact(missionWeakPointCount: number) {
 }
 
 function buildReviewCompletionBody(reviewCompletion: TodayReviewCompletion) {
-  if (reviewCompletion.unresolvedCount > 0) {
-    return 'This pass is done. Anything unresolved stays visible in Today and Review.';
+  if (reviewCompletion.remainingWeakPointCount === 0) {
+    return 'Review is clear now. Today will not add another required Review step unless a new miss is saved.';
   }
 
-  const unresolvedCopy =
-    'That batch is fully cleared.';
+  const remainingCopy = `${formatCountedNoun(
+    reviewCompletion.remainingWeakPointCount,
+    'weak point',
+  )} still ${reviewCompletion.remainingWeakPointCount === 1 ? 'needs' : 'need'} review.`;
 
   const nextBatchCopy =
     reviewCompletion.nextBatchSize > 0
-      ? `${formatCountedNoun(reviewCompletion.nextBatchSize, 'item')} ${
+      ? `${formatCountedNoun(reviewCompletion.nextBatchSize, 'retry item')} ${
           reviewCompletion.nextBatchSize === 1 ? 'is' : 'are'
-        } waiting in Review.`
-      : 'No next review batch is queued right now.';
+        } ready now.`
+      : 'No next short batch is ready right now.';
 
-  return `${unresolvedCopy} ${nextBatchCopy}`;
+  return `${remainingCopy} ${nextBatchCopy}`;
 }
 
 function buildReviewSkillSignal(reviewCompletion: TodayReviewCompletion) {

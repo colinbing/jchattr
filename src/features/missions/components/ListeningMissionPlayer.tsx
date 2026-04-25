@@ -337,6 +337,7 @@ function ListeningItemPanel({
   const [feedback, setFeedback] = useState<ListeningFeedback>(null);
   const translationChoices = getListeningTranslationChoices(item, choicePool, {
     avoidTranslations,
+    shuffleSeed: `${missionId}:${currentItemIndex}`,
   });
   const latestVisibleHint = getLatestVisibleHint(item, revealed, readingMatchesTranscript);
   const isAnswerRevealed = revealed.translation;

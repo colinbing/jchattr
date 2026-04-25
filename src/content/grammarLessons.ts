@@ -156,7 +156,7 @@ export const grammarLessons = [
       {
         id: 'drill-destination-2',
         type: 'reorder',
-        prompt: 'Reorder: きょう / としょかんに / いきます',
+        prompt: 'Reorder: きょう / としょかん / に / いきます',
         answer: 'きょうとしょかんにいきます。',
         support: 'Time can come first, then the destination with に, then the verb.',
       },

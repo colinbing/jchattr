@@ -335,7 +335,7 @@ function OutputTaskCard({
           <p className="mission-feedback__body">
             {feedback.isAccepted
               ? `${feedback.message} ${hasNextTask ? 'Use the main button to move straight to the next task.' : 'Use the main button to finish the mission.'}`
-              : `${feedback.message} Expected pattern: ${feedback.expectedAnswer}`}
+              : `${feedback.message} Try: ${feedback.expectedAnswer}`}
           </p>
         </div>
       ) : null}

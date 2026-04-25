@@ -59,7 +59,7 @@ Not:
 
 ## Working implementation tracker
 
-Status: intake accepted, implementation not started.
+Status: active intake with V2.0 through V2.3 addressed.
 
 This pass is now the active Phase 4 feedback source. The goal is to turn the latest mobile-use feedback into bounded implementation slices without drifting into a full scheduler, new backend, new mission system, or broad content expansion.
 
@@ -72,7 +72,7 @@ The current repo shape supports a narrow first implementation path:
 - Mission route chrome is controlled by `src/components/layout/AppShell.tsx` and currently hides mobile nav only on `/mission/*`.
 - Listening choice order and distractor scoring live in `src/lib/listeningChoices.ts`.
 - Reorder chip extraction/shuffling lives in `src/lib/reorderDrill.ts`; exact solved-order opening is already guarded, but drill prompts can still expose the canonical order.
-- Output feedback copy lives in `src/lib/outputEvaluation.ts`; it still contains internal `accepted answer patterns` wording.
+- Output feedback copy lives in `src/lib/outputEvaluation.ts`; V2.3 replaced the internal `accepted answer patterns` wording with learner-facing feedback.
 - Early hardcoded Colin content is in `src/content/missions.ts` and related content files.
 
 ### Slice status table
@@ -81,8 +81,8 @@ The current repo shape supports a narrow first implementation path:
 | --- | --- | --- | --- |
 | V2.0 mobile audit and code-path confirmation | Addressed | Reproduced the pass-2 feedback in a phone viewport, inspected console/state, confirmed which items are bugs vs design friction, and produced exact file targets. | No code changes were made in the audit pass. |
 | V2.1 finite Today lesson shell | Addressed | Today now presents one finite session-scoped core lesson card with remaining count/time, one Start/Continue CTA, completion state, and optional bonus below. | No date-keyed daily-plan persistence; no new scheduler; no recommendation selection change. |
-| V2.2 review loop containment | Next slice | Reduce Review page copy, prevent cleared review from hijacking Today, make active review use focused chrome like missions, and clarify remaining weak-point copy. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
-| V2.3 early trust fixes | Accepted, can follow V2.0 | Improve listening attempt order/distractor behavior, remove internal output feedback language, make reorder prompts avoid exposing the answer, and fix narrow spacing bugs. | No new mission type; no runtime AI distractor generation; no broad content rewrite. |
+| V2.2 review loop containment | Addressed | Review now separates queue landing, active retry, and post-batch handoff states; active retries use focused chrome and clearer local navigation; cleared Review return copy no longer implies Today should require another Review step. | No SRS intervals, hidden urgency scoring, or spaced repetition model. |
+| V2.3 early trust fixes | Addressed | Listening choices now use deterministic per-item/context shuffling with closer distractor scoring, output feedback no longer exposes internal accepted-pattern language, reorder prompts hide canonical chunk order and split target particles for relevant `に` lessons, and the narrow output-hint/progress spacing bugs are tightened. | No new mission type; no runtime AI distractor generation; no broad content rewrite. |
 | V2.4 early output and grammar pedagogy | Accepted for design, not first code slice | Audit early output prerequisites, consider word/chunk banks or stronger hints, and demote common mistakes from required pre-drill reading into contextual support. | No full vocab lesson system or new progress schema unless a later decision explicitly approves it. |
 | V2.5 content cleanup | Accepted as a small content slice | Replace hardcoded Colin examples with neutral/Japanese placeholder content and revisit early mission estimated minutes. | No broad personalization engine; no large content expansion. |
 | V2.6 stable daily session model | Deferred | Persist a date-keyed daily plan if the live recommendation model still feels feed-like after V2.1. | Not part of the first implementation pass. |
@@ -176,6 +176,8 @@ Likely fix:
 
 ### 3. Review can reappear immediately after finishing review
 
+Status: Addressed in V2.2 for the confirmed cleared-review path. Successful retries clear weak points before Today recomputes, Today return copy now says when Review is clear, and remaining weak-point copy names how much is still waiting.
+
 User describes finishing review, returning to Today, then being sent back into review again.
 
 Expected behavior:
@@ -198,6 +200,8 @@ Likely fix:
 
 ### 4. Listening answer options may still be predictable / insufficiently randomized
 
+Status: Addressed in V2.3 for current generated choices. Listening choices now receive stable item/context seeds in mission and Review contexts, and the correct answer is deliberately distributed across positions without reshuffling while the learner is deciding.
+
 User reports many answers appearing as option C/bottom option, with only occasional variation.
 
 Expected behavior:
@@ -217,6 +221,8 @@ Likely fix:
 ---
 
 ### 5. Reorder drills may show the answer in the prompt
+
+Status: Addressed in V2.3 for reorder rendering. Reorder drill headings now show a generic task instruction instead of echoing the authored canonical chunk sequence; the answer remains available through the existing check/reveal flow.
 
 User noticed a reorder task that displayed chunks in correct order in the heading:
 - `kyo / toshokan ni / ikimas`
@@ -242,6 +248,8 @@ Likely fix:
 ---
 
 ### 6. Reorder drills bundle target particle with noun chunk
+
+Status: Addressed in V2.3 for the current targeted `に` lessons. Reorder token generation now splits configured target particles into their own chips when the lesson focus is particle placement, and the destination-with-に content was hand-corrected to author `としょかん / に / いきます`.
 
 Example:
 - `toshokan ni` is one chunk in a `に` lesson.
@@ -301,6 +309,8 @@ Do not build a full new vocab lesson system in this slice unless already support
 
 ### 8. Output feedback copy is too technical
 
+Status: Addressed in V2.3 for current mission and Review output feedback. Technical accepted-pattern language was replaced with learner-facing `Try the target pattern` / `Try:` copy while keeping the existing actionable close/missing-particle messages.
+
 Current-ish copy:
 - `Not quite`
 - `Expected one of the accepted answer patterns`
@@ -326,6 +336,8 @@ Likely fix:
 
 ### 9. Hint container has awkward vertical spacing
 
+Status: Addressed in V2.3 for the current output hint accordion. The hint container now uses compact grid spacing and only modest open-state padding.
+
 User describes output hint box:
 - visible blank/invisible line
 - too tall before and after revealing hint
@@ -348,6 +360,8 @@ Likely fix:
 ---
 
 ### 10. Green progress bar touches intro/examples buttons
+
+Status: Addressed in V2.3 for the shared mission progress container by adding a small vertical gap and bottom padding.
 
 User says the green bar above intro/examples in mission top container is touching the buttons and looks weird.
 
@@ -527,6 +541,8 @@ Recommendation:
 
 ### G. Review page is too verbose
 
+Status: Addressed in V2.2. Review now has separate queue, active retry, and post-batch states; tracked items stay out of the active retry state and remain collapsed when shown.
+
 User says top review page has redundant copy:
 - `Take one short retry batch...`
 - `one ready`
@@ -546,6 +562,8 @@ Also remove/demote:
 ---
 
 ### H. Review loop still has bottom nav / route chrome
+
+Status: Addressed in V2.2 for active batches. The mobile bottom nav is hidden while an active Review batch is running, and the retry workspace exposes a local Today link.
 
 User says nav was removed from missions but remains in review loop.
 
@@ -582,6 +600,8 @@ Do not overbuild; this is a UI simplification.
 ---
 
 ### J. Listening distractors are too easy
+
+Status: Partly addressed in V2.3 without new metadata. The existing generated-choice heuristic now prefers distractors with shared meaningful English words and overlapping Japanese signal characters, and avoids repeating recent translations more strongly. True authored near-miss distractor metadata remains a larger content follow-up.
 
 User says options are often obviously wrong because only one contains the keyword:
 - heard `coffee`, only one answer says coffee
@@ -784,9 +804,17 @@ Codex should inspect current grammar mission model and propose a minimal path to
 
 ---
 
-## Recommended next Codex prompt — investigation-first
+## Current Recommended Next Codex Prompt — V2.4
 
-Use this before implementation.
+```md
+Implement V2.4 early output and grammar pedagogy. Preserve local-first storage, TypeScript-only code, current schemas, mission types, deterministic recommendation/review selection, and the V2.1/V2.2/V2.3 Today-Review-trust shell. Use a narrow iPhone-like viewport to audit the first output missions and grammar Common Mistakes placement. If the audit confirms friction, implement the smallest high-confidence support improvement using current content and schemas, such as clearer task-local hints or a narrow existing-data chunk/word support surface, and demote/collapse Common Mistakes only if it still interrupts the learner before drills. Keep Colin-specific content cleanup, estimate tuning, new mission types, and date-keyed daily sessions out of this slice unless directly touched. Update BUILD_STATUS.md and Japanese_OS_feedback_plan.md, then run typecheck, build, report:build-status-summary, report:progression-gaps, report:reading-reuse, and git diff --check.
+```
+
+---
+
+## Historical V2.0 Codex Prompt — investigation-first
+
+Preserved for traceability. This audit prompt has been run; V2.0 through V2.3 are now addressed.
 
 ```md
 Context:
@@ -847,9 +875,9 @@ Do not edit files yet.
 
 ---
 
-## Recommended implementation slice after audit
+## Historical V2.1-V2.3 Implementation Brief
 
-Only after the audit confirms the behavior:
+Preserved for traceability. The finite Today shell, Review containment, and early trust fixes were split across V2.1, V2.2, and V2.3 rather than implemented as one broad slice.
 
 ```md
 Context:

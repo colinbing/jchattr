@@ -77,68 +77,89 @@ export function ReviewPage() {
     activeBatchRef.current?.scrollIntoView({ block: 'start' });
   }, [activeBatch]);
 
+  useEffect(() => {
+    const bodyClassName = 'review-active-mode';
+
+    if (activeBatch && activeBatch.length > 0) {
+      document.body.classList.add(bodyClassName);
+    } else {
+      document.body.classList.remove(bodyClassName);
+    }
+
+    return () => {
+      document.body.classList.remove(bodyClassName);
+    };
+  }, [activeBatch]);
+
   return (
     <PageShell
-      eyebrow="Retry Loop"
+      variant="compact"
+      eyebrow="Retry"
       title="Review"
-      description="Take one short retry batch, then get back to Today. The queue stays local, deterministic, and intentionally small."
+      description={
+        activeBatch
+          ? 'Finish this short retry batch, then return to Today.'
+          : 'Clear one short local retry batch, then get back to Today.'
+      }
       aside={
         <span className="status-chip">
           {batchItems.length > 0 ? `${batchItems.length} ready` : 'All clear'}
         </span>
       }
     >
-      <SurfaceCard
-        title="Review queue"
-        description="Keep review short on purpose. Retry the top weak points once, then move on."
-      >
-        <div className="review-queue-card">
-          <div className="review-queue-card__copy">
-            <p className="review-launch-card__title">
-              {batchItems.length > 0
-                ? `${batchItems.length} retry item${batchItems.length === 1 ? '' : 's'} ready`
-                : 'No retry batch ready right now'}
-            </p>
-            <p className="review-launch-card__body">
-              {batchItems.length > 0
-                ? `Batch order is highest miss count first, then most recent miss, capped at ${REVIEW_BATCH_SIZE} items.`
-                : 'Nothing needs an immediate retry. New misses from missions will show up here automatically.'}
-            </p>
-          </div>
+      {!activeBatch && !lastBatchSummary ? (
+        <SurfaceCard
+          title="Ready now"
+          description="One focused batch. Correct retries clear local weak points."
+        >
+          <div className="review-queue-card">
+            <div className="review-queue-card__copy">
+              <p className="review-launch-card__title">
+                {batchItems.length > 0
+                  ? `${batchItems.length} retry item${batchItems.length === 1 ? '' : 's'} ready`
+                  : 'All clear right now'}
+              </p>
+              <p className="review-launch-card__body">
+                {batchItems.length > 0
+                  ? `Start up to ${REVIEW_BATCH_SIZE} local weak points, then return to Today.`
+                  : 'Today will only ask for Review again after a new miss is saved.'}
+              </p>
+            </div>
 
-          <div className="review-chip-row" aria-label="Review queue summary">
-            <span className="review-chip">
-              {weakPoints.length} tracked weak point{weakPoints.length === 1 ? '' : 's'}
-            </span>
-            <span className="review-chip">
-              {totalMisses} saved miss{totalMisses === 1 ? '' : 'es'}
-            </span>
-            <span className="review-chip">
-              {reviewLoopProgress.lastCompletedAt
-                ? `Last batch ${formatTimestamp(reviewLoopProgress.lastCompletedAt)}`
-                : 'No review batch yet'}
-            </span>
-          </div>
+            <div className="review-chip-row" aria-label="Review queue summary">
+              <span className="review-chip">
+                {weakPoints.length} weak point{weakPoints.length === 1 ? '' : 's'}
+              </span>
+              <span className="review-chip">
+                {totalMisses} saved miss{totalMisses === 1 ? '' : 'es'}
+              </span>
+              <span className="review-chip">
+                {reviewLoopProgress.lastCompletedAt
+                  ? `Last ${formatTimestamp(reviewLoopProgress.lastCompletedAt)}`
+                  : 'No batch yet'}
+              </span>
+            </div>
 
-          <div className="mission-step-actions review-card-actions">
-            <button
-              type="button"
-              className="mission-button"
-              disabled={batchItems.length === 0}
-              onClick={() => {
-                setLastBatchSummary(null);
-                setActiveBatch(batchItems);
-              }}
-            >
-              {lastBatchSummary && batchItems.length > 0 ? 'Start next batch' : 'Start review'}
-            </button>
+            <div className="mission-step-actions review-card-actions">
+              <button
+                type="button"
+                className="mission-button"
+                disabled={batchItems.length === 0}
+                onClick={() => {
+                  setLastBatchSummary(null);
+                  setActiveBatch(batchItems);
+                }}
+              >
+                Start review
+              </button>
 
-            <Link to="/" className="mission-button mission-button--secondary mission-button--link">
-              Back to Today
-            </Link>
+              <Link to="/" className="mission-button mission-button--secondary mission-button--link">
+                Back to Today
+              </Link>
+            </div>
           </div>
-        </div>
-      </SurfaceCard>
+        </SurfaceCard>
+      ) : null}
 
       {lastBatchSummary ? (
         <SurfaceCard
@@ -155,16 +176,7 @@ export function ReviewPage() {
                 {lastBatchSummary.clearedCount}/{lastBatchSummary.attemptedCount} retries cleared
               </p>
               <p className="review-launch-card__body">
-                {lastBatchSummary.unresolvedCount > 0
-                  ? `${lastBatchSummary.unresolvedCount} item${
-                      lastBatchSummary.unresolvedCount === 1 ? '' : 's'
-                    } still need another pass.`
-                  : 'That batch is fully cleared.'}{' '}
-                {lastBatchSummary.nextBatchSize > 0
-                  ? `${lastBatchSummary.nextBatchSize} more item${
-                      lastBatchSummary.nextBatchSize === 1 ? '' : 's'
-                    } are ready if you want one more short batch later.`
-                  : 'No next batch is queued.'}
+                {formatPostBatchBody(lastBatchSummary)}
               </p>
             </div>
 
@@ -248,66 +260,68 @@ export function ReviewPage() {
         </div>
       ) : null}
 
-      <SurfaceCard
-        title="Tracked items"
-        description="Open this only when you want the queue details."
-      >
-        {weakPoints.length > 0 ? (
-          <details className="review-details">
-            <summary className="review-details__summary">
-              {weakPoints.length} tracked weak point{weakPoints.length === 1 ? '' : 's'}
-            </summary>
+      {!activeBatch ? (
+        <SurfaceCard
+          title="Tracked items"
+          description="Open this only when you want the queue details."
+        >
+          {weakPoints.length > 0 ? (
+            <details className="review-details">
+              <summary className="review-details__summary">
+                {weakPoints.length} tracked weak point{weakPoints.length === 1 ? '' : 's'}
+              </summary>
 
-            <div className="review-group-list">
-              {WEAK_POINT_GROUPS.map((itemType) => {
-                const items = weakPoints.filter((weakPoint) => weakPoint.itemType === itemType);
+              <div className="review-group-list">
+                {WEAK_POINT_GROUPS.map((itemType) => {
+                  const items = weakPoints.filter((weakPoint) => weakPoint.itemType === itemType);
 
-                if (items.length === 0) {
-                  return null;
-                }
+                  if (items.length === 0) {
+                    return null;
+                  }
 
-                return (
-                  <section key={itemType} className="review-group">
-                    <div className="review-group__header">
-                      <h3 className="review-group__title">{formatGroupLabel(itemType)}</h3>
-                      <p className="review-group__meta">
-                        {items.length} item{items.length === 1 ? '' : 's'}
-                      </p>
-                    </div>
+                  return (
+                    <section key={itemType} className="review-group">
+                      <div className="review-group__header">
+                        <h3 className="review-group__title">{formatGroupLabel(itemType)}</h3>
+                        <p className="review-group__meta">
+                          {items.length} item{items.length === 1 ? '' : 's'}
+                        </p>
+                      </div>
 
-                    <div className="review-item-list">
-                      {items.map((weakPoint) => {
-                        const summary = resolveWeakPointSummary(weakPoint, starterContent);
+                      <div className="review-item-list">
+                        {items.map((weakPoint) => {
+                          const summary = resolveWeakPointSummary(weakPoint, starterContent);
 
-                        return (
-                          <article key={weakPoint.itemId} className="review-item-card">
-                            <p className="review-item-card__eyebrow">{summary.eyebrow}</p>
-                            <h4 className="review-item-card__title">{summary.title}</h4>
-                            <p className="review-item-card__body">{summary.body}</p>
-                            <p className="review-item-card__meta">
-                              Mission: {summary.missionTitle}
-                            </p>
-                            <p className="review-item-card__meta">
-                              Missed {weakPoint.missCount} time
-                              {weakPoint.missCount === 1 ? '' : 's'} · last missed{' '}
-                              {formatTimestamp(weakPoint.lastMissedAt)}
-                            </p>
-                          </article>
-                        );
-                      })}
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
-          </details>
-        ) : (
-          <ul className="simple-list">
-            <li>No weak points recorded yet.</li>
-            <li>Incorrect answers from missions will appear here automatically.</li>
-          </ul>
-        )}
-      </SurfaceCard>
+                          return (
+                            <article key={weakPoint.itemId} className="review-item-card">
+                              <p className="review-item-card__eyebrow">{summary.eyebrow}</p>
+                              <h4 className="review-item-card__title">{summary.title}</h4>
+                              <p className="review-item-card__body">{summary.body}</p>
+                              <p className="review-item-card__meta">
+                                Mission: {summary.missionTitle}
+                              </p>
+                              <p className="review-item-card__meta">
+                                Missed {weakPoint.missCount} time
+                                {weakPoint.missCount === 1 ? '' : 's'} · last missed{' '}
+                                {formatTimestamp(weakPoint.lastMissedAt)}
+                              </p>
+                            </article>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            </details>
+          ) : (
+            <ul className="simple-list">
+              <li>No weak points recorded yet.</li>
+              <li>Incorrect answers from missions will appear here automatically.</li>
+            </ul>
+          )}
+        </SurfaceCard>
+      ) : null}
     </PageShell>
   );
 }
@@ -355,4 +369,22 @@ function formatTimestamp(timestamp: string) {
     hour: 'numeric',
     minute: '2-digit',
   }).format(date);
+}
+
+function formatPostBatchBody(summary: LastBatchSummary) {
+  if (summary.remainingWeakPointCount === 0) {
+    return 'Review is clear now. Today will not add another required Review step unless a new miss is saved.';
+  }
+
+  const remainingCopy = `${summary.remainingWeakPointCount} weak point${
+    summary.remainingWeakPointCount === 1 ? '' : 's'
+  } still ${summary.remainingWeakPointCount === 1 ? 'needs' : 'need'} review.`;
+  const nextBatchCopy =
+    summary.nextBatchSize > 0
+      ? `${summary.nextBatchSize} ${
+          summary.nextBatchSize === 1 ? 'item is' : 'items are'
+        } ready for the next short batch.`
+      : 'No next batch is ready right now.';
+
+  return `${remainingCopy} ${nextBatchCopy}`;
 }

@@ -1,7 +1,23 @@
 const REORDER_PROMPT_DELIMITER = /[:：]/;
+const TARGET_PARTICLES_BY_FOCUS = new Map<string, string[]>([
+  ['grammar-destination-ni', ['に']],
+  ['grammar-time-ni', ['に']],
+  ['grammar-weekdays-ni', ['に']],
+]);
 
-export function getReorderTokens(prompt: string, seed: string) {
-  const tokens = extractReorderTokens(prompt);
+type ReorderTokenOptions = {
+  focusId?: string;
+};
+
+export function getReorderTokens(
+  prompt: string,
+  seed: string,
+  options: ReorderTokenOptions = {},
+) {
+  const tokens = splitTargetParticles(
+    extractReorderTokens(prompt),
+    getTargetParticles(options.focusId),
+  );
 
   if (tokens.length <= 1) {
     return tokens;
@@ -36,6 +52,38 @@ function extractReorderTokens(prompt: string) {
     .split('/')
     .map((token) => token.trim())
     .filter(Boolean);
+}
+
+export function formatReorderPrompt(prompt: string) {
+  return extractReorderTokens(prompt).length > 1
+    ? 'Put the chunks in order.'
+    : prompt;
+}
+
+function getTargetParticles(focusId: string | undefined) {
+  if (!focusId) {
+    return [];
+  }
+
+  return TARGET_PARTICLES_BY_FOCUS.get(focusId) ?? [];
+}
+
+function splitTargetParticles(tokens: string[], particles: string[]) {
+  if (particles.length === 0) {
+    return tokens;
+  }
+
+  return tokens.flatMap((token) => {
+    const particle = particles.find((candidate) => {
+      return token.length > candidate.length && token.endsWith(candidate);
+    });
+
+    if (!particle) {
+      return [token];
+    }
+
+    return [token.slice(0, -particle.length), particle].filter(Boolean);
+  });
 }
 
 function rotateTokens(tokens: string[]) {
