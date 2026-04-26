@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistInput } from '../../../components/KanaAssistInput';
+import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type {
   ExampleSentence,
@@ -9,6 +10,9 @@ import type {
   GrammarLesson,
   Mission,
 } from '../../../lib/content/types';
+import {
+  getGrammarMistakeExplanation,
+} from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
   resolveContinueStepIndex,
@@ -330,7 +334,7 @@ export function GrammarMissionPlayer({
                 <DrillCard
                   key={currentDrill.id}
                   missionId={mission.id}
-                  lessonId={lesson.id}
+                  lesson={lesson}
                   drill={currentDrill}
                   index={currentDrillIndex}
                   totalCount={sessionDrills.length}
@@ -393,7 +397,7 @@ export function GrammarMissionPlayer({
 
 type DrillCardProps = {
   missionId: string;
-  lessonId: string;
+  lesson: GrammarLesson;
   drill: GrammarDrill;
   index: number;
   totalCount: number;
@@ -404,7 +408,7 @@ type DrillCardProps = {
 
 function DrillCard({
   missionId,
-  lessonId,
+  lesson,
   drill,
   index,
   totalCount,
@@ -412,7 +416,7 @@ function DrillCard({
   onAdvance,
   onCleared,
 }: DrillCardProps) {
-  const reorderTokens = getReorderTokens(drill.prompt, drill.id, { focusId: lessonId });
+  const reorderTokens = getReorderTokens(drill.prompt, drill.id, { focusId: lesson.id });
   const [selectedChoice, setSelectedChoice] = useState('');
   const [typedAnswer, setTypedAnswer] = useState('');
   const [assembledTokenIndexes, setAssembledTokenIndexes] = useState<number[]>([]);
@@ -442,7 +446,7 @@ function DrillCard({
         itemId: drill.id,
         itemType: 'grammar-drill',
         missionId,
-        contentId: lessonId,
+        contentId: lesson.id,
       });
     }
 
@@ -456,6 +460,15 @@ function DrillCard({
     setAssembledTokenIndexes([]);
     setFeedback(null);
   }
+
+  const mistakeExplanation =
+    feedback === 'incorrect'
+      ? getGrammarMistakeExplanation({
+          drill,
+          lesson,
+          learnerAnswer: currentResponse,
+        })
+      : null;
 
   return (
     <article className="mission-drill-card">
@@ -609,6 +622,10 @@ function DrillCard({
                 : `Expected answer: ${drill.answer}`}
             </p>
           </div>
+        ) : null}
+
+        {mistakeExplanation ? (
+          <MistakeExplanationDrawer explanation={mistakeExplanation} />
         ) : null}
       </div>
     </article>

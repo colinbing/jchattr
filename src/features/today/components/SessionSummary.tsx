@@ -41,6 +41,8 @@ export function SessionSummary({
 }: SessionSummaryProps) {
   const isComplete = remainingCount === 0;
   const totalCount = items.length;
+  const completedStudyDaysThisWeek = weekDays.filter((day) => day.isComplete).length;
+  const weeklyShapeCopy = formatWeeklyShapeCopy(completedStudyDaysThisWeek);
 
   return (
     <section className="session-summary" aria-label="Daily session summary">
@@ -61,18 +63,31 @@ export function SessionSummary({
             }`}
             aria-current={day.isCurrent ? 'date' : undefined}
             aria-label={`${day.dateLabel}${day.isCurrent ? ', current study day' : ''}${
-              day.isComplete ? ', complete' : ''
+              day.isComplete ? ', gold star earned' : ''
             }`}
           >
             <span className="week-tracker__label">{day.dayLabel}</span>
             <span className="week-tracker__marker" aria-hidden="true">
-              {day.isComplete ? '✓' : ''}
+              {day.isComplete ? '★' : ''}
             </span>
           </li>
         ))}
       </ol>
+      <p className="week-tracker__summary">{weeklyShapeCopy}</p>
 
-      <div className="session-summary__content">
+      <div
+        className={`session-summary__content${
+          isComplete ? ' session-summary__content--complete' : ''
+        }`}
+      >
+        {isComplete ? (
+          <div className="session-summary__gold-star" aria-label="Gold star earned for today">
+            <span className="session-summary__gold-star-icon" aria-hidden="true">
+              ★
+            </span>
+            <span>Gold star earned</span>
+          </div>
+        ) : null}
         <p className="session-summary__eyebrow">
           {isComplete ? 'Today complete' : "Today's lesson"}
         </p>
@@ -137,4 +152,26 @@ export function SessionSummary({
       ) : null}
     </section>
   );
+}
+
+function formatWeeklyShapeCopy(completedStudyDays: number) {
+  if (completedStudyDays >= 7) {
+    return '7/7 gold stars this week · perfect week';
+  }
+
+  if (completedStudyDays >= 5) {
+    return `${completedStudyDays}/7 gold stars this week · strong week`;
+  }
+
+  if (completedStudyDays >= 3) {
+    return `${completedStudyDays}/7 gold stars this week · rhythm`;
+  }
+
+  if (completedStudyDays >= 1) {
+    return `${completedStudyDays}/7 gold star${
+      completedStudyDays === 1 ? '' : 's'
+    } this week · started`;
+  }
+
+  return 'Gold stars appear here after core completion.';
 }

@@ -2,8 +2,15 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
+import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { GrammarDrill } from '../../../lib/content/types';
+import {
+  getGrammarMistakeExplanation,
+  getListeningMistakeExplanation,
+  getOutputMistakeExplanation,
+  getReadingMistakeExplanation,
+} from '../../../lib/feedback/mistakeExplanations';
 import { hasDistinctReading } from '../../../lib/japaneseText';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import { getReorderTokens } from '../../../lib/reorderDrill';
@@ -272,6 +279,14 @@ function GrammarReviewCard({
     assembledTokenIndexes,
     reorderTokens,
   });
+  const mistakeExplanation =
+    feedback === 'incorrect'
+      ? getGrammarMistakeExplanation({
+          drill: item.drill,
+          lesson: item.lesson,
+          learnerAnswer: currentResponse,
+        })
+      : null;
 
   function submitAnswer() {
     if (!currentResponse.trim()) {
@@ -379,6 +394,10 @@ function GrammarReviewCard({
       </div>
 
       {feedback ? <ReviewFeedback result={feedback} answer={item.drill.answer} /> : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
+      ) : null}
     </div>
   );
 }
@@ -399,6 +418,13 @@ function ListeningReviewCard({
     item.choicePool,
     avoidTranslations,
   );
+  const mistakeExplanation =
+    feedback === 'incorrect'
+      ? getListeningMistakeExplanation({
+          item: item.listeningItem,
+          learnerAnswer: selectedChoice,
+        })
+      : null;
 
   function submitAnswer() {
     if (!selectedChoice) {
@@ -521,6 +547,10 @@ function ListeningReviewCard({
       ) : feedback ? (
         <ReviewFeedback result={feedback} answer={item.listeningItem.translation} />
       ) : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
+      ) : null}
     </div>
   );
 }
@@ -553,6 +583,14 @@ function OutputReviewCard({
 }) {
   const [response, setResponse] = useState('');
   const [feedback, setFeedback] = useState<OutputEvaluationResult | null>(null);
+  const mistakeExplanation =
+    feedback && !feedback.isAccepted
+      ? getOutputMistakeExplanation({
+          task: item.task,
+          feedback,
+          learnerAnswer: response,
+        })
+      : null;
 
   function submitAnswer() {
     if (!response.trim()) {
@@ -607,6 +645,10 @@ function OutputReviewCard({
       </div>
 
       {feedback ? <OutputReviewFeedback feedback={feedback} /> : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
+      ) : null}
     </div>
   );
 }
@@ -641,6 +683,14 @@ function ReadingReviewCard({
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReviewResult | null>(null);
   const showReading = hasDistinctReading(item.example.japanese, item.example.reading);
+  const mistakeExplanation =
+    feedback === 'incorrect'
+      ? getReadingMistakeExplanation({
+          check: item.check,
+          example: item.example,
+          learnerAnswer: selectedChoice,
+        })
+      : null;
 
   function submitAnswer() {
     if (!selectedChoice) {
@@ -705,6 +755,10 @@ function ReadingReviewCard({
       </div>
 
       {feedback ? <ReviewFeedback result={feedback} answer={item.check.answer} /> : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
+      ) : null}
 
       {feedback ? (
         <div className="reading-reveal-card">

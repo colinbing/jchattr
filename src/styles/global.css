@@ -340,8 +340,58 @@ button {
 }
 
 .week-tracker__day--complete .week-tracker__marker {
-  border-color: var(--color-accent);
-  background: var(--color-accent);
+  border-color: rgba(197, 139, 77, 0.6);
+  background: #c58b4d;
+  color: #fff9e8;
+  box-shadow: 0 4px 12px rgba(197, 139, 77, 0.24);
+}
+
+.week-tracker__summary {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.session-summary__content {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.session-summary__content--complete {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(197, 139, 77, 0.28);
+  background: rgba(255, 249, 232, 0.72);
+}
+
+.session-summary__gold-star {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(197, 139, 77, 0.16);
+  color: #7f4f21;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.session-summary__gold-star-icon {
+  display: inline-flex;
+  width: 1.2rem;
+  height: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #c58b4d;
+  color: #fff9e8;
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
 .session-summary__eyebrow,
@@ -468,6 +518,60 @@ button {
 .today-details__body {
   margin: 0;
   color: var(--color-ink-muted);
+}
+
+.today-focus-control {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  background: var(--color-surface-strong);
+}
+
+.today-focus-control__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.today-focus-control__summary strong {
+  color: var(--color-ink);
+  font-size: 0.88rem;
+}
+
+.today-focus-control__options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+}
+
+.today-focus-control__option {
+  min-width: 0;
+  min-height: 2.35rem;
+  padding: 0.55rem var(--space-2);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 253, 247, 0.82);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+}
+
+.today-focus-control__option--selected {
+  border-color: rgba(36, 84, 70, 0.45);
+  background: rgba(36, 84, 70, 0.1);
+  color: var(--color-accent);
 }
 
 .mission-list {
@@ -999,6 +1103,56 @@ button {
   font-weight: 600;
 }
 
+.settings-focus,
+.settings-focus__current,
+.settings-focus__options,
+.settings-focus-option {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.settings-focus__current {
+  gap: var(--space-1);
+}
+
+.settings-focus__current strong {
+  font-size: 1.05rem;
+}
+
+.settings-focus__current p {
+  margin: 0;
+  color: var(--color-ink-muted);
+}
+
+.settings-focus__options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.settings-focus-option {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid rgba(36, 84, 70, 0.1);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-strong);
+  color: var(--color-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-focus-option--selected {
+  border-color: rgba(36, 84, 70, 0.42);
+  background: rgba(36, 84, 70, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(36, 84, 70, 0.2);
+}
+
+.settings-focus-option__label {
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
 .settings-action-list,
 .settings-action-card,
 .settings-confirmation,
@@ -1041,6 +1195,7 @@ button {
 .mission-session-card__meta-row,
 .mission-session-details,
 .mission-focus-card,
+.mission-explainer-drawer,
 .mission-inline-actions {
   display: grid;
   gap: var(--space-3);
@@ -1332,6 +1487,58 @@ button {
 
 .mission-guardrails-details .mission-mistake-card {
   background: var(--color-surface);
+}
+
+.mission-explainer-drawer {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(197, 139, 77, 0.22);
+  background: rgba(197, 139, 77, 0.08);
+}
+
+.mission-explainer-drawer__summary {
+  cursor: pointer;
+  color: #7f4f21;
+  font-weight: 700;
+}
+
+.mission-explainer {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+}
+
+.mission-explainer__title,
+.mission-explainer__list,
+.mission-explainer__list dd {
+  margin: 0;
+}
+
+.mission-explainer__title {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.mission-explainer__list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.mission-explainer__list div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.mission-explainer__list dt {
+  color: #7f4f21;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mission-explainer__list dd {
+  color: var(--color-ink-muted);
 }
 
 .mission-choice-grid,

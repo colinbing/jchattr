@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
+import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import type {
   ExampleSentence,
   GrammarLesson,
   ListeningItem,
   Mission,
 } from '../../../lib/content/types';
+import { getListeningMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
   resolveContinueStepIndex,
@@ -350,6 +352,13 @@ function ListeningItemPanel({
   });
   const latestVisibleHint = getLatestVisibleHint(item, revealed, readingMatchesTranscript);
   const isAnswerRevealed = revealed.translation;
+  const mistakeExplanation =
+    feedback === 'incorrect'
+      ? getListeningMistakeExplanation({
+          item,
+          learnerAnswer: selectedChoice,
+        })
+      : null;
 
   function reveal(step: RevealKey) {
     if (step === 'translation' && !revealed.translation && !feedback) {
@@ -493,6 +502,10 @@ function ListeningItemPanel({
             {getListeningFeedbackBody(feedback, item, revealed)}
           </p>
         </div>
+      ) : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
       ) : null}
 
       <div className="listening-focus-card__actions">

@@ -1099,14 +1099,14 @@ Use these states:
 | 1H Capstone breadth batch 3 | Verified | Added hand-reviewed chapter 8-10 capstones covering packs 36-50, using exact existing example lines with sourceExampleIds, 11 lines per story, and 4 comprehension checks each. Chapter 10 keeps plain-style content recognition-safe. Content reports now show capstone chapter coverage as 10/10. Verified with typecheck, build, source-line audit, and standard content reports. |
 | 1I Naturalized capstone layer | Verified | Added a chapter 1 naturalized bonus story variant with source example IDs, source capstone line IDs, route locking behind the exact-source closeout, Missions bonus-story exposure, and Today story-mode bonus recommendations. Primary capstone coverage remains 10/10. Verified with typecheck, build, source-trace audit, and standard content reports. |
 | 3A Feedback taxonomy | Verified | Added a shared typed `MistakeExplanation` model plus deterministic grammar helper utilities for particle-focused misses and common grammar drill fallbacks. No mission/review UI wiring changed. Verified with typecheck, build, and a helper smoke check. |
-| 3B Grammar mistake drawer | Not started |  |
-| 3C Review mistake drawer | Not started |  |
-| 3D Other modality explanations | Not started |  |
-| 4A Gold star visual pass | Not started |  |
-| 4B Weekly shape copy | Not started |  |
-| 5A Preference store | Not started |  |
-| 5B Today focus weighting | Not started |  |
-| 5C Today focus control | Not started |  |
+| 3B Grammar mistake drawer | Verified | Grammar mission misses now show a compact `Explain mistake` drawer powered by deterministic mistake explanations, while keeping existing expected-answer feedback and weak-point recording intact. Verified with typecheck, build, and an in-app browser manual grammar-mission miss/edit flow. |
+| 3C Review mistake drawer | Verified | Review grammar retries now reuse the shared mistake explainer drawer after incorrect answers without changing Review queue semantics. Item-to-item navigation remounts retry cards cleanly so stale drawer state does not leak across items. Verified with typecheck, build, and an in-app browser Review miss/next/back flow. |
+| 3D Other modality explanations | Verified | Added deterministic explanation helpers and compact drawers for listening, reading, and output misses across mission players and Review retries. Listening explains gist/focus, reading explains the source-line/check relation, and output explains accepted variants plus target token patterns. Verified with typecheck, build, and standard content reports. |
+| 4A Gold star visual pass | Verified | Today Complete now shows a compact `Gold star earned` badge, and completed weekly tracker days render as gold stars from the existing daily-session completion source. Completion semantics and storage were unchanged. Verified with typecheck, build, and in-app browser before/after Today completion inspection. |
+| 4B Weekly shape copy | Verified | Weekly tracker now derives a compact milestone line from completed study days only: started at 1, rhythm at 3, strong week at 5, and perfect week at 7. Verified with typecheck, build, and in-app browser complete/incomplete Today inspection. |
+| 5A Preference store | Verified | Added a typed local `study-preferences` store with a durable focus mode and a compact Settings control for Balanced, More listening, More output, Light day, Class prep, and Weak points first. Today recommendation behavior is unchanged. Verified with typecheck and build. |
+| 5B Today focus weighting | Verified | Today and Missions now pass the saved study focus mode into deterministic recommendations. Review-first, next unlocked path mission, and urgent stabilize behavior stay protected; focus mode only breaks ties for support and bonus mission slots, with matching learner-facing copy. Verified with typecheck, build, and recommendation smoke checks. |
+| 5C Today focus control | Verified | Today now exposes a collapsed focus-mode control inside the optional bonus area, writing to the existing study-preferences store without changing the finite daily lesson card. Settings remains the durable configuration surface. Verified with typecheck, build, and mobile browser layout inspection. |
 | 6A Scenario model decision | Not started |  |
 | 6B First scenario sim | Not started |  |
 | 6C Scenario pack set | Not started |  |

@@ -40,6 +40,12 @@ import {
   type TodayRecommendation,
 } from '../lib/todayRecommendations';
 import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
+import {
+  setStudyFocusMode,
+  STUDY_FOCUS_MODE_OPTIONS,
+  type StudyFocusMode,
+  useStudyPreferences,
+} from '../../../lib/settings/studyPreferences';
 
 export function TodayPage() {
   const location = useLocation();
@@ -50,6 +56,7 @@ export function TodayPage() {
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
+  const studyPreferences = useStudyPreferences();
   const [studyDayKey, setStudyDayKey] = useState(() => getCurrentStudyDayKey());
   const [dailySessionRecord, setDailySessionRecord] = useState(() =>
     readDailySessionRecord(studyDayKey),
@@ -67,6 +74,7 @@ export function TodayPage() {
     weakPoints,
     reviewLoopProgress,
     capstoneProgress,
+    { studyFocusMode: studyPreferences.focusMode },
   );
   const progressOverview = deriveProgressOverview(starterContent, missionProgress, weakPoints);
   const continueMission = resolveContinueMission(
@@ -344,6 +352,8 @@ export function TodayPage() {
             : 'Open this only if you want more after the main plan.'
         }
       >
+        <TodayFocusModeControl focusMode={studyPreferences.focusMode} />
+
         <details className="today-details">
           <summary className="today-details__summary">
             {bonusRecommendations.length > 0
@@ -372,6 +382,41 @@ export function TodayPage() {
         </details>
       </SurfaceCard>
     </PageShell>
+  );
+}
+
+function TodayFocusModeControl({ focusMode }: { focusMode: StudyFocusMode }) {
+  const currentFocusOption =
+    STUDY_FOCUS_MODE_OPTIONS.find((option) => option.id === focusMode) ??
+    STUDY_FOCUS_MODE_OPTIONS[0];
+
+  return (
+    <details className="today-focus-control">
+      <summary className="today-focus-control__summary">
+        <span>Focus</span>
+        <strong>{currentFocusOption.label}</strong>
+      </summary>
+      <div
+        className="today-focus-control__options"
+        role="radiogroup"
+        aria-label="Today focus mode"
+      >
+        {STUDY_FOCUS_MODE_OPTIONS.map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            className={`today-focus-control__option${
+              option.id === focusMode ? ' today-focus-control__option--selected' : ''
+            }`}
+            role="radio"
+            aria-checked={option.id === focusMode}
+            onClick={() => setStudyFocusMode(option.id)}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </details>
   );
 }
 

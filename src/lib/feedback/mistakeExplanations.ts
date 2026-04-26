@@ -1,4 +1,13 @@
-import type { GrammarDrill, GrammarDrillType, GrammarLesson } from '../content/types';
+import type {
+  ExampleSentence,
+  GrammarDrill,
+  GrammarDrillType,
+  GrammarLesson,
+  ListeningItem,
+  OutputTask,
+  ReadingCheck,
+} from '../content/types';
+import type { OutputEvaluationResult } from '../outputEvaluation';
 import { normalizeJapaneseText } from '../normalizeJapaneseText';
 
 export type MistakeExplanation = {
@@ -12,6 +21,23 @@ export type MistakeExplanation = {
 export type GrammarMistakeExplanationContext = {
   drill: GrammarDrill;
   lesson?: Pick<GrammarLesson, 'id' | 'title' | 'tags' | 'commonMistakes'>;
+  learnerAnswer?: string | null;
+};
+
+export type ListeningMistakeExplanationContext = {
+  item: Pick<ListeningItem, 'transcript' | 'reading' | 'translation' | 'focusPoint'>;
+  learnerAnswer?: string | null;
+};
+
+export type ReadingMistakeExplanationContext = {
+  check: Pick<ReadingCheck, 'prompt' | 'answer' | 'support'>;
+  example: Pick<ExampleSentence, 'japanese' | 'reading' | 'english'>;
+  learnerAnswer?: string | null;
+};
+
+export type OutputMistakeExplanationContext = {
+  task: Pick<OutputTask, 'acceptableAnswers' | 'evaluation'>;
+  feedback: Pick<OutputEvaluationResult, 'message' | 'expectedAnswer' | 'tone'>;
   learnerAnswer?: string | null;
 };
 
@@ -288,6 +314,59 @@ export function getDrillTypeMistakeExplanation(
   };
 }
 
+export function getListeningMistakeExplanation({
+  item,
+  learnerAnswer,
+}: ListeningMistakeExplanationContext): MistakeExplanation {
+  return {
+    title: 'Match the heard line to its gist.',
+    correctPattern: item.translation,
+    likelyConfusion: learnerAnswer ? `You chose: ${learnerAnswer}` : undefined,
+    explanation: `This listening item is asking for the overall meaning of 「${item.transcript}」. The focus point is: ${item.focusPoint}`,
+    retryHint:
+      'Replay the audio once, then reveal the transcript or pattern hint only if you still cannot anchor the meaning.',
+  };
+}
+
+export function getReadingMistakeExplanation({
+  check,
+  example,
+  learnerAnswer,
+}: ReadingMistakeExplanationContext): MistakeExplanation {
+  return {
+    title: 'Connect the check to the source line.',
+    correctPattern: check.answer,
+    likelyConfusion: learnerAnswer ? `You chose: ${learnerAnswer}` : check.support,
+    explanation: `The check asks: ${check.prompt} The source line means: ${example.english}`,
+    retryHint:
+      check.support ??
+      'Read the Japanese line first, identify the asked detail, then compare only that detail against the choices.',
+  };
+}
+
+export function getOutputMistakeExplanation({
+  task,
+  feedback,
+  learnerAnswer,
+}: OutputMistakeExplanationContext): MistakeExplanation {
+  const patternAnalysis = analyzeOutputTokenPattern(task, learnerAnswer);
+  const variantSummary = formatAcceptableVariants(task.acceptableAnswers);
+  const targetPattern = patternAnalysis?.targetPattern.length
+    ? patternAnalysis.targetPattern.join(' + ')
+    : task.acceptableAnswers[0];
+
+  return {
+    title:
+      feedback.tone === 'close'
+        ? 'Close, but one output piece is off.'
+        : 'Use the target output pattern.',
+    correctPattern: variantSummary,
+    likelyConfusion: patternAnalysis?.likelyConfusion ?? feedback.message,
+    explanation: `This prompt accepts short beginner-safe variants. The main target pieces are: ${targetPattern}`,
+    retryHint: patternAnalysis?.retryHint ?? 'Retry with the shortest acceptable line first.',
+  };
+}
+
 export function inferCorrectParticle({
   drill,
   lesson,
@@ -380,3 +459,203 @@ const DRILL_TYPE_EXPLANATIONS: Record<
     retryHint: 'Keep particle chunks with their nouns, then place the ending or main verb at the end.',
   },
 };
+
+function formatAcceptableVariants(acceptableAnswers: string[]) {
+  const visibleAnswers = acceptableAnswers.slice(0, 3);
+  const suffix = acceptableAnswers.length > visibleAnswers.length ? ' ...' : '';
+
+  return `${visibleAnswers.join(' / ')}${suffix}`;
+}
+
+function analyzeOutputTokenPattern(
+  task: Pick<OutputTask, 'evaluation'>,
+  learnerAnswer: string | null | undefined,
+):
+  | {
+      targetPattern: string[];
+      likelyConfusion?: string;
+      retryHint: string;
+    }
+  | null {
+  const tokenPatterns = task.evaluation?.tokenPatterns?.map((pattern) =>
+    pattern.map(normalizeJapaneseText),
+  );
+
+  if (!tokenPatterns?.length) {
+    return null;
+  }
+
+  const normalizedLearnerAnswer = normalizeJapaneseText(learnerAnswer ?? '');
+  const vocabulary = Array.from(new Set(tokenPatterns.flat())).sort(
+    (left, right) => right.length - left.length,
+  );
+  const responseTokens = tokenizeOutputResponseForExplanation(normalizedLearnerAnswer, vocabulary);
+  const closestPattern = selectClosestOutputPattern(tokenPatterns, responseTokens);
+
+  if (!closestPattern) {
+    return {
+      targetPattern: tokenPatterns[0],
+      retryHint: 'Use the visible pieces or hint, then rebuild one accepted line from left to right.',
+    };
+  }
+
+  const missingTokens = getMissingOutputTokens(closestPattern, responseTokens);
+  const unexpectedTokens = getMissingOutputTokens(responseTokens, closestPattern);
+  const sameTokensDifferentOrder =
+    missingTokens.length === 0 &&
+    unexpectedTokens.length === 0 &&
+    !arraysEqual(closestPattern, responseTokens);
+
+  if (sameTokensDifferentOrder) {
+    return {
+      targetPattern: closestPattern,
+      likelyConfusion: 'The expected pieces are present, but their order does not match this drill.',
+      retryHint: 'Keep particles attached to their nouns, then put the polite ending or main verb last.',
+    };
+  }
+
+  if (missingTokens.length > 0 && unexpectedTokens.length > 0) {
+    return {
+      targetPattern: closestPattern,
+      likelyConfusion: `Missing ${formatJapaneseTokenList(
+        missingTokens,
+      )}; extra or different piece ${formatJapaneseTokenList(unexpectedTokens)}.`,
+      retryHint: 'Swap the off-pattern piece first, then check whether the rest of the line still matches.',
+    };
+  }
+
+  if (missingTokens.length > 0) {
+    return {
+      targetPattern: closestPattern,
+      likelyConfusion: `Missing ${formatJapaneseTokenList(missingTokens)}.`,
+      retryHint: 'Add the missing target piece without adding extra words.',
+    };
+  }
+
+  if (unexpectedTokens.length > 0) {
+    return {
+      targetPattern: closestPattern,
+      likelyConfusion: `Extra or different piece ${formatJapaneseTokenList(unexpectedTokens)}.`,
+      retryHint: 'Remove the extra piece and keep the shortest accepted version.',
+    };
+  }
+
+  return {
+    targetPattern: closestPattern,
+    retryHint: 'Compare your line against one acceptable variant and retry the shortest version.',
+  };
+}
+
+function tokenizeOutputResponseForExplanation(response: string, vocabulary: string[]) {
+  if (!response) {
+    return [];
+  }
+
+  const tokens: string[] = [];
+  let index = 0;
+
+  while (index < response.length) {
+    const matchedToken = vocabulary.find((token) => response.startsWith(token, index));
+
+    if (matchedToken) {
+      tokens.push(matchedToken);
+      index += matchedToken.length;
+      continue;
+    }
+
+    const nextMatchIndex = findNextOutputTokenIndex(response, index + 1, vocabulary);
+    const fallbackChunk =
+      nextMatchIndex === -1 ? response.slice(index) : response.slice(index, nextMatchIndex);
+
+    tokens.push(fallbackChunk);
+    index += fallbackChunk.length;
+  }
+
+  return tokens;
+}
+
+function findNextOutputTokenIndex(response: string, startIndex: number, vocabulary: string[]) {
+  for (let index = startIndex; index < response.length; index += 1) {
+    if (vocabulary.some((token) => response.startsWith(token, index))) {
+      return index;
+    }
+  }
+
+  return -1;
+}
+
+function selectClosestOutputPattern(patterns: string[][], responseTokens: string[]) {
+  return patterns
+    .map((pattern) => ({
+      pattern,
+      commonCount: getCommonOutputTokenCount(pattern, responseTokens),
+      orderedCount: getOrderedCommonOutputCount(pattern, responseTokens),
+      lengthDelta: Math.abs(pattern.length - responseTokens.length),
+    }))
+    .sort((left, right) => {
+      if (right.commonCount !== left.commonCount) {
+        return right.commonCount - left.commonCount;
+      }
+
+      if (right.orderedCount !== left.orderedCount) {
+        return right.orderedCount - left.orderedCount;
+      }
+
+      return left.lengthDelta - right.lengthDelta;
+    })[0]?.pattern;
+}
+
+function getCommonOutputTokenCount(expected: string[], actual: string[]) {
+  const expectedCounts = buildOutputTokenCounts(expected);
+  const actualCounts = buildOutputTokenCounts(actual);
+
+  return Object.keys(expectedCounts).reduce((sum, token) => {
+    return sum + Math.min(expectedCounts[token] ?? 0, actualCounts[token] ?? 0);
+  }, 0);
+}
+
+function getOrderedCommonOutputCount(expected: string[], actual: string[]) {
+  let actualIndex = 0;
+  let count = 0;
+
+  expected.forEach((token) => {
+    const nextIndex = actual.indexOf(token, actualIndex);
+
+    if (nextIndex >= 0) {
+      count += 1;
+      actualIndex = nextIndex + 1;
+    }
+  });
+
+  return count;
+}
+
+function getMissingOutputTokens(expected: string[], actual: string[]) {
+  const expectedCounts = buildOutputTokenCounts(expected);
+  const actualCounts = buildOutputTokenCounts(actual);
+
+  return Object.entries(expectedCounts).flatMap(([token, expectedCount]) => {
+    const missingCount = expectedCount - (actualCounts[token] ?? 0);
+
+    if (missingCount <= 0) {
+      return [];
+    }
+
+    return Array.from({ length: missingCount }, () => token);
+  });
+}
+
+function buildOutputTokenCounts(tokens: string[]) {
+  return tokens.reduce<Record<string, number>>((counts, token) => {
+    counts[token] = (counts[token] ?? 0) + 1;
+    return counts;
+  }, {});
+}
+
+function arraysEqual(left: string[], right: string[]) {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+function formatJapaneseTokenList(tokens: string[]) {
+  return tokens.map((token) => `「${token}」`).join(', ');
+}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { JapaneseTextPair } from '../../../components/JapaneseTextPair';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
+import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import type {
   ExampleSentence,
   GrammarLesson,
@@ -9,6 +10,7 @@ import type {
   OutputTask,
   VocabItem,
 } from '../../../lib/content/types';
+import { getOutputMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
   resolveContinueStepIndex,
@@ -291,6 +293,14 @@ function OutputTaskCard({
     () => getOutputAnswerPieces(task, relatedVocab),
     [relatedVocab, task],
   );
+  const mistakeExplanation =
+    feedback && !feedback.isAccepted
+      ? getOutputMistakeExplanation({
+          task,
+          feedback,
+          learnerAnswer: response,
+        })
+      : null;
 
   function submitAnswer() {
     if (!response.trim()) {
@@ -375,6 +385,10 @@ function OutputTaskCard({
               : `${feedback.message} Try: ${feedback.expectedAnswer}`}
           </p>
         </div>
+      ) : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
       ) : null}
 
       <div className="output-focus-card__actions">

@@ -16,6 +16,7 @@ import {
   isMissionUnlocked,
 } from '../../today/lib/todayRecommendations';
 import { missionLibraryChapters } from '../lib/missionLibraryStructure';
+import { useStudyPreferences } from '../../../lib/settings/studyPreferences';
 
 export function MissionsPage() {
   const location = useLocation();
@@ -25,12 +26,14 @@ export function MissionsPage() {
   const capstoneProgress = useCapstoneProgress();
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
+  const studyPreferences = useStudyPreferences();
   const recommendations = deriveTodayRecommendations(
     starterContent,
     missionProgress,
     weakPoints,
     reviewLoopProgress,
     capstoneProgress,
+    { studyFocusMode: studyPreferences.focusMode },
   );
   const reviewRecommendation =
     recommendations.find((recommendation) => recommendation.kind === 'review') ?? null;

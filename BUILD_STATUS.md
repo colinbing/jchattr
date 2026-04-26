@@ -181,6 +181,14 @@
 - Phase 4 V2.2 review loop containment that keeps the same deterministic Review queue but separates queue landing, active retry, and post-batch handoff states, hides mobile bottom nav only during active Review batches, adds local Today navigation in the retry workspace, and clarifies cleared-versus-remaining weak-point copy when Review returns to Today
 - Phase 4 V2.6 date-keyed daily session and weekly tracker that keeps the same deterministic Today plan inputs but stores the finite core lesson in localStorage by study-day date, rolls the study day at 3 AM America/New_York using the device clock, adds JCHATTR branding plus the current study date to Today, renders a compact Sunday-Saturday completion tracker, and keeps optional in-progress bonus work from reopening the completed daily core count without adding backend, sync, accounts, analytics, or online clock validation
 - Feature 3A feedback taxonomy that adds a shared typed mistake-explanation model and deterministic grammar helper utilities for particle-focused misses plus common grammar drill fallbacks, without wiring new UI yet
+- Feature 3B grammar mistake drawer that shows compact deterministic explanations after grammar mission misses while preserving existing expected-answer feedback, answer editing, and weak-point recording
+- Feature 3C Review grammar mistake drawer that reuses the shared mistake explainer after incorrect grammar retries without changing Review queue completion, retry clearing, or item navigation semantics
+- Feature 3D other-modality explanation pass that extends deterministic compact mistake drawers to listening, reading, and output misses across mission players and Review retries without adding AI or changing scoring semantics
+- Feature 4A gold-star visual pass that keeps the existing daily-session completion source but makes Today Complete visibly award a gold star and renders completed weekly tracker days as gold stars
+- Feature 4B weekly-shape copy that summarizes completed study days in one compact line, with 1/3/5/7-day milestone wording derived only from the existing daily-session weekly tracker data
+- Feature 5A preference-store foundation that adds a typed local study-preferences store plus a compact Settings focus-mode control without changing Today recommendation behavior yet
+- Feature 5B focus-mode recommendation weighting that passes the saved study focus mode into Today and Missions recommendations as a protected support/bonus tie-breaker without demoting Review-first or the next unlocked path mission
+- Feature 5C Today focus-mode affordance that adds a collapsed focus control inside the optional bonus area, writes to the existing study-preferences store, and keeps the finite daily lesson card visually dominant
 
 ## Current App Capabilities
 
@@ -439,9 +447,9 @@
 - Current listening audio coverage is manifest-complete through the shipped pack 50 set plus Blocks A1, A2, B1, B2, C1, C2, D1, D2, E1, E2, and the listening prep support-line coverage fix
 - Claim-gate note: the repo now clears its documented `N5-comprehensive` threshold, but a lighter reading layer remains one of the clearer places for optional future polish if we want denser recombination before or during later UX work
 - Typed Japanese input now has a local romaji-to-kana assist and kana-equivalent answer matching, but it is intentionally basic, hiragana-first, and not a full IME or kanji conversion system
-- Review loop is deterministic but simple; no spaced repetition, scheduling, or recommendation weighting beyond current heuristics
+- Review loop is deterministic but simple; no spaced repetition, scheduling, or adaptive scoring beyond current heuristics
 - Review flow is now deeper inside the Review page itself, but it still does not do multi-stage scheduling, spaced repetition, or hidden urgency scoring
-- Today is now more review-aware, more personally explained, date-keyed by local study day, and able to surface completed-chapter capstones, but recommendation logic is still intentionally simple and deterministic rather than adaptive or SRS-scheduled
+- Today is now more review-aware, more personally explained, date-keyed by local study day, able to surface completed-chapter capstones, and lightly steered by the local focus mode for support/bonus tie-breaks, but recommendation logic is still intentionally deterministic rather than AI-driven or SRS-scheduled
 - Completed capstones can now surface as optional Today recombination rereads through the same capstone player without entering the finite core daily plan
 - Capstone content breadth now covers the full chapter spine: production capstone content covers chapters 1-10 / packs 1-50, with chapter 10 kept to recognition-safe plain-style comprehension
 - Chapter 1 now has one naturalized bonus capstone variant, gated behind the exact-source closeout and counted separately from primary chapter coverage
@@ -449,14 +457,14 @@
 - Daily-session rollover uses the user's device clock with an America/New_York 3 AM study-day boundary; there is no server clock, account sync, or cross-device validation
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
-- Settings is intentionally small; there is still no broader preferences system beyond reset controls and audio status
+- Settings is intentionally small; it now has a local focus-mode preference that affects only deterministic Today/Missions support and bonus tie-breaks
 - No account, sync, backend, analytics, or CMS
 - No automated tests are present in the inspected slice
 
 ## Next Recommended Slices
 
-1. Implement Feature 3B from `NEXT_FEATURE_PLAN.md`: add the mistake explainer drawer to grammar missions using deterministic explanations where available.
-2. Keep Feature 3C ready after grammar mission wiring lands so Review retries can reuse the same explanation drawer without changing Review queue semantics.
+1. Implement Feature 6A from `NEXT_FEATURE_PLAN.md`: decide and document the controlled scenario-sim data model before building the first scenario player.
+2. Keep Feature 6B ready after the scenario model decision lands if scenario-sim work remains the priority.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import { SurfaceCard } from '../../../components/layout/PageShell';
 import type { ExampleSentence, Mission, ReadingCheck } from '../../../lib/content/types';
+import { getReadingMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
   resolveContinueStepIndex,
@@ -248,6 +250,14 @@ function ReadingCheckCard({
   const [feedback, setFeedback] = useState<ReadingCheckFeedback>(null);
   const hasSubmitted = feedback !== null;
   const showReading = hasDistinctReading(example.japanese, example.reading);
+  const mistakeExplanation =
+    feedback === 'incorrect'
+      ? getReadingMistakeExplanation({
+          check,
+          example,
+          learnerAnswer: selectedChoice,
+        })
+      : null;
 
   function submitCheck() {
     if (!selectedChoice) {
@@ -356,6 +366,10 @@ function ReadingCheckCard({
               : `The best match here is: ${check.answer}`}
           </p>
         </div>
+      ) : null}
+
+      {mistakeExplanation ? (
+        <MistakeExplanationDrawer explanation={mistakeExplanation} />
       ) : null}
 
       {hasSubmitted ? (

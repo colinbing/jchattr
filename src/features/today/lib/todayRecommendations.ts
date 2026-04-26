@@ -14,6 +14,7 @@ import {
   getWeakPointList,
   type WeakPointStore,
 } from '../../../lib/progress/weakPoints';
+import type { StudyFocusMode } from '../../../lib/settings/studyPreferences';
 import type { MissionSessionMode } from '../../missions/lib/missionSession';
 import { selectReviewBatch } from '../../review/lib/reviewBatch';
 
@@ -25,6 +26,11 @@ const URGENT_WEAK_POINT_COUNT = 3;
 const REPEATED_MISS_THRESHOLD = 2;
 
 export type TodayRecommendationPriority = 'core' | 'bonus';
+
+export type TodayRecommendationOptions = {
+  limit?: number;
+  studyFocusMode?: StudyFocusMode;
+};
 
 export type TodayRecommendation =
   | {
@@ -84,8 +90,10 @@ export function deriveTodayRecommendations(
   weakPoints: WeakPointStore,
   reviewLoopProgress: ReviewLoopProgress,
   capstoneProgress?: CapstoneProgressRecord,
-  limit = TODAY_RECOMMENDATION_LIMIT,
+  options: TodayRecommendationOptions = {},
 ): TodayRecommendation[] {
+  const limit = options.limit ?? TODAY_RECOMMENDATION_LIMIT;
+  const studyFocusMode = options.studyFocusMode ?? 'balanced';
   const recommendations: TodayRecommendation[] = [];
   const missionContextById = createMissionRecommendationContextById(starterContent);
   const selectedMissionIds = new Set<string>();
@@ -168,6 +176,7 @@ export function deriveTodayRecommendations(
     selectedMissionIds,
     reviewAwareness,
     missionContextById,
+    studyFocusMode,
     nextMission
       ? { mission: nextMission, source: 'next-step' }
       : getFallbackReinforcementAnchor(
@@ -213,6 +222,14 @@ export function deriveTodayRecommendations(
         return leftWasReviewed ? 1 : -1;
       }
 
+      const focusDelta =
+        getStudyFocusMissionScore(right, studyFocusMode, reviewAwareness, missionContextById) -
+        getStudyFocusMissionScore(left, studyFocusMode, reviewAwareness, missionContextById);
+
+      if (focusDelta !== 0) {
+        return focusDelta;
+      }
+
       const leftProgress = getMissionProgressEntry(missionProgress, left.id);
       const rightProgress = getMissionProgressEntry(missionProgress, right.id);
 
@@ -244,16 +261,23 @@ export function deriveTodayRecommendations(
 
     const progress = getMissionProgressEntry(missionProgress, mission.id);
     const slotLabel = progress.completionCount === 0 ? 'Keep moving' : 'Light pass';
+    const focusReason = buildStudyFocusReason(
+      mission,
+      studyFocusMode,
+      reviewAwareness,
+      missionContextById,
+    );
+    const baseReason =
+      progress.completionCount === 0
+        ? 'This is another open step if you want to keep the path moving.'
+        : 'This has had lighter practice than your other completed missions.';
 
     recommendations.push({
       id: mission.id,
       kind: 'mission',
       slotLabel,
       title: mission.title,
-      reason:
-        progress.completionCount === 0
-          ? 'This is another open step if you want to keep the path moving.'
-          : 'This has had lighter practice than your other completed missions.',
+      reason: withStudyFocusReason(baseReason, focusReason),
       ctaLabel: 'Open mission',
       to: `/mission/${mission.id}`,
       mission,
@@ -716,6 +740,7 @@ function selectSupportMission(
   selectedMissionIds: Set<string>,
   reviewAwareness: ReviewAwareness,
   missionContextById: Record<string, MissionRecommendationContext>,
+  studyFocusMode: StudyFocusMode,
   anchor: ReinforcementAnchor | null,
 ): SupportMissionSelection | null {
   if (reviewAwareness.isUrgent) {
@@ -765,6 +790,14 @@ function selectSupportMission(
         return relatednessDelta;
       }
 
+      const focusDelta =
+        getStudyFocusMissionScore(right, studyFocusMode, reviewAwareness, missionContextById) -
+        getStudyFocusMissionScore(left, studyFocusMode, reviewAwareness, missionContextById);
+
+      if (focusDelta !== 0) {
+        return focusDelta;
+      }
+
       const leftProgress = getMissionProgressEntry(missionProgress, left.id);
       const rightProgress = getMissionProgressEntry(missionProgress, right.id);
 
@@ -781,23 +814,36 @@ function selectSupportMission(
 
       return leftTime - rightTime;
     })[0];
+    const focusReason = buildStudyFocusReason(
+      mission,
+      studyFocusMode,
+      reviewAwareness,
+      missionContextById,
+    );
+    const baseReason = buildReinforcementReason(
+      mission,
+      missionProgress,
+      reviewAwareness,
+      missionContextById,
+      anchor,
+    );
 
     return {
       mission,
       slotLabel: 'Reinforce',
-      reason: buildReinforcementReason(
-        mission,
-        missionProgress,
-        reviewAwareness,
-        missionContextById,
-        anchor,
-      ),
+      reason: withStudyFocusReason(baseReason, focusReason),
       ctaLabel: 'Open short pass',
       sessionMode: 'reinforce',
     };
   }
 
-  const mission = fallbackMissions[0] ?? null;
+  const mission = [...fallbackMissions].sort((left, right) => {
+    const focusDelta =
+      getStudyFocusMissionScore(right, studyFocusMode, reviewAwareness, missionContextById) -
+      getStudyFocusMissionScore(left, studyFocusMode, reviewAwareness, missionContextById);
+
+    return focusDelta !== 0 ? focusDelta : 0;
+  })[0] ?? null;
 
   if (!mission) {
     return null;
@@ -805,19 +851,26 @@ function selectSupportMission(
 
   const progress = getMissionProgressEntry(missionProgress, mission.id);
   const isCompleted = progress.completionCount > 0;
+  const focusReason = buildStudyFocusReason(
+    mission,
+    studyFocusMode,
+    reviewAwareness,
+    missionContextById,
+  );
+  const baseReason = isCompleted
+    ? buildReinforcementReason(
+        mission,
+        missionProgress,
+        reviewAwareness,
+        missionContextById,
+        anchor,
+      )
+    : buildOpenSupportReason(mission, anchor, missionContextById);
 
   return {
     mission,
     slotLabel: isCompleted ? 'Light pass' : 'Keep moving',
-    reason: isCompleted
-      ? buildReinforcementReason(
-          mission,
-          missionProgress,
-          reviewAwareness,
-          missionContextById,
-          anchor,
-        )
-      : buildOpenSupportReason(mission, anchor, missionContextById),
+    reason: withStudyFocusReason(baseReason, focusReason),
     ctaLabel:
       isCompleted ? 'Open short pass' : 'Open mission',
     sessionMode: isCompleted ? 'reinforce' : 'default',
@@ -852,6 +905,112 @@ function buildOpenSupportReason(
   return `This unlocked mission overlaps ${formatTagList(
     relationSummary.sharedTags,
   )}, so it gives the next mission more context.`;
+}
+
+function getStudyFocusMissionScore(
+  mission: Mission,
+  studyFocusMode: StudyFocusMode,
+  reviewAwareness: ReviewAwareness,
+  missionContextById: Record<string, MissionRecommendationContext>,
+) {
+  switch (studyFocusMode) {
+    case 'more-listening':
+      return (mission.type === 'listening' ? 6 : 0) +
+        (mission.targetSkill === 'listening-comprehension' ? 4 : 0);
+    case 'more-output':
+      return (mission.type === 'output' ? 6 : 0) +
+        (mission.targetSkill === 'output-confidence' ? 4 : 0);
+    case 'light-day':
+      return Math.max(0, 10 - mission.estimatedMinutes);
+    case 'class-prep':
+      return getClassPrepMissionScore(mission);
+    case 'weak-points-first': {
+      const weakPointSummary = getRelatedWeakPointSummary(
+        mission,
+        reviewAwareness.weakPointList,
+        missionContextById,
+      );
+
+      return weakPointSummary.directWeakPointCount * 6 +
+        weakPointSummary.relatedWeakPointCount * 3;
+    }
+    case 'balanced':
+      return 0;
+  }
+}
+
+function getClassPrepMissionScore(mission: Mission) {
+  const skillScore =
+    mission.targetSkill === 'sentence-structure' ||
+    mission.targetSkill === 'particles' ||
+    mission.targetSkill === 'verb-forms'
+      ? 4
+      : mission.targetSkill === 'output-confidence'
+        ? 2
+        : 0;
+
+  switch (mission.type) {
+    case 'grammar':
+      return skillScore + 4;
+    case 'output':
+      return skillScore + 3;
+    case 'listening':
+      return skillScore + 2;
+    case 'reading':
+      return skillScore + 1;
+  }
+}
+
+function buildStudyFocusReason(
+  mission: Mission,
+  studyFocusMode: StudyFocusMode,
+  reviewAwareness: ReviewAwareness,
+  missionContextById: Record<string, MissionRecommendationContext>,
+) {
+  if (
+    getStudyFocusMissionScore(
+      mission,
+      studyFocusMode,
+      reviewAwareness,
+      missionContextById,
+    ) <= 0
+  ) {
+    return null;
+  }
+
+  switch (studyFocusMode) {
+    case 'more-listening':
+      return 'More listening nudges this slot toward ear-first practice.';
+    case 'more-output':
+      return 'More output nudges this slot toward active sentence work.';
+    case 'light-day':
+      return 'Light day prefers the shorter useful option here.';
+    case 'class-prep':
+      return 'Class prep prefers practical beginner structure here.';
+    case 'weak-points-first': {
+      const weakPointSummary = getRelatedWeakPointSummary(
+        mission,
+        reviewAwareness.weakPointList,
+        missionContextById,
+      );
+
+      if (weakPointSummary.directWeakPointCount > 0) {
+        return 'Weak points first keeps this tied to an open miss.';
+      }
+
+      if (weakPointSummary.relatedWeakPointCount > 0) {
+        return 'Weak points first keeps this near an open review lane.';
+      }
+
+      return null;
+    }
+    case 'balanced':
+      return null;
+  }
+}
+
+function withStudyFocusReason(reason: string, focusReason: string | null) {
+  return focusReason ? `${focusReason} ${reason}` : reason;
 }
 
 function buildReinforcementReason(
