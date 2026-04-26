@@ -6,6 +6,7 @@ export function AppShell() {
   const location = useLocation();
   const isMissionDetailRoute =
     location.pathname.startsWith('/mission/') || location.pathname.startsWith('/capstone/');
+  const isStudyRoute = isMissionDetailRoute || location.pathname.startsWith('/review');
   const preserveScroll = Boolean(
     (location.state as { preserveScroll?: boolean } | null)?.preserveScroll,
   );
@@ -19,7 +20,15 @@ export function AppShell() {
   }, [location.hash, location.pathname, preserveScroll]);
 
   return (
-    <div className={`app-frame${isMissionDetailRoute ? ' app-frame--mission-detail' : ''}`}>
+    <div
+      className={[
+        'app-frame',
+        isMissionDetailRoute ? 'app-frame--mission-detail' : '',
+        isStudyRoute ? 'app-frame--study-route' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div className="app-shell">
         <aside className="app-shell__sidebar">
           <div className="brand-mark">

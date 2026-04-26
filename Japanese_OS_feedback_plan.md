@@ -785,7 +785,172 @@ Implement the next naturalized capstone expansion slice: add beginner-natural bo
 
 ---
 
-## 8. Historical Launch Prompt
+## 8. Desktop UX Visual Audit And Polish Plan
+
+Date: 2026-04-26.
+
+Scope:
+- Desktop-like in-app browser viewport after the simulated window was enlarged and zoomed out.
+- Main pages: Today, Missions, Progress, Review, Settings.
+- Mission/player routes: grammar, listening, output, reading, scenario, capstone closeout, capstone recombination, naturalized capstone locked state.
+- Stateful surfaces: Review active batch, capstone support reveal, reading post-answer reveal, lower Settings/reset area.
+
+Result:
+- No desktop-only P0 functional blocker was found.
+- The desktop version is usable, but it still reads as a mobile-first app stretched into a desktop frame.
+- The next desktop work should be a presentation/layout polish slice, not a learning-model or content change.
+
+### D1 — Wide viewport framing leaves too much dead space
+
+State: Next slice.
+Priority: P1.
+
+Observed:
+- On the desktop-like viewport, the app content stays constrained to the left/middle while a large unused right-side area remains visually dominant.
+- The shell can show a clipped duplicate edge of the app at extreme zoom/window combinations.
+
+Why it matters:
+- The desktop app feels less intentional than the mobile app, even though the core surfaces work.
+- The learner's attention is pulled toward empty framing instead of the current task.
+
+Fix direction:
+- Keep mobile shell behavior unchanged.
+- At desktop breakpoints, make the app frame feel intentionally centered and bounded.
+- Audit `.app-frame`, `.app-shell`, `--shell-max-width`, and background/overflow behavior.
+- Prefer a calm full-page desktop workspace over decorative side duplication or large dead zones.
+
+Acceptance checks:
+- Today, Missions, Progress, Review, Settings, and mission routes render without horizontal overflow at desktop widths.
+- No clipped duplicate app column appears at desktop zoom/window sizes.
+- Mobile viewport screenshots remain visually equivalent to the current mobile baseline.
+
+### D2 — Left brand rail is too dominant during study
+
+State: Planned.
+Priority: P2.
+
+Observed:
+- The persistent `Short daily loops, built to stick` rail is polished, but it competes with active learning tasks on every route.
+- In mission and Review routes, it feels more like a marketing panel than task chrome.
+
+Why it matters:
+- Desktop has more room, but the active task should still own attention.
+- The current rail uses a lot of high-contrast visual mass for static copy.
+
+Fix direction:
+- Keep the rail on desktop, but compact it after the landing context:
+  - smaller brand card,
+  - less prominent headline,
+  - or mission-mode variant focused on navigation/status rather than product pitch.
+- Do not remove the existing mobile bottom navigation behavior.
+
+Acceptance checks:
+- Mission, Review, and capstone routes place visual emphasis on the active card, not the brand rail.
+- Navigation remains obvious.
+- Today can retain more brand/context than mission routes if that feels better.
+
+### D3 — Mission workspaces underuse desktop width
+
+State: Planned.
+Priority: P2.
+
+Observed:
+- Grammar, output, scenario, reading, and capstone players remain largely single-column.
+- This preserves focus, but on desktop it creates avoidable empty space and long vertical stacks.
+
+Why it matters:
+- Desktop can improve task ergonomics without making the UI busier.
+- Support details, progress, answer pieces, and feedback can sit beside the active task where it helps.
+
+Fix direction:
+- Add desktop-only workspace layouts with narrow support rails where useful.
+- Good candidates:
+  - Grammar: lesson/task card plus compact progress/support rail.
+  - Output/scenario: prompt/input primary column plus answer pieces/support rail.
+  - Reading/capstone: line/check primary column plus reveal/support/progress rail after support is opened.
+- Avoid making desktop cards nested or dashboard-like.
+- Preserve the current single-column mobile mission players.
+
+Acceptance checks:
+- Desktop mission players feel intentionally spacious but still single-focus.
+- No mission task requires more scrolling than before for its primary action.
+- Mobile screenshots remain unchanged aside from any intentionally shared copy fixes.
+
+### D4 — Review active batch is too narrow on desktop
+
+State: Planned.
+Priority: P2.
+
+Observed:
+- Review landing uses a good two-card desktop layout.
+- Once a batch starts, the active retry workspace becomes narrow, with answer choices wrapping more tightly than necessary.
+
+Why it matters:
+- Review is a high-friction moment; desktop should make it feel controlled and easy to scan.
+
+Fix direction:
+- Give active Review batch a desktop-specific max width or two-column task/support layout.
+- Keep the local Today navigation and no-global-mobile-nav semantics intact.
+- Do not change Review queue, scoring, weak-point clearing, or batch sizing.
+
+Acceptance checks:
+- Active Review retries have enough width for choices and typed output.
+- Miss feedback and mistake drawer remain close to the answer.
+- Review mobile active-batch layout remains unchanged.
+
+### D5 — Reading post-answer action order invites skipping support
+
+State: Planned.
+Priority: P2.
+
+Observed:
+- After a reading answer, `Next check` appears before the feedback, meaning, notice text, and vocab support.
+
+Why it matters:
+- The flow technically works, but it invites the learner to advance before reading the explanatory payoff.
+
+Fix direction:
+- Move the primary next action after the revealed feedback/support on reading routes.
+- Consider the same action-order audit for capstones if needed.
+- Do not change reading scoring, Review pressure, or answer persistence.
+
+Acceptance checks:
+- After answering, the learner sees result and support before the next-step CTA.
+- Keyboard/click flow still supports fast movement.
+- Mobile remains readable and does not push the next action excessively far down.
+
+### D6 — Missions chapter switcher still feels mobile-born on desktop
+
+State: Deferred.
+Priority: P3.
+
+Observed:
+- The horizontal chapter switcher works on desktop, but it behaves like a mobile carousel.
+
+Why it matters:
+- The Missions page is usable now, and changing the chapter browser risks larger layout churn.
+
+Fix direction:
+- Defer until after D1-D5.
+- If revisited, consider a denser desktop chapter grid or left-side chapter list while keeping the next mission and Review-first behavior prominent.
+
+### Recommended Desktop Polish Sequence
+
+1. Shell/framing plus mission-mode rail compacting.
+2. Active Review desktop width.
+3. Desktop mission workspace support rails for output/scenario and reading/capstone first.
+4. Reading post-answer action order.
+5. Optional Missions desktop chapter browser revision.
+
+### Recommended Next Slice
+
+```text
+Implement Desktop Polish 1 from Japanese_OS_feedback_plan.md: fix desktop shell/framing and compact the desktop brand rail on mission/review/capstone routes while preserving mobile behavior. Do not change learning semantics, recommendations, content, or scoring. Run typecheck/build and manually inspect desktop and mobile-like viewports across Today, Missions, Review, one mission route, and one capstone route.
+```
+
+---
+
+## 9. Historical Launch Prompt
 
 This prompt launched the first mobile core-loop friction cleanup.
 It is preserved for traceability, but it is not the current recommended next prompt.
@@ -836,7 +1001,7 @@ Summarize changed files, explain any tradeoffs, list verification commands run, 
 
 ---
 
-## 9. Historical Follow-Up Slice
+## 10. Historical Follow-Up Slice
 
 This follow-up slice was completed through later Phase 4 mobile mission-flow cleanup work.
 It is preserved as historical planning context, not as the active queue.

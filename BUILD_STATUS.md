@@ -483,10 +483,11 @@
 
 ## Next Recommended Slices
 
-1. Expand naturalized capstone bonus stories for chapters 2-4 in a small source-auditable batch, preserving exact-source capstones as the default first-pass closeout.
-2. Continue deterministic mistake-explanation tuning from observed misses, especially particles, typed output token-pattern misses, and reading/listening confusion copy, before relying on optional AI fallback.
-3. Consider optional AI proxy work only after deterministic gaps are clear. Keep no browser API key exposure, add one proxy boundary at a time, and prefer typed-output coaching or review-only content drafting support before realtime voice.
-4. Run another short mobile acceptance pass after the naturalized capstone batch to catch new reading-support or completion-handoff friction.
+1. Implement Desktop Polish 1 from `Japanese_OS_feedback_plan.md`: fix desktop shell/framing and compact the desktop brand rail on mission/review/capstone routes while preserving mobile behavior.
+2. Expand naturalized capstone bonus stories for chapters 2-4 in a small source-auditable batch, preserving exact-source capstones as the default first-pass closeout.
+3. Continue deterministic mistake-explanation tuning from observed misses, especially particles, typed output token-pattern misses, and reading/listening confusion copy, before relying on optional AI fallback.
+4. Consider optional AI proxy work only after deterministic gaps are clear. Keep no browser API key exposure, add one proxy boundary at a time, and prefer typed-output coaching or review-only content drafting support before realtime voice.
+5. Run another short mobile acceptance pass after the desktop polish and naturalized capstone batch to catch new viewport or completion-handoff friction.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

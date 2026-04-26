@@ -1201,12 +1201,18 @@ Feature 1-8 are now implemented and verified. The next phase should stabilize th
    - Keep every naturalized line source-auditable with source examples and/or source capstone line IDs.
    - Run the full content QA suite and include content audits.
 
-4. **Deterministic explainer tuning**
+4. **Desktop UX polish**
+   - Fix desktop shell/framing and reduce static brand-rail dominance on study routes.
+   - Add desktop-only workspace improvements only after shell/framing is stable.
+   - Preserve current mobile behavior and single-focus mission semantics.
+   - Status: planned on 2026-04-26 from the desktop visual audit. Detailed findings and acceptance criteria live in `Japanese_OS_feedback_plan.md`.
+
+5. **Deterministic explainer tuning**
    - Improve local mistake explanations from observed misses before relying on AI fallback.
    - Prioritize particles, output token-pattern misses, and reading/listening confusion copy.
    - Keep deterministic scoring and Review semantics unchanged.
 
-5. **Optional AI proxy work**
+6. **Optional AI proxy work**
    - Start only after deterministic gaps are known from the audit.
    - Build one proxy boundary at a time, with no browser API key exposure.
    - Recommended first proxy is typed-output coaching or capstone draft generation support, not realtime voice.
@@ -1215,7 +1221,7 @@ Feature 1-8 are now implemented and verified. The next phase should stabilize th
 ### Next Best Phase Prompt
 
 ```text
-Implement the next naturalized capstone expansion slice: add beginner-natural bonus capstones for chapters 2-4 only, preserving exact-source capstones as the default first-pass version. Keep every line source-auditable, avoid hidden N4+ grammar, run typecheck/build plus standard content reports, and include a content audit.
+Implement Desktop Polish 1 from Japanese_OS_feedback_plan.md: fix desktop shell/framing and compact the desktop brand rail on mission/review/capstone routes while preserving mobile behavior. Do not change learning semantics, recommendations, content, or scoring. Run typecheck/build and manually inspect desktop and mobile-like viewports across Today, Missions, Review, one mission route, and one capstone route.
 ```
 
 ## Recommended Implementation Order
