@@ -189,6 +189,29 @@ If a creative idea appears mid-build:
 - Prefer vertical slices.
 - Finish the current slice before widening scope.
 
+## AI Content Drafting
+
+For any AI-assisted Japanese content drafting, follow
+`PROMPTS/AI_CONTENT_DRAFTING_PROTOCOL.md`.
+
+Key boundary:
+- AI may draft review-only content.
+- AI drafts must stay outside `src/content/` until human review is complete.
+- Production Japanese requires source traceability, schema validation, and content QA.
+- Runtime AI is not allowed unless a later feature explicitly implements it behind the documented safeguards.
+- Runtime mistake-explanation fallback is disabled by default and must use a proxy endpoint, not a browser-exposed OpenAI key.
+- Runtime typed-output coaching is also disabled by default and can only offer post-check advice after local evaluation.
+- Voice coach work is a spike only. See `PROMPTS/VOICE_COACH_SPIKE.md`; the local prototype route is disabled unless `VITE_VOICE_COACH_SPIKE_ENABLED=true`.
+
+Current review-only helper:
+
+```bash
+npm run draft:capstone -- --chapter=ch01 --packs=1-5 --examples=ex-colin-desu,ex-student-desu --print-source-packet
+```
+
+Set `OPENAI_API_KEY` only when intentionally generating a draft. Draft files are written under
+`drafts/ai-content/capstones/` or `/tmp/japanese-os-ai-drafts/capstones/`, never production content.
+
 ---
 
 ## Definition of a Good Codex Session

@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getListeningAudioStatus } from '../../../lib/audio/listeningAudioAssets';
 import { getStarterContent } from '../../../lib/content/loader';
+import { getAiMistakeExplanationConfigStatus } from '../../../lib/feedback/aiMistakeExplanations';
+import { getAiOutputCoachConfigStatus } from '../../../lib/feedback/aiOutputCoach';
 import { useCapstoneProgress } from '../../../lib/progress/capstoneProgress';
 import { useContinueState } from '../../../lib/progress/continueState';
 import { useMissionProgress } from '../../../lib/progress/missionProgress';
@@ -12,6 +14,8 @@ import {
   type StudyDataStoreId,
 } from '../../../lib/settings/studyData';
 import {
+  READING_DISPLAY_MODE_OPTIONS,
+  setReadingDisplayMode,
   setStudyFocusMode,
   STUDY_FOCUS_MODE_OPTIONS,
   useStudyPreferences,
@@ -33,14 +37,23 @@ export function SettingsPage() {
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
   const studyPreferences = useStudyPreferences();
+  const aiMistakeExplanationStatus = getAiMistakeExplanationConfigStatus();
+  const aiOutputCoachStatus = getAiOutputCoachConfigStatus();
   const [pendingResetId, setPendingResetId] = useState<StudyDataStoreId | null>(null);
   const [lastResetMessage, setLastResetMessage] = useState<string | null>(null);
   const [lastFocusMessage, setLastFocusMessage] = useState<string | null>(null);
+  const [lastReadingDisplayMessage, setLastReadingDisplayMessage] = useState<string | null>(
+    null,
+  );
   const weakPointList = getWeakPointList(weakPoints);
   const audioStatus = getListeningAudioStatus();
   const currentFocusOption =
     STUDY_FOCUS_MODE_OPTIONS.find((option) => option.id === studyPreferences.focusMode) ??
     STUDY_FOCUS_MODE_OPTIONS[0];
+  const currentReadingDisplayOption =
+    READING_DISPLAY_MODE_OPTIONS.find(
+      (option) => option.id === studyPreferences.readingDisplayMode,
+    ) ?? READING_DISPLAY_MODE_OPTIONS[0];
   const totalCompletionCount = Object.values(
     missionProgress.completionCountsByMissionId,
   ).reduce((sum, count) => sum + count, 0);
@@ -226,6 +239,89 @@ export function SettingsPage() {
               {lastFocusMessage}
             </p>
           ) : null}
+        </div>
+      </SurfaceCard>
+
+      <SurfaceCard
+        title="Reading display"
+        description="Choose how much kana support appears in reading and capstone lines."
+      >
+        <div className="settings-focus">
+          <div className="settings-focus__current">
+            <span className="mission-card__skill-label">Current display</span>
+            <strong>{currentReadingDisplayOption.label}</strong>
+            <p>{currentReadingDisplayOption.summary}</p>
+          </div>
+          <div
+            className="settings-focus__options"
+            role="radiogroup"
+            aria-label="Reading display mode"
+          >
+            {READING_DISPLAY_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                className={`settings-focus-option${
+                  option.id === studyPreferences.readingDisplayMode
+                    ? ' settings-focus-option--selected'
+                    : ''
+                }`}
+                role="radio"
+                aria-checked={option.id === studyPreferences.readingDisplayMode}
+                onClick={() => {
+                  setReadingDisplayMode(option.id);
+                  setLastReadingDisplayMessage(`Reading display saved: ${option.label}.`);
+                }}
+              >
+                <span className="settings-focus-option__label">{option.label}</span>
+              </button>
+            ))}
+          </div>
+          {lastReadingDisplayMessage ? (
+            <p className="settings-feedback" role="status" aria-live="polite">
+              {lastReadingDisplayMessage}
+            </p>
+          ) : null}
+        </div>
+      </SurfaceCard>
+
+      <SurfaceCard
+        title="AI explanation fallback"
+        description="Optional fallback only. Deterministic explanations stay first."
+      >
+        <div className="settings-focus">
+          <div className="settings-focus__current">
+            <span className="mission-card__skill-label">Runtime status</span>
+            <strong>{aiMistakeExplanationStatus.configured ? 'Configured' : 'Off'}</strong>
+            <p>
+              {aiMistakeExplanationStatus.configured
+                ? 'A fallback endpoint is configured for misses without deterministic explanations.'
+                : 'No AI fallback endpoint is active. Current mistake drawers use deterministic local explanations.'}
+            </p>
+          </div>
+          <p className="settings-feedback">
+            AI fallback copy cannot mark answers correct or incorrect; mission checks remain local and deterministic.
+          </p>
+        </div>
+      </SurfaceCard>
+
+      <SurfaceCard
+        title="AI output coach"
+        description="Optional post-check feedback only. Local scoring stays authoritative."
+      >
+        <div className="settings-focus">
+          <div className="settings-focus__current">
+            <span className="mission-card__skill-label">Runtime status</span>
+            <strong>{aiOutputCoachStatus.configured ? 'Configured' : 'Off'}</strong>
+            <p>
+              {aiOutputCoachStatus.configured
+                ? 'A typed-output coaching endpoint is configured for post-check feedback.'
+                : 'No AI output coach endpoint is active. Typed output is scored locally with deterministic patterns.'}
+            </p>
+          </div>
+          <p className="settings-feedback">
+            AI output coaching can suggest a retry after local evaluation, but it cannot change whether the answer passed.
+          </p>
         </div>
       </SurfaceCard>
 

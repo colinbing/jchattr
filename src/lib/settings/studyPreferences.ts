@@ -13,8 +13,19 @@ export type StudyFocusMode =
   | 'class-prep'
   | 'weak-points-first';
 
+export type ReadingDisplayMode =
+  | 'guided-reveal'
+  | 'kana-support'
+  | 'japanese-only';
+
 export type StudyFocusModeOption = {
   id: StudyFocusMode;
+  label: string;
+  summary: string;
+};
+
+export type ReadingDisplayModeOption = {
+  id: ReadingDisplayMode;
   label: string;
   summary: string;
 };
@@ -22,6 +33,7 @@ export type StudyFocusModeOption = {
 export interface StudyPreferencesRecord {
   version: number;
   focusMode: StudyFocusMode;
+  readingDisplayMode: ReadingDisplayMode;
   updatedAt: string | null;
 }
 
@@ -58,13 +70,35 @@ export const STUDY_FOCUS_MODE_OPTIONS: StudyFocusModeOption[] = [
   },
 ];
 
+export const READING_DISPLAY_MODE_OPTIONS: ReadingDisplayModeOption[] = [
+  {
+    id: 'guided-reveal',
+    label: 'Guided reveal',
+    summary: 'Keep the current read-first flow, then show reading support after you answer.',
+  },
+  {
+    id: 'kana-support',
+    label: 'Kana support',
+    summary: 'Show kana reading support with the Japanese line before the check.',
+  },
+  {
+    id: 'japanese-only',
+    label: 'Japanese only',
+    summary: 'Hide reading support and keep the line visually cleaner.',
+  },
+];
+
 const STUDY_FOCUS_MODE_IDS = new Set<StudyFocusMode>(
   STUDY_FOCUS_MODE_OPTIONS.map((option) => option.id),
+);
+const READING_DISPLAY_MODE_IDS = new Set<ReadingDisplayMode>(
+  READING_DISPLAY_MODE_OPTIONS.map((option) => option.id),
 );
 
 const DEFAULT_STUDY_PREFERENCES: StudyPreferencesRecord = {
   version: STUDY_PREFERENCES_VERSION,
   focusMode: 'balanced',
+  readingDisplayMode: 'guided-reveal',
   updatedAt: null,
 };
 
@@ -116,6 +150,21 @@ export function setStudyFocusMode(focusMode: StudyFocusMode, updatedAt = new Dat
   const nextPreferences = parseStudyPreferences({
     ...currentPreferences,
     focusMode,
+    updatedAt: updatedAt.toISOString(),
+  });
+
+  writeStudyPreferences(nextPreferences);
+  return nextPreferences;
+}
+
+export function setReadingDisplayMode(
+  readingDisplayMode: ReadingDisplayMode,
+  updatedAt = new Date(),
+) {
+  const currentPreferences = readStudyPreferences();
+  const nextPreferences = parseStudyPreferences({
+    ...currentPreferences,
+    readingDisplayMode,
     updatedAt: updatedAt.toISOString(),
   });
 
@@ -176,6 +225,7 @@ function parseStudyPreferences(rawValue: unknown): StudyPreferencesRecord {
   return {
     version: STUDY_PREFERENCES_VERSION,
     focusMode: sanitizeFocusMode(rawValue.focusMode),
+    readingDisplayMode: sanitizeReadingDisplayMode(rawValue.readingDisplayMode),
     updatedAt: sanitizeTimestamp(rawValue.updatedAt),
   };
 }
@@ -184,6 +234,13 @@ function sanitizeFocusMode(value: unknown): StudyFocusMode {
   return typeof value === 'string' && STUDY_FOCUS_MODE_IDS.has(value as StudyFocusMode)
     ? (value as StudyFocusMode)
     : DEFAULT_STUDY_PREFERENCES.focusMode;
+}
+
+function sanitizeReadingDisplayMode(value: unknown): ReadingDisplayMode {
+  return typeof value === 'string' &&
+    READING_DISPLAY_MODE_IDS.has(value as ReadingDisplayMode)
+    ? (value as ReadingDisplayMode)
+    : DEFAULT_STUDY_PREFERENCES.readingDisplayMode;
 }
 
 function sanitizeTimestamp(value: unknown) {

@@ -5,7 +5,7 @@ import {
 } from '../../../lib/progress/capstoneProgress';
 import {
   buildContentNote,
-  formatMissionType,
+  formatMissionTypeForMission,
   formatTargetSkill,
   MissionLibraryCard,
   type MissionLibraryCardData,
@@ -52,7 +52,7 @@ export function MissionChapterCard({
               <p className="mission-focus-card__eyebrow">Next mission in this chapter</p>
               <h4 className="mission-chapter__focus-title">{nextMission.mission.title}</h4>
               <p className="mission-chapter__focus-body">
-                {formatMissionType(nextMission.mission.type)} ·{' '}
+                {formatMissionTypeForMission(nextMission.mission)} ·{' '}
                 {formatTargetSkill(nextMission.mission.targetSkill)} ·{' '}
                 {buildContentNote(nextMission.mission, starterContent)}
               </p>

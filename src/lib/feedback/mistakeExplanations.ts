@@ -16,6 +16,8 @@ export type MistakeExplanation = {
   likelyConfusion?: string;
   explanation: string;
   retryHint: string;
+  source?: 'deterministic' | 'ai-fallback';
+  safetyNote?: string;
 };
 
 export type GrammarMistakeExplanationContext = {
@@ -268,9 +270,64 @@ export function getGrammarMistakeExplanation(
   context: GrammarMistakeExplanationContext,
 ): MistakeExplanation {
   return (
+    getSpecificGrammarDistractorExplanation(context) ??
     getParticleMistakeExplanation(context) ??
     getDrillTypeMistakeExplanation(context.drill, context.lesson)
   );
+}
+
+function getSpecificGrammarDistractorExplanation({
+  drill,
+  learnerAnswer,
+}: GrammarMistakeExplanationContext): MistakeExplanation | null {
+  if (!learnerAnswer) {
+    return null;
+  }
+
+  const normalizedAnswer = normalizeJapaneseText(drill.answer);
+  const normalizedLearnerAnswer = normalizeJapaneseText(learnerAnswer);
+  const answerHasQuestionMarker = normalizedAnswer.endsWith('か');
+  const learnerHasQuestionMarker = normalizedLearnerAnswer.includes('か');
+
+  if (!answerHasQuestionMarker && learnerHasQuestionMarker) {
+    return {
+      title: 'Do not add か unless the line is a question.',
+      correctPattern: drill.answer,
+      likelyConfusion: 'The selected answer turns the statement into a question-like line.',
+      explanation:
+        'か belongs at the end of a polite question. If the prompt wants a statement, keep the sentence ending as です or the target verb form without か.',
+      retryHint: 'First decide whether the English prompt is asking or stating, then check the final ending.',
+    };
+  }
+
+  if (answerHasQuestionMarker && !learnerHasQuestionMarker) {
+    return {
+      title: 'Add か when the prompt is asking.',
+      correctPattern: drill.answer,
+      likelyConfusion: 'The selected answer is a statement, but the prompt needs a question.',
+      explanation:
+        'In this beginner polite style, か at the end turns the sentence into a question.',
+      retryHint: 'Keep the statement structure, then add か at the end if the prompt asks something.',
+    };
+  }
+
+  if (
+    normalizedAnswer.includes('は') &&
+    normalizedLearnerAnswer.includes('は') &&
+    normalizedAnswer !== normalizedLearnerAnswer
+  ) {
+    return {
+      title: 'Keep the topic and comment in the practiced order.',
+      correctPattern: drill.answer,
+      likelyConfusion:
+        'The selected answer has は, but the topic/comment relationship does not match the target sentence.',
+      explanation:
+        'は marks the topic, and the rest of the sentence comments on that topic. In these early drills, changing which chunk comes before は changes what the sentence is about.',
+      retryHint: 'Match the topic from the English prompt first, then put は after that topic.',
+    };
+  }
+
+  return null;
 }
 
 export function getParticleMistakeExplanation(

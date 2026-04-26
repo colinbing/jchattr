@@ -106,6 +106,7 @@ export function CapstoneDetailPage() {
         story={story}
         lines={lines}
         checksByLineId={checksByLineId}
+        vocabItems={starterContent.vocabItems}
         mode={capstoneMode}
       />
     </PageShell>

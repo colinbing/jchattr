@@ -84,6 +84,33 @@ export interface OutputTask {
   };
 }
 
+export type ScenarioSetting = 'classroom' | 'store' | 'meetup' | 'travel' | 'health' | 'home';
+export type ScenarioMoveType = 'choose' | 'type' | 'build';
+
+export interface ScenarioStep {
+  id: string;
+  actor: 'system' | 'learner';
+  moveType: ScenarioMoveType;
+  prompt: string;
+  promptJapanese?: string;
+  supportExampleIds: string[];
+  acceptableAnswers: string[];
+  requiredTokenPatterns?: string[];
+  weakPointItemId?: string;
+}
+
+export interface ScenarioMissionMetadata {
+  kind: 'scenario';
+  scenarioId: string;
+  setting: ScenarioSetting;
+  communicativeGoal: string;
+  sourcePackIds: number[];
+  grammarLessonIds: string[];
+  vocabIds: string[];
+  exampleIds: string[];
+  steps: ScenarioStep[];
+}
+
 export interface ReadingCheck {
   id: string;
   exampleId: string;
@@ -146,6 +173,7 @@ export interface Mission {
   unlockRules?: MissionUnlockRules;
   outputTasks?: OutputTask[];
   readingChecks?: ReadingCheck[];
+  scenario?: ScenarioMissionMetadata;
 }
 
 export interface ContentCollection {

@@ -13,6 +13,8 @@ const targetSkillSchema = z.enum([
 const listeningDifficultySchema = z.enum(['easy', 'medium']);
 const capstoneLineStyleSchema = z.enum(['source-exact', 'naturalized']);
 const capstoneStoryVariantSchema = z.enum(['source-exact', 'naturalized']);
+const scenarioSettingSchema = z.enum(['classroom', 'store', 'meetup', 'travel', 'health', 'home']);
+const scenarioMoveTypeSchema = z.enum(['choose', 'type', 'build']);
 const vocabPartOfSpeechSchema = z.enum([
   'pronoun',
   'noun',
@@ -89,6 +91,30 @@ export const outputTaskSchema = z.object({
       tokenPatterns: z.array(z.array(nonEmptyStringSchema).min(1)).min(1).optional(),
     })
     .optional(),
+});
+
+export const scenarioStepSchema = z.object({
+  id: idSchema,
+  actor: z.enum(['system', 'learner']),
+  moveType: scenarioMoveTypeSchema,
+  prompt: nonEmptyStringSchema,
+  promptJapanese: nonEmptyStringSchema.optional(),
+  supportExampleIds: z.array(idSchema).min(1),
+  acceptableAnswers: z.array(nonEmptyStringSchema).min(1),
+  requiredTokenPatterns: z.array(nonEmptyStringSchema).min(1).optional(),
+  weakPointItemId: idSchema.optional(),
+});
+
+export const scenarioMissionMetadataSchema = z.object({
+  kind: z.literal('scenario'),
+  scenarioId: idSchema,
+  setting: scenarioSettingSchema,
+  communicativeGoal: nonEmptyStringSchema,
+  sourcePackIds: z.array(z.number().int().positive()).min(1),
+  grammarLessonIds: z.array(idSchema).min(1),
+  vocabIds: z.array(idSchema).min(1),
+  exampleIds: z.array(idSchema).min(1),
+  steps: z.array(scenarioStepSchema).min(1),
 });
 
 export const readingCheckSchema = z
@@ -174,6 +200,7 @@ export const missionSchema = z.object({
   unlockRules: missionUnlockRulesSchema.optional(),
   outputTasks: z.array(outputTaskSchema).min(1).optional(),
   readingChecks: z.array(readingCheckSchema).min(1).optional(),
+  scenario: scenarioMissionMetadataSchema.optional(),
 }).superRefine((mission, context) => {
   if (mission.type === 'output' && !mission.outputTasks?.length) {
     context.addIssue({
@@ -188,6 +215,14 @@ export const missionSchema = z.object({
       code: z.ZodIssueCode.custom,
       path: ['readingChecks'],
       message: 'Reading missions must include at least one reading check.',
+    });
+  }
+
+  if (mission.scenario && mission.type !== 'output') {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['scenario'],
+      message: 'Scenario metadata is only supported on output missions.',
     });
   }
 });

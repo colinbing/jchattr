@@ -899,10 +899,17 @@ Acceptance criteria:
 - They should appear as optional chapter/application practice.
 - No hidden new grammar.
 
+Implementation notes:
+
+- Added five additional structured-output scenario sims alongside the existing class self-introduction scenario, for six total optional application missions.
+- The scenario set now covers early class/self-introduction, meetup planning, store requests, study goals, health check-ins, and travel delay updates.
+- Each scenario uses existing grammar IDs, vocab IDs, output task surfaces, and source example IDs only.
+- Today recommendations still filter scenario missions out of the finite daily core loop; scenarios remain available from Missions as optional application practice.
+
 Next best prompt:
 
 ```text
-Implement Feature 6C from NEXT_FEATURE_PLAN.md: add a small scenario-sim pack across existing N5 lanes, using only covered grammar/vocab. Wire them into Missions as application practice. Run the full content QA suite and include a content audit.
+Implement Feature 7A from NEXT_FEATURE_PLAN.md: add the seen-vocab derivation foundation for reading support display, using existing mission progress/content references only. Do not change reading UI yet. Run typecheck/build and content reports if code changes.
 ```
 
 ---
@@ -934,10 +941,17 @@ Acceptance criteria:
 - Expose a helper that answers whether a vocab id is seen.
 - No UI change yet.
 
+Implementation notes:
+
+- Added `src/lib/progress/seenVocab.ts` with deterministic seen-vocab derivation from completed mission progress.
+- The helper uses explicit mission vocab refs plus vocab linked through mission example refs, grammar-lesson example refs, reading checks, and scenario refs.
+- It returns ordered seen vocab IDs, a predicate-style lookup, and source breadcrumbs for later reading-support UI/debugging.
+- No reading/capstone UI behavior changed in this slice.
+
 Next best prompt:
 
 ```text
-Implement Feature 7A from NEXT_FEATURE_PLAN.md: add a deterministic helper that derives seen vocab ids from completed missions and content refs. Do not change UI yet. Run typecheck/build.
+Implement Feature 7B from NEXT_FEATURE_PLAN.md: add a local reading-display preference and apply it to reading/capstone text rendering in a backwards-compatible way. Preserve default readability. Run typecheck/build and inspect mobile reading flow.
 ```
 
 #### 7B. Reading Support Display Mode
@@ -948,10 +962,18 @@ Acceptance criteria:
 - Reading/capstone line component can use it.
 - Default behavior preserves current clarity.
 
+Implementation notes:
+
+- Extended the local study-preferences store with `readingDisplayMode`.
+- Added three display modes: `Guided reveal` as the default current behavior, `Kana support`, and `Japanese only`.
+- Added a shared reading-display helper used by reading mission cards and capstone line cards.
+- Added a compact Settings control for the local display preference.
+- Default behavior remains Japanese-first with reading support only after answer/reveal, and duplicate kana readings are still suppressed.
+
 Next best prompt:
 
 ```text
-Implement Feature 7B from NEXT_FEATURE_PLAN.md: add a local reading-display preference and apply it to reading/capstone text rendering in a backwards-compatible way. Preserve default readability. Run typecheck/build and inspect mobile reading flow.
+Implement Feature 7C from NEXT_FEATURE_PLAN.md: show compact known/unknown vocab support chips in reading or capstone flows using existing content refs and seen-vocab derivation. Keep the UI tucked behind support where needed. Run typecheck/build.
 ```
 
 #### 7C. Known/Unknown Chips
@@ -962,10 +984,17 @@ Acceptance criteria:
 - Chips do not crowd the active task.
 - No heavy parsing; rely on explicit content refs where possible.
 
+Implementation notes:
+
+- Added a small vocab-support resolver that maps explicit example IDs to linked vocab items without parsing Japanese text.
+- Added collapsed vocab support chips to reading reveals and capstone line reveals.
+- Chips show form, meaning, and `Seen` / `New` based on the 7A seen-vocab lookup.
+- Reading checks use the current check's `exampleId`; capstone lines use their `sourceExampleIds`.
+
 Next best prompt:
 
 ```text
-Implement Feature 7C from NEXT_FEATURE_PLAN.md: show compact known/unknown vocab support chips in reading or capstone flows using existing content refs and seen-vocab derivation. Keep the UI tucked behind support where needed. Run typecheck/build.
+Implement Feature 8A from NEXT_FEATURE_PLAN.md: define the AI content drafting and audit protocol before adding any generation scripts. Keep it documentation-first and preserve current runtime behavior. Run typecheck/build only if code changes.
 ```
 
 ---
@@ -1013,10 +1042,17 @@ Acceptance criteria:
 - Generated drafts must land outside production content until reviewed.
 - No runtime AI.
 
+Implementation notes:
+
+- Added `PROMPTS/AI_CONTENT_DRAFTING_PROTOCOL.md`.
+- The protocol defines allowed draft targets, review-only output locations, required source packet shape, structured draft shapes, capstone/story and alternate-example prompt templates, human review checklist, rejection rules, promotion path, and runtime AI boundaries.
+- Linked the protocol from `PROMPTS/README.md`.
+- No runtime AI, generation script, API call, or production content was added.
+
 Next best prompt:
 
 ```text
-Implement Feature 8A from NEXT_FEATURE_PLAN.md: create an AI content drafting protocol under PROMPTS/ that supports capstone stories and alternate examples, including required sourceExampleIds, grammar/vocab constraints, and human review checklist. No runtime AI or production content generation yet.
+Implement Feature 8B from NEXT_FEATURE_PLAN.md: add a review-only capstone draft script that uses selected source examples and writes draft output outside production content. It must not modify shipped content automatically. Run typecheck/build and document usage.
 ```
 
 #### 8B. Capstone Draft Script
@@ -1028,10 +1064,18 @@ Acceptance criteria:
 - Requires explicit API key if using OpenAI.
 - Fails safely when no key is present.
 
+Implementation notes:
+
+- Added `scripts/draft-capstone.ts` and `npm run draft:capstone`.
+- The script builds a source packet from selected pack numbers and explicit `sourceExampleIds`, validates that examples exist and belong to the selected packs, and can print the packet with `--print-source-packet` without an API key.
+- Draft generation requires `OPENAI_API_KEY`, uses the OpenAI Responses API, validates the returned JSON draft shape locally, and writes only to review-only roots: `drafts/ai-content/capstones/` or `/tmp/japanese-os-ai-drafts/capstones/`.
+- `drafts/ai-content/` is gitignored, and the script refuses output paths outside the review-only roots so shipped content cannot be modified automatically.
+- Documented usage in `PROMPTS/AI_CONTENT_DRAFTING_PROTOCOL.md` and `PROMPTS/README.md`.
+
 Next best prompt:
 
 ```text
-Implement Feature 8B from NEXT_FEATURE_PLAN.md: add a review-only capstone draft script that uses selected source examples and writes draft output outside production content. It must not modify shipped content automatically. Run typecheck/build and document usage.
+Implement Feature 8C from NEXT_FEATURE_PLAN.md: add an optional deterministic-to-AI mistake explanation fallback design and first guarded runtime wiring. Runtime AI must be disabled unless API configuration exists, deterministic explanations remain authoritative, and AI output must never mark correctness. Run typecheck/build and document safeguards.
 ```
 
 #### 8C. Deterministic-To-AI Mistake Explanation Fallback
@@ -1043,10 +1087,20 @@ Acceptance criteria:
 - AI output is not used to mark correctness.
 - Feature is optional and disabled by default unless API configuration exists.
 
+Implementation notes:
+
+- Added `src/lib/feedback/aiMistakeExplanations.ts` with a typed request/response contract, local response validation, sanitized payload construction, and a guarded runtime request helper.
+- The fallback returns `skipped` whenever a deterministic explanation exists, so deterministic explanation coverage remains authoritative.
+- Runtime AI is disabled unless `VITE_AI_MISTAKE_EXPLANATIONS_ENABLED=true` and `VITE_AI_MISTAKE_EXPLANATION_ENDPOINT` are both configured.
+- The browser does not accept or store an OpenAI API key. The endpoint is a future local/backend proxy boundary.
+- `MistakeExplanation` now has optional `source` and `safetyNote` fields, and the drawer can label AI fallback copy if it is ever displayed.
+- Settings shows the current AI fallback configuration status without enabling any API calls.
+- The runtime protocol docs now require a proxy endpoint, narrow context payloads, schema validation, and no correctness authority for AI.
+
 Next best prompt:
 
 ```text
-Implement Feature 8C from NEXT_FEATURE_PLAN.md only after deterministic mistake explanations are useful: add an optional AI explanation fallback that never marks correctness and is disabled unless configured. Use official OpenAI docs before coding API details. Run typecheck/build.
+Implement Feature 8D from NEXT_FEATURE_PLAN.md: add an optional typed output coach design and first guarded helper for post-check typed-output feedback. Local token-pattern correctness must remain authoritative, runtime AI must stay disabled unless configured, and feedback must stay narrow and beginner-safe. Run typecheck/build and document safeguards.
 ```
 
 #### 8D. Typed Output Coach
@@ -1057,10 +1111,19 @@ Acceptance criteria:
 - Local token-pattern correctness remains authoritative.
 - Feedback is narrow and beginner-safe.
 
+Implementation notes:
+
+- Added `src/lib/feedback/aiOutputCoach.ts` with a typed request/response contract, sanitized payload builder, response validation, and guarded runtime request helper.
+- The helper requires an existing local `OutputEvaluationResult`, so AI coaching can only run after deterministic output evaluation.
+- Runtime AI is disabled unless `VITE_AI_OUTPUT_COACH_ENABLED=true` and `VITE_AI_OUTPUT_COACH_ENDPOINT` are both configured.
+- The browser does not accept or store an OpenAI API key; the endpoint remains a future local/backend proxy boundary.
+- Settings shows the current AI output coach configuration status without enabling any API calls.
+- Protocol docs now describe the typed-output coach boundary and explicitly forbid AI from changing `isAccepted`, tone, weak-point recording, mission completion, or review state.
+
 Next best prompt:
 
 ```text
-Implement Feature 8D from NEXT_FEATURE_PLAN.md only after 8C: add optional AI feedback for typed output responses after local evaluation. Local correctness must remain authoritative. Use official OpenAI docs before coding API details. Run typecheck/build.
+Implement Feature 8E from NEXT_FEATURE_PLAN.md as a spike only: research the smallest browser voice-coach prototype path using current official OpenAI audio docs. Do not wire it into the main app. Produce a recommendation and, if safe, an isolated prototype behind a disabled route or dev-only surface.
 ```
 
 #### 8E. Voice Coach Spike
@@ -1071,13 +1134,89 @@ Acceptance criteria:
 - Do not add to main daily loop until the UX is proven.
 - Evaluate browser microphone permissions, transcription quality, latency, and feedback usefulness.
 
+Implementation notes:
+
+- Added `PROMPTS/VOICE_COACH_SPIKE.md` with the current recommendation: start with short record-and-review pronunciation probes before realtime speech-to-speech chat.
+- Checked current official OpenAI audio docs for speech-to-text, realtime transcription, realtime WebRTC, and text-to-speech disclosure requirements.
+- Added an isolated `VoiceCoachSpikePage` that records one short local microphone clip with `MediaRecorder`, creates local playback, and displays local capture metadata.
+- The prototype does not upload audio, call OpenAI, store speech, score pronunciation, or affect missions, Review, weak points, recommendations, or daily tracking.
+- The route is unlinked and disabled by default; it only exists in local dev when `VITE_VOICE_COACH_SPIKE_ENABLED=true`, at `/dev/voice-coach-spike`.
+- Recommendation: next voice work should add a local/backend transcription proxy for one short clip, then deterministic transcript matching, before any realtime conversation or TTS layer.
+
 Next best prompt:
 
 ```text
-Implement Feature 8E from NEXT_FEATURE_PLAN.md as a spike only: research the smallest browser voice-coach prototype path using current official OpenAI audio docs. Do not wire it into the main app. Produce a recommendation and, if safe, an isolated prototype behind a disabled route or dev-only surface.
+Run an end-of-Feature-8 audit: verify AI/content/voice safeguards, disabled runtime defaults, docs accuracy, typecheck/build, standard content reports, and app smoke checks before deciding whether to begin any real runtime proxy work.
+```
+
+#### 8F. Feature 8 Audit And Lazy Voice Route Cleanup
+
+Acceptance criteria:
+
+- Verify AI/content/voice safeguards after Features 8A-8E.
+- Confirm runtime AI remains disabled by default.
+- Confirm no browser OpenAI API key path exists.
+- Confirm review-only drafting cannot modify shipped content automatically.
+- Keep the voice coach spike isolated from the default route bundle.
+- Do not add new app behavior.
+
+Implementation notes:
+
+- Ran an end-of-Feature-8 audit across typecheck, build, standard content reports, source searches, script dry run, and in-app browser smoke checks.
+- Confirmed the browser runtime has no OpenAI API key path and no direct `api.openai.com` calls from `src`.
+- Confirmed optional AI mistake and output coach helpers remain disabled unless explicit proxy endpoint flags are configured.
+- Confirmed the capstone drafting script can dry-run source packets without an API key, requires `OPENAI_API_KEY` only for intentional generation, and writes only to review-only draft roots.
+- Confirmed the voice coach spike is unlinked, disabled by default, and does not render at `/dev/voice-coach-spike` while `VITE_VOICE_COACH_SPIKE_ENABLED` is off.
+- Lazy-loaded the disabled voice coach spike route so the prototype component is not statically imported into the default router path; production build now emits `VoiceCoachSpikePage-*.js` as a separate async chunk.
+
+Next best prompt:
+
+```text
+Run a Phase 4 acceptance audit: test the learner loop end-to-end across Today, mission completion, missed-answer mistake drawers, Review retries, capstone completion, reinforce/recombination passes, reading support chips, focus preferences, and Settings. Do not implement new feature behavior yet; document findings with severity, screenshots/URLs when useful, and recommended next slices.
 ```
 
 ---
+
+## Next Phase Options
+
+Feature 1-8 are now implemented and verified. The next phase should stabilize the learner experience before widening the system.
+
+### Recommended Sequence
+
+1. **Phase 4 acceptance audit**
+   - Simulate real learner use across the main loop: Today, mission player, Review, capstone, reinforce, reading support, focus preferences, and Settings.
+   - Capture issues in `Japanese_OS_feedback_plan.md` before coding.
+   - Use this to decide whether the next slice is UX repair, content expansion, or AI plumbing.
+   - Status: completed on 2026-04-26. Findings were logged in `Japanese_OS_feedback_plan.md`.
+
+2. **Acceptance-audit polish slice**
+   - Tune Review and output miss-state copy without changing scoring semantics.
+   - Make deterministic explanations more specific for observed grammar distractors.
+   - Hide raw capstone source IDs from learner-facing support.
+   - Status: completed on 2026-04-26. `Japanese_OS_feedback_plan.md` entries A1-A4 were updated to addressed/addressed-for-copy, and browser checks covered Review unresolved handoff, output miss copy, grammar distractor explanations, and capstone source support.
+
+3. **Naturalized capstone expansion**
+   - Add beginner-natural bonus capstones for chapters 2-10 in small batches.
+   - Preserve exact-source capstones as first-pass/default.
+   - Keep every naturalized line source-auditable with source examples and/or source capstone line IDs.
+   - Run the full content QA suite and include content audits.
+
+4. **Deterministic explainer tuning**
+   - Improve local mistake explanations from observed misses before relying on AI fallback.
+   - Prioritize particles, output token-pattern misses, and reading/listening confusion copy.
+   - Keep deterministic scoring and Review semantics unchanged.
+
+5. **Optional AI proxy work**
+   - Start only after deterministic gaps are known from the audit.
+   - Build one proxy boundary at a time, with no browser API key exposure.
+   - Recommended first proxy is typed-output coaching or capstone draft generation support, not realtime voice.
+   - Voice should advance from local recording to one short transcription proxy plus deterministic transcript matching before any realtime conversation layer.
+
+### Next Best Phase Prompt
+
+```text
+Implement the next naturalized capstone expansion slice: add beginner-natural bonus capstones for chapters 2-4 only, preserving exact-source capstones as the default first-pass version. Keep every line source-auditable, avoid hidden N4+ grammar, run typecheck/build plus standard content reports, and include a content audit.
+```
 
 ## Recommended Implementation Order
 
@@ -1117,8 +1256,9 @@ This order maximizes learner value while reducing architecture risk:
 32. `8C` optional AI explanation fallback
 33. `8D` optional typed output coach
 34. `8E` voice coach spike
+35. `8F` Feature 8 audit and lazy voice route cleanup
 
-Gold-star work can move earlier if motivation polish becomes the priority. AI work should not move earlier than deterministic capstones, capstone content-spine planning, and mistake explanations. Full capstone breadth can be batched around Feature 3 if implementation momentum requires it, but the 1E blueprint should happen before broad new content or AI drafting.
+The original eight-feature sequence is complete. Future work should use the Next Phase Options above rather than adding new slices to this historical implementation order unless a new phase plan is created.
 
 ---
 
@@ -1158,16 +1298,17 @@ Use these states:
 | 5B Today focus weighting | Verified | Today and Missions now pass the saved study focus mode into deterministic recommendations. Review-first, next unlocked path mission, and urgent stabilize behavior stay protected; focus mode only breaks ties for support and bonus mission slots, with matching learner-facing copy. Verified with typecheck, build, and recommendation smoke checks. |
 | 5C Today focus control | Verified | Today now exposes a collapsed focus-mode control inside the optional bonus area, writing to the existing study-preferences store without changing the finite daily lesson card. Settings remains the durable configuration surface. Verified with typecheck, build, and mobile browser layout inspection. |
 | 6A Scenario model decision | Verified | Documented scenario sims as structured output missions first, not a new mission type. Added the optional scenario metadata shape, graduation criteria for a future dedicated type, and concrete 6B file targets. No runtime behavior changed. |
-| 6B First scenario sim | Not started |  |
-| 6C Scenario pack set | Not started |  |
-| 7A Seen vocab derivation | Not started |  |
-| 7B Reading support display mode | Not started |  |
-| 7C Known/unknown chips | Not started |  |
-| 8A AI content drafting protocol | Not started |  |
-| 8B Capstone draft script | Not started |  |
-| 8C Optional AI explanation fallback | Not started |  |
-| 8D Optional typed output coach | Not started |  |
-| 8E Voice coach spike | Not started |  |
+| 6B First scenario sim | Verified | Added one controlled class self-introduction scenario as a structured output mission with typed scenario metadata, schema validation, loader relation checks, a Missions-only application lane, and a compact scenario brief in the output player. Today filters scenario missions out of core recommendations. Content uses exact-source pack 1-3 lines: `わたしはたなかです`, `これはなんですか`, and `せんせいはきょうしつにいます`. Verified with typecheck, build, standard content reports, scenario source audit, Today exclusion smoke check, and in-app browser scenario flow inspection. |
+| 6C Scenario pack set | Verified | Added five additional controlled scenario sims for six total optional application missions across existing N5 lanes: class self-introduction, meetup planning, store water request, study goals, health check, and travel delay update. Each scenario is a structured output mission using covered grammar/vocab and auditable source example IDs only. Missions exposes them through the optional Scenarios lane, while Today continues to exclude scenario missions from finite daily recommendations. Verified with typecheck, build, loader/source audit, Today exclusion smoke check, and standard content reports. |
+| 7A Seen vocab derivation | Verified | Added `deriveSeenVocabLookup`, `deriveSeenVocabIds`, and `hasSeenVocab` helpers in `src/lib/progress/seenVocab.ts`. Seen vocab is derived from completed mission progress using explicit vocab refs plus example-linked vocab through mission examples, grammar lesson examples, reading checks, and scenario refs. No UI behavior changed. Verified with typecheck, build, smoke check, and standard content reports. |
+| 7B Reading support display mode | Verified | Extended the local study-preferences store with a `readingDisplayMode`, added Guided reveal / Kana support / Japanese only options, wired a shared display helper into reading missions and capstone lines, and added a compact Settings control. Default Guided reveal preserves the existing read-first behavior and still suppresses duplicate kana readings. Verified with typecheck, build, helper smoke check, and in-app browser reading/settings inspection. |
+| 7C Known/unknown chips | Verified | Added explicit-ref vocab support chips to reading and capstone reveal support. Chips resolve from reading check `exampleId` or capstone `sourceExampleIds`, show form/meaning plus Seen/New status from the 7A seen-vocab lookup, and stay collapsed behind a support drawer so active tasks remain uncluttered. Verified with typecheck, build, vocab resolver smoke check, and diff check. |
+| 8A AI content drafting protocol | Verified | Added `PROMPTS/AI_CONTENT_DRAFTING_PROTOCOL.md` with source-packet requirements, capstone/story and alternate-example prompt templates, structured draft shapes, review-only output boundaries, human review checklist, rejection rules, promotion path, and runtime AI boundaries. Linked it from `PROMPTS/README.md`. No runtime AI, generation script, API call, or production content was added. |
+| 8B Capstone draft script | Verified | Added `npm run draft:capstone`, a review-only capstone draft helper that builds source packets from selected packs/source examples, supports `--print-source-packet` without an API key, requires `OPENAI_API_KEY` for generation, validates returned draft JSON, and writes only under gitignored `drafts/ai-content/capstones/` or `/tmp/japanese-os-ai-drafts/capstones/`. Production content is never modified automatically. |
+| 8C Optional AI explanation fallback | Verified | Added a disabled-by-default AI mistake fallback contract that can request explanation copy only when no deterministic explanation exists. The frontend sends a narrow sanitized payload to a configured proxy endpoint, validates the response, labels AI fallback copy, and never lets AI mark correctness or mutate review/weak-point state. Settings exposes the current off/configured status. No browser OpenAI key path was added. |
+| 8D Optional typed output coach | Verified | Added a disabled-by-default typed output coach contract that can request advisory feedback only after local `OutputEvaluationResult` exists. The frontend sends a narrow sanitized payload to a configured proxy endpoint, validates returned coaching copy, and cannot let AI change output correctness, weak-point state, mission completion, or review semantics. Settings exposes the current off/configured status. |
+| 8E Voice coach spike | Verified | Added a docs-backed voice coach spike and a disabled dev-only local microphone capture probe. The recommendation is to start with short record-and-review pronunciation clips plus future proxy transcription, not realtime speech chat. The prototype is unlinked, local-only, requires `VITE_VOICE_COACH_SPIKE_ENABLED=true`, and does not upload, transcribe, score, store, or affect study state. |
+| 8F Feature 8 audit and lazy voice route cleanup | Verified | Audited AI/content/voice safeguards, disabled defaults, browser key exposure, review-only draft output, source searches, app smoke checks, typecheck/build, and standard content reports. Then lazy-loaded the disabled voice coach spike route so it is split into its own async chunk and no longer statically imported into the default router path. No new app behavior was added. |
 
 ---
 

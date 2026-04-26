@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "draft:capstone": "tsx scripts/draft-capstone.ts",
     "generate:listening-audio": "tsx scripts/generate-listening-audio.ts",
     "preview": "vite preview",
     "report:build-status-summary": "node --import tsx scripts/report-build-status-summary.ts",

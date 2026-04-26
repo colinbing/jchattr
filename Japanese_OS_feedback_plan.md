@@ -666,7 +666,126 @@ Return confirmed regressions, UX friction, suspected issues, and whether the pro
 
 ---
 
-## 7. Historical Launch Prompt
+## 7. Phase 4 Acceptance Audit After Features 1-8
+
+Date: 2026-04-26.
+
+Scope:
+- Today finite lesson shell, weekly gold-star tracker, optional focus control.
+- Grammar mission miss flow and deterministic mistake drawer.
+- Review retry start, miss flow, mistake drawer, and post-batch handoff.
+- Missions library chapter surface, completed-mission `Open again` reinforce state, capstone entry, and scenarios lane.
+- Capstone exact-source/recombination player, naturalized story gate, and vocab support chips.
+- Reading mission reveal and known/new vocab support chips.
+- Settings focus and reading-display preferences plus disabled AI status cards.
+
+Result:
+- No P0 breakage found in the tested local state.
+- The app is clean enough to continue gathering real feedback.
+- The next work should be a narrow polish/tuning slice before broader naturalized capstone or AI proxy work.
+
+Verified working:
+- Today rendered the finite daily shell with the current study day, weekly gold-star line, lesson count, bonus area, and focus control. At `Sun Apr 26 01:08 EDT`, the app correctly still showed the Saturday, April 25 study day because the local rollover is 3 AM America/New_York.
+- Grammar mission miss flow showed expected-answer feedback plus an `Explain mistake` drawer.
+- Review started from a newly created weak point and showed an active retry workspace.
+- Missions `Open again` launched a short reinforce pass with `Short reinforce pass` copy.
+- Capstone recombination opened at `/capstone/capstone-story-ch01-first-day?mode=recombination`, revealed meaning/support, and showed collapsed vocab support chips.
+- Naturalized capstone route remained locked until the exact-source closeout is complete.
+- Reading mission reveal showed meaning/support and collapsed known/new vocab chips.
+- Settings focus preference wrote and restored successfully; AI fallback/output coach cards remained off.
+- Scenario sim route opened as a structured output mission and showed scenario brief, prompt, answer pieces, and output miss explanation.
+- `npm run typecheck` passed during the audit.
+
+### A1 — Review can end a batch after a miss with `0/1 retries cleared`
+
+State: Addressed.
+Priority: P2.
+
+Observed:
+- In Review, after choosing an incorrect answer, the `Finish review batch` button became available.
+- Finishing produced a clear but slightly odd handoff: `This batch is done`, `0/1 retries cleared`, and `1 weak point still needs review`.
+
+Why it matters:
+- The behavior is internally consistent with supported exposure and unresolved weak points, but the button label makes a failed retry feel like successful batch completion.
+
+Fix direction:
+- Keep Review semantics unchanged.
+- After an incorrect retry, change the primary action copy to something like `End batch for now` or keep `Try again` / `Edit answer` visually stronger than finishing.
+- Ensure the post-batch state distinguishes `batch ended` from `retry cleared`.
+
+Recommended slice:
+- Completed in the Phase 4 acceptance-audit polish slice. Missed retry batches now use `End batch for now`, unresolved post-batch copy says the pass ended with open items, and expected-answer feedback says the item stays open without changing Review queue semantics.
+
+### A2 — Review explanation can be too generic for the selected wrong option
+
+State: Addressed.
+Priority: P2.
+
+Observed:
+- In a Review retry for `わたしはたなかです。`, selecting `たなかはわたしか。` opened an explanation whose likely confusion said `Dropping は when the sentence needs a clear topic`.
+- The selected wrong answer did include `は`; the real problem was closer to malformed question/copula/topic order.
+
+Why it matters:
+- The drawer system works, but some deterministic fallbacks are too broad when the wrong option is a specific distractor.
+
+Fix direction:
+- Keep deterministic explanations local and authoritative.
+- Add more targeted explanation rules for common grammar distractor patterns, especially:
+  - malformed `か` question endings
+  - topic/comment reversal
+  - particle mismatch versus particle omission
+  - output token-pattern misses
+
+Recommended slice:
+- Completed in the Phase 4 acceptance-audit polish slice. The observed `たなかはわたしか。` distractor now gets a specific `か` question-ending explanation instead of the older broad `は` omission fallback.
+
+### A3 — Capstone support exposes raw/stale source IDs to learners
+
+State: Addressed.
+Priority: P2.
+
+Observed:
+- In the chapter 1 capstone support reveal, the learner-facing source line says `Built from ex-colin-desu` even though the visible Japanese is `わたしはたなかです。`.
+
+Why it matters:
+- Source traceability is valuable for audits, but raw IDs are implementation-facing and can be confusing when historical IDs survive content cleanup.
+
+Fix direction:
+- Keep source traceability in content.
+- Hide raw source IDs from learner-facing support, or replace them with neutral copy such as `Built from a source example in this chapter`.
+- If source IDs remain visible in any dev/audit mode later, label them as audit metadata rather than lesson support.
+
+Recommended slice:
+- Completed in the Phase 4 acceptance-audit polish slice. Capstone support keeps traceability in the content model but shows learner-facing source copy such as `Built from source examples in this chapter` instead of raw source IDs.
+
+### A4 — Scenario/output miss flow works, but incorrect answers can still advance
+
+State: Addressed for copy; scoring semantics unchanged.
+Priority: P3.
+
+Observed:
+- Scenario output miss feedback was helpful and the explanation correctly identified missing pieces.
+- The flow still offered `Next task` after a miss, preserving pass movement while leaving review pressure.
+
+Why it matters:
+- This may be intentional for momentum, but it should be evaluated in real use: learners may interpret `Next task` as success unless the feedback is visually clear enough.
+
+Fix direction:
+- Do not change scoring semantics without a dedicated Review/weak-point decision.
+- In a future copy pass, consider making incorrect-but-advance states read as `Keep moving` / `Try later in Review` instead of success-like progression.
+
+Recommended slice:
+- Completed for the current copy pass. Output misses now say the item stays open for later review and use `Keep moving` / `Finish for now` instead of success-like `Next task` language when the answer was not accepted.
+
+### Recommended Next Slice
+
+```text
+Implement the next naturalized capstone expansion slice: add beginner-natural bonus capstones for chapters 2-4 only, preserving exact-source capstones as the default first-pass version. Keep every line source-auditable, avoid hidden N4+ grammar, run typecheck/build plus standard content reports, and include a content audit.
+```
+
+---
+
+## 8. Historical Launch Prompt
 
 This prompt launched the first mobile core-loop friction cleanup.
 It is preserved for traceability, but it is not the current recommended next prompt.
@@ -717,7 +836,7 @@ Summarize changed files, explain any tradeoffs, list verification commands run, 
 
 ---
 
-## 8. Historical Follow-Up Slice
+## 9. Historical Follow-Up Slice
 
 This follow-up slice was completed through later Phase 4 mobile mission-flow cleanup work.
 It is preserved as historical planning context, not as the active queue.

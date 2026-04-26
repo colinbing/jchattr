@@ -1,22 +1,30 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SurfaceCard } from '../../../components/layout/PageShell';
-import { hasDistinctReading } from '../../../lib/japaneseText';
+import { getStarterContent } from '../../../lib/content/loader';
+import { shouldShowReadingSupport } from '../../../lib/readingDisplay';
+import { getVocabItemsForExampleIds } from '../../../lib/content/vocabSupport';
 import {
   getCapstoneProgressEntry,
   markCapstoneComplete,
   useCapstoneProgress,
 } from '../../../lib/progress/capstoneProgress';
+import { useMissionProgress } from '../../../lib/progress/missionProgress';
+import { deriveSeenVocabLookup } from '../../../lib/progress/seenVocab';
+import { useStudyPreferences } from '../../../lib/settings/studyPreferences';
 import type {
   CapstoneCheck,
   CapstoneLine,
   CapstoneStory,
+  VocabItem,
 } from '../../../lib/content/types';
+import { VocabSupportChips } from './VocabSupportChips';
 
 type CapstoneStoryPlayerProps = {
   story: CapstoneStory;
   lines: CapstoneLine[];
   checksByLineId: Record<string, CapstoneCheck[]>;
+  vocabItems: VocabItem[];
   mode?: 'closeout' | 'recombination';
 };
 
@@ -26,9 +34,16 @@ export function CapstoneStoryPlayer({
   story,
   lines,
   checksByLineId,
+  vocabItems,
   mode = 'closeout',
 }: CapstoneStoryPlayerProps) {
   const capstoneProgress = useCapstoneProgress();
+  const missionProgress = useMissionProgress();
+  const starterContent = getStarterContent();
+  const seenVocabLookup = useMemo(
+    () => deriveSeenVocabLookup(starterContent, missionProgress),
+    [missionProgress, starterContent],
+  );
   const completion = getCapstoneProgressEntry(capstoneProgress, story.id);
   const isNaturalizedStory = story.variant === 'naturalized';
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
@@ -163,6 +178,8 @@ export function CapstoneStoryPlayer({
             isCheckCleared={isCurrentCheckCleared}
             hasNextLine={currentLineIndex < lines.length - 1}
             isFinished={isFinished}
+            vocabItems={vocabItems}
+            seenVocabLookup={seenVocabLookup}
             finishLabel={
               isNaturalizedStory
                 ? 'Finish story mode'
@@ -263,6 +280,8 @@ type CapstoneLineCardProps = {
   isCheckCleared: boolean;
   hasNextLine: boolean;
   isFinished: boolean;
+  vocabItems: VocabItem[];
+  seenVocabLookup: ReturnType<typeof deriveSeenVocabLookup>;
   finishLabel: string;
   onReveal: () => void;
   onCheckCleared: (checkId: string) => void;
@@ -276,6 +295,8 @@ function CapstoneLineCard({
   isCheckCleared,
   hasNextLine,
   isFinished,
+  vocabItems,
+  seenVocabLookup,
   finishLabel,
   onReveal,
   onCheckCleared,
@@ -283,7 +304,23 @@ function CapstoneLineCard({
 }: CapstoneLineCardProps) {
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<CheckFeedback>(null);
-  const showReading = hasDistinctReading(line.japanese, line.reading);
+  const studyPreferences = useStudyPreferences();
+  const showPromptReading = shouldShowReadingSupport({
+    japanese: line.japanese,
+    reading: line.reading,
+    mode: studyPreferences.readingDisplayMode,
+    placement: 'prompt',
+  });
+  const showRevealReading = shouldShowReadingSupport({
+    japanese: line.japanese,
+    reading: line.reading,
+    mode: studyPreferences.readingDisplayMode,
+    placement: 'reveal',
+  });
+  const supportVocabItems = useMemo(
+    () => getVocabItemsForExampleIds(vocabItems, line.sourceExampleIds),
+    [line.sourceExampleIds, vocabItems],
+  );
   const hasSubmitted = feedback !== null;
   const canAdvance = isRevealed && (isCheckCleared || feedback === 'correct') && !isFinished;
 
@@ -306,6 +343,9 @@ function CapstoneLineCard({
       <div className="reading-check-card__prompt">
         <p className="mission-copy-block__eyebrow">Japanese first</p>
         <p className="reading-check-card__sentence">{line.japanese}</p>
+        {showPromptReading ? (
+          <p className="reading-check-card__support-reading">{line.reading}</p>
+        ) : null}
       </div>
 
       {!isRevealed ? (
@@ -318,7 +358,7 @@ function CapstoneLineCard({
 
       {isRevealed ? (
         <div className="reading-reveal-card">
-          {showReading ? (
+          {showRevealReading ? (
             <div className="reading-reveal-card__section">
               <p className="mission-copy-block__eyebrow">Reading</p>
               <p className="mission-copy-block__body">{line.reading}</p>
@@ -331,15 +371,20 @@ function CapstoneLineCard({
           <div className="reading-reveal-card__section">
             <p className="mission-copy-block__eyebrow">Source</p>
             <p className="mission-copy-block__body">
-              {line.lineStyle === 'naturalized' ? 'Naturalized from' : 'Built from'}{' '}
-              {line.sourceExampleIds.join(', ')}.
+              {line.lineStyle === 'naturalized'
+                ? 'Naturalized from chapter source lines.'
+                : 'Built from source examples in this chapter.'}
             </p>
             {line.sourceLineIds?.length ? (
               <p className="mission-copy-block__body">
-                Traced to {line.sourceLineIds.join(', ')}.
+                Traceability is saved in the content model for audit.
               </p>
             ) : null}
           </div>
+          <VocabSupportChips
+            vocabItems={supportVocabItems}
+            seenVocabLookup={seenVocabLookup}
+          />
         </div>
       ) : null}
 

@@ -10,6 +10,9 @@ export function MistakeExplanationDrawer({ explanation }: MistakeExplanationDraw
       <summary className="mission-explainer-drawer__summary">Explain mistake</summary>
       <div className="mission-explainer">
         <p className="mission-explainer__title">{explanation.title}</p>
+        {explanation.source === 'ai-fallback' ? (
+          <p className="mission-explainer__source">AI fallback</p>
+        ) : null}
         <dl className="mission-explainer__list">
           <div>
             <dt>Pattern</dt>
@@ -29,6 +32,12 @@ export function MistakeExplanationDrawer({ explanation }: MistakeExplanationDraw
             <dt>Retry</dt>
             <dd>{explanation.retryHint}</dd>
           </div>
+          {explanation.safetyNote ? (
+            <div>
+              <dt>Guardrail</dt>
+              <dd>{explanation.safetyNote}</dd>
+            </div>
+          ) : null}
         </dl>
       </div>
     </details>

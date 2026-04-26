@@ -2,20 +2,30 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import { SurfaceCard } from '../../../components/layout/PageShell';
-import type { ExampleSentence, Mission, ReadingCheck } from '../../../lib/content/types';
+import type {
+  ExampleSentence,
+  Mission,
+  ReadingCheck,
+  VocabItem,
+} from '../../../lib/content/types';
+import { getStarterContent } from '../../../lib/content/loader';
+import { getVocabItemsForExampleIds } from '../../../lib/content/vocabSupport';
 import { getReadingMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
-import { hasDistinctReading } from '../../../lib/japaneseText';
+import { shouldShowReadingSupport } from '../../../lib/readingDisplay';
 import {
   getMissionProgressEntry,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
+import { deriveSeenVocabLookup } from '../../../lib/progress/seenVocab';
+import { useStudyPreferences } from '../../../lib/settings/studyPreferences';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import { VocabSupportChips } from './VocabSupportChips';
 import {
   buildMissionCompletionRouteState,
   formatMissionReplayVariant,
@@ -28,6 +38,7 @@ type ReadingMissionPlayerProps = {
   mission: Mission;
   checks: ReadingCheck[];
   examplesById: Record<string, ExampleSentence>;
+  vocabItems: VocabItem[];
   sessionMode: MissionSessionMode;
 };
 
@@ -37,10 +48,16 @@ export function ReadingMissionPlayer({
   mission,
   checks,
   examplesById,
+  vocabItems,
   sessionMode,
 }: ReadingMissionPlayerProps) {
   const navigate = useNavigate();
   const missionProgress = useMissionProgress();
+  const starterContent = getStarterContent();
+  const seenVocabLookup = useMemo(
+    () => deriveSeenVocabLookup(starterContent, missionProgress),
+    [missionProgress, starterContent],
+  );
   const [sessionRotation] = useState(() => {
     return getMissionProgressEntry(missionProgress, mission.id).completionCount;
   });
@@ -190,6 +207,8 @@ export function ReadingMissionPlayer({
             missionId={mission.id}
             check={currentCheck}
             example={currentExample}
+            vocabItems={vocabItems}
+            seenVocabLookup={seenVocabLookup}
             hasNextCheck={currentCheckIndex < sessionChecks.length - 1}
             onAdvance={goToNextCheck}
             onCleared={handleCheckCleared}
@@ -233,6 +252,8 @@ type ReadingCheckCardProps = {
   missionId: string;
   check: ReadingCheck;
   example: ExampleSentence;
+  vocabItems: VocabItem[];
+  seenVocabLookup: ReturnType<typeof deriveSeenVocabLookup>;
   hasNextCheck: boolean;
   onAdvance: () => void;
   onCleared: (checkId: string) => void;
@@ -242,14 +263,32 @@ function ReadingCheckCard({
   missionId,
   check,
   example,
+  vocabItems,
+  seenVocabLookup,
   hasNextCheck,
   onAdvance,
   onCleared,
 }: ReadingCheckCardProps) {
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReadingCheckFeedback>(null);
+  const studyPreferences = useStudyPreferences();
   const hasSubmitted = feedback !== null;
-  const showReading = hasDistinctReading(example.japanese, example.reading);
+  const showPromptReading = shouldShowReadingSupport({
+    japanese: example.japanese,
+    reading: example.reading,
+    mode: studyPreferences.readingDisplayMode,
+    placement: 'prompt',
+  });
+  const showRevealReading = shouldShowReadingSupport({
+    japanese: example.japanese,
+    reading: example.reading,
+    mode: studyPreferences.readingDisplayMode,
+    placement: 'reveal',
+  });
+  const supportVocabItems = useMemo(
+    () => getVocabItemsForExampleIds(vocabItems, [check.exampleId]),
+    [check.exampleId, vocabItems],
+  );
   const mistakeExplanation =
     feedback === 'incorrect'
       ? getReadingMistakeExplanation({
@@ -284,6 +323,9 @@ function ReadingCheckCard({
       <div className="reading-check-card__prompt">
         <p className="mission-copy-block__eyebrow">Japanese first</p>
         <p className="reading-check-card__sentence">{example.japanese}</p>
+        {showPromptReading ? (
+          <p className="reading-check-card__support-reading">{example.reading}</p>
+        ) : null}
       </div>
 
       <div className="reading-check-card__question">
@@ -374,7 +416,7 @@ function ReadingCheckCard({
 
       {hasSubmitted ? (
         <div className="reading-reveal-card">
-          {showReading ? (
+          {showRevealReading ? (
             <div className="reading-reveal-card__section">
               <p className="mission-copy-block__eyebrow">Reading</p>
               <p className="mission-copy-block__body">{example.reading}</p>
@@ -390,6 +432,10 @@ function ReadingCheckCard({
               <p className="mission-copy-block__body">{check.support}</p>
             </div>
           ) : null}
+          <VocabSupportChips
+            vocabItems={supportVocabItems}
+            seenVocabLookup={seenVocabLookup}
+          />
         </div>
       ) : null}
     </div>

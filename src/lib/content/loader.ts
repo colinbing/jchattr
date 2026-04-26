@@ -104,6 +104,53 @@ function validateRelations(content: ContentCollection) {
         missionRecord,
       );
     }
+
+    if (mission.scenario) {
+      assertIdsExist(
+        `Mission ${mission.id} scenario`,
+        'grammar lesson',
+        mission.scenario.grammarLessonIds,
+        grammarRecord,
+      );
+      assertIdsExist(
+        `Mission ${mission.id} scenario`,
+        'vocab item',
+        mission.scenario.vocabIds,
+        vocabRecord,
+      );
+      assertIdsExist(
+        `Mission ${mission.id} scenario`,
+        'example sentence',
+        mission.scenario.exampleIds,
+        exampleRecord,
+      );
+
+      const outputTaskRecord = createRecordById(mission.outputTasks ?? []);
+
+      mission.scenario.steps.forEach((step) => {
+        assertIdsExist(
+          `Mission ${mission.id} scenario step ${step.id}`,
+          'output task',
+          [step.id],
+          outputTaskRecord,
+        );
+        assertIdsExist(
+          `Mission ${mission.id} scenario step ${step.id}`,
+          'support example',
+          step.supportExampleIds,
+          exampleRecord,
+        );
+
+        if (step.weakPointItemId) {
+          assertIdsExist(
+            `Mission ${mission.id} scenario step ${step.id}`,
+            'output task',
+            [step.weakPointItemId],
+            outputTaskRecord,
+          );
+        }
+      });
+    }
   });
 
   content.capstoneLines.forEach((line) => {

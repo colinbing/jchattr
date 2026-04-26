@@ -40,6 +40,7 @@ export function ReviewBatchPlayer({
   const currentResult = resultsByItemId[currentItem.weakPoint.itemId];
   const isLastItem = currentIndex === items.length - 1;
   const allItemsAttempted = items.every((item) => resultsByItemId[item.weakPoint.itemId]);
+  const hasUnclearedAttempt = Object.values(resultsByItemId).some((result) => result === 'incorrect');
   const progressValue = ((currentIndex + 1) / items.length) * 100;
   const summary = getReviewBatchSummary(currentItem);
   const recentListeningTranslations = items
@@ -242,7 +243,7 @@ export function ReviewBatchPlayer({
                 }
                 disabled={!allItemsAttempted}
               >
-                Finish review batch
+                {hasUnclearedAttempt ? 'End batch for now' : 'Finish review batch'}
               </button>
             )}
           </div>
@@ -668,7 +669,7 @@ function OutputReviewFeedback({
       <p className="mission-feedback__body">
         {feedback.isAccepted
           ? 'Retry recorded for this item.'
-          : `${feedback.message} Try: ${feedback.expectedAnswer}`}
+          : `${feedback.message} Try: ${formatExpectedReviewAnswer(feedback.expectedAnswer)} This item stays open for another pass.`}
       </p>
     </div>
   );
@@ -801,10 +802,16 @@ function ReviewFeedback({
         {result === 'correct' ? 'Correct.' : 'Not quite.'}
       </p>
       <p className="mission-feedback__body">
-        {result === 'correct' ? 'Retry recorded for this item.' : `Expected answer: ${answer}`}
+        {result === 'correct'
+          ? 'Retry recorded for this item.'
+          : `Expected answer: ${formatExpectedReviewAnswer(answer)} This item stays open for another pass.`}
       </p>
     </div>
   );
+}
+
+function formatExpectedReviewAnswer(answer: string) {
+  return /[。.!?！？]$/u.test(answer) ? answer : `${answer}.`;
 }
 
 function SupportedExposureFeedback() {

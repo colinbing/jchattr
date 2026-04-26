@@ -79,6 +79,7 @@ export function OutputMissionPlayer({
     );
   });
   const currentTask = sessionTasks[currentTaskIndex];
+  const currentScenarioStep = mission.scenario?.steps.find((step) => step.id === currentTask.id);
   const currentResponse = responsesByTaskId[currentTask.id] ?? '';
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
@@ -142,7 +143,13 @@ export function OutputMissionPlayer({
         <div className="output-session-bar" aria-label="Output mission progress">
           <div className="output-session-bar__copy">
             <p className="mission-copy-block__eyebrow">
-              {sessionMode === 'reinforce' ? 'Short output pass' : 'Output mission'}
+              {mission.scenario
+                ? sessionMode === 'reinforce'
+                  ? 'Short scenario pass'
+                  : 'Scenario sim'
+                : sessionMode === 'reinforce'
+                  ? 'Short output pass'
+                  : 'Output mission'}
             </p>
             <h2 className="output-session-bar__title">{mission.title}</h2>
           </div>
@@ -190,6 +197,28 @@ export function OutputMissionPlayer({
             ) : null}
           </dl>
         </details>
+
+        {mission.scenario ? (
+          <section className="scenario-brief" aria-label="Scenario brief">
+            <div className="scenario-brief__copy">
+              <p className="mission-copy-block__eyebrow">
+                {formatScenarioSetting(mission.scenario.setting)}
+              </p>
+              <h3 className="scenario-brief__title">{mission.scenario.communicativeGoal}</h3>
+              {currentScenarioStep ? (
+                <p className="scenario-brief__body">{currentScenarioStep.prompt}</p>
+              ) : null}
+            </div>
+            <div className="scenario-brief__meta" aria-label="Scenario source scope">
+              <span className="mission-state-pill mission-state-pill--ready">
+                {mission.scenario.steps.length} moves
+              </span>
+              <span className="mission-state-pill mission-state-pill--ready">
+                Packs {formatScenarioPackRange(mission.scenario.sourcePackIds)}
+              </span>
+            </div>
+          </section>
+        ) : null}
 
         <OutputTaskCard
           missionId={mission.id}
@@ -382,7 +411,7 @@ function OutputTaskCard({
           <p className="mission-feedback__body">
             {feedback.isAccepted
               ? `${feedback.message} ${hasNextTask ? 'Use the main button to move straight to the next task.' : 'Use the main button to finish the mission.'}`
-              : `${feedback.message} Try: ${feedback.expectedAnswer}`}
+              : `${feedback.message} Try: ${formatExpectedOutputAnswer(feedback.expectedAnswer)} This stays open for later review while you keep the pass moving.`}
           </p>
         </div>
       ) : null}
@@ -402,7 +431,13 @@ function OutputTaskCard({
         </button>
         {feedback ? (
           <button type="button" className="mission-button" onClick={onAdvance}>
-            {hasNextTask ? 'Next task' : 'Finish to Today'}
+            {feedback.isAccepted
+              ? hasNextTask
+                ? 'Next task'
+                : 'Finish to Today'
+              : hasNextTask
+                ? 'Keep moving'
+                : 'Finish for now'}
           </button>
         ) : (
           <button
@@ -419,8 +454,30 @@ function OutputTaskCard({
   );
 }
 
+function formatExpectedOutputAnswer(answer: string) {
+  return /[。.!?！？]$/u.test(answer) ? answer : `${answer}.`;
+}
+
 function formatTargetSkill(targetSkill: Mission['targetSkill']) {
   return targetSkill.replace(/-/g, ' ');
+}
+
+function formatScenarioSetting(setting: NonNullable<Mission['scenario']>['setting']) {
+  return `${setting.replace(/-/g, ' ')} scenario`;
+}
+
+function formatScenarioPackRange(sourcePackIds: number[]) {
+  const sortedPackIds = [...sourcePackIds].sort((left, right) => left - right);
+
+  if (sortedPackIds.length === 0) {
+    return 'n/a';
+  }
+
+  if (sortedPackIds.length === 1) {
+    return String(sortedPackIds[0]);
+  }
+
+  return `${sortedPackIds[0]}-${sortedPackIds[sortedPackIds.length - 1]}`;
 }
 
 type OutputAnswerPiece = {

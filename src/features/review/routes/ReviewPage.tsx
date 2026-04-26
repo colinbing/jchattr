@@ -165,15 +165,19 @@ export function ReviewPage() {
         <SurfaceCard
           title="Back to Today"
           description={
-            lastBatchSummary.nextBatchSize > 0
-              ? 'This batch is done. Return to Today first, then come back later only if you want one more short batch.'
+            lastBatchSummary.unresolvedCount > 0
+              ? 'This pass ended with at least one item still open. Return to Today first.'
+              : lastBatchSummary.nextBatchSize > 0
+                ? 'This batch is done. Return to Today first, then come back later only if you want one more short batch.'
               : 'This batch is done. Return to Today and keep the loop moving.'
           }
         >
           <div className="review-post-batch-card">
             <div className="review-post-batch-card__copy">
               <p className="review-launch-card__title">
-                {lastBatchSummary.clearedCount}/{lastBatchSummary.attemptedCount} retries cleared
+                {lastBatchSummary.unresolvedCount > 0
+                  ? `${lastBatchSummary.unresolvedCount}/${lastBatchSummary.attemptedCount} still open`
+                  : `${lastBatchSummary.clearedCount}/${lastBatchSummary.attemptedCount} retries cleared`}
               </p>
               <p className="review-launch-card__body">
                 {formatPostBatchBody(lastBatchSummary)}
@@ -374,6 +378,12 @@ function formatTimestamp(timestamp: string) {
 function formatPostBatchBody(summary: LastBatchSummary) {
   if (summary.remainingWeakPointCount === 0) {
     return 'Review is clear now. Today will not add another required Review step unless a new miss is saved.';
+  }
+
+  if (summary.unresolvedCount > 0) {
+    return `${summary.unresolvedCount} attempted item${
+      summary.unresolvedCount === 1 ? '' : 's'
+    } stayed open. Nothing was cleared incorrectly; retry it again in a later short batch.`;
   }
 
   const remainingCopy = `${summary.remainingWeakPointCount} weak point${

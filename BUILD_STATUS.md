@@ -190,6 +190,19 @@
 - Feature 5B focus-mode recommendation weighting that passes the saved study focus mode into Today and Missions recommendations as a protected support/bonus tie-breaker without demoting Review-first or the next unlocked path mission
 - Feature 5C Today focus-mode affordance that adds a collapsed focus control inside the optional bonus area, writes to the existing study-preferences store, and keeps the finite daily lesson card visually dominant
 - Feature 6A scenario-model decision that keeps scenario sims as structured output missions first, documents optional scenario metadata and graduation criteria for a future dedicated type, and sets concrete 6B file targets without changing runtime behavior
+- Feature 6B first scenario sim that adds a controlled class self-introduction scenario as a structured output mission, validates source-auditable scenario metadata, exposes it in an optional Missions application lane, and keeps it out of core Today recommendations
+- Feature 6C scenario pack set that expands the optional Missions scenario lane to six controlled structured-output scenarios across existing N5 lanes while keeping Today recommendations scenario-free
+- Feature 7A seen-vocab foundation that derives deterministic seen vocab from completed missions and explicit content refs without changing reading UI yet
+- Feature 7B reading-display preference that adds local Guided reveal / Kana support / Japanese only modes and wires them into reading and capstone line rendering while preserving the default read-first behavior
+- Feature 7C known/unknown vocab chips that add collapsed reading/capstone support chips from explicit example refs and the seen-vocab lookup without crowding active tasks
+- Feature 8A AI content drafting protocol that documents source-packet requirements, review-only draft boundaries, prompt templates, human audit gates, rejection rules, and runtime AI safeguards without adding scripts or runtime AI
+- Feature 8B review-only capstone draft script that builds source packets from selected packs/source examples, can dry-run those packets without an API key, requires `OPENAI_API_KEY` for generation, validates draft JSON, and writes only outside shipped content under gitignored draft roots
+- Feature 8C optional AI explanation fallback contract that is disabled by default, uses a future proxy endpoint rather than a browser OpenAI key, skips whenever deterministic explanations exist, validates returned explanation copy, and cannot mark correctness or mutate study state
+- Feature 8D optional typed output coach contract that is disabled by default, requires local `OutputEvaluationResult` before any request, uses a future proxy endpoint rather than a browser OpenAI key, validates returned coaching copy, and cannot change local output scoring or study state
+- Feature 8E voice coach spike that documents the smallest safe browser voice-coach path and adds an unlinked, disabled dev-only local microphone capture probe with no upload, transcription, scoring, storage, or study-state effects
+- Feature 8 audit checkpoint that verified AI/content/voice safeguards, disabled runtime defaults, no browser OpenAI key path, review-only draft output boundaries, standard content reports, typecheck/build, and in-app smoke checks before any real runtime proxy work
+- Feature 8 lazy voice-route cleanup that keeps the disabled voice coach spike behind the same local dev flag while loading the prototype route as a separate async chunk instead of statically importing it into the default router path
+- Phase 4 acceptance-audit polish slice that keeps scoring semantics unchanged while tuning Review unresolved-batch CTA/handoff copy, adding more specific deterministic grammar distractor explanations for observed `か`/topic-order misses, clarifying output miss movement as open-for-review, and hiding raw capstone source IDs from learner-facing support
 
 ## Current App Capabilities
 
@@ -240,10 +253,10 @@
 - Mission detail routes now hide the global mobile bottom nav and replace it with mission-local back links to the previous surface, Today, or Missions
 - Mission players now mark grammar, listening, output, and reading missions complete automatically once every drill or check in that pass has been cleared, then clear continue-state for that mission on save
 - Route changes into Today, Missions, Review, and mission detail now scroll to the top by default, while explicit continue-state resume preserves the learner's existing scroll position
-- User can complete 199 starter missions across 4 mission types:
+- User can complete 205 starter missions across 4 mission types:
   - 50 grammar
   - 50 listening
-  - 50 output
+  - 56 output
   - 49 reading
 - Grammar missions currently include:
   - one active section at a time with compact top progress
@@ -271,6 +284,7 @@
   - a post-check primary action that advances directly to the next task or Today instead of forcing the learner through a second unrelated next-step click
   - short reinforce passes that rotate a smaller prompt/example/vocab subset when launched from Today reinforce recommendations
   - optional grammar/example/vocab support behind a drawer instead of always-visible reference blocks
+  - six optional structured-output scenario sims exposed from Missions as application practice
 - Typed Japanese entry currently used in grammar and output flows:
   - supports optional local romaji-to-hiragana assist
   - accepts hiragana and katakana as equivalent for answer checking
@@ -280,6 +294,8 @@
   - one local multiple-choice comprehension decision per line before reveal
   - one active reading check at a time with compact top progress and nearby next/previous controls
   - compact reveal of reading, meaning, and a short support note after submission, with reading hidden when it would duplicate the Japanese line exactly
+  - a local display preference that defaults to the same guided reveal behavior, with optional kana-support and Japanese-only modes
+  - collapsed known/new vocab support chips derived from explicit source examples and local completed-mission progress
   - short reinforce passes that rotate a smaller check set when launched from Today reinforce recommendations
 - Review loop currently:
   - selects top weak points by miss count, then recency
@@ -418,7 +434,7 @@
   - 731 example sentences
   - 550 vocab items
   - 361 listening items
-  - 199 missions
+  - 205 missions
   - 11 capstone stories with 116 capstone lines and 44 capstone checks, now reachable from Missions through a dedicated capstone player route
 - Mission auto-complete now works, but it is still pass-local: completion triggers when each drill or check has been cleared once in the current pass, and there is still no finer-grained saved per-item progress model inside a mission
 - Continue state restores mission/step only, not in-progress answers
@@ -454,19 +470,23 @@
 - Completed capstones can now surface as optional Today recombination rereads through the same capstone player without entering the finite core daily plan
 - Capstone content breadth now covers the full chapter spine: production capstone content covers chapters 1-10 / packs 1-50, with chapter 10 kept to recognition-safe plain-style comprehension
 - Chapter 1 now has one naturalized bonus capstone variant, gated behind the exact-source closeout and counted separately from primary chapter coverage
+- Reading/capstone display mode is preference-backed and now has collapsed known/new vocab chips, but support is still explicit-ref based rather than full token-level parsing/highlighting
 - Grammar, listening, output, and reading reinforce missions now use a named deterministic replay-variant helper with metadata while first-pass missions still receive full source lists
 - Daily-session rollover uses the user's device clock with an America/New_York 3 AM study-day boundary; there is no server clock, account sync, or cross-device validation
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
-- No speech input or pronunciation scoring
+- No production speech input or pronunciation scoring; there is one disabled dev-only voice-coach spike route for local recording/playback tests, and that spike is lazy-loaded behind the dev flag rather than statically imported into the default route bundle
 - Settings is intentionally small; it now has a local focus-mode preference that affects only deterministic Today/Missions support and bonus tie-breaks
-- Scenario sims are planned as structured output missions first, not a new mission type, until branching state, multi-turn audio-first dialogue, distinct scoring/review semantics, or separate scheduling justify a dedicated scenario primitive
+- Scenario sims are implemented as structured output missions first, not a new mission type. The current slice has six optional application scenarios in Missions only; branching state, multi-turn audio-first dialogue, distinct scoring/review semantics, or separate scheduling would still justify a dedicated scenario primitive later.
+- AI-assisted content drafting now has a documented review protocol and one review-only capstone draft script. Runtime AI has disabled-by-default contracts for mistake-explanation fallback and typed-output coaching, plus a disabled dev-only voice-coach spike, but no endpoints are configured and no production AI-generated content exists.
 - No account, sync, backend, analytics, or CMS
 - No automated tests are present in the inspected slice
 
 ## Next Recommended Slices
 
-1. Implement Feature 6B from `NEXT_FEATURE_PLAN.md`: build one controlled class self-introduction scenario sim as a structured output mission using packs 1-5 source material, keeping it optional from Missions and out of core Today recommendations.
-2. Keep Feature 6C ready after the first scenario sim is verified if scenario-sim work remains the priority.
+1. Expand naturalized capstone bonus stories for chapters 2-4 in a small source-auditable batch, preserving exact-source capstones as the default first-pass closeout.
+2. Continue deterministic mistake-explanation tuning from observed misses, especially particles, typed output token-pattern misses, and reading/listening confusion copy, before relying on optional AI fallback.
+3. Consider optional AI proxy work only after deterministic gaps are clear. Keep no browser API key exposure, add one proxy boundary at a time, and prefer typed-output coaching or review-only content drafting support before realtime voice.
+4. Run another short mobile acceptance pass after the naturalized capstone batch to catch new reading-support or completion-handoff friction.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 

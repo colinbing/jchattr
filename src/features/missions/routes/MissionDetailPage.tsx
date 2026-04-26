@@ -206,6 +206,7 @@ export function MissionDetailPage() {
           mission={mission}
           checks={readingChecks}
           examplesById={examplesById}
+          vocabItems={starterContent.vocabItems}
           sessionMode={sessionMode}
         />
       </PageShell>

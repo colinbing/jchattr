@@ -50,7 +50,7 @@ export function MissionLibraryCard({
     <article className={cardClassName}>
       <div className="mission-card__header">
         <div className="mission-card__meta">
-          <span className="mission-badge">{formatMissionType(mission.type)}</span>
+          <span className="mission-badge">{formatMissionTypeForMission(mission)}</span>
           <span className="mission-card__minutes">{mission.estimatedMinutes} min</span>
         </div>
         <h3 className="mission-card__title">{mission.title}</h3>
@@ -143,6 +143,11 @@ export function MissionLibraryCard({
 }
 
 export function buildContentNote(mission: Mission, starterContent: StarterContent) {
+  if (mission.scenario) {
+    const moveCount = mission.scenario.steps.length;
+    return `${moveCount} scenario move${moveCount === 1 ? '' : 's'} using source examples`;
+  }
+
   if (mission.type === 'grammar') {
     const lessonId = mission.contentRefs.grammarLessonIds?.[0];
     const lesson = lessonId ? starterContent.byId.grammarLessons[lessonId] : null;
@@ -176,6 +181,14 @@ export function formatMissionType(type: Mission['type']) {
     case 'reading':
       return 'Reading';
   }
+}
+
+export function formatMissionTypeForMission(mission: Pick<Mission, 'type' | 'scenario'>) {
+  if (mission.scenario) {
+    return 'Scenario';
+  }
+
+  return formatMissionType(mission.type);
 }
 
 export function formatTargetSkill(targetSkill: Mission['targetSkill']) {

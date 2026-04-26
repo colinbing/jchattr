@@ -295,16 +295,20 @@ export function TodayPage() {
       {reviewCompletion ? (
         <SurfaceCard
           className="today-support-card"
-          title="Review finished"
+          title={reviewCompletion.unresolvedCount > 0 ? 'Review pass ended' : 'Review finished'}
           description={
-            reviewCompletion.nextBatchSize > 0
+            reviewCompletion.unresolvedCount > 0
+              ? 'Some retry work is still open. Today can keep moving.'
+              : reviewCompletion.nextBatchSize > 0
               ? 'Review pass done. Today will show whether to retry or move on.'
               : 'The review queue is clear. Move straight into Today.'
           }
         >
           <div className="review-return-card">
             <p className="review-launch-card__title">
-              {reviewCompletion.clearedCount}/{reviewCompletion.attemptedCount} retries cleared
+              {reviewCompletion.unresolvedCount > 0
+                ? `${reviewCompletion.unresolvedCount}/${reviewCompletion.attemptedCount} still open`
+                : `${reviewCompletion.clearedCount}/${reviewCompletion.attemptedCount} retries cleared`}
             </p>
             <p className="review-launch-card__body">
               {buildReviewCompletionBody(reviewCompletion)}
@@ -966,6 +970,13 @@ function buildMissionReviewImpact(missionWeakPointCount: number) {
 function buildReviewCompletionBody(reviewCompletion: TodayReviewCompletion) {
   if (reviewCompletion.remainingWeakPointCount === 0) {
     return 'Review is clear now. Today will not add another required Review step unless a new miss is saved.';
+  }
+
+  if (reviewCompletion.unresolvedCount > 0) {
+    return `${formatCountedNoun(
+      reviewCompletion.unresolvedCount,
+      'attempted item',
+    )} stayed open for another pass. Today can continue without pretending it was cleared.`;
   }
 
   const remainingCopy = `${formatCountedNoun(

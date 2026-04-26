@@ -97,8 +97,8 @@ export function deriveTodayRecommendations(
   const recommendations: TodayRecommendation[] = [];
   const missionContextById = createMissionRecommendationContextById(starterContent);
   const selectedMissionIds = new Set<string>();
-  const unlockedMissions = starterContent.missions.filter((mission) =>
-    isMissionUnlocked(mission, missionProgress),
+  const unlockedMissions = starterContent.missions.filter(
+    (mission) => !isScenarioMission(mission) && isMissionUnlocked(mission, missionProgress),
   );
   const reviewAwareness = deriveReviewAwareness(
     starterContent,
@@ -308,6 +308,10 @@ export function isMissionUnlocked(
   return requiredMissionIds.every((requiredMissionId) => {
     return getMissionProgressEntry(missionProgress, requiredMissionId).isCompleted;
   });
+}
+
+function isScenarioMission(mission: Mission) {
+  return mission.scenario?.kind === 'scenario';
 }
 
 function getReviewRecommendation(

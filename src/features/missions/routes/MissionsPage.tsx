@@ -134,6 +134,10 @@ export function MissionsPage() {
       ? `${activeSection.items.length} reading checkpoint${
           activeSection.items.length === 1 ? '' : 's'
         } in the recombination lane`
+      : activeSection.chapter.kind === 'application'
+        ? `${activeSection.items.length} controlled scenario${
+            activeSection.items.length === 1 ? '' : 's'
+          } for optional application practice`
       : `${activeSection.unlockedCount} mission${
           activeSection.unlockedCount === 1 ? '' : 's'
         } unlocked in this five-pack block`
@@ -324,6 +328,7 @@ export function MissionsPage() {
           <summary className="today-details__summary">How this path works</summary>
           <ul className="simple-list">
             <li>Core chapters follow the shipped five-pack curriculum path so the mission stack feels like progression, not a dump.</li>
+            <li>Scenario sims stay in an optional application lane so practical output practice does not change the core Today path.</li>
             <li>Reading checkpoints stay in their own lane because they are reinforcement and recombination, not the main unlock spine.</li>
             <li>Unlocked or locked state still comes only from `requiredMissionIds` and local completion data.</li>
             <li>Recommended and needs-review states still come from the same deterministic local helpers used elsewhere in the app.</li>

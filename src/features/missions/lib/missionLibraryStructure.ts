@@ -18,7 +18,7 @@ export type MissionLibraryChapter = {
   missionIds: string[];
   packRangeLabel?: string;
   packTitles?: string[];
-  kind: 'core' | 'reading';
+  kind: 'core' | 'reading' | 'application';
 };
 
 const CORE_CHAPTER_SEEDS: CoreChapterSeed[] = [
@@ -147,7 +147,24 @@ function createReadingChapter(): MissionLibraryChapter {
   };
 }
 
+function createApplicationChapter(): MissionLibraryChapter {
+  const starterContent = getStarterContent();
+
+  return {
+    id: 'chapter-application-scenarios',
+    label: 'Scenarios',
+    title: 'Application practice',
+    description:
+      'Use controlled scenario sims to turn already-seen grammar and vocabulary into short practical moves.',
+    missionIds: starterContent.missions
+      .filter((mission) => mission.scenario?.kind === 'scenario')
+      .map((mission) => mission.id),
+    kind: 'application',
+  };
+}
+
 export const missionLibraryChapters: MissionLibraryChapter[] = [
   ...CORE_CHAPTER_SEEDS.map(createCoreChapter),
+  createApplicationChapter(),
   createReadingChapter(),
 ];
