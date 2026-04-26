@@ -792,19 +792,66 @@ These are not open chatbots. They are controlled scenario drills built from know
 
 ### Data Direction
 
-Add a new mission type only if it meaningfully differs from output/reading. Otherwise, create scenario missions as structured output missions first.
+Decision for 6A: create scenario sims as structured output missions first, not as a new mission type.
 
-Candidate scenario model:
+Rationale:
+
+- Scenario sims are constrained communicative production loops: choose, build, or type the learner's next move.
+- The existing output mission lane already owns typed production, deterministic answer checks, weak-point recording, completion state, replay variants, Review isolation, and Today/Missions routing.
+- Reading and listening can provide scenario context or support lines without becoming the primary interaction type.
+- A new `scenario` mission type would force broad schema, route, player, review, recommendation, and library changes before proving that the scenario loop needs separate semantics.
+- Scenario sims should graduate to a dedicated mission type only if they need branching dialogue state, multi-turn audio-first turns, different scoring/review behavior, or a separate scheduler.
+
+First-slice model direction:
+
+- Keep `Mission.type = 'output'`.
+- Add optional scenario metadata only when the first scenario needs source-auditable structure beyond normal `outputTasks`.
+- Keep the actual learner checks represented by regular `outputTasks` for 6B so existing completion, Review, and replay behavior still work.
+- Use existing `scenarioTags` on content packs for placement/relevance before adding a new taxonomy.
+
+Candidate optional scenario metadata:
 
 ```ts
+type ScenarioMissionMetadata = {
+  kind: 'scenario';
+  scenarioId: string;
+  setting: 'classroom' | 'store' | 'meetup' | 'travel' | 'health' | 'home';
+  communicativeGoal: string;
+  sourcePackIds: number[];
+  grammarLessonIds: string[];
+  vocabIds: string[];
+  exampleIds: string[];
+  steps: ScenarioStep[];
+};
+
 type ScenarioStep = {
   id: string;
+  actor: 'system' | 'learner';
+  moveType: 'choose' | 'type' | 'build';
   prompt: string;
-  expectedMove: 'choose' | 'type' | 'listen' | 'build';
+  promptJapanese?: string;
   supportExampleIds: string[];
-  acceptableAnswers?: string[];
+  acceptableAnswers: string[];
+  requiredTokenPatterns?: string[];
+  weakPointItemId?: string;
 };
 ```
+
+First 6B scenario recommendation:
+
+- Build a class self-introduction / first-lesson exchange as an output mission using packs 1-5 material.
+- Keep it short: 2-3 output tasks and 1 compact scenario frame.
+- Use only existing grammar/vocab/source examples.
+- Do not add it to required Today recommendations yet; place it as optional application practice in Missions unless the implementation reveals a safer existing slot.
+
+First 6B file targets:
+
+- `src/lib/content/types.ts`: add optional `scenario?: ScenarioMissionMetadata` to output missions only if the first slice needs structured scenario metadata.
+- `src/lib/content/schemas.ts`: validate optional scenario metadata and refine it so scenario metadata is only allowed on output missions.
+- `src/content/missions.ts`: add one controlled scenario output mission with existing grammar/vocab/example refs.
+- `src/features/missions/components/OutputMissionPlayer.tsx`: add minimal scenario framing when `mission.scenario` exists, while reusing the same output-task surface.
+- `src/features/missions/lib/missionLibraryStructure.ts`: expose the first scenario as optional application practice.
+- `src/features/today/lib/todayRecommendations.ts`: avoid changing core Today routing in 6B unless the scenario is explicitly optional/bonus and preserves Review-first plus the finite daily shell.
 
 ### Patch Batches
 
@@ -812,33 +859,36 @@ type ScenarioStep = {
 
 Acceptance criteria:
 
-- Decide whether scenario sims are a new mission type or output mission subtype.
-- Document the decision in this plan.
-- No large implementation yet.
+- Scenario sims are documented as structured output missions, not a new mission type.
+- The first optional data model and 6B file targets are documented.
+- No runtime behavior changes.
 
 Next best prompt:
 
 ```text
-Implement Feature 6A from NEXT_FEATURE_PLAN.md: inspect output, reading, and mission type architecture, then decide whether scenario sims should be a new mission type or a structured output subtype. Update NEXT_FEATURE_PLAN.md with the decision and first-slice file targets. No broad implementation yet.
+Implement Feature 6A from NEXT_FEATURE_PLAN.md: decide and document the controlled scenario-sim data model before building the first scenario player. Run typecheck/build only if code changes.
 ```
 
 #### 6B. First Scenario Sim
 
 Scope:
 
-- One scenario only, likely class self-introduction or convenience-store item request.
-- Use existing grammar/vocab.
+- One scenario only: class self-introduction / first-lesson exchange.
+- Build as a structured output mission using the 6A model direction.
+- Use existing grammar/vocab/source examples from packs 1-5.
+- Keep Today behavior unchanged unless the scenario is clearly optional/bonus.
 
 Acceptance criteria:
 
 - One mobile-first scenario sim can be completed.
 - Steps are controlled and short.
 - Weak points can be recorded or gracefully skipped with a documented reason.
+- Scenario content is source-auditable and does not introduce hidden grammar.
 
 Next best prompt:
 
 ```text
-Implement Feature 6B from NEXT_FEATURE_PLAN.md: build one controlled scenario sim using the architecture decision from 6A. Use existing grammar/vocab only. Keep it mobile-first and deterministic. Run typecheck/build and content reports; include a content audit.
+Implement Feature 6B from NEXT_FEATURE_PLAN.md: build one controlled class self-introduction scenario sim as a structured output mission using the 6A model direction. Use existing packs 1-5 grammar/vocab/source examples only. Keep it mobile-first, deterministic, and optional from Missions without changing core Today recommendations. Run typecheck/build and content reports; include a content audit.
 ```
 
 #### 6C. Scenario Pack Set
@@ -1107,7 +1157,7 @@ Use these states:
 | 5A Preference store | Verified | Added a typed local `study-preferences` store with a durable focus mode and a compact Settings control for Balanced, More listening, More output, Light day, Class prep, and Weak points first. Today recommendation behavior is unchanged. Verified with typecheck and build. |
 | 5B Today focus weighting | Verified | Today and Missions now pass the saved study focus mode into deterministic recommendations. Review-first, next unlocked path mission, and urgent stabilize behavior stay protected; focus mode only breaks ties for support and bonus mission slots, with matching learner-facing copy. Verified with typecheck, build, and recommendation smoke checks. |
 | 5C Today focus control | Verified | Today now exposes a collapsed focus-mode control inside the optional bonus area, writing to the existing study-preferences store without changing the finite daily lesson card. Settings remains the durable configuration surface. Verified with typecheck, build, and mobile browser layout inspection. |
-| 6A Scenario model decision | Not started |  |
+| 6A Scenario model decision | Verified | Documented scenario sims as structured output missions first, not a new mission type. Added the optional scenario metadata shape, graduation criteria for a future dedicated type, and concrete 6B file targets. No runtime behavior changed. |
 | 6B First scenario sim | Not started |  |
 | 6C Scenario pack set | Not started |  |
 | 7A Seen vocab derivation | Not started |  |

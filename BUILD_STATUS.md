@@ -189,6 +189,7 @@
 - Feature 5A preference-store foundation that adds a typed local study-preferences store plus a compact Settings focus-mode control without changing Today recommendation behavior yet
 - Feature 5B focus-mode recommendation weighting that passes the saved study focus mode into Today and Missions recommendations as a protected support/bonus tie-breaker without demoting Review-first or the next unlocked path mission
 - Feature 5C Today focus-mode affordance that adds a collapsed focus control inside the optional bonus area, writes to the existing study-preferences store, and keeps the finite daily lesson card visually dominant
+- Feature 6A scenario-model decision that keeps scenario sims as structured output missions first, documents optional scenario metadata and graduation criteria for a future dedicated type, and sets concrete 6B file targets without changing runtime behavior
 
 ## Current App Capabilities
 
@@ -458,13 +459,14 @@
 - Skill map heuristics are intentionally rough and based only on completions + recorded misses
 - No speech input or pronunciation scoring
 - Settings is intentionally small; it now has a local focus-mode preference that affects only deterministic Today/Missions support and bonus tie-breaks
+- Scenario sims are planned as structured output missions first, not a new mission type, until branching state, multi-turn audio-first dialogue, distinct scoring/review semantics, or separate scheduling justify a dedicated scenario primitive
 - No account, sync, backend, analytics, or CMS
 - No automated tests are present in the inspected slice
 
 ## Next Recommended Slices
 
-1. Implement Feature 6A from `NEXT_FEATURE_PLAN.md`: decide and document the controlled scenario-sim data model before building the first scenario player.
-2. Keep Feature 6B ready after the scenario model decision lands if scenario-sim work remains the priority.
+1. Implement Feature 6B from `NEXT_FEATURE_PLAN.md`: build one controlled class self-introduction scenario sim as a structured output mission using packs 1-5 source material, keeping it optional from Missions and out of core Today recommendations.
+2. Keep Feature 6C ready after the first scenario sim is verified if scenario-sim work remains the priority.
 
 ## Documented Post-Phase-3 Product / UX Backlog
 
