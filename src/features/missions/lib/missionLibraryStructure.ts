@@ -1,5 +1,6 @@
 import { contentPacks } from '../../../content/contentPacks';
 import { getStarterContent } from '../../../lib/content/loader';
+import type { Mission } from '../../../lib/content/types';
 
 type CoreChapterSeed = {
   id: string;
@@ -16,6 +17,7 @@ export type MissionLibraryChapter = {
   title: string;
   description: string;
   missionIds: string[];
+  applicationMissionIds?: string[];
   packRangeLabel?: string;
   packTitles?: string[];
   kind: 'core' | 'reading' | 'application';
@@ -118,6 +120,7 @@ function createCoreChapter(seed: CoreChapterSeed): MissionLibraryChapter {
   const packs = contentPacks.filter(
     (pack) => pack.packNumber >= seed.packStart && pack.packNumber <= seed.packEnd,
   );
+  const starterContent = getStarterContent();
 
   return {
     id: seed.id,
@@ -125,10 +128,33 @@ function createCoreChapter(seed: CoreChapterSeed): MissionLibraryChapter {
     title: seed.title,
     description: seed.description,
     missionIds: packs.flatMap((pack) => pack.missionIds),
+    applicationMissionIds: getApplicationMissionIdsForPackRange(
+      starterContent.missions,
+      seed.packStart,
+      seed.packEnd,
+    ),
     packRangeLabel: `Packs ${seed.packStart}-${seed.packEnd}`,
     packTitles: packs.map((pack) => pack.title),
     kind: 'core',
   };
+}
+
+export function getApplicationMissionIdsForPackRange(
+  missions: Mission[],
+  packStart: number,
+  packEnd: number,
+) {
+  return missions
+    .filter((mission) => {
+      if (mission.scenario?.kind !== 'scenario') {
+        return false;
+      }
+
+      return mission.scenario.sourcePackIds.some((packId) => {
+        return packId >= packStart && packId <= packEnd;
+      });
+    })
+    .map((mission) => mission.id);
 }
 
 function createReadingChapter(): MissionLibraryChapter {

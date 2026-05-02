@@ -1019,6 +1019,11 @@ button {
   padding: var(--space-3);
 }
 
+.mission-chapter__application {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .mission-chapter__state-row {
   display: flex;
   flex-wrap: wrap;

@@ -1685,27 +1685,27 @@ Codex must update this section as work is completed.
 
 ---
 
-## Gate 8 audit — pending
+## Gate 8 audit — 2026-05-02 02:43 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Implemented the targeted component-extraction slice without behavior changes. Moved Today mission-completion formatting helpers out of `TodayPage` into pure `todayPlanFormatting` helpers and added focused tests for clean completion, exposure completion with review pressure, skill-signal copy, labels, unit labels, and review-impact copy.
+- Files changed: `src/features/today/routes/TodayPage.tsx`, `src/features/today/lib/todayPlanFormatting.ts`, `src/features/today/lib/todayPlanFormatting.test.ts`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `npm run test -- src/features/today/lib/todayPlanFormatting.test.ts`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: Focused tests passed (1 file, 5 tests). Full `npm run test` passed (10 files, 54 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning.
+- Manual UI checks: Ran the app at `http://127.0.0.1:5173/`. In-app browser smoke loaded Today with no captured error logs. True mobile Chrome CDP smoke used `390x844`, DPR 3 and checked Today and Review initial rendering. Screenshots were captured and visually reviewed. No app console/runtime errors were reported; one transient browser network 404 log appeared on the first QA run and did not reproduce when checking the log source.
+- Risks / questions: `TodayPage` shrank from 1139 to 1050 lines; the new formatting module is 106 lines. This slice intentionally did not refactor mission players, Review components, plan-state logic, storage, or CSS. An existing pluralization typo can produce `passs` when `completionCount > 1`; it was not changed to preserve this behavior-only extraction.
+- Recommended next action: Continue with the next narrow stabilization slice from the patch document after targeted extraction, likely scenario/application surfacing audit or output-evaluation guardrails, depending on which remaining Phase 7/8 item is safest to isolate.
 
 ---
 
-## Gate 9 audit — pending
+## Gate 9 audit — 2026-05-02 03:01 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Implemented Phase 7 Option A scenario/application surfacing on the Missions page only. Core chapters now carry contextual `applicationMissionIds` based on scenario `sourcePackIds`; `MissionChapterCard` renders an optional "Application practice" block only when those scenario missions are unlocked or already finished. Today recommendation/core behavior was not changed.
+- Files changed: `src/features/missions/lib/missionLibraryStructure.ts`, `src/features/missions/lib/missionLibraryStructure.test.ts`, `src/features/missions/routes/MissionsPage.tsx`, `src/features/missions/components/MissionChapterCard.tsx`, `src/styles/global.css`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `npm run test -- src/features/missions/lib/missionLibraryStructure.test.ts`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: Focused test passed (1 file, 1 test). Full `npm run test` passed (11 files, 55 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning.
+- Manual UI checks: Ran the app at `http://127.0.0.1:5173/`. In-app browser smoke loaded Missions with no captured app error logs. True mobile Chrome CDP smoke used `390x844`, DPR 3. Reset-state Missions did not show the contextual application block in Chapter 1. After seeding the prerequisite completion locally in the temporary QA browser, Chapter 1 showed "Optional scenario", "Application practice", and `Scenario: first class check-in`; the section avoided required/core/mastery-test copy. Today was checked afterward and did not show scenario/application copy. No app console/runtime errors were reported.
+- Risks / questions: Scenario cards still also exist in the standalone Scenarios application chapter; this slice adds contextual surfacing without removing the existing lane. Contextual blocks are hidden until the scenario is unlocked or finished, so locked upcoming scenarios remain discoverable only through the Scenarios tab.
+- Recommended next action: Continue with Phase 8 output evaluation guardrails: expand deterministic evaluator tests and document that output checking is pattern-based, not open-ended Japanese grading.
 
 ---
 

@@ -30,15 +30,19 @@ import {
 } from '../../../lib/progress/dailySession';
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import { getWeakPointList, useWeakPoints } from '../../../lib/progress/weakPoints';
-import {
-  deriveProgressOverview,
-  formatSkillTierLabel,
-  type SkillAreaProgress,
-} from '../../../lib/progress/skillMap';
+import { deriveProgressOverview } from '../../../lib/progress/skillMap';
 import {
   deriveTodayRecommendations,
   type TodayRecommendation,
 } from '../lib/todayRecommendations';
+import {
+  buildMissionCompletionTitle,
+  buildMissionPracticeRecap,
+  buildMissionReviewImpact,
+  buildMissionSkillRecap,
+  formatMissionTypeLabel,
+  formatTargetSkillLabel,
+} from '../lib/todayPlanFormatting';
 import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
 import {
   setStudyFocusMode,
@@ -933,66 +937,6 @@ function isCoreRecommendation(recommendation: TodayRecommendation) {
   return recommendation.priority !== 'bonus';
 }
 
-function buildMissionPracticeRecap(missionCompletion: TodayMissionCompletion) {
-  const reviewItemCount = missionCompletion.incorrectCount + missionCompletion.supportedCount;
-  const unitLabel = formatMissionUnitLabel(
-    missionCompletion.missionType,
-    missionCompletion.totalCount,
-  );
-
-  if (reviewItemCount === 0) {
-    return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} ${unitLabel} attempted; ${missionCompletion.correctCount} correct.`;
-  }
-
-  return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} ${unitLabel} attempted; ${missionCompletion.correctCount} correct and ${reviewItemCount} saved for Review.`;
-}
-
-function buildMissionSkillRecap(
-  skillArea: SkillAreaProgress | null,
-  missionCompletion: TodayMissionCompletion,
-) {
-  if (!skillArea) {
-    return missionCompletion.isMasteryComplete
-      ? `${formatTargetSkillLabel(missionCompletion.targetSkill)} got one clean local practice signal.`
-      : `${formatTargetSkillLabel(missionCompletion.targetSkill)} got exposure practice with review pressure still open.`;
-  }
-
-  const tierLabel = formatSkillTierLabel(skillArea.tier).toLowerCase();
-  const completionLabel = `${skillArea.completionCount} related finished pass${
-    skillArea.completionCount === 1 ? '' : 's'
-  }`;
-
-  return missionCompletion.isMasteryComplete
-    ? `${skillArea.label} is ${tierLabel}; clean pass recorded with ${completionLabel} on this device.`
-    : `${skillArea.label} is ${tierLabel}; exposure recorded, but this was not a clean pass.`;
-}
-
-function buildMissionCompletionTitle(missionCompletion: TodayMissionCompletion) {
-  if (missionCompletion.isMasteryComplete) {
-    return `${missionCompletion.correctCount}/${missionCompletion.totalCount} correct · clean pass`;
-  }
-
-  const reviewItemCount = missionCompletion.incorrectCount + missionCompletion.supportedCount;
-
-  return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} attempted · ${
-    missionCompletion.correctCount
-  } correct${
-    reviewItemCount > 0
-      ? ` · ${reviewItemCount} review item${reviewItemCount === 1 ? '' : 's'}`
-      : ''
-  }`;
-}
-
-function buildMissionReviewImpact(missionWeakPointCount: number) {
-  if (missionWeakPointCount > 0) {
-    return `${missionWeakPointCount} item${
-      missionWeakPointCount === 1 ? '' : 's'
-    } from this mission still ${missionWeakPointCount === 1 ? 'needs' : 'need'} review.`;
-  }
-
-  return 'No open weak point from this mission right now.';
-}
-
 function buildReviewCompletionBody(reviewCompletion: TodayReviewCompletion) {
   if (reviewCompletion.remainingWeakPointCount === 0) {
     return 'Review is clear now. Today will not add another required Review step unless a new miss is saved.';
@@ -1101,39 +1045,6 @@ function formatContinueDetail(
   return `Resume output task ${safeStepIndex + 1} of ${totalTasks}.`;
 }
 
-function formatMissionTypeLabel(type: TodayMissionCompletion['missionType']) {
-  switch (type) {
-    case 'grammar':
-      return 'Grammar';
-    case 'listening':
-      return 'Listening';
-    case 'output':
-      return 'Output';
-    case 'reading':
-      return 'Reading';
-  }
-}
-
-function formatTargetSkillLabel(targetSkill: TodayMissionCompletion['targetSkill']) {
-  return targetSkill.replace(/-/g, ' ');
-}
-
 function formatCountedNoun(count: number, noun: string) {
   return `${count} ${noun}${count === 1 ? '' : 's'}`;
-}
-
-function formatMissionUnitLabel(
-  missionType: TodayMissionCompletion['missionType'],
-  totalCount: number,
-) {
-  const unitLabel =
-    missionType === 'grammar'
-      ? 'drill'
-      : missionType === 'listening'
-        ? 'listening check'
-        : missionType === 'output'
-          ? 'output task'
-          : 'reading check';
-
-  return `${unitLabel}${totalCount === 1 ? '' : 's'}`;
 }

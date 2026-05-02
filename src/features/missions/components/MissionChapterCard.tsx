@@ -16,12 +16,14 @@ import type { MissionLibraryChapter } from '../lib/missionLibraryStructure';
 type MissionChapterCardProps = {
   chapter: MissionLibraryChapter;
   items: MissionLibraryCardData[];
+  applicationItems?: MissionLibraryCardData[];
   starterContent: StarterContent;
 };
 
 export function MissionChapterCard({
   chapter,
   items,
+  applicationItems = [],
   starterContent,
 }: MissionChapterCardProps) {
   const capstoneProgress = useCapstoneProgress();
@@ -41,6 +43,10 @@ export function MissionChapterCard({
       ? starterContent.capstoneStories.filter((story) =>
           shouldShowCapstoneStory(story, chapter.id, capstoneProgress),
         )
+      : [];
+  const visibleApplicationItems =
+    chapter.kind === 'core'
+      ? applicationItems.filter((item) => item.isUnlocked || item.progress.isCompleted)
       : [];
 
   return (
@@ -182,6 +188,40 @@ export function MissionChapterCard({
             </div>
           ))}
         </div>
+
+        {visibleApplicationItems.length > 0 ? (
+          <section
+            className="mission-chapter__application"
+            aria-labelledby={`${chapter.id}-application-title`}
+          >
+            <div className="mission-focus-card mission-chapter__focus">
+              <div className="mission-chapter__focus-copy">
+                <p className="mission-focus-card__eyebrow">Optional scenario</p>
+                <h4
+                  className="mission-chapter__focus-title"
+                  id={`${chapter.id}-application-title`}
+                >
+                  Application practice
+                </h4>
+                <p className="mission-chapter__focus-body">
+                  Try these after the core missions. They reuse what you have already learned in a short practical situation.
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="mission-list"
+              role="list"
+              aria-label={`${chapter.title} application practice`}
+            >
+              {visibleApplicationItems.map((item) => (
+                <div key={item.mission.id} role="listitem">
+                  <MissionLibraryCard item={item} starterContent={starterContent} />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
     </section>
   );

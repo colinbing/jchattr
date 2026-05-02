@@ -92,6 +92,9 @@ export function MissionsPage() {
     return {
       chapter,
       items,
+      applicationItems: (chapter.applicationMissionIds ?? [])
+        .map((missionId) => missionLibraryById.get(missionId))
+        .filter((item): item is MissionLibraryCardData => Boolean(item)),
       nextMission,
       completedCount: items.filter((item) => item.progress.isCompleted).length,
       unlockedCount: items.filter((item) => item.isUnlocked).length,
@@ -260,6 +263,7 @@ export function MissionsPage() {
               <MissionChapterCard
                 chapter={activeSection.chapter}
                 items={activeSection.items}
+                applicationItems={activeSection.applicationItems}
                 starterContent={starterContent}
               />
             </div>
