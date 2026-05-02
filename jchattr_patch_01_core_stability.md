@@ -1613,27 +1613,27 @@ Codex must update this section as work is completed.
 
 ---
 
-## Gate 2 audit — pending
+## Gate 2 audit — completed later under Gate 5
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Phase 2 weak-point key migration was implemented and fully audited later under Gate 5 because the first product slice intentionally prioritized completion semantics before returning to the original phase order.
+- Files changed: See Gate 5 audit for the authoritative file list.
+- Commands run: See Gate 5 audit.
+- Results: See Gate 5 audit.
+- Manual UI checks: See Gate 5 audit.
+- Risks / questions: See Gate 5 audit.
+- Recommended next action: Gate 5 remains the authoritative Phase 2 audit record.
 
 ---
 
-## Gate 3 audit — pending
+## Gate 3 audit — completed later under Gate 6
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Phase 3 transactional Review resolution was implemented and fully audited later under Gate 6 after the weak-point compound-key migration landed.
+- Files changed: See Gate 6 audit for the authoritative file list.
+- Commands run: See Gate 6 audit.
+- Results: See Gate 6 audit.
+- Manual UI checks: See Gate 6 audit.
+- Risks / questions: See Gate 6 audit.
+- Recommended next action: Gate 6 remains the authoritative Phase 3 audit record.
 
 ---
 
