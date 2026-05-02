@@ -8,9 +8,8 @@ import {
 } from '../../../lib/progress/reviewLoop';
 import {
   getWeakPointList,
-  getWeakPointKey,
   readWeakPoints,
-  resolveWeakPointSuccess,
+  replaceWeakPoints,
   type WeakPoint,
   type WeakPointItemType,
   useWeakPoints,
@@ -23,6 +22,7 @@ import {
   selectReviewBatch,
   type ReviewBatchItem,
 } from '../lib/reviewBatch';
+import { applyReviewBatchResults } from '../lib/reviewResolution';
 
 const WEAK_POINT_GROUPS: WeakPointItemType[] = [
   'grammar-drill',
@@ -223,17 +223,16 @@ export function ReviewPage() {
         <div ref={activeBatchRef}>
           <ReviewBatchPlayer
             items={activeBatch}
-            onSuccessfulRetry={(weakPoint) => {
-              resolveWeakPointSuccess(weakPoint);
-            }}
-            onComplete={(weakPoints, resultsByWeakPointKey) => {
-              const weakPointKeys = weakPoints.map((weakPoint) => getWeakPointKey(weakPoint));
+            onComplete={(itemResults) => {
+              const weakPointKeys = itemResults.map((itemResult) => itemResult.weakPointKey);
               markReviewBatchComplete(weakPointKeys);
-              const latestWeakPointStore = readWeakPoints();
+              const latestWeakPointStore = replaceWeakPoints(
+                applyReviewBatchResults(readWeakPoints(), itemResults),
+              );
               const remainingWeakPoints = getWeakPointList(latestWeakPointStore);
               const nextBatch = selectReviewBatch(latestWeakPointStore, starterContent);
-              const clearedCount = weakPointKeys.filter(
-                (weakPointKey) => resultsByWeakPointKey[weakPointKey] === 'correct',
+              const clearedCount = itemResults.filter(
+                (itemResult) => itemResult.result === 'correct',
               ).length;
 
               if (returnToToday) {

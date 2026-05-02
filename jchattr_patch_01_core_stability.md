@@ -1661,27 +1661,27 @@ Codex must update this section as work is completed.
 
 ---
 
-## Gate 6 audit — pending
+## Gate 6 audit — 2026-05-02 02:09 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Implemented transactional Review resolution. `ReviewBatchPlayer` now keeps draft results locally and no longer calls the immediate `onSuccessfulRetry` mutation path. Weak points are resolved only once from final batch results in `ReviewPage` after the batch is completed. Editing/resetting an answered retry clears the draft result until the user submits again.
+- Files changed: `src/features/review/components/ReviewBatchPlayer.tsx`, `src/features/review/routes/ReviewPage.tsx`, `src/features/review/lib/reviewResolution.ts`, `src/features/review/lib/reviewResolution.test.ts`, `src/lib/progress/weakPoints.ts`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `npm run test -- src/features/review/lib/reviewResolution.test.ts src/lib/progress/weakPoints.test.ts`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: Focused tests passed (2 files, 15 tests). Full `npm run test` passed (8 files, 43 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning.
+- Manual UI checks: Ran Review at `http://127.0.0.1:5174/review` in a true mobile Chrome CDP viewport (`390x844`, DPR 3). Seeded one grammar weak point, answered correctly, confirmed localStorage did not mutate before batch completion, reset/changed final answer to incorrect, completed batch, confirmed weak point remained, then completed a second batch correctly and confirmed the weak point was removed. No console errors were reported.
+- Risks / questions: Review result transaction is now local and final-result based. This does not yet broaden Review QA across all item types after transaction changes; grammar path was used for the edit-after-correct regression, while pure tests cover mixed batch result application.
+- Recommended next action: Continue with the next patch slice from the document after Gate 6.
 
 ---
 
-## Gate 7 audit — pending
+## Gate 7 audit — 2026-05-02 02:27 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Implemented Continue-state v2 with typed per-mission position data while preserving legacy `stepIndex` fallback. Grammar now resumes by section plus example/drill index; listening/output/reading resume by typed item position. Mission finish actions now synchronously finalize exposure completion and clear matching continue state, using the same guarded path as the existing auto-complete effect.
+- Files changed: `src/lib/progress/continueState.ts`, `src/lib/progress/continueState.test.ts`, `src/features/missions/lib/useMissionAutoComplete.ts`, `src/features/missions/lib/useMissionAutoComplete.test.ts`, `src/features/missions/components/GrammarMissionPlayer.tsx`, `src/features/missions/components/ListeningMissionPlayer.tsx`, `src/features/missions/components/OutputMissionPlayer.tsx`, `src/features/missions/components/ReadingMissionPlayer.tsx`, `src/features/missions/components/MissionCompletionCard.tsx`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `npm run test -- src/lib/progress/continueState.test.ts src/features/missions/lib/useMissionAutoComplete.test.ts`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: Focused tests passed (2 files, 10 tests). Full `npm run test` passed (9 files, 49 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning. Initial mobile QA caught a continue-state cleanup race after grammar finish; the finish path was fixed and revalidated.
+- Manual UI checks: Ran the app at `http://127.0.0.1:5174/` in a true mobile Chrome CDP viewport (`390x844`, DPR 3). Checked Today initial load; grammar mission resume/write on drill 2; wrong grammar answer followed by correct grammar answer; grammar finish clearing continue state; seeded v2 resume for output prompt 2, reading check 2, and listening line 2. Captured and visually reviewed screenshots for Today, grammar, output, reading, and listening. No console/runtime errors were reported.
+- Risks / questions: Continue state still uses the existing storage key (`japanese-os.continue-state.v1`) for localStorage preservation while storing `version: 2`. The in-app browser itself does not expose a documented mobile viewport setter, so true iPhone QA used temporary Chrome CDP.
+- Recommended next action: Continue with the next narrow stabilization slice from the patch document: targeted component extraction without behavior changes, keeping tests and mobile smoke QA in place.
 
 ---
 

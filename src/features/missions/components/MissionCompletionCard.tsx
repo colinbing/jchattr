@@ -17,6 +17,7 @@ type MissionCompletionCardProps = {
   unitLabel: string;
   sessionMode: MissionSessionMode;
   returnState: MissionCompletionRouteState;
+  onReturn?: () => void;
 };
 
 export function MissionCompletionCard({
@@ -26,6 +27,7 @@ export function MissionCompletionCard({
   unitLabel,
   sessionMode,
   returnState,
+  onReturn,
 }: MissionCompletionCardProps) {
   const progress = useMissionProgress();
   const completion = getMissionProgressEntry(progress, missionId);
@@ -96,7 +98,12 @@ export function MissionCompletionCard({
 
         {showReturnActions ? (
           <div className="mission-step-actions mission-completion-card__actions">
-            <Link to="/" state={returnState} className="mission-button mission-button--link">
+            <Link
+              to="/"
+              state={returnState}
+              className="mission-button mission-button--link"
+              onClick={onReturn}
+            >
               Open Today plan
             </Link>
             <Link

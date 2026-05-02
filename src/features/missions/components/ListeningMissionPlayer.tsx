@@ -11,6 +11,7 @@ import type {
 import { getListeningMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
+  resolveContinuePosition,
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
@@ -84,9 +85,22 @@ export function ListeningMissionPlayer({
       ),
     [mission.id, mission.type, sessionItems.length],
   );
+  const initialContinuePosition = useMemo(
+    () =>
+      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
+        sectionIds: ['prep', 'checks'],
+        legacySectionId: 'checks',
+        maxItemIndex: sessionItems.length - 1,
+      }),
+    [mission.id, mission.type, sessionItems.length],
+  );
   const [resultsByItemId, setResultsByItemId] = useState<Record<string, MissionItemOutcome>>({});
-  const [currentItemIndex, setCurrentItemIndex] = useState(() => initialContinueStepIndex ?? 0);
-  const [hasCompletedPrep, setHasCompletedPrep] = useState(() => initialContinueStepIndex !== null);
+  const [currentItemIndex, setCurrentItemIndex] = useState(
+    () => initialContinuePosition?.itemIndex ?? initialContinueStepIndex ?? 0,
+  );
+  const [hasCompletedPrep, setHasCompletedPrep] = useState(
+    () => initialContinuePosition?.sectionId === 'checks' || initialContinueStepIndex !== null,
+  );
   const currentItem = sessionItems[currentItemIndex];
   const showPrep = !hasCompletedPrep && supportExamples.length > 0;
   const progressValue = showPrep ? 0 : ((currentItemIndex + 1) / sessionItems.length) * 100;
@@ -102,14 +116,18 @@ export function ListeningMissionPlayer({
       missionId: mission.id,
       missionType: mission.type,
       stepIndex: currentItemIndex,
+      position: {
+        sectionId: hasCompletedPrep ? 'checks' : 'prep',
+        itemIndex: currentItemIndex,
+      },
     });
-  }, [currentItemIndex, mission.id, mission.type]);
+  }, [currentItemIndex, hasCompletedPrep, mission.id, mission.type]);
 
   useEffect(() => {
     setCurrentItemIndex((index) => Math.min(index, Math.max(0, sessionItems.length - 1)));
   }, [sessionItems.length]);
 
-  useMissionAutoComplete({
+  const completeMissionIfReady = useMissionAutoComplete({
     missionId: mission.id,
     attemptSummary,
   });
@@ -204,7 +222,10 @@ export function ListeningMissionPlayer({
             onNext={() =>
               setCurrentItemIndex((index) => Math.min(sessionItems.length - 1, index + 1))
             }
-            onFinish={() => navigate('/', { state: completionState })}
+            onFinish={() => {
+              completeMissionIfReady();
+              navigate('/', { state: completionState });
+            }}
           />
         )}
       </div>

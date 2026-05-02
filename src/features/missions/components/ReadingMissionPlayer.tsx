@@ -13,6 +13,7 @@ import { getVocabItemsForExampleIds } from '../../../lib/content/vocabSupport';
 import { getReadingMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
+  resolveContinuePosition,
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
@@ -72,8 +73,18 @@ export function ReadingMissionPlayer({
   );
   const sessionChecks = sessionCheckVariant.items;
   const [resultsByCheckId, setResultsByCheckId] = useState<Record<string, MissionItemOutcome>>({});
+  const initialContinuePosition = useMemo(
+    () =>
+      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
+        sectionIds: ['checks'],
+        legacySectionId: 'checks',
+        maxItemIndex: sessionChecks.length - 1,
+      }),
+    [mission.id, mission.type, sessionChecks.length],
+  );
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
+      initialContinuePosition?.itemIndex ??
       resolveContinueStepIndex(
         readContinueState(),
         mission.id,
@@ -95,6 +106,10 @@ export function ReadingMissionPlayer({
       missionId: mission.id,
       missionType: mission.type,
       stepIndex: currentCheckIndex,
+      position: {
+        sectionId: 'checks',
+        itemIndex: currentCheckIndex,
+      },
     });
   }, [currentCheckIndex, mission.id, mission.type]);
 
@@ -102,7 +117,7 @@ export function ReadingMissionPlayer({
     setCurrentCheckIndex((index) => Math.min(index, Math.max(0, sessionChecks.length - 1)));
   }, [sessionChecks.length]);
 
-  useMissionAutoComplete({
+  const completeMissionIfReady = useMissionAutoComplete({
     missionId: mission.id,
     attemptSummary,
   });
@@ -120,6 +135,7 @@ export function ReadingMissionPlayer({
       return;
     }
 
+    completeMissionIfReady();
     navigate('/', {
       state: buildMissionCompletionRouteState(
         mission,
@@ -251,6 +267,7 @@ export function ReadingMissionPlayer({
           sessionMode,
           attemptSummary,
         )}
+        onReturn={completeMissionIfReady}
       />
     </div>
   );

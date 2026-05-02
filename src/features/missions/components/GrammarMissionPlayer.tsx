@@ -15,6 +15,7 @@ import {
 } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
+  resolveContinuePosition,
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
@@ -80,10 +81,38 @@ export function GrammarMissionPlayer({
     [sessionDrills.length, sessionExamples.length, sessionMode],
   );
   const grammarFocusTerms = useMemo(() => getGrammarFocusTerms(lesson), [lesson]);
+  const initialContinuePosition = useMemo(
+    () =>
+      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
+        sectionIds: sessionSteps.map((step) => step.id),
+        maxItemIndex: Math.max(sessionExamples.length, sessionDrills.length) - 1,
+      }),
+    [mission.id, mission.type, sessionDrills.length, sessionExamples.length, sessionSteps],
+  );
   const [resultsByDrillId, setResultsByDrillId] = useState<Record<string, MissionItemOutcome>>({});
-  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
-  const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(() =>
+    initialContinuePosition?.sectionId === 'examples' &&
+    initialContinuePosition.itemIndex !== null &&
+    initialContinuePosition.itemIndex < sessionExamples.length
+      ? initialContinuePosition.itemIndex
+      : 0,
+  );
+  const [currentDrillIndex, setCurrentDrillIndex] = useState(() =>
+    initialContinuePosition?.sectionId === 'drills' &&
+    initialContinuePosition.itemIndex !== null &&
+    initialContinuePosition.itemIndex < sessionDrills.length
+      ? initialContinuePosition.itemIndex
+      : 0,
+  );
   const [currentStepIndex, setCurrentStepIndex] = useState(() => {
+    const continueStepIndex = initialContinuePosition
+      ? sessionSteps.findIndex((step) => step.id === initialContinuePosition.sectionId)
+      : null;
+
+    if (continueStepIndex !== null && continueStepIndex >= 0) {
+      return continueStepIndex;
+    }
+
     return (
       resolveContinueStepIndex(
         readContinueState(),
@@ -107,8 +136,16 @@ export function GrammarMissionPlayer({
       missionId: mission.id,
       missionType: mission.type,
       stepIndex: currentStepIndex,
+      position: {
+        sectionId: currentStep.id,
+        itemIndex: getGrammarContinueItemIndex({
+          currentStepId: currentStep.id,
+          currentExampleIndex,
+          currentDrillIndex,
+        }),
+      },
     });
-  }, [currentStepIndex, mission.id, mission.type]);
+  }, [currentDrillIndex, currentExampleIndex, currentStep.id, currentStepIndex, mission.id, mission.type]);
 
   useEffect(() => {
     setCurrentExampleIndex((index) => Math.min(index, Math.max(0, sessionExamples.length - 1)));
@@ -122,7 +159,7 @@ export function GrammarMissionPlayer({
     setCurrentStepIndex((index) => Math.min(index, Math.max(0, sessionSteps.length - 1)));
   }, [sessionSteps.length]);
 
-  useMissionAutoComplete({
+  const completeMissionIfReady = useMissionAutoComplete({
     missionId: mission.id,
     attemptSummary,
   });
@@ -148,6 +185,7 @@ export function GrammarMissionPlayer({
       return;
     }
 
+    completeMissionIfReady();
     navigate('/', {
       state: buildMissionCompletionRouteState(
         mission,
@@ -381,15 +419,16 @@ export function GrammarMissionPlayer({
                 <button
                   type="button"
                   className="mission-button mission-button--link"
-                  onClick={() =>
+                  onClick={() => {
+                    completeMissionIfReady();
                     navigate('/', {
                       state: buildMissionCompletionRouteState(
                         mission,
                         sessionMode,
                         attemptSummary,
                       ),
-                    })
-                  }
+                    });
+                  }}
                 >
                   Finish to Today
                 </button>
@@ -819,6 +858,26 @@ function getStepDescription(
         ? `One active drill at a time · ${currentDrillIndex + 1} of ${drillCount}`
         : 'No drills linked yet.';
   }
+}
+
+function getGrammarContinueItemIndex({
+  currentStepId,
+  currentExampleIndex,
+  currentDrillIndex,
+}: {
+  currentStepId: MissionStepId;
+  currentExampleIndex: number;
+  currentDrillIndex: number;
+}) {
+  if (currentStepId === 'examples') {
+    return currentExampleIndex;
+  }
+
+  if (currentStepId === 'drills') {
+    return currentDrillIndex;
+  }
+
+  return null;
 }
 
 function getCurrentResponse({

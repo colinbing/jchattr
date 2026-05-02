@@ -168,6 +168,12 @@ export function resetWeakPoints() {
   return EMPTY_WEAK_POINTS;
 }
 
+export function replaceWeakPoints(weakPoints: WeakPointStore) {
+  const nextWeakPoints = parseWeakPoints(weakPoints);
+  writeWeakPoints(nextWeakPoints);
+  return nextWeakPoints;
+}
+
 export function getWeakPointList(weakPoints: WeakPointStore) {
   return Object.values(weakPoints.weakPointsByKey).sort((left, right) => {
     return Date.parse(right.lastMissedAt) - Date.parse(left.lastMissedAt);

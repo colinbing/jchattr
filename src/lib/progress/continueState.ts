@@ -4,7 +4,13 @@ import type { MissionType } from '../content/types';
 export const CONTINUE_STATE_STORAGE_KEY = 'japanese-os.continue-state.v1';
 
 const CONTINUE_STATE_UPDATED_EVENT = 'japanese-os:continue-state-updated';
-const CONTINUE_STATE_VERSION = 1;
+const CONTINUE_STATE_VERSION = 2;
+
+export interface ContinuePosition {
+  sectionId: string;
+  itemIndex?: number | null;
+  subItemIndex?: number | null;
+}
 
 export interface ContinueStateRecord {
   version: number;
@@ -12,13 +18,23 @@ export interface ContinueStateRecord {
   missionType: MissionType | null;
   lastVisitedAt: string | null;
   stepIndex: number | null;
+  position: ContinuePosition | null;
 }
 
 type UpdateContinueStateParams = {
   missionId: string;
   missionType: MissionType;
   stepIndex?: number | null;
+  position?: ContinuePosition | null;
   visitedAt?: Date;
+};
+
+type ResolveContinuePositionOptions = {
+  sectionIds?: string[];
+  maxItemIndex?: number;
+  maxSubItemIndex?: number;
+  legacySectionId?: string;
+  maxLegacyStepIndex?: number;
 };
 
 const EMPTY_CONTINUE_STATE: ContinueStateRecord = {
@@ -27,6 +43,7 @@ const EMPTY_CONTINUE_STATE: ContinueStateRecord = {
   missionType: null,
   lastVisitedAt: null,
   stepIndex: null,
+  position: null,
 };
 
 let cachedRawContinueState: string | null | undefined;
@@ -76,6 +93,7 @@ export function updateContinueState({
   missionId,
   missionType,
   stepIndex = null,
+  position = null,
   visitedAt = new Date(),
 }: UpdateContinueStateParams) {
   if (!missionId.trim()) {
@@ -88,6 +106,7 @@ export function updateContinueState({
     missionType,
     lastVisitedAt: visitedAt.toISOString(),
     stepIndex,
+    position,
   });
 
   writeContinueState(nextContinueState);
@@ -132,6 +151,58 @@ export function resolveContinueStepIndex(
   }
 
   return continueState.stepIndex;
+}
+
+export function resolveContinuePosition(
+  continueState: ContinueStateRecord,
+  missionId: string,
+  missionType: MissionType,
+  options: ResolveContinuePositionOptions = {},
+) {
+  if (
+    continueState.lastActiveMissionId !== missionId ||
+    continueState.missionType !== missionType
+  ) {
+    return null;
+  }
+
+  if (continueState.position) {
+    return sanitizeResolvedPosition(continueState.position, options);
+  }
+
+  const legacyStepIndex = resolveContinueStepIndex(
+    continueState,
+    missionId,
+    missionType,
+    options.maxLegacyStepIndex ?? deriveMaxLegacyStepIndex(options),
+  );
+
+  if (legacyStepIndex === null) {
+    return null;
+  }
+
+  if (options.legacySectionId) {
+    return sanitizeResolvedPosition(
+      {
+        sectionId: options.legacySectionId,
+        itemIndex: legacyStepIndex,
+      },
+      options,
+    );
+  }
+
+  const legacySectionId = options.sectionIds?.[legacyStepIndex];
+
+  if (!legacySectionId) {
+    return null;
+  }
+
+  return sanitizeResolvedPosition(
+    {
+      sectionId: legacySectionId,
+    },
+    options,
+  );
 }
 
 function subscribeToContinueState(onStoreChange: () => void) {
@@ -204,7 +275,81 @@ function parseContinueState(rawValue: unknown): ContinueStateRecord {
       rawValue.stepIndex >= 0
         ? rawValue.stepIndex
         : null,
+    position: sanitizeContinuePosition(rawValue.position),
   };
+}
+
+function sanitizeContinuePosition(value: unknown): ContinuePosition | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  const sectionId =
+    typeof value.sectionId === 'string' && value.sectionId.trim().length > 0
+      ? value.sectionId
+      : null;
+
+  if (!sectionId) {
+    return null;
+  }
+
+  return {
+    sectionId,
+    itemIndex: sanitizeOptionalIndex(value.itemIndex),
+    subItemIndex: sanitizeOptionalIndex(value.subItemIndex),
+  };
+}
+
+function sanitizeResolvedPosition(
+  position: ContinuePosition,
+  options: ResolveContinuePositionOptions,
+) {
+  if (options.sectionIds && !options.sectionIds.includes(position.sectionId)) {
+    return null;
+  }
+
+  const itemIndex = sanitizeOptionalIndex(position.itemIndex);
+  const subItemIndex = sanitizeOptionalIndex(position.subItemIndex);
+
+  if (
+    itemIndex !== null &&
+    options.maxItemIndex !== undefined &&
+    itemIndex > options.maxItemIndex
+  ) {
+    return null;
+  }
+
+  if (
+    subItemIndex !== null &&
+    options.maxSubItemIndex !== undefined &&
+    subItemIndex > options.maxSubItemIndex
+  ) {
+    return null;
+  }
+
+  return {
+    sectionId: position.sectionId,
+    itemIndex,
+    subItemIndex,
+  };
+}
+
+function sanitizeOptionalIndex(value: unknown) {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0
+    ? value
+    : null;
+}
+
+function deriveMaxLegacyStepIndex(options: ResolveContinuePositionOptions) {
+  if (options.legacySectionId && options.maxItemIndex !== undefined) {
+    return options.maxItemIndex;
+  }
+
+  if (options.sectionIds?.length) {
+    return options.sectionIds.length - 1;
+  }
+
+  return options.maxItemIndex ?? 0;
 }
 
 function isMissionType(value: unknown): value is MissionType {

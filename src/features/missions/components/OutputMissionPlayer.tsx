@@ -13,6 +13,7 @@ import type {
 import { getOutputMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
   readContinueState,
+  resolveContinuePosition,
   resolveContinueStepIndex,
   updateContinueState,
 } from '../../../lib/progress/continueState';
@@ -78,8 +79,18 @@ export function OutputMissionPlayer({
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
     Record<string, OutputEvaluationResult | null>
   >({});
+  const initialContinuePosition = useMemo(
+    () =>
+      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
+        sectionIds: ['tasks'],
+        legacySectionId: 'tasks',
+        maxItemIndex: sessionTasks.length - 1,
+      }),
+    [mission.id, mission.type, sessionTasks.length],
+  );
   const [currentTaskIndex, setCurrentTaskIndex] = useState(() => {
     return (
+      initialContinuePosition?.itemIndex ??
       resolveContinueStepIndex(readContinueState(), mission.id, mission.type, sessionTasks.length - 1) ??
       0
     );
@@ -100,6 +111,10 @@ export function OutputMissionPlayer({
       missionId: mission.id,
       missionType: mission.type,
       stepIndex: currentTaskIndex,
+      position: {
+        sectionId: 'tasks',
+        itemIndex: currentTaskIndex,
+      },
     });
   }, [currentTaskIndex, mission.id, mission.type]);
 
@@ -107,7 +122,7 @@ export function OutputMissionPlayer({
     setCurrentTaskIndex((index) => Math.min(index, Math.max(0, sessionTasks.length - 1)));
   }, [sessionTasks.length]);
 
-  useMissionAutoComplete({
+  const completeMissionIfReady = useMissionAutoComplete({
     missionId: mission.id,
     attemptSummary,
   });
@@ -139,6 +154,7 @@ export function OutputMissionPlayer({
       return;
     }
 
+    completeMissionIfReady();
     navigate('/', { state: completionState });
   }
 

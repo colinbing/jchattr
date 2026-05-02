@@ -13,7 +13,7 @@ import {
 } from '../../../lib/feedback/mistakeExplanations';
 import { hasDistinctReading } from '../../../lib/japaneseText';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
-import { getWeakPointKey, type WeakPoint } from '../../../lib/progress/weakPoints';
+import { getWeakPointKey } from '../../../lib/progress/weakPoints';
 import { getReorderTokens } from '../../../lib/reorderDrill';
 import type { ReviewBatchItem } from '../lib/reviewBatch';
 import {
@@ -21,19 +21,20 @@ import {
   getReviewBatchSummary,
   normalizeReviewAnswer,
 } from '../lib/reviewBatch';
+import {
+  buildReviewBatchCompletionResults,
+  type ReviewBatchCompletionResult,
+  type ReviewResult,
+} from '../lib/reviewResolution';
 
 type ReviewBatchPlayerProps = {
   items: ReviewBatchItem[];
-  onComplete: (weakPoints: WeakPoint[], resultsByWeakPointKey: Record<string, ReviewResult>) => void;
-  onSuccessfulRetry: (weakPoint: WeakPoint) => void;
+  onComplete: (itemResults: ReviewBatchCompletionResult[]) => void;
 };
-
-type ReviewResult = 'correct' | 'incorrect';
 
 export function ReviewBatchPlayer({
   items,
   onComplete,
-  onSuccessfulRetry,
 }: ReviewBatchPlayerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [resultsByWeakPointKey, setResultsByWeakPointKey] = useState<Record<string, ReviewResult>>({});
@@ -60,6 +61,23 @@ export function ReviewBatchPlayer({
     () => items.filter((item) => resultsByWeakPointKey[getWeakPointKey(item.weakPoint)]).length,
     [items, resultsByWeakPointKey],
   );
+
+  function handleReviewResult(
+    weakPointKey: string,
+    result: ReviewResult | null,
+  ) {
+    setResultsByWeakPointKey((current) => {
+      if (result === null) {
+        const { [weakPointKey]: _discardedResult, ...remainingResults } = current;
+        return remainingResults;
+      }
+
+      return {
+        ...current,
+        [weakPointKey]: result,
+      };
+    });
+  }
 
   return (
     <div className="review-batch-player">
@@ -140,16 +158,7 @@ export function ReviewBatchPlayer({
               key={currentItem.weakPoint.itemId}
               item={currentItem}
               onReviewed={(result) => {
-                if (
-                  result === 'correct' &&
-                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
-                ) {
-                  onSuccessfulRetry(currentItem.weakPoint);
-                }
-                setResultsByWeakPointKey((current) => ({
-                  ...current,
-                  [currentWeakPointKey]: result,
-                }));
+                handleReviewResult(currentWeakPointKey, result);
               }}
             />
           ) : null}
@@ -160,16 +169,7 @@ export function ReviewBatchPlayer({
               item={currentItem}
               avoidTranslations={recentListeningTranslations}
               onReviewed={(result) => {
-                if (
-                  result === 'correct' &&
-                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
-                ) {
-                  onSuccessfulRetry(currentItem.weakPoint);
-                }
-                setResultsByWeakPointKey((current) => ({
-                  ...current,
-                  [currentWeakPointKey]: result,
-                }));
+                handleReviewResult(currentWeakPointKey, result);
               }}
             />
           ) : null}
@@ -179,16 +179,7 @@ export function ReviewBatchPlayer({
               key={currentItem.weakPoint.itemId}
               item={currentItem}
               onReviewed={(result) => {
-                if (
-                  result === 'correct' &&
-                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
-                ) {
-                  onSuccessfulRetry(currentItem.weakPoint);
-                }
-                setResultsByWeakPointKey((current) => ({
-                  ...current,
-                  [currentWeakPointKey]: result,
-                }));
+                handleReviewResult(currentWeakPointKey, result);
               }}
             />
           ) : null}
@@ -198,16 +189,7 @@ export function ReviewBatchPlayer({
               key={currentItem.weakPoint.itemId}
               item={currentItem}
               onReviewed={(result) => {
-                if (
-                  result === 'correct' &&
-                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
-                ) {
-                  onSuccessfulRetry(currentItem.weakPoint);
-                }
-                setResultsByWeakPointKey((current) => ({
-                  ...current,
-                  [currentWeakPointKey]: result,
-                }));
+                handleReviewResult(currentWeakPointKey, result);
               }}
             />
           ) : null}
@@ -239,8 +221,10 @@ export function ReviewBatchPlayer({
                 className="mission-button"
                 onClick={() =>
                   onComplete(
-                    items.map((item) => item.weakPoint),
-                    resultsByWeakPointKey,
+                    buildReviewBatchCompletionResults(
+                      items.map((item) => item.weakPoint),
+                      resultsByWeakPointKey,
+                    ),
                   )
                 }
                 disabled={!allItemsAttempted}
@@ -256,7 +240,7 @@ export function ReviewBatchPlayer({
 }
 
 type ReviewCardProps = {
-  onReviewed: (result: ReviewResult) => void;
+  onReviewed: (result: ReviewResult | null) => void;
 };
 
 type ListeningReviewFeedback = ReviewResult | 'supported';
@@ -319,6 +303,7 @@ function GrammarReviewCard({
               onClick={() => {
                 setSelectedChoice(choice);
                 setFeedback(null);
+                onReviewed(null);
               }}
             >
               {choice}
@@ -332,7 +317,10 @@ function GrammarReviewCard({
           label="Your answer"
           value={typedAnswer}
           onChange={setTypedAnswer}
-          onInteraction={() => setFeedback(null)}
+          onInteraction={() => {
+            setFeedback(null);
+            onReviewed(null);
+          }}
           placeholder="Type the missing Japanese"
         />
       ) : null}
@@ -364,6 +352,7 @@ function GrammarReviewCard({
                 onClick={() => {
                   setAssembledTokenIndexes((indexes) => [...indexes, tokenIndex]);
                   setFeedback(null);
+                  onReviewed(null);
                 }}
               >
                 {token}
@@ -390,6 +379,7 @@ function GrammarReviewCard({
             setTypedAnswer('');
             setAssembledTokenIndexes([]);
             setFeedback(null);
+            onReviewed(null);
           }}
         >
           Reset
@@ -516,6 +506,7 @@ function ListeningReviewCard({
             onClick={() => {
               setSelectedChoice(choice);
               setFeedback(null);
+              onReviewed(null);
             }}
           >
             {choice}
@@ -539,6 +530,7 @@ function ListeningReviewCard({
             setSelectedChoice('');
             setFeedback(null);
             setAnswerRevealed(false);
+            onReviewed(null);
           }}
         >
           Reset
@@ -621,7 +613,10 @@ function OutputReviewCard({
         label="Your Japanese line"
         value={response}
         onChange={setResponse}
-        onInteraction={() => setFeedback(null)}
+        onInteraction={() => {
+          setFeedback(null);
+          onReviewed(null);
+        }}
         rows={3}
         placeholder="Type your line in Japanese"
       />
@@ -641,6 +636,7 @@ function OutputReviewCard({
           onClick={() => {
             setResponse('');
             setFeedback(null);
+            onReviewed(null);
           }}
         >
           Reset
@@ -729,6 +725,7 @@ function ReadingReviewCard({
             onClick={() => {
               setSelectedChoice(choice);
               setFeedback(null);
+              onReviewed(null);
             }}
           >
             {choice}
@@ -751,6 +748,7 @@ function ReadingReviewCard({
           onClick={() => {
             setSelectedChoice('');
             setFeedback(null);
+            onReviewed(null);
           }}
         >
           Reset
