@@ -14,6 +14,7 @@
     "report:content-overlap": "node --import tsx scripts/report-content-overlap.ts",
     "report:progression-gaps": "node --import tsx scripts/report-progression-gaps.ts",
     "report:reading-reuse": "node --import tsx scripts/report-reading-reuse.ts",
+    "report:scenario-inventory": "node --import tsx scripts/report-scenario-inventory.ts",
     "sync:listening-audio-manifest": "tsx scripts/sync-listening-audio-manifest.ts",
     "test": "vitest run",
     "test:watch": "vitest",

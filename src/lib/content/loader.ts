@@ -1,4 +1,5 @@
 import { starterContentModules } from '../../content';
+import { assertScenarioMissionContracts } from './scenarioContracts';
 import { contentCollectionSchema } from './schemas';
 import type {
   ContentCollection,
@@ -152,6 +153,8 @@ function validateRelations(content: ContentCollection) {
       });
     }
   });
+
+  assertScenarioMissionContracts(content.missions);
 
   content.capstoneLines.forEach((line) => {
     assertIdsExist(
