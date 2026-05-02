@@ -79,7 +79,7 @@ export type TodayRecommendation =
 // 1. Recommend Review first when there are unresolved weak points.
 // 2. Mark review as urgent when weak points are fresh, repeated, or numerous.
 // 3. Recommend the next unlocked incomplete mission in starter order.
-// 4. When a chapter is cleared, add its capstone as a closeout only if Review is not urgent.
+// 4. When a chapter is finished, add its capstone as a closeout only if Review is not urgent.
 // 5. Once the capstone is complete, offer bonus story-mode or recombination rereads through the same capstone surface.
 // 6. Use the third slot to stabilize the mission tied to the top open weak point when review is urgent.
 // 7. Otherwise recommend one reinforcement mission, preferring related alternate missions by target skill and linked grammar tags.
@@ -393,7 +393,7 @@ function getCapstoneRecommendation(
     title: capstoneStory.title,
     reason: `${sourcePackLabel} ${
       capstoneStory.sourcePackIds.length === 1 ? 'is' : 'are'
-    } clear. Wrap the chapter with one short story built from lines you have already practiced.`,
+    } finished. Wrap the chapter with one short story built from lines you have already practiced.`,
     ctaLabel: 'Read capstone',
     to: `/capstone/${capstoneStory.id}`,
     capstoneStory,
@@ -724,7 +724,7 @@ function buildNextMissionReason(
   }
 
   if (personalization.completedSameSkillCount > 0) {
-    return 'This keeps the path moving by building on skill work you have already cleared locally.';
+    return 'This keeps the path moving by building on skill work you have already finished locally.';
   }
 
   if (hasReviewRecommendation) {
@@ -732,7 +732,7 @@ function buildNextMissionReason(
   }
 
   if (reviewAwareness.hasRecentReview) {
-    return 'You just cleared review, so this keeps the path moving without extra noise.';
+    return 'You just finished review, so this keeps the path moving without extra noise.';
   }
 
   return 'This keeps the core path moving with one fresh mission.';
@@ -1052,7 +1052,7 @@ function buildReinforcementReason(
   }
 
   if (progress.completionCount <= 1) {
-    return 'You have only cleared this once, so a short rotated follow-up pass should make it stick better.';
+    return 'You have only finished this once, so a short rotated follow-up pass should make it stick better.';
   }
 
   return 'This mission has a lighter practice count than the rest, so use a short rotated pass instead of replaying the full mission.';

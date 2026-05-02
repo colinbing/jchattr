@@ -74,7 +74,7 @@ export function MissionLibraryCard({
           </span>
           {progress.isCompleted ? (
             <span className="mission-state-pill mission-state-pill--completed">
-              Completed
+              {progress.isMastered ? 'Clean pass' : 'Finished'}
             </span>
           ) : null}
           {isRecommended ? (
@@ -110,7 +110,7 @@ export function MissionLibraryCard({
             </p>
             {progress.lastCompletedAt ? (
               <p className="mission-library-card__detail-text">
-                Last cleared {formatCompletedAt(progress.lastCompletedAt)}.
+                Last finished {formatCompletedAt(progress.lastCompletedAt)}.
               </p>
             ) : null}
             {!isUnlocked && unlockRequirement ? (
@@ -197,12 +197,16 @@ export function formatTargetSkill(targetSkill: Mission['targetSkill']) {
 
 function buildProgressNote(progress: MissionProgressEntry, isUnlocked: boolean) {
   if (progress.isCompleted) {
+    const masteryCopy = progress.isMastered
+      ? ` Clean pass recorded ${progress.masteryCount} time${progress.masteryCount === 1 ? '' : 's'}.`
+      : ' Review may still be needed for this mission.';
+
     return progress.completionCount > 1
-      ? `Mission complete. Cleared ${progress.completionCount} times. Open again starts a short reinforce pass.`
-      : 'Mission complete. Open again starts a short reinforce pass.';
+      ? `Mission finished ${progress.completionCount} times.${masteryCopy} Open again starts a short reinforce pass.`
+      : `Mission finished.${masteryCopy} Open again starts a short reinforce pass.`;
   }
 
-  return isUnlocked ? 'Ready for a first clear.' : 'Locked until the earlier requirement is cleared.';
+  return isUnlocked ? 'Ready for a first pass.' : 'Locked until the earlier requirement is finished.';
 }
 
 function formatCompletedAt(timestamp: string) {

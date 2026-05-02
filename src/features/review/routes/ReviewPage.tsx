@@ -8,6 +8,7 @@ import {
 } from '../../../lib/progress/reviewLoop';
 import {
   getWeakPointList,
+  getWeakPointKey,
   readWeakPoints,
   resolveWeakPointSuccess,
   type WeakPoint,
@@ -222,16 +223,17 @@ export function ReviewPage() {
         <div ref={activeBatchRef}>
           <ReviewBatchPlayer
             items={activeBatch}
-            onSuccessfulRetry={(itemId) => {
-              resolveWeakPointSuccess(itemId);
+            onSuccessfulRetry={(weakPoint) => {
+              resolveWeakPointSuccess(weakPoint);
             }}
-            onComplete={(itemIds, resultsByItemId) => {
-              markReviewBatchComplete(itemIds);
+            onComplete={(weakPoints, resultsByWeakPointKey) => {
+              const weakPointKeys = weakPoints.map((weakPoint) => getWeakPointKey(weakPoint));
+              markReviewBatchComplete(weakPointKeys);
               const latestWeakPointStore = readWeakPoints();
               const remainingWeakPoints = getWeakPointList(latestWeakPointStore);
               const nextBatch = selectReviewBatch(latestWeakPointStore, starterContent);
-              const clearedCount = itemIds.filter(
-                (itemId) => resultsByItemId[itemId] === 'correct',
+              const clearedCount = weakPointKeys.filter(
+                (weakPointKey) => resultsByWeakPointKey[weakPointKey] === 'correct',
               ).length;
 
               if (returnToToday) {
@@ -240,9 +242,9 @@ export function ReviewPage() {
                   replace: true,
                   state: {
                     reviewCompletion: {
-                      attemptedCount: itemIds.length,
+                      attemptedCount: weakPointKeys.length,
                       clearedCount,
-                      unresolvedCount: itemIds.length - clearedCount,
+                      unresolvedCount: weakPointKeys.length - clearedCount,
                       remainingWeakPointCount: remainingWeakPoints.length,
                       nextBatchSize: nextBatch.length,
                     },
@@ -252,9 +254,9 @@ export function ReviewPage() {
               }
 
               setLastBatchSummary({
-                attemptedCount: itemIds.length,
+                attemptedCount: weakPointKeys.length,
                 clearedCount,
-                unresolvedCount: itemIds.length - clearedCount,
+                unresolvedCount: weakPointKeys.length - clearedCount,
                 remainingWeakPointCount: remainingWeakPoints.length,
                 nextBatchSize: nextBatch.length,
               });

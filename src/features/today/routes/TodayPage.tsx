@@ -258,8 +258,7 @@ export function TodayPage() {
         >
           <div className="review-return-card mission-return-card">
             <p className="review-launch-card__title">
-              {missionCompletion.clearedCount}/{missionCompletion.totalCount}{' '}
-              {formatMissionUnitLabel(missionCompletion.missionType, missionCompletion.totalCount)} cleared
+              {buildMissionCompletionTitle(missionCompletion)}
             </p>
             <p className="review-launch-card__body">
               {missionCompletion.missionTitle} · {formatMissionTypeLabel(missionCompletion.missionType)} ·{' '}
@@ -935,10 +934,17 @@ function isCoreRecommendation(recommendation: TodayRecommendation) {
 }
 
 function buildMissionPracticeRecap(missionCompletion: TodayMissionCompletion) {
-  return `${missionCompletion.clearedCount}/${missionCompletion.totalCount} ${formatMissionUnitLabel(
+  const reviewItemCount = missionCompletion.incorrectCount + missionCompletion.supportedCount;
+  const unitLabel = formatMissionUnitLabel(
     missionCompletion.missionType,
     missionCompletion.totalCount,
-  )} in ${formatTargetSkillLabel(missionCompletion.targetSkill)}.`;
+  );
+
+  if (reviewItemCount === 0) {
+    return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} ${unitLabel} attempted; ${missionCompletion.correctCount} correct.`;
+  }
+
+  return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} ${unitLabel} attempted; ${missionCompletion.correctCount} correct and ${reviewItemCount} saved for Review.`;
 }
 
 function buildMissionSkillRecap(
@@ -946,15 +952,35 @@ function buildMissionSkillRecap(
   missionCompletion: TodayMissionCompletion,
 ) {
   if (!skillArea) {
-    return `${formatTargetSkillLabel(missionCompletion.targetSkill)} got one more local practice signal.`;
+    return missionCompletion.isMasteryComplete
+      ? `${formatTargetSkillLabel(missionCompletion.targetSkill)} got one clean local practice signal.`
+      : `${formatTargetSkillLabel(missionCompletion.targetSkill)} got exposure practice with review pressure still open.`;
   }
 
   const tierLabel = formatSkillTierLabel(skillArea.tier).toLowerCase();
-  const completionLabel = `${skillArea.completionCount} related completion${
+  const completionLabel = `${skillArea.completionCount} related finished pass${
     skillArea.completionCount === 1 ? '' : 's'
   }`;
 
-  return `${skillArea.label} is ${tierLabel}; ${completionLabel} on this device.`;
+  return missionCompletion.isMasteryComplete
+    ? `${skillArea.label} is ${tierLabel}; clean pass recorded with ${completionLabel} on this device.`
+    : `${skillArea.label} is ${tierLabel}; exposure recorded, but this was not a clean pass.`;
+}
+
+function buildMissionCompletionTitle(missionCompletion: TodayMissionCompletion) {
+  if (missionCompletion.isMasteryComplete) {
+    return `${missionCompletion.correctCount}/${missionCompletion.totalCount} correct · clean pass`;
+  }
+
+  const reviewItemCount = missionCompletion.incorrectCount + missionCompletion.supportedCount;
+
+  return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} attempted · ${
+    missionCompletion.correctCount
+  } correct${
+    reviewItemCount > 0
+      ? ` · ${reviewItemCount} review item${reviewItemCount === 1 ? '' : 's'}`
+      : ''
+  }`;
 }
 
 function buildMissionReviewImpact(missionWeakPointCount: number) {

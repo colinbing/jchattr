@@ -64,7 +64,7 @@ export function TodayRecommendationCard({
           <p className="list-meta">
             {recommendation.sessionMode === 'reinforce' ? 'Short reinforce pass. ' : ''}
             {progress?.isCompleted
-              ? `Completed ${progress.completionCount} time${
+              ? `Finished ${progress.completionCount} time${
                   progress.completionCount === 1 ? '' : 's'
                 } on this device. `
               : ''}

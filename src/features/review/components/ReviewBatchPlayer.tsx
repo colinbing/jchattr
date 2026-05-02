@@ -13,6 +13,7 @@ import {
 } from '../../../lib/feedback/mistakeExplanations';
 import { hasDistinctReading } from '../../../lib/japaneseText';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
+import { getWeakPointKey, type WeakPoint } from '../../../lib/progress/weakPoints';
 import { getReorderTokens } from '../../../lib/reorderDrill';
 import type { ReviewBatchItem } from '../lib/reviewBatch';
 import {
@@ -23,8 +24,8 @@ import {
 
 type ReviewBatchPlayerProps = {
   items: ReviewBatchItem[];
-  onComplete: (itemIds: string[], resultsByItemId: Record<string, ReviewResult>) => void;
-  onSuccessfulRetry: (itemId: string) => void;
+  onComplete: (weakPoints: WeakPoint[], resultsByWeakPointKey: Record<string, ReviewResult>) => void;
+  onSuccessfulRetry: (weakPoint: WeakPoint) => void;
 };
 
 type ReviewResult = 'correct' | 'incorrect';
@@ -35,12 +36,13 @@ export function ReviewBatchPlayer({
   onSuccessfulRetry,
 }: ReviewBatchPlayerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [resultsByItemId, setResultsByItemId] = useState<Record<string, ReviewResult>>({});
+  const [resultsByWeakPointKey, setResultsByWeakPointKey] = useState<Record<string, ReviewResult>>({});
   const currentItem = items[currentIndex];
-  const currentResult = resultsByItemId[currentItem.weakPoint.itemId];
+  const currentWeakPointKey = getWeakPointKey(currentItem.weakPoint);
+  const currentResult = resultsByWeakPointKey[currentWeakPointKey];
   const isLastItem = currentIndex === items.length - 1;
-  const allItemsAttempted = items.every((item) => resultsByItemId[item.weakPoint.itemId]);
-  const hasUnclearedAttempt = Object.values(resultsByItemId).some((result) => result === 'incorrect');
+  const allItemsAttempted = items.every((item) => resultsByWeakPointKey[getWeakPointKey(item.weakPoint)]);
+  const hasUnclearedAttempt = Object.values(resultsByWeakPointKey).some((result) => result === 'incorrect');
   const progressValue = ((currentIndex + 1) / items.length) * 100;
   const summary = getReviewBatchSummary(currentItem);
   const recentListeningTranslations = items
@@ -55,8 +57,8 @@ export function ReviewBatchPlayer({
     .map((item) => item.listeningItem.translation);
 
   const completedCount = useMemo(
-    () => items.filter((item) => resultsByItemId[item.weakPoint.itemId]).length,
-    [items, resultsByItemId],
+    () => items.filter((item) => resultsByWeakPointKey[getWeakPointKey(item.weakPoint)]).length,
+    [items, resultsByWeakPointKey],
   );
 
   return (
@@ -140,13 +142,13 @@ export function ReviewBatchPlayer({
               onReviewed={(result) => {
                 if (
                   result === 'correct' &&
-                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
                 ) {
-                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                  onSuccessfulRetry(currentItem.weakPoint);
                 }
-                setResultsByItemId((current) => ({
+                setResultsByWeakPointKey((current) => ({
                   ...current,
-                  [currentItem.weakPoint.itemId]: result,
+                  [currentWeakPointKey]: result,
                 }));
               }}
             />
@@ -160,13 +162,13 @@ export function ReviewBatchPlayer({
               onReviewed={(result) => {
                 if (
                   result === 'correct' &&
-                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
                 ) {
-                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                  onSuccessfulRetry(currentItem.weakPoint);
                 }
-                setResultsByItemId((current) => ({
+                setResultsByWeakPointKey((current) => ({
                   ...current,
-                  [currentItem.weakPoint.itemId]: result,
+                  [currentWeakPointKey]: result,
                 }));
               }}
             />
@@ -179,13 +181,13 @@ export function ReviewBatchPlayer({
               onReviewed={(result) => {
                 if (
                   result === 'correct' &&
-                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
                 ) {
-                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                  onSuccessfulRetry(currentItem.weakPoint);
                 }
-                setResultsByItemId((current) => ({
+                setResultsByWeakPointKey((current) => ({
                   ...current,
-                  [currentItem.weakPoint.itemId]: result,
+                  [currentWeakPointKey]: result,
                 }));
               }}
             />
@@ -198,13 +200,13 @@ export function ReviewBatchPlayer({
               onReviewed={(result) => {
                 if (
                   result === 'correct' &&
-                  resultsByItemId[currentItem.weakPoint.itemId] !== 'correct'
+                  resultsByWeakPointKey[currentWeakPointKey] !== 'correct'
                 ) {
-                  onSuccessfulRetry(currentItem.weakPoint.itemId);
+                  onSuccessfulRetry(currentItem.weakPoint);
                 }
-                setResultsByItemId((current) => ({
+                setResultsByWeakPointKey((current) => ({
                   ...current,
-                  [currentItem.weakPoint.itemId]: result,
+                  [currentWeakPointKey]: result,
                 }));
               }}
             />
@@ -237,8 +239,8 @@ export function ReviewBatchPlayer({
                 className="mission-button"
                 onClick={() =>
                   onComplete(
-                    items.map((item) => item.weakPoint.itemId),
-                    resultsByItemId,
+                    items.map((item) => item.weakPoint),
+                    resultsByWeakPointKey,
                   )
                 }
                 disabled={!allItemsAttempted}

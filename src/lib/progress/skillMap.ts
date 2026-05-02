@@ -29,6 +29,9 @@ export interface ProgressOverview {
   completedMissionCount: number;
   totalCompletionCount: number;
   lastCompletedAt: string | null;
+  masteredMissionCount: number;
+  totalMasteryCount: number;
+  lastMasteredAt: string | null;
   trackedWeakPointCount: number;
   totalMissCount: number;
   lastMissedAt: string | null;
@@ -151,9 +154,9 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
 ];
 
 // Heuristics stay intentionally small:
-// - not-enough-data: no related completions and no related misses, or the area is not instrumented yet
-// - shaky: misses outweigh completions, or there are at least 2 recorded misses
-// - solid: at least 3 related completions and no more than 1 total miss
+// - not-enough-data: no related finished passes and no related misses, or the area is not instrumented yet
+// - shaky: misses outweigh finished passes, or there are at least 2 recorded misses
+// - solid: at least 3 related finished passes and no more than 1 total miss
 // - okay: everything in between
 export function deriveProgressOverview(
   starterContent: StarterContent,
@@ -173,6 +176,14 @@ export function deriveProgressOverview(
     ),
     lastCompletedAt: getLatestTimestamp(
       Object.values(missionProgress.lastCompletedAtByMissionId),
+    ),
+    masteredMissionCount: missionProgress.masteredMissionIds.length,
+    totalMasteryCount: completionEntries.reduce(
+      (sum, entry) => sum + entry.masteryCount,
+      0,
+    ),
+    lastMasteredAt: getLatestTimestamp(
+      Object.values(missionProgress.lastMasteredAtByMissionId),
     ),
     trackedWeakPointCount: weakPointList.length,
     totalMissCount: weakPointList.reduce((sum, weakPoint) => sum + weakPoint.missCount, 0),
@@ -318,10 +329,10 @@ function buildSkillNote(
   }
 
   if (tier === 'solid') {
-    return `${completionCount} related completions with only light recent friction.`;
+    return `${completionCount} related finished passes with only light recent friction.`;
   }
 
-  return `${completionCount} related completion${completionCount === 1 ? '' : 's'} with manageable miss pressure.`;
+  return `${completionCount} related finished pass${completionCount === 1 ? '' : 'es'} with manageable miss pressure.`;
 }
 
 function getLatestTimestamp(timestamps: string[]) {

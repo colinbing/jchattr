@@ -27,6 +27,11 @@ import {
   selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
+import {
+  mergeMissionItemOutcome,
+  summarizeMissionItemOutcomes,
+  type MissionItemOutcome,
+} from '../lib/missionCompletion';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type ListeningMissionPlayerProps = {
@@ -79,18 +84,17 @@ export function ListeningMissionPlayer({
       ),
     [mission.id, mission.type, sessionItems.length],
   );
-  const [clearedItemIds, setClearedItemIds] = useState<string[]>([]);
+  const [resultsByItemId, setResultsByItemId] = useState<Record<string, MissionItemOutcome>>({});
   const [currentItemIndex, setCurrentItemIndex] = useState(() => initialContinueStepIndex ?? 0);
   const [hasCompletedPrep, setHasCompletedPrep] = useState(() => initialContinueStepIndex !== null);
   const currentItem = sessionItems[currentItemIndex];
   const showPrep = !hasCompletedPrep && supportExamples.length > 0;
   const progressValue = showPrep ? 0 : ((currentItemIndex + 1) / sessionItems.length) * 100;
-  const completionState = buildMissionCompletionRouteState(
-    mission,
-    sessionMode,
-    Math.min(clearedItemIds.length, sessionItems.length),
-    sessionItems.length,
+  const attemptSummary = useMemo(
+    () => summarizeMissionItemOutcomes(resultsByItemId, sessionItems.length),
+    [resultsByItemId, sessionItems.length],
   );
+  const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
   const primaryLesson = relatedLessons[0];
 
   useEffect(() => {
@@ -107,14 +111,14 @@ export function ListeningMissionPlayer({
 
   useMissionAutoComplete({
     missionId: mission.id,
-    clearedCount: clearedItemIds.length,
-    totalCount: sessionItems.length,
+    attemptSummary,
   });
 
-  function handleItemCleared(itemId: string) {
-    setClearedItemIds((currentIds) =>
-      currentIds.includes(itemId) ? currentIds : [...currentIds, itemId],
-    );
+  function handleItemResult(itemId: string, outcome: MissionItemOutcome) {
+    setResultsByItemId((currentResults) => ({
+      ...currentResults,
+      [itemId]: mergeMissionItemOutcome(currentResults[itemId], outcome),
+    }));
   }
 
   return (
@@ -192,10 +196,10 @@ export function ListeningMissionPlayer({
               .map((listeningItem) => listeningItem.translation)}
             currentItemIndex={currentItemIndex}
             totalItems={sessionItems.length}
-            clearedCount={clearedItemIds.length}
+            attemptSummary={attemptSummary}
             canGoPrevious={currentItemIndex > 0}
             isLastItem={currentItemIndex === sessionItems.length - 1}
-            onCleared={handleItemCleared}
+            onResult={handleItemResult}
             onPrevious={() => setCurrentItemIndex((index) => Math.max(0, index - 1))}
             onNext={() =>
               setCurrentItemIndex((index) => Math.min(sessionItems.length - 1, index + 1))
@@ -310,10 +314,10 @@ type ListeningItemPanelProps = {
   avoidTranslations: string[];
   currentItemIndex: number;
   totalItems: number;
-  clearedCount: number;
+  attemptSummary: ReturnType<typeof summarizeMissionItemOutcomes>;
   canGoPrevious: boolean;
   isLastItem: boolean;
-  onCleared: (itemId: string) => void;
+  onResult: (itemId: string, outcome: MissionItemOutcome) => void;
   onPrevious: () => void;
   onNext: () => void;
   onFinish: () => void;
@@ -329,10 +333,10 @@ function ListeningItemPanel({
   avoidTranslations,
   currentItemIndex,
   totalItems,
-  clearedCount,
+  attemptSummary,
   canGoPrevious,
   isLastItem,
-  onCleared,
+  onResult,
   onPrevious,
   onNext,
   onFinish,
@@ -370,7 +374,7 @@ function ListeningItemPanel({
       });
       setSelectedChoice('');
       setFeedback('supported');
-      onCleared(item.id);
+      onResult(item.id, 'supported');
     }
 
     setRevealed((current) => ({ ...current, [step]: true }));
@@ -393,7 +397,7 @@ function ListeningItemPanel({
     }
 
     setFeedback(nextFeedback);
-    onCleared(item.id);
+    onResult(item.id, nextFeedback === 'correct' ? 'correct' : 'incorrect');
   }
 
   return (
@@ -406,7 +410,7 @@ function ListeningItemPanel({
           <h3 className="listening-focus-card__prompt">Choose the meaning you heard.</h3>
         </div>
         <p className="listening-focus-card__count">
-          {clearedCount}/{totalItems}
+          {attemptSummary.attemptedCount}/{totalItems}
         </p>
       </div>
 

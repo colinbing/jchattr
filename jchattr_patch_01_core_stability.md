@@ -1590,26 +1590,26 @@ Expected goals:
 
 Codex must update this section as work is completed.
 
-## Gate 0 audit — not started
+## Gate 0 audit — 2026-05-02 01:19 EDT
 
-- Date/time:
-- Repo branch:
-- Current package scripts:
-- Current failing commands, if any:
-- Initial code inspection notes:
-- Risks identified before edits:
+- Date/time: 2026-05-02 01:19 EDT
+- Repo branch: current workspace branch; `git status --short` was clean before edits.
+- Current package scripts: `dev`, `build`, `draft:capstone`, `generate:listening-audio`, `preview`, report scripts, `sync:listening-audio-manifest`, `typecheck`; this slice added `test` and `test:watch`.
+- Current failing commands, if any: none found in this slice. `npm run test`, `npm run typecheck`, and `npm run build` passed after edits.
+- Initial code inspection notes: mission players use `cleared*Ids` as attempted/done state; `useMissionAutoComplete` marks missions complete when `clearedCount >= totalCount`; wrong grammar/output/reading answers and listening answer reveal record weak points but still advance the cleared/done count. Weak points currently store by `weakPointsByItemId`, Review resolves successful retries immediately, Continue state is legacy `stepIndex` only, and Today/Progress/Missions copy still uses cleared/completion language for exposure-style completion.
+- Risks identified before edits: completion semantics need a tested helper before product behavior changes; weak-point key migration and review transaction work are prerequisites for fully reliable review pressure; current UI can honestly mention review pressure in places but still says `cleared` after wrong answers.
 
 ---
 
-## Gate 1 audit — pending
+## Gate 1 audit — 2026-05-02 01:19 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Added Vitest harness and baseline tests for deterministic current behavior. Added pure `summarizeMissionItemOutcomes` helper with tests so the completion-semantics slice has a small testable model before React player changes.
+- Files changed: `package.json`, `package-lock.json`, `src/test/mockWindow.ts`, `src/lib/outputEvaluation.test.ts`, `src/lib/progress/weakPoints.test.ts`, `src/lib/progress/continueState.test.ts`, `src/features/review/lib/reviewBatch.test.ts`, `src/features/today/lib/todayRecommendations.test.ts`, `src/features/missions/lib/missionCompletion.ts`, `src/features/missions/lib/missionCompletion.test.ts`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `git status --short`; read this patch document fully; inspected package scripts, storage modules, review/today helpers, mission completion hook, all four mission players, completion card, Today recap, and Progress page; `npm install -D vitest`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: tests passed, typecheck passed, build passed. Build emitted Vite's large chunk warning for `dist/assets/index-*.js`; not a build failure.
+- Manual UI checks: Local app ran at `http://127.0.0.1:5174/`. In-app browser flow checked Today load, grammar wrong/correct feedback, listening answer reveal as supported exposure, output unacceptable answer, reading wrong answer, Today recap after a wrong grammar completion, Review queue details, and browser console errors. Console errors: none. Mobile audit is partial: browser plugin reported viewport `1634x2291` and exposed no documented mobile viewport setter, so iPhone-sized visual QA was not completed.
+- Risks / questions: Confirmed current bug remains: finishing grammar after wrong answers returns to Today with `2/2 drills cleared` even though weak points remain. Review pressure does appear, but completion language is misleading. Gate 1 test harness is in place; product behavior is intentionally unchanged in this slice.
+- Recommended next action: Continue with the completion-semantics implementation slice using `summarizeMissionItemOutcomes`: wire mission players to outcomes, persist exposure vs mastery in mission progress, and update Today/completion copy so wrong/supported attempts are not labeled cleared/mastered.
 
 ---
 
@@ -1637,27 +1637,27 @@ Codex must update this section as work is completed.
 
 ---
 
-## Gate 4 audit — pending
+## Gate 4 audit — 2026-05-02 01:32 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Implemented the first completion-semantics product slice. Mission players now track item outcomes as `correct`, `incorrect`, or `supported` instead of using `cleared*Ids` as attempted state. Exposure completion still unlocks/finishes missions through `completedMissionIds`; clean mastery is stored separately through new mastery fields. Today, mission completion, Missions, and Progress copy now avoid calling wrong/supported mission attempts cleared/mastered.
+- Files changed: `src/features/missions/lib/missionCompletion.ts`, `src/features/missions/lib/missionCompletion.test.ts`, `src/lib/progress/missionProgress.ts`, `src/lib/progress/missionProgress.test.ts`, `src/lib/progress/skillMap.ts`, `src/features/missions/lib/missionSession.ts`, `src/features/missions/lib/useMissionAutoComplete.ts`, `src/features/missions/components/GrammarMissionPlayer.tsx`, `src/features/missions/components/ListeningMissionPlayer.tsx`, `src/features/missions/components/OutputMissionPlayer.tsx`, `src/features/missions/components/ReadingMissionPlayer.tsx`, `src/features/missions/components/MissionCompletionCard.tsx`, `src/features/missions/components/MissionLibraryCard.tsx`, `src/features/missions/components/MissionChapterCard.tsx`, `src/features/missions/routes/MissionsPage.tsx`, `src/features/progress/routes/ProgressPage.tsx`, `src/features/today/components/MissionCard.tsx`, `src/features/today/components/TodayRecommendationCard.tsx`, `src/features/today/lib/todayRecommendations.ts`, `src/features/today/routes/TodayPage.tsx`, plus Gate 1 harness files already listed above.
+- Commands run: `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: `npm run test` passed (7 files, 33 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning.
+- Manual UI checks: Local app ran at `http://127.0.0.1:5174/`. Checked Today initial load; grammar wrong then edit/correct; grammar finish recap; listening answer reveal; output unacceptable answer; reading wrong answer; Review weak-point queue; browser console errors. Functional checks passed and console errors were empty. Follow-up true mobile QA passed in a temporary Chrome CDP session with `innerWidth: 390`, `innerHeight: 844`, DPR 3. Screenshots captured for Today, grammar wrong/correct-after-miss, Today recap, listening supported reveal, output unacceptable answer, reading wrong answer, and Review details. No console errors were reported in the mobile session.
+- Risks / questions: Review still resolves weak points immediately. Weak-point keys are being handled in the next slice.
+- Recommended next action: Proceed with weak-point compound key migration, then transactional Review resolution.
 
 ---
 
-## Gate 5 audit — pending
+## Gate 5 audit — 2026-05-02 02:00 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Risks / questions:
-- Recommended next action:
+- Completed: Implemented weak-point compound-key storage. New weak points are keyed by `itemType:missionId:itemId`; legacy `weakPointsByItemId` storage is still parsed as a safe fallback. Review retry resolution now passes weak-point identity instead of bare `itemId`, so same-item-id collisions across mission/type resolve only the intended weak point.
+- Files changed: `src/lib/progress/weakPoints.ts`, `src/lib/progress/weakPoints.test.ts`, `src/features/review/components/ReviewBatchPlayer.tsx`, `src/features/review/routes/ReviewPage.tsx`, `src/features/review/lib/reviewBatch.test.ts`, `src/features/today/lib/todayRecommendations.test.ts`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `npm run test -- src/lib/progress/weakPoints.test.ts src/features/review/lib/reviewBatch.test.ts src/features/today/lib/todayRecommendations.test.ts`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: Focused tests passed (3 files, 16 tests). Full `npm run test` passed (7 files, 37 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning.
+- Manual UI checks: Reloaded Review at `http://127.0.0.1:5174/review` in the same true mobile CDP session (`390x844`, DPR 3) with existing legacy `weakPointsByItemId` localStorage. Opened tracked weak-point details and confirmed grammar, listening, output, and reading weak points still render. No console errors were reported.
+- Risks / questions: Legacy fallback normalizes old data on read; it does not rewrite localStorage until the next weak-point write. Review still mutates weak points immediately on successful retry; transactional review resolution remains the next stabilization phase.
+- Recommended next action: Implement transactional Review resolution so weak points mutate only once when the batch completes.
 
 ---
 

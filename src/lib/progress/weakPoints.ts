@@ -3,7 +3,7 @@ import { useSyncExternalStore } from 'react';
 export const WEAK_POINTS_STORAGE_KEY = 'japanese-os.weak-points.v1';
 
 const WEAK_POINTS_UPDATED_EVENT = 'japanese-os:weak-points-updated';
-const WEAK_POINTS_VERSION = 1;
+const WEAK_POINTS_VERSION = 2;
 
 export type WeakPointItemType =
   | 'grammar-drill'
@@ -22,12 +22,12 @@ export interface WeakPoint {
 
 export interface WeakPointStore {
   version: number;
-  weakPointsByItemId: Record<string, WeakPoint>;
+  weakPointsByKey: Record<string, WeakPoint>;
 }
 
 const EMPTY_WEAK_POINTS: WeakPointStore = {
   version: WEAK_POINTS_VERSION,
-  weakPointsByItemId: {},
+  weakPointsByKey: {},
 };
 
 let cachedRawWeakPoints: string | null | undefined;
@@ -40,6 +40,20 @@ type RecordMissParams = {
   contentId?: string;
   missedAt?: Date;
 };
+
+type WeakPointIdentity = {
+  itemId: string;
+  itemType: WeakPointItemType;
+  missionId: string;
+};
+
+export function getWeakPointKey({
+  itemId,
+  itemType,
+  missionId,
+}: WeakPointIdentity) {
+  return `${itemType}:${missionId}:${itemId}`;
+}
 
 export function getEmptyWeakPoints(): WeakPointStore {
   return EMPTY_WEAK_POINTS;
@@ -93,13 +107,14 @@ export function recordWeakPoint({
   }
 
   const currentWeakPoints = readWeakPoints();
-  const existingWeakPoint = currentWeakPoints.weakPointsByItemId[itemId];
+  const weakPointKey = getWeakPointKey({ itemId, itemType, missionId });
+  const existingWeakPoint = currentWeakPoints.weakPointsByKey[weakPointKey];
 
   const nextWeakPoints = parseWeakPoints({
     ...currentWeakPoints,
-    weakPointsByItemId: {
-      ...currentWeakPoints.weakPointsByItemId,
-      [itemId]: {
+    weakPointsByKey: {
+      ...currentWeakPoints.weakPointsByKey,
+      [weakPointKey]: {
         itemId,
         itemType,
         missionId,
@@ -114,24 +129,26 @@ export function recordWeakPoint({
   return nextWeakPoints;
 }
 
-export function resolveWeakPointSuccess(itemId: string) {
-  if (!itemId.trim()) {
+export function resolveWeakPointSuccess(identity: WeakPointIdentity | string) {
+  const currentWeakPoints = readWeakPoints();
+  const weakPointKey = resolveWeakPointKey(currentWeakPoints, identity);
+
+  if (!weakPointKey) {
     return readWeakPoints();
   }
 
-  const currentWeakPoints = readWeakPoints();
-  const existingWeakPoint = currentWeakPoints.weakPointsByItemId[itemId];
+  const existingWeakPoint = currentWeakPoints.weakPointsByKey[weakPointKey];
 
   if (!existingWeakPoint) {
     return currentWeakPoints;
   }
 
-  const nextWeakPointsByItemId = { ...currentWeakPoints.weakPointsByItemId };
+  const nextWeakPointsByKey = { ...currentWeakPoints.weakPointsByKey };
 
   if (existingWeakPoint.missCount <= 1) {
-    delete nextWeakPointsByItemId[itemId];
+    delete nextWeakPointsByKey[weakPointKey];
   } else {
-    nextWeakPointsByItemId[itemId] = {
+    nextWeakPointsByKey[weakPointKey] = {
       ...existingWeakPoint,
       missCount: existingWeakPoint.missCount - 1,
     };
@@ -139,7 +156,7 @@ export function resolveWeakPointSuccess(itemId: string) {
 
   const nextWeakPoints = parseWeakPoints({
     ...currentWeakPoints,
-    weakPointsByItemId: nextWeakPointsByItemId,
+    weakPointsByKey: nextWeakPointsByKey,
   });
 
   writeWeakPoints(nextWeakPoints);
@@ -152,7 +169,7 @@ export function resetWeakPoints() {
 }
 
 export function getWeakPointList(weakPoints: WeakPointStore) {
-  return Object.values(weakPoints.weakPointsByItemId).sort((left, right) => {
+  return Object.values(weakPoints.weakPointsByKey).sort((left, right) => {
     return Date.parse(right.lastMissedAt) - Date.parse(left.lastMissedAt);
   });
 }
@@ -204,28 +221,44 @@ function parseWeakPoints(rawValue: unknown): WeakPointStore {
 
   return {
     version: WEAK_POINTS_VERSION,
-    weakPointsByItemId: sanitizeWeakPoints(rawValue.weakPointsByItemId),
+    weakPointsByKey: sanitizeWeakPointStore(rawValue),
   };
 }
 
-function sanitizeWeakPoints(value: unknown) {
-  if (!isRecord(value)) {
-    return {};
+function sanitizeWeakPointStore(rawValue: Record<string, unknown>) {
+  const weakPointsByKey: Record<string, WeakPoint> = {};
+
+  if (isRecord(rawValue.weakPointsByKey)) {
+    mergeWeakPointEntries(weakPointsByKey, rawValue.weakPointsByKey, 'compound-key');
   }
 
-  return Object.entries(value).reduce<Record<string, WeakPoint>>((record, [key, entry]) => {
+  if (isRecord(rawValue.weakPointsByItemId)) {
+    mergeWeakPointEntries(weakPointsByKey, rawValue.weakPointsByItemId, 'legacy-item-id');
+  }
+
+  return weakPointsByKey;
+}
+
+function mergeWeakPointEntries(
+  weakPointsByKey: Record<string, WeakPoint>,
+  entries: Record<string, unknown>,
+  keyMode: 'compound-key' | 'legacy-item-id',
+) {
+  Object.entries(entries).forEach(([key, entry]) => {
     if (!isRecord(entry)) {
-      return record;
+      return;
     }
 
-    const itemId = typeof entry.itemId === 'string' && entry.itemId.trim().length > 0
-      ? entry.itemId
-      : key;
+    const keyParts = keyMode === 'compound-key' ? parseWeakPointKey(key) : null;
+    const itemId =
+      typeof entry.itemId === 'string' && entry.itemId.trim().length > 0
+        ? entry.itemId
+        : keyParts?.itemId ?? key;
     const itemType = isWeakPointItemType(entry.itemType) ? entry.itemType : null;
     const missionId =
       typeof entry.missionId === 'string' && entry.missionId.trim().length > 0
         ? entry.missionId
-        : null;
+        : keyParts?.missionId ?? null;
     const missCount =
       typeof entry.missCount === 'number' && Number.isInteger(entry.missCount) && entry.missCount > 0
         ? entry.missCount
@@ -236,10 +269,10 @@ function sanitizeWeakPoints(value: unknown) {
         : null;
 
     if (!itemType || !missionId || !missCount || !lastMissedAt) {
-      return record;
+      return;
     }
 
-    record[itemId] = {
+    const weakPoint = {
       itemId,
       itemType,
       missionId,
@@ -250,9 +283,77 @@ function sanitizeWeakPoints(value: unknown) {
       missCount,
       lastMissedAt,
     };
+    const weakPointKey = getWeakPointKey(weakPoint);
+    weakPointsByKey[weakPointKey] = mergeWeakPoint(
+      weakPointsByKey[weakPointKey],
+      weakPoint,
+    );
+  });
+}
 
-    return record;
-  }, {});
+function resolveWeakPointKey(
+  weakPoints: WeakPointStore,
+  identity: WeakPointIdentity | string,
+) {
+  if (typeof identity !== 'string') {
+    if (!identity.itemId.trim() || !identity.missionId.trim()) {
+      return null;
+    }
+
+    const weakPointKey = getWeakPointKey(identity);
+    return weakPoints.weakPointsByKey[weakPointKey] ? weakPointKey : null;
+  }
+
+  const rawIdentity = identity.trim();
+
+  if (!rawIdentity) {
+    return null;
+  }
+
+  if (weakPoints.weakPointsByKey[rawIdentity]) {
+    return rawIdentity;
+  }
+
+  return Object.entries(weakPoints.weakPointsByKey).find(
+    ([, weakPoint]) => weakPoint.itemId === rawIdentity,
+  )?.[0] ?? null;
+}
+
+function mergeWeakPoint(
+  currentWeakPoint: WeakPoint | undefined,
+  nextWeakPoint: WeakPoint,
+) {
+  if (!currentWeakPoint) {
+    return nextWeakPoint;
+  }
+
+  const nextMissCount = Math.max(currentWeakPoint.missCount, nextWeakPoint.missCount);
+  const nextLastMissedAt =
+    Date.parse(nextWeakPoint.lastMissedAt) > Date.parse(currentWeakPoint.lastMissedAt)
+      ? nextWeakPoint.lastMissedAt
+      : currentWeakPoint.lastMissedAt;
+
+  return {
+    ...currentWeakPoint,
+    ...nextWeakPoint,
+    missCount: nextMissCount,
+    lastMissedAt: nextLastMissedAt,
+  };
+}
+
+function parseWeakPointKey(key: string): WeakPointIdentity | null {
+  const [itemType, missionId, ...itemIdParts] = key.split(':');
+  const itemId = itemIdParts.join(':');
+
+  if (!isWeakPointItemType(itemType) || !missionId || !itemId) {
+    return null;
+  }
+
+  return {
+    itemId,
+    itemType,
+    missionId,
+  };
 }
 
 function isWeakPointItemType(value: unknown): value is WeakPointItemType {

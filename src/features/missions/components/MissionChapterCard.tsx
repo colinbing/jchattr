@@ -35,7 +35,7 @@ export function MissionChapterCard({
   const nextMission = items.find(
     (item) => item.isUnlocked && item.progress.completionCount === 0,
   );
-  const isChapterCleared = completedCount === items.length;
+  const isChapterFinished = completedCount === items.length;
   const capstoneStories =
     chapter.kind === 'core'
       ? starterContent.capstoneStories.filter((story) =>
@@ -80,7 +80,7 @@ export function MissionChapterCard({
             {unlockedCount}/{items.length} unlocked
           </span>
           <span className="mission-state-pill mission-state-pill--completed">
-            {completedCount}/{items.length} cleared
+            {completedCount}/{items.length} finished
           </span>
           {weakPointCount > 0 ? (
             <span className="mission-state-pill mission-state-pill--review">
@@ -90,12 +90,12 @@ export function MissionChapterCard({
           {!nextMission ? (
             <span
               className={
-                isChapterCleared
+                isChapterFinished
                   ? 'mission-state-pill mission-state-pill--completed'
                   : 'mission-state-pill mission-state-pill--locked'
               }
             >
-              {isChapterCleared ? 'Chapter cleared' : 'Locked for now'}
+              {isChapterFinished ? 'Chapter finished' : 'Locked for now'}
             </span>
           ) : null}
         </div>

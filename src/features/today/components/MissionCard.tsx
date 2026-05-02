@@ -40,14 +40,14 @@ export function MissionCard({ mission, progress }: MissionCardProps) {
         <p className="mission-card__skill-value">{formatTargetSkill(mission.targetSkill)}</p>
         <p className="mission-card__progress">
           {progress.isCompleted
-            ? `Completed ${progress.completionCount} time${
+            ? `Finished ${progress.completionCount} time${
                 progress.completionCount === 1 ? '' : 's'
-              }`
-            : 'Not completed yet. Completion saves automatically after you clear every drill or check.'}
+              }${progress.isMastered ? ' · clean pass recorded' : ' · review may still be needed'}`
+            : 'Not finished yet. Progress saves automatically after you attempt every required item.'}
         </p>
         {progress.lastCompletedAt ? (
           <p className="list-meta">
-            Last completed {formatCompletedAt(progress.lastCompletedAt)}
+            Last finished {formatCompletedAt(progress.lastCompletedAt)}
           </p>
         ) : null}
       </div>

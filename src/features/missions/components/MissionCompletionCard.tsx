@@ -8,10 +8,11 @@ import type {
   MissionCompletionRouteState,
   MissionSessionMode,
 } from '../lib/missionSession';
+import type { MissionAttemptSummary } from '../lib/missionCompletion';
 
 type MissionCompletionCardProps = {
   missionId: string;
-  clearedCount: number;
+  attemptSummary: MissionAttemptSummary;
   totalCount: number;
   unitLabel: string;
   sessionMode: MissionSessionMode;
@@ -20,7 +21,7 @@ type MissionCompletionCardProps = {
 
 export function MissionCompletionCard({
   missionId,
-  clearedCount,
+  attemptSummary,
   totalCount,
   unitLabel,
   sessionMode,
@@ -28,10 +29,12 @@ export function MissionCompletionCard({
 }: MissionCompletionCardProps) {
   const progress = useMissionProgress();
   const completion = getMissionProgressEntry(progress, missionId);
-  const isAutoCompleteReady = totalCount > 0 && clearedCount >= totalCount;
+  const isAutoCompleteReady = attemptSummary.isExposureComplete;
   const showReturnActions = isAutoCompleteReady || completion.isCompleted;
-  const completedCount = Math.min(clearedCount, totalCount);
-  const progressLabel = `${completedCount}/${totalCount} ${unitLabel}${totalCount === 1 ? '' : 's'}`;
+  const progressLabel = `${attemptSummary.attemptedCount}/${totalCount} ${unitLabel}${
+    totalCount === 1 ? '' : 's'
+  } attempted`;
+  const reviewItemCount = attemptSummary.incorrectCount + attemptSummary.supportedCount;
 
   return (
     <SurfaceCard
@@ -49,14 +52,22 @@ export function MissionCompletionCard({
           <p className="mission-completion-card__status">
             {completion.isCompleted
               ? isAutoCompleteReady
-                ? sessionMode === 'reinforce'
-                  ? 'Short reinforce pass complete'
-                  : 'Mission complete'
-                : 'Completed earlier on this device'
+                ? attemptSummary.isMasteryComplete
+                  ? 'Clean pass'
+                  : reviewItemCount > 0
+                    ? 'Finished with review needed'
+                    : sessionMode === 'reinforce'
+                      ? 'Short reinforce pass finished'
+                      : 'Mission pass finished'
+                : 'Finished earlier on this device'
               : 'Keep going'}
           </p>
           <div className="review-chip-row review-chip-row--active" aria-label="Mission pass summary">
             <span className="review-chip">{progressLabel}</span>
+            <span className="review-chip">{attemptSummary.correctCount} correct</span>
+            {reviewItemCount > 0 ? (
+              <span className="review-chip">{reviewItemCount} review item{reviewItemCount === 1 ? '' : 's'}</span>
+            ) : null}
             {showReturnActions ? (
               <span className="review-chip">
                 {sessionMode === 'reinforce' ? 'Short reinforce pass' : 'Core mission pass'}
@@ -69,10 +80,15 @@ export function MissionCompletionCard({
             <details className="mission-completion-card__details">
               <summary className="mission-completion-card__summary-toggle">Earlier on this device</summary>
               <p className="mission-completion-card__meta">
-                Completed {completion.completionCount} time{completion.completionCount === 1 ? '' : 's'}.
+                Finished {completion.completionCount} time{completion.completionCount === 1 ? '' : 's'}.
               </p>
+              {completion.masteryCount > 0 ? (
+                <p className="mission-completion-card__meta">
+                  Clean pass {completion.masteryCount} time{completion.masteryCount === 1 ? '' : 's'}.
+                </p>
+              ) : null}
               <p className="mission-completion-card__meta">
-                Last completed {formatCompletedAt(completion.lastCompletedAt)}
+                Last finished {formatCompletedAt(completion.lastCompletedAt)}
               </p>
             </details>
           ) : null}

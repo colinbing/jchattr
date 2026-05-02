@@ -1,31 +1,30 @@
 import { useEffect, useRef } from 'react';
 import { clearContinueState } from '../../../lib/progress/continueState';
-import { markMissionComplete } from '../../../lib/progress/missionProgress';
+import { markMissionExposureComplete } from '../../../lib/progress/missionProgress';
+import type { MissionAttemptSummary } from './missionCompletion';
 
 type UseMissionAutoCompleteParams = {
   missionId: string;
-  clearedCount: number;
-  totalCount: number;
+  attemptSummary: MissionAttemptSummary;
 };
 
 export function useMissionAutoComplete({
   missionId,
-  clearedCount,
-  totalCount,
+  attemptSummary,
 }: UseMissionAutoCompleteParams) {
   const hasAutoCompletedRef = useRef(false);
 
   useEffect(() => {
-    if (!missionId.trim() || totalCount <= 0) {
+    if (!missionId.trim() || attemptSummary.totalCount <= 0) {
       return;
     }
 
-    if (clearedCount < totalCount || hasAutoCompletedRef.current) {
+    if (!attemptSummary.isExposureComplete || hasAutoCompletedRef.current) {
       return;
     }
 
-    markMissionComplete(missionId);
+    markMissionExposureComplete(missionId, attemptSummary);
     clearContinueState(missionId);
     hasAutoCompletedRef.current = true;
-  }, [clearedCount, missionId, totalCount]);
+  }, [attemptSummary, missionId]);
 }

@@ -35,8 +35,12 @@ export function ProgressPage() {
       >
         <dl className="progress-summary-grid">
           <div className="progress-summary-grid__stat">
-            <dt>Missions cleared</dt>
+            <dt>Missions finished</dt>
             <dd>{overview.completedMissionCount}</dd>
+          </div>
+          <div className="progress-summary-grid__stat">
+            <dt>Clean passes</dt>
+            <dd>{overview.masteredMissionCount}</dd>
           </div>
           <div className="progress-summary-grid__stat">
             <dt>Weak points</dt>
@@ -49,20 +53,24 @@ export function ProgressPage() {
         </dl>
 
         <details className="today-details">
-          <summary className="today-details__summary">Completion details</summary>
+          <summary className="today-details__summary">Finished-pass details</summary>
           <div className="progress-page__detail-copy">
             <p className="today-details__body">
               {overview.completedMissionCount} starter mission
-              {overview.completedMissionCount === 1 ? '' : 's'} cleared on this device.
+              {overview.completedMissionCount === 1 ? '' : 's'} finished on this device.
             </p>
             <p className="today-details__body">
-              {overview.totalCompletionCount} total clear
-              {overview.totalCompletionCount === 1 ? '' : 's'} recorded.
+              {overview.totalCompletionCount} total finished pass
+              {overview.totalCompletionCount === 1 ? '' : 'es'} recorded.
+            </p>
+            <p className="today-details__body">
+              {overview.totalMasteryCount} clean pass
+              {overview.totalMasteryCount === 1 ? '' : 'es'} recorded.
             </p>
             <p className="today-details__body">
               {overview.lastCompletedAt
-                ? `Most recent clear ${formatTimestamp(overview.lastCompletedAt)}.`
-                : 'No saved clears yet.'}
+                ? `Most recent finished pass ${formatTimestamp(overview.lastCompletedAt)}.`
+                : 'No saved finished passes yet.'}
             </p>
           </div>
         </details>
@@ -134,7 +142,7 @@ export function ProgressPage() {
         <details className="today-details">
           <summary className="today-details__summary">How these tiers work</summary>
           <p className="today-details__body">
-            Tiers are derived only from saved completions and recorded misses. They stay intentionally
+            Tiers are derived only from saved finished passes and recorded misses. They stay intentionally
             simple and readable rather than pretending to be precise mastery scores.
           </p>
         </details>
@@ -162,7 +170,7 @@ function SkillCard({ skillArea }: SkillCardProps) {
 
       <dl className="skill-card__stats skill-card__stats--compact">
         <div className="skill-card__stat">
-          <dt>Completions</dt>
+          <dt>Finished passes</dt>
           <dd>{skillArea.completionCount}</dd>
         </div>
         <div className="skill-card__stat">

@@ -31,6 +31,11 @@ import {
   selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
+import {
+  mergeMissionItemOutcome,
+  summarizeMissionItemOutcomes,
+  type MissionItemOutcome,
+} from '../lib/missionCompletion';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type GrammarMissionPlayerProps = {
@@ -75,7 +80,7 @@ export function GrammarMissionPlayer({
     [sessionDrills.length, sessionExamples.length, sessionMode],
   );
   const grammarFocusTerms = useMemo(() => getGrammarFocusTerms(lesson), [lesson]);
-  const [clearedDrillIds, setClearedDrillIds] = useState<string[]>([]);
+  const [resultsByDrillId, setResultsByDrillId] = useState<Record<string, MissionItemOutcome>>({});
   const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
   const [currentDrillIndex, setCurrentDrillIndex] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(() => {
@@ -92,7 +97,10 @@ export function GrammarMissionPlayer({
   const progressValue = ((currentStepIndex + 1) / sessionSteps.length) * 100;
   const currentExample = sessionExamples[currentExampleIndex] ?? null;
   const currentDrill = sessionDrills[currentDrillIndex] ?? null;
-  const completedDrillCount = Math.min(clearedDrillIds.length, sessionDrills.length);
+  const attemptSummary = useMemo(
+    () => summarizeMissionItemOutcomes(resultsByDrillId, sessionDrills.length),
+    [resultsByDrillId, sessionDrills.length],
+  );
 
   useEffect(() => {
     updateContinueState({
@@ -116,14 +124,14 @@ export function GrammarMissionPlayer({
 
   useMissionAutoComplete({
     missionId: mission.id,
-    clearedCount: clearedDrillIds.length,
-    totalCount: sessionDrills.length,
+    attemptSummary,
   });
 
-  function handleDrillCleared(drillId: string) {
-    setClearedDrillIds((currentIds) =>
-      currentIds.includes(drillId) ? currentIds : [...currentIds, drillId],
-    );
+  function handleDrillResult(drillId: string, outcome: MissionItemOutcome) {
+    setResultsByDrillId((currentResults) => ({
+      ...currentResults,
+      [drillId]: mergeMissionItemOutcome(currentResults[drillId], outcome),
+    }));
   }
 
   function goToNextStep() {
@@ -144,8 +152,7 @@ export function GrammarMissionPlayer({
       state: buildMissionCompletionRouteState(
         mission,
         sessionMode,
-        completedDrillCount,
-        sessionDrills.length,
+        attemptSummary,
       ),
     });
   }
@@ -340,10 +347,11 @@ export function GrammarMissionPlayer({
                   totalCount={sessionDrills.length}
                   hasNextDrill={currentDrillIndex < sessionDrills.length - 1}
                   onAdvance={goToNextDrill}
-                  onCleared={handleDrillCleared}
+                  onResult={handleDrillResult}
                 />
                 <p className="list-meta">
-                  {completedDrillCount}/{sessionDrills.length} drills done.
+                  {attemptSummary.attemptedCount}/{sessionDrills.length} drills attempted ·{' '}
+                  {attemptSummary.correctCount} correct.
                 </p>
               </>
             ) : (
@@ -378,8 +386,7 @@ export function GrammarMissionPlayer({
                       state: buildMissionCompletionRouteState(
                         mission,
                         sessionMode,
-                        completedDrillCount,
-                        sessionDrills.length,
+                        attemptSummary,
                       ),
                     })
                   }
@@ -403,7 +410,7 @@ type DrillCardProps = {
   totalCount: number;
   hasNextDrill: boolean;
   onAdvance: () => void;
-  onCleared: (drillId: string) => void;
+  onResult: (drillId: string, outcome: MissionItemOutcome) => void;
 };
 
 function DrillCard({
@@ -414,7 +421,7 @@ function DrillCard({
   totalCount,
   hasNextDrill,
   onAdvance,
-  onCleared,
+  onResult,
 }: DrillCardProps) {
   const reorderTokens = getReorderTokens(drill.prompt, drill.id, { focusId: lesson.id });
   const [selectedChoice, setSelectedChoice] = useState('');
@@ -451,7 +458,7 @@ function DrillCard({
     }
 
     setFeedback(nextFeedback);
-    onCleared(drill.id);
+    onResult(drill.id, nextFeedback === 'correct' ? 'correct' : 'incorrect');
   }
 
   function resetAnswer() {

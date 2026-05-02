@@ -127,7 +127,7 @@ export function MissionsPage() {
   const readingMissionCount =
     chapterSections.find((section) => section.chapter.kind === 'reading')?.items.length ?? 0;
   const activeChapterProgress = activeSection
-    ? `${activeSection.completedCount}/${activeSection.items.length} cleared`
+    ? `${activeSection.completedCount}/${activeSection.items.length} finished`
     : null;
   const activeChapterSummary = activeSection
     ? activeSection.chapter.kind === 'reading'
@@ -181,7 +181,7 @@ export function MissionsPage() {
           <div className="mission-library-switcher__track" role="tablist" aria-label="Mission chapters">
             {chapterSections.map((section) => {
               const isActive = activeSection?.chapter.id === section.chapter.id;
-              const completionLabel = `${section.completedCount}/${section.items.length} cleared`;
+              const completionLabel = `${section.completedCount}/${section.items.length} finished`;
               return (
                 <button
                   key={section.chapter.id}
@@ -314,7 +314,7 @@ export function MissionsPage() {
               <dd>{unlockedCount}</dd>
             </div>
             <div className="mission-library-summary__stat">
-              <dt>Completed</dt>
+              <dt>Finished</dt>
               <dd>{completedCount}</dd>
             </div>
             <div className="mission-library-summary__stat">
@@ -330,7 +330,7 @@ export function MissionsPage() {
             <li>Core chapters follow the shipped five-pack curriculum path so the mission stack feels like progression, not a dump.</li>
             <li>Scenario sims stay in an optional application lane so practical output practice does not change the core Today path.</li>
             <li>Reading checkpoints stay in their own lane because they are reinforcement and recombination, not the main unlock spine.</li>
-            <li>Unlocked or locked state still comes only from `requiredMissionIds` and local completion data.</li>
+            <li>Unlocked or locked state still comes only from `requiredMissionIds` and local finished-pass data.</li>
             <li>Recommended and needs-review states still come from the same deterministic local helpers used elsewhere in the app.</li>
           </ul>
         </details>

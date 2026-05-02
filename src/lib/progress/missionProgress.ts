@@ -3,12 +3,16 @@ import { useSyncExternalStore } from 'react';
 export const MISSION_PROGRESS_STORAGE_KEY = 'japanese-os.mission-progress.v1';
 
 const MISSION_PROGRESS_UPDATED_EVENT = 'japanese-os:mission-progress-updated';
-const MISSION_PROGRESS_VERSION = 1;
+const MISSION_PROGRESS_VERSION = 2;
 const EMPTY_MISSION_PROGRESS: MissionProgressRecord = {
   version: MISSION_PROGRESS_VERSION,
   completedMissionIds: [],
   completionCountsByMissionId: {},
   lastCompletedAtByMissionId: {},
+  masteredMissionIds: [],
+  masteryCountsByMissionId: {},
+  lastMasteredAtByMissionId: {},
+  lastAttemptSummaryByMissionId: {},
 };
 
 let cachedRawMissionProgress: string | null | undefined;
@@ -19,12 +23,30 @@ export interface MissionProgressRecord {
   completedMissionIds: string[];
   completionCountsByMissionId: Record<string, number>;
   lastCompletedAtByMissionId: Record<string, string>;
+  masteredMissionIds: string[];
+  masteryCountsByMissionId: Record<string, number>;
+  lastMasteredAtByMissionId: Record<string, string>;
+  lastAttemptSummaryByMissionId: Record<string, StoredMissionAttemptSummary>;
 }
 
 export type MissionProgressEntry = {
   isCompleted: boolean;
   completionCount: number;
   lastCompletedAt: string | null;
+  isMastered: boolean;
+  masteryCount: number;
+  lastMasteredAt: string | null;
+  lastAttemptSummary: StoredMissionAttemptSummary | null;
+};
+
+export type StoredMissionAttemptSummary = {
+  attemptedCount: number;
+  correctCount: number;
+  incorrectCount: number;
+  supportedCount: number;
+  totalCount: number;
+  isExposureComplete: boolean;
+  isMasteryComplete: boolean;
 };
 
 export function getEmptyMissionProgress(): MissionProgressRecord {
@@ -68,11 +90,20 @@ export function readMissionProgress(): MissionProgressRecord {
 }
 
 export function markMissionComplete(missionId: string, completedAt = new Date()) {
+  return markMissionExposureComplete(missionId, undefined, completedAt);
+}
+
+export function markMissionExposureComplete(
+  missionId: string,
+  attemptSummary?: StoredMissionAttemptSummary,
+  completedAt = new Date(),
+) {
   if (!missionId.trim()) {
     return getEmptyMissionProgress();
   }
 
   const currentProgress = readMissionProgress();
+  const completedAtIso = completedAt.toISOString();
   const nextProgress = parseMissionProgress({
     ...currentProgress,
     completedMissionIds: Array.from(new Set([...currentProgress.completedMissionIds, missionId])),
@@ -82,8 +113,62 @@ export function markMissionComplete(missionId: string, completedAt = new Date())
     },
     lastCompletedAtByMissionId: {
       ...currentProgress.lastCompletedAtByMissionId,
-      [missionId]: completedAt.toISOString(),
+      [missionId]: completedAtIso,
     },
+    masteredMissionIds: attemptSummary?.isMasteryComplete
+      ? Array.from(new Set([...currentProgress.masteredMissionIds, missionId]))
+      : currentProgress.masteredMissionIds,
+    masteryCountsByMissionId: attemptSummary?.isMasteryComplete
+      ? {
+          ...currentProgress.masteryCountsByMissionId,
+          [missionId]: (currentProgress.masteryCountsByMissionId[missionId] ?? 0) + 1,
+        }
+      : currentProgress.masteryCountsByMissionId,
+    lastMasteredAtByMissionId: attemptSummary?.isMasteryComplete
+      ? {
+          ...currentProgress.lastMasteredAtByMissionId,
+          [missionId]: completedAtIso,
+        }
+      : currentProgress.lastMasteredAtByMissionId,
+    lastAttemptSummaryByMissionId: attemptSummary
+      ? {
+          ...currentProgress.lastAttemptSummaryByMissionId,
+          [missionId]: attemptSummary,
+        }
+      : currentProgress.lastAttemptSummaryByMissionId,
+  });
+
+  writeMissionProgress(nextProgress);
+  return nextProgress;
+}
+
+export function markMissionMasteryComplete(
+  missionId: string,
+  attemptSummary?: StoredMissionAttemptSummary,
+  masteredAt = new Date(),
+) {
+  if (!missionId.trim()) {
+    return getEmptyMissionProgress();
+  }
+
+  const currentProgress = readMissionProgress();
+  const nextProgress = parseMissionProgress({
+    ...currentProgress,
+    masteredMissionIds: Array.from(new Set([...currentProgress.masteredMissionIds, missionId])),
+    masteryCountsByMissionId: {
+      ...currentProgress.masteryCountsByMissionId,
+      [missionId]: (currentProgress.masteryCountsByMissionId[missionId] ?? 0) + 1,
+    },
+    lastMasteredAtByMissionId: {
+      ...currentProgress.lastMasteredAtByMissionId,
+      [missionId]: masteredAt.toISOString(),
+    },
+    lastAttemptSummaryByMissionId: attemptSummary
+      ? {
+          ...currentProgress.lastAttemptSummaryByMissionId,
+          [missionId]: attemptSummary,
+        }
+      : currentProgress.lastAttemptSummaryByMissionId,
   });
 
   writeMissionProgress(nextProgress);
@@ -101,13 +186,21 @@ export function getMissionProgressEntry(
 ): MissionProgressEntry {
   const completionCount = progress.completionCountsByMissionId[missionId] ?? 0;
   const lastCompletedAt = progress.lastCompletedAtByMissionId[missionId] ?? null;
+  const masteryCount = progress.masteryCountsByMissionId[missionId] ?? 0;
+  const lastMasteredAt = progress.lastMasteredAtByMissionId[missionId] ?? null;
   const isCompleted =
     progress.completedMissionIds.includes(missionId) || completionCount > 0;
+  const isMastered =
+    progress.masteredMissionIds.includes(missionId) || masteryCount > 0;
 
   return {
     isCompleted,
     completionCount,
     lastCompletedAt,
+    isMastered,
+    masteryCount,
+    lastMasteredAt,
+    lastAttemptSummary: progress.lastAttemptSummaryByMissionId[missionId] ?? null,
   };
 }
 
@@ -168,6 +261,16 @@ function parseMissionProgress(rawValue: unknown): MissionProgressRecord {
     lastCompletedAtByMissionId: sanitizeLastCompletedAt(
       rawValue.lastCompletedAtByMissionId,
     ),
+    masteredMissionIds: sanitizeCompletedMissionIds(rawValue.masteredMissionIds),
+    masteryCountsByMissionId: sanitizeCompletionCounts(
+      rawValue.masteryCountsByMissionId,
+    ),
+    lastMasteredAtByMissionId: sanitizeLastCompletedAt(
+      rawValue.lastMasteredAtByMissionId,
+    ),
+    lastAttemptSummaryByMissionId: sanitizeAttemptSummaries(
+      rawValue.lastAttemptSummaryByMissionId,
+    ),
   };
 }
 
@@ -217,6 +320,55 @@ function sanitizeLastCompletedAt(value: unknown) {
     record[key] = timestamp;
     return record;
   }, {});
+}
+
+function sanitizeAttemptSummaries(value: unknown) {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  return Object.entries(value).reduce<Record<string, StoredMissionAttemptSummary>>(
+    (record, [key, summary]) => {
+      if (typeof key !== 'string' || !isRecord(summary)) {
+        return record;
+      }
+
+      const attemptedCount = sanitizeNonNegativeInteger(summary.attemptedCount);
+      const correctCount = sanitizeNonNegativeInteger(summary.correctCount);
+      const incorrectCount = sanitizeNonNegativeInteger(summary.incorrectCount);
+      const supportedCount = sanitizeNonNegativeInteger(summary.supportedCount);
+      const totalCount = sanitizeNonNegativeInteger(summary.totalCount);
+
+      if (
+        attemptedCount === null ||
+        correctCount === null ||
+        incorrectCount === null ||
+        supportedCount === null ||
+        totalCount === null
+      ) {
+        return record;
+      }
+
+      record[key] = {
+        attemptedCount,
+        correctCount,
+        incorrectCount,
+        supportedCount,
+        totalCount,
+        isExposureComplete: summary.isExposureComplete === true,
+        isMasteryComplete: summary.isMasteryComplete === true,
+      };
+
+      return record;
+    },
+    {},
+  );
+}
+
+function sanitizeNonNegativeInteger(value: unknown) {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0
+    ? value
+    : null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

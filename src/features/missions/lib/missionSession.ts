@@ -1,4 +1,5 @@
 import type { Mission, MissionType } from '../../../lib/content/types';
+import type { MissionAttemptSummary } from './missionCompletion';
 
 export type MissionSessionMode = 'default' | 'reinforce';
 
@@ -8,8 +9,14 @@ export type MissionCompletionSummary = {
   missionType: MissionType;
   targetSkill: Mission['targetSkill'];
   sessionMode: MissionSessionMode;
+  attemptedCount: number;
+  correctCount: number;
+  incorrectCount: number;
+  supportedCount: number;
   clearedCount: number;
   totalCount: number;
+  isExposureComplete: boolean;
+  isMasteryComplete: boolean;
 };
 
 export type MissionCompletionRouteState = {
@@ -35,8 +42,7 @@ export type MissionReplayVariant<T> = {
 export function buildMissionCompletionRouteState(
   mission: Mission,
   sessionMode: MissionSessionMode,
-  clearedCount: number,
-  totalCount: number,
+  attemptSummary: MissionAttemptSummary,
 ): MissionCompletionRouteState {
   return {
     missionCompletion: {
@@ -45,8 +51,14 @@ export function buildMissionCompletionRouteState(
       missionType: mission.type,
       targetSkill: mission.targetSkill,
       sessionMode,
-      clearedCount,
-      totalCount,
+      attemptedCount: attemptSummary.attemptedCount,
+      correctCount: attemptSummary.correctCount,
+      incorrectCount: attemptSummary.incorrectCount,
+      supportedCount: attemptSummary.supportedCount,
+      clearedCount: attemptSummary.correctCount,
+      totalCount: attemptSummary.totalCount,
+      isExposureComplete: attemptSummary.isExposureComplete,
+      isMasteryComplete: attemptSummary.isMasteryComplete,
     },
   };
 }

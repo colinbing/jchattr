@@ -32,6 +32,11 @@ import {
   selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
+import {
+  mergeMissionItemOutcome,
+  summarizeMissionItemOutcomes,
+  type MissionItemOutcome,
+} from '../lib/missionCompletion';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type ReadingMissionPlayerProps = {
@@ -66,7 +71,7 @@ export function ReadingMissionPlayer({
     [checks, sessionMode, sessionRotation],
   );
   const sessionChecks = sessionCheckVariant.items;
-  const [clearedCheckIds, setClearedCheckIds] = useState<string[]>([]);
+  const [resultsByCheckId, setResultsByCheckId] = useState<Record<string, MissionItemOutcome>>({});
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
       resolveContinueStepIndex(
@@ -80,6 +85,10 @@ export function ReadingMissionPlayer({
   const currentCheck = sessionChecks[currentCheckIndex];
   const currentExample = examplesById[currentCheck.exampleId];
   const progressValue = ((currentCheckIndex + 1) / sessionChecks.length) * 100;
+  const attemptSummary = useMemo(
+    () => summarizeMissionItemOutcomes(resultsByCheckId, sessionChecks.length),
+    [resultsByCheckId, sessionChecks.length],
+  );
 
   useEffect(() => {
     updateContinueState({
@@ -95,14 +104,14 @@ export function ReadingMissionPlayer({
 
   useMissionAutoComplete({
     missionId: mission.id,
-    clearedCount: clearedCheckIds.length,
-    totalCount: sessionChecks.length,
+    attemptSummary,
   });
 
-  function handleCheckCleared(checkId: string) {
-    setClearedCheckIds((currentIds) =>
-      currentIds.includes(checkId) ? currentIds : [...currentIds, checkId],
-    );
+  function handleCheckResult(checkId: string, outcome: MissionItemOutcome) {
+    setResultsByCheckId((currentResults) => ({
+      ...currentResults,
+      [checkId]: mergeMissionItemOutcome(currentResults[checkId], outcome),
+    }));
   }
 
   function goToNextCheck() {
@@ -115,8 +124,7 @@ export function ReadingMissionPlayer({
       state: buildMissionCompletionRouteState(
         mission,
         sessionMode,
-        Math.min(clearedCheckIds.length, sessionChecks.length),
-        sessionChecks.length,
+        attemptSummary,
       ),
     });
   }
@@ -211,10 +219,11 @@ export function ReadingMissionPlayer({
             seenVocabLookup={seenVocabLookup}
             hasNextCheck={currentCheckIndex < sessionChecks.length - 1}
             onAdvance={goToNextCheck}
-            onCleared={handleCheckCleared}
+            onResult={handleCheckResult}
           />
           <p className="list-meta">
-            {clearedCheckIds.length}/{sessionChecks.length} reading checks done.
+            {attemptSummary.attemptedCount}/{sessionChecks.length} reading checks attempted ·{' '}
+            {attemptSummary.correctCount} correct.
           </p>
 
           {currentCheckIndex > 0 ? (
@@ -233,15 +242,14 @@ export function ReadingMissionPlayer({
 
       <MissionCompletionCard
         missionId={mission.id}
-        clearedCount={clearedCheckIds.length}
+        attemptSummary={attemptSummary}
         totalCount={sessionChecks.length}
         unitLabel="reading check"
         sessionMode={sessionMode}
         returnState={buildMissionCompletionRouteState(
           mission,
           sessionMode,
-          Math.min(clearedCheckIds.length, sessionChecks.length),
-          sessionChecks.length,
+          attemptSummary,
         )}
       />
     </div>
@@ -256,7 +264,7 @@ type ReadingCheckCardProps = {
   seenVocabLookup: ReturnType<typeof deriveSeenVocabLookup>;
   hasNextCheck: boolean;
   onAdvance: () => void;
-  onCleared: (checkId: string) => void;
+  onResult: (checkId: string, outcome: MissionItemOutcome) => void;
 };
 
 function ReadingCheckCard({
@@ -267,7 +275,7 @@ function ReadingCheckCard({
   seenVocabLookup,
   hasNextCheck,
   onAdvance,
-  onCleared,
+  onResult,
 }: ReadingCheckCardProps) {
   const [selectedChoice, setSelectedChoice] = useState('');
   const [feedback, setFeedback] = useState<ReadingCheckFeedback>(null);
@@ -315,7 +323,7 @@ function ReadingCheckCard({
     }
 
     setFeedback(nextFeedback);
-    onCleared(check.id);
+    onResult(check.id, nextFeedback === 'correct' ? 'correct' : 'incorrect');
   }
 
   return (

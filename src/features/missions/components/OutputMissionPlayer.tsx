@@ -28,6 +28,12 @@ import {
   selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
+import {
+  mergeMissionItemOutcome,
+  summarizeMissionItemOutcomes,
+  type MissionItemOutcome,
+  type MissionAttemptSummary,
+} from '../lib/missionCompletion';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
 
 type OutputMissionPlayerProps = {
@@ -67,7 +73,7 @@ export function OutputMissionPlayer({
   const sessionTasks = sessionTaskVariant.items;
   const sessionExamples = sessionExampleVariant.items;
   const sessionVocab = sessionVocabVariant.items;
-  const [clearedTaskIds, setClearedTaskIds] = useState<string[]>([]);
+  const [resultsByTaskId, setResultsByTaskId] = useState<Record<string, MissionItemOutcome>>({});
   const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
     Record<string, OutputEvaluationResult | null>
@@ -83,12 +89,11 @@ export function OutputMissionPlayer({
   const currentResponse = responsesByTaskId[currentTask.id] ?? '';
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
-  const completionState = buildMissionCompletionRouteState(
-    mission,
-    sessionMode,
-    Math.min(clearedTaskIds.length, sessionTasks.length),
-    sessionTasks.length,
+  const attemptSummary = useMemo(
+    () => summarizeMissionItemOutcomes(resultsByTaskId, sessionTasks.length),
+    [resultsByTaskId, sessionTasks.length],
   );
+  const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
 
   useEffect(() => {
     updateContinueState({
@@ -104,14 +109,14 @@ export function OutputMissionPlayer({
 
   useMissionAutoComplete({
     missionId: mission.id,
-    clearedCount: clearedTaskIds.length,
-    totalCount: sessionTasks.length,
+    attemptSummary,
   });
 
-  function handleTaskCleared(taskId: string) {
-    setClearedTaskIds((currentIds) =>
-      currentIds.includes(taskId) ? currentIds : [...currentIds, taskId],
-    );
+  function handleTaskResult(taskId: string, outcome: MissionItemOutcome) {
+    setResultsByTaskId((currentResults) => ({
+      ...currentResults,
+      [taskId]: mergeMissionItemOutcome(currentResults[taskId], outcome),
+    }));
   }
 
   function updateTaskResponse(taskId: string, response: string) {
@@ -228,13 +233,13 @@ export function OutputMissionPlayer({
           feedback={currentFeedback}
           currentTaskIndex={currentTaskIndex}
           totalTasks={sessionTasks.length}
-          clearedCount={clearedTaskIds.length}
+          attemptSummary={attemptSummary}
           canGoPrevious={currentTaskIndex > 0}
           hasNextTask={currentTaskIndex < sessionTasks.length - 1}
           onPrevious={() => setCurrentTaskIndex((index) => Math.max(0, index - 1))}
           onResponseChange={updateTaskResponse}
           onFeedbackChange={updateTaskFeedback}
-          onCleared={handleTaskCleared}
+          onResult={handleTaskResult}
           onAdvance={goToNextTask}
         />
       </div>
@@ -291,13 +296,13 @@ type OutputTaskCardProps = {
   feedback: OutputEvaluationResult | null;
   currentTaskIndex: number;
   totalTasks: number;
-  clearedCount: number;
+  attemptSummary: MissionAttemptSummary;
   canGoPrevious: boolean;
   hasNextTask: boolean;
   onPrevious: () => void;
   onResponseChange: (taskId: string, response: string) => void;
   onFeedbackChange: (taskId: string, feedback: OutputEvaluationResult | null) => void;
-  onCleared: (taskId: string) => void;
+  onResult: (taskId: string, outcome: MissionItemOutcome) => void;
   onAdvance: () => void;
 };
 
@@ -309,13 +314,13 @@ function OutputTaskCard({
   feedback,
   currentTaskIndex,
   totalTasks,
-  clearedCount,
+  attemptSummary,
   canGoPrevious,
   hasNextTask,
   onPrevious,
   onResponseChange,
   onFeedbackChange,
-  onCleared,
+  onResult,
   onAdvance,
 }: OutputTaskCardProps) {
   const answerPieces = useMemo(
@@ -348,7 +353,7 @@ function OutputTaskCard({
     }
 
     onFeedbackChange(task.id, nextFeedback);
-    onCleared(task.id);
+    onResult(task.id, nextFeedback.isAccepted ? 'correct' : 'incorrect');
   }
 
   return (
@@ -361,7 +366,7 @@ function OutputTaskCard({
           <p className="output-task-card__prompt">{task.prompt}</p>
         </div>
         <p className="output-focus-card__count">
-          {clearedCount}/{totalTasks}
+          {attemptSummary.attemptedCount}/{totalTasks}
         </p>
       </div>
 
