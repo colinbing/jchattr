@@ -60,6 +60,24 @@ describe('daily session progress', () => {
     ).toBe(false);
   });
 
+  it('keeps completed plan item keys separate across the 3 AM ET study-day rollover', () => {
+    markDailySessionPlanItemComplete(
+      '2026-05-01',
+      'mission:mission-grammar-topic-desu:default',
+    );
+    const nextDayRecord = markDailySessionPlanItemComplete(
+      '2026-05-02',
+      'mission:mission-grammar-topic-desu:reinforce',
+    );
+
+    expect(nextDayRecord.completedPlanItemKeysByStudyDay['2026-05-01']).toEqual([
+      'mission:mission-grammar-topic-desu:default',
+    ]);
+    expect(nextDayRecord.completedPlanItemKeysByStudyDay['2026-05-02']).toEqual([
+      'mission:mission-grammar-topic-desu:reinforce',
+    ]);
+  });
+
   it('keeps the previous study day before the 3 AM ET rollover', () => {
     expect(getCurrentStudyDayKey(new Date('2026-05-02T06:59:59.000Z'))).toBe(
       '2026-05-01',

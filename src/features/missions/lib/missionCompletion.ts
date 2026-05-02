@@ -12,12 +12,15 @@ export type MissionAttemptSummary = {
 
 export function summarizeMissionItemOutcomes(
   outcomesByItemId: Record<string, MissionItemOutcome>,
-  totalCount: number,
+  expectedItemIds: string[],
 ): MissionAttemptSummary {
-  const safeTotalCount = Math.max(0, Math.floor(totalCount));
-  const boundedOutcomes = Object.values(outcomesByItemId)
-    .filter(isMissionItemOutcome)
-    .slice(0, safeTotalCount);
+  const uniqueExpectedItemIds = Array.from(
+    new Set(expectedItemIds.filter((itemId) => itemId.trim().length > 0)),
+  );
+  const safeTotalCount = uniqueExpectedItemIds.length;
+  const boundedOutcomes = uniqueExpectedItemIds
+    .map((itemId) => outcomesByItemId[itemId])
+    .filter(isMissionItemOutcome);
   const correctCount = boundedOutcomes.filter((outcome) => outcome === 'correct').length;
   const incorrectCount = boundedOutcomes.filter((outcome) => outcome === 'incorrect').length;
   const supportedCount = boundedOutcomes.filter((outcome) => outcome === 'supported').length;
@@ -49,6 +52,6 @@ export function mergeMissionItemOutcome(
   return 'correct';
 }
 
-function isMissionItemOutcome(value: string): value is MissionItemOutcome {
+function isMissionItemOutcome(value: unknown): value is MissionItemOutcome {
   return value === 'correct' || value === 'incorrect' || value === 'supported';
 }

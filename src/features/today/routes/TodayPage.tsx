@@ -33,8 +33,13 @@ import {
   deriveTodayRecommendations,
   type TodayRecommendation,
 } from '../lib/todayRecommendations';
+import {
+  filterBonusRecommendations,
+  getTodayRecommendationPlanKey,
+} from '../lib/todayBonusRecommendations';
 import { isTodayPlanItemCompleteForStudyDay } from '../lib/todayPlanCompletion';
 import { getTodayPlanItemKey } from '../lib/todayPlanKeys';
+import { shouldRecreateTodayPlanSnapshotForLiveRecommendations } from '../lib/todayPlanSnapshot';
 import {
   buildMissionPracticeRecap,
   buildMissionReviewImpact,
@@ -110,10 +115,14 @@ export function TodayPage() {
     weakPointCount: weakPointList.length,
     continueMission,
   });
-  const bonusRecommendations =
-    visibleRecommendations.filter((recommendation) => {
-      return !planState.planKeys.has(getRecommendationKey(recommendation));
-    });
+  const bonusRecommendations = filterBonusRecommendations(
+    visibleRecommendations,
+    {
+      planKeys: planState.planKeys,
+      missionIds: planState.planMissionIds,
+      capstoneStoryIds: planState.planCapstoneStoryIds,
+    },
+  );
   const optionalContinueMission =
     continueMission &&
     !planState.planKeys.has(
@@ -227,7 +236,7 @@ export function TodayPage() {
       variant="compact"
       eyebrow="Daily Entry"
       title="Today"
-      description="Start with the small daily plan. Open the rest only if you want more."
+      description="Follow the core plan first. Bonus practice stays optional after the daily work."
       aside={<span className="status-chip">Daily loop</span>}
     >
       <SessionSummary
@@ -247,7 +256,7 @@ export function TodayPage() {
         <SurfaceCard
           className="today-support-card"
           title="Optional in-progress practice"
-          description="Today is complete. Resume this only if you want extra practice."
+          description="Core work is finished. Resume this only if you want more practice."
         >
           <div className="review-return-card">
             <p className="review-launch-card__title">
@@ -275,7 +284,7 @@ export function TodayPage() {
           <summary className="today-completion-disclosure__summary">
             <span className="today-completion-disclosure__copy">
               <span className="today-completion-disclosure__eyebrow">
-                Mission finished
+                Finished today
               </span>
               <strong>{missionCompletion.missionTitle}</strong>
             </span>
@@ -312,8 +321,8 @@ export function TodayPage() {
 
             <p className="review-launch-card__body">
               {planState.remainingCount > 0
-                ? 'Use the Today lesson card above for the next step.'
-                : 'Today core work is complete. Bonus practice is optional.'}
+                ? 'Use the core plan above for the next unfinished step.'
+                : 'Core work is finished for today. Bonus practice is optional.'}
             </p>
           </div>
         </details>
@@ -325,10 +334,10 @@ export function TodayPage() {
           title={reviewCompletion.unresolvedCount > 0 ? 'Review pass ended' : 'Review finished'}
           description={
             reviewCompletion.unresolvedCount > 0
-              ? 'Some retry work is still open. Today can keep moving.'
+              ? 'Some retry work is still open. The core plan can keep moving.'
               : reviewCompletion.nextBatchSize > 0
-              ? 'Review pass done. Today will show whether to retry or move on.'
-              : 'The review queue is clear. Move straight into Today.'
+              ? 'Review pass done. Today will show whether another retry belongs in the plan.'
+              : 'The review queue is clear. Move into the core plan.'
           }
         >
           <div className="review-return-card">
@@ -367,8 +376,8 @@ export function TodayPage() {
 
             <p className="review-launch-card__body">
               {planState.remainingCount > 0
-                ? 'Use the Today lesson card above for the next step.'
-                : 'Today core work is complete. Bonus practice is optional.'}
+                ? 'Use the core plan above for the next unfinished step.'
+                : 'Core work is finished for today. Bonus practice is optional.'}
             </p>
           </div>
         </SurfaceCard>
@@ -379,8 +388,8 @@ export function TodayPage() {
         title={planState.remainingCount === 0 ? 'Optional bonus practice' : 'Bonus later'}
         description={
           planState.remainingCount === 0
-            ? 'Today is complete. Add one focused pass only if you still want more.'
-            : 'Extra practice is available after the main plan.'
+            ? 'Core work is finished. Add one short pass only if you still want more.'
+            : 'Extra practice stays available after the core plan.'
         }
       >
         <div className="today-bonus-card__header">
@@ -464,6 +473,8 @@ type TodayPlanSnapshotItem = {
 type TodayPlanState = {
   snapshot: TodayPlanSnapshot;
   planKeys: Set<string>;
+  planMissionIds: Set<string>;
+  planCapstoneStoryIds: Set<string>;
   summaryItems: SessionSummaryItem[];
   completedCount: number;
   remainingCount: number;
@@ -637,6 +648,16 @@ function resolveTodayPlanState({
   return {
     snapshot: normalizedSnapshot,
     planKeys: new Set(planItems.map((item) => item.key)),
+    planMissionIds: new Set(
+      planItems
+        .map((item) => item.missionId)
+        .filter((missionId): missionId is string => Boolean(missionId)),
+    ),
+    planCapstoneStoryIds: new Set(
+      planItems
+        .map((item) => item.capstoneStoryId)
+        .filter((capstoneStoryId): capstoneStoryId is string => Boolean(capstoneStoryId)),
+    ),
     summaryItems: renderedSummaryItems,
     completedCount: renderedSummaryItems.filter((item) => item.status === 'done').length,
     remainingCount: remainingPlanItems.length + extraContinueCount,
@@ -856,7 +877,13 @@ function shouldRecreateTodayPlanSnapshot({
     return true;
   }
 
-  if (hasNoLocalStudyState && snapshotKeys.join('|') !== liveCoreKeys.join('|')) {
+  if (
+    shouldRecreateTodayPlanSnapshotForLiveRecommendations({
+      snapshotKeys,
+      liveCoreKeys,
+      hasLocalStudyState: !hasNoLocalStudyState,
+    })
+  ) {
     return true;
   }
 
@@ -949,30 +976,14 @@ function formatTodayPlanItemMeta(item: TodayPlanSnapshotItem, isCompleted: boole
 function createRecommendationByKey(recommendations: TodayRecommendation[]) {
   return new Map(
     recommendations.map((recommendation) => [
-      getRecommendationKey(recommendation),
+      getTodayRecommendationPlanKey(recommendation),
       recommendation,
     ]),
   );
 }
 
 function getRecommendationKey(recommendation: TodayRecommendation) {
-  if (recommendation.kind === 'review') {
-    return getTodayPlanItemKey({ kind: 'review' });
-  }
-
-  if (recommendation.kind === 'capstone') {
-    return getTodayPlanItemKey({
-      kind: 'capstone',
-      capstoneStoryId: recommendation.capstoneStory.id,
-      capstoneMode: recommendation.capstoneMode,
-    });
-  }
-
-  return getTodayPlanItemKey({
-    kind: 'mission',
-    missionId: recommendation.mission.id,
-    sessionMode: recommendation.sessionMode,
-  });
+  return getTodayRecommendationPlanKey(recommendation);
 }
 
 function isTodayPlanSnapshot(value: unknown): value is TodayPlanSnapshot {

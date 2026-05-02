@@ -74,6 +74,10 @@ export function OutputMissionPlayer({
   const sessionTasks = sessionTaskVariant.items;
   const sessionExamples = sessionExampleVariant.items;
   const sessionVocab = sessionVocabVariant.items;
+  const sessionTaskIds = useMemo(
+    () => sessionTasks.map((task) => task.id),
+    [sessionTasks],
+  );
   const [resultsByTaskId, setResultsByTaskId] = useState<Record<string, MissionItemOutcome>>({});
   const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
@@ -101,8 +105,8 @@ export function OutputMissionPlayer({
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
   const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByTaskId, sessionTasks.length),
-    [resultsByTaskId, sessionTasks.length],
+    () => summarizeMissionItemOutcomes(resultsByTaskId, sessionTaskIds),
+    [resultsByTaskId, sessionTaskIds],
   );
   const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
 

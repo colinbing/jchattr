@@ -72,6 +72,10 @@ export function ReadingMissionPlayer({
     [checks, sessionMode, sessionRotation],
   );
   const sessionChecks = sessionCheckVariant.items;
+  const sessionCheckIds = useMemo(
+    () => sessionChecks.map((check) => check.id),
+    [sessionChecks],
+  );
   const [resultsByCheckId, setResultsByCheckId] = useState<Record<string, MissionItemOutcome>>({});
   const initialContinuePosition = useMemo(
     () =>
@@ -97,8 +101,8 @@ export function ReadingMissionPlayer({
   const currentExample = examplesById[currentCheck.exampleId];
   const progressValue = ((currentCheckIndex + 1) / sessionChecks.length) * 100;
   const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByCheckId, sessionChecks.length),
-    [resultsByCheckId, sessionChecks.length],
+    () => summarizeMissionItemOutcomes(resultsByCheckId, sessionCheckIds),
+    [resultsByCheckId, sessionCheckIds],
   );
 
   useEffect(() => {

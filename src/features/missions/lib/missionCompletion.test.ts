@@ -9,7 +9,7 @@ describe('summarizeMissionItemOutcomes', () => {
           first: 'correct',
           second: 'correct',
         },
-        2,
+        ['first', 'second'],
       ),
     ).toEqual({
       attemptedCount: 2,
@@ -28,7 +28,7 @@ describe('summarizeMissionItemOutcomes', () => {
         first: 'correct',
         second: 'incorrect',
       },
-      2,
+      ['first', 'second'],
     );
 
     expect(summary.isExposureComplete).toBe(true);
@@ -42,7 +42,7 @@ describe('summarizeMissionItemOutcomes', () => {
         first: 'correct',
         second: 'supported',
       },
-      2,
+      ['first', 'second'],
     );
 
     expect(summary.isExposureComplete).toBe(true);
@@ -51,28 +51,69 @@ describe('summarizeMissionItemOutcomes', () => {
   });
 
   it('keeps an empty result set incomplete', () => {
-    expect(summarizeMissionItemOutcomes({}, 2)).toMatchObject({
+    expect(summarizeMissionItemOutcomes({}, ['first', 'second'])).toMatchObject({
       attemptedCount: 0,
+      totalCount: 2,
       isExposureComplete: false,
       isMasteryComplete: false,
     });
   });
 
-  it('does not let extra result keys inflate the summary beyond total count', () => {
+  it('ignores extra result keys outside the expected active item ids', () => {
     const summary = summarizeMissionItemOutcomes(
       {
+        stale: 'incorrect',
         first: 'correct',
         second: 'correct',
-        stale: 'correct',
       },
-      2,
+      ['first', 'second'],
     );
 
     expect(summary).toMatchObject({
       attemptedCount: 2,
       correctCount: 2,
+      incorrectCount: 0,
       totalCount: 2,
       isMasteryComplete: true,
+    });
+  });
+
+  it('counts by expected ids instead of stale key insertion order', () => {
+    const summary = summarizeMissionItemOutcomes(
+      {
+        stale: 'correct',
+        first: 'incorrect',
+        second: 'supported',
+      },
+      ['first', 'second'],
+    );
+
+    expect(summary).toMatchObject({
+      attemptedCount: 2,
+      correctCount: 0,
+      incorrectCount: 1,
+      supportedCount: 1,
+      totalCount: 2,
+      isExposureComplete: true,
+      isMasteryComplete: false,
+    });
+  });
+
+  it('keeps missing expected outcomes incomplete even when stale keys are present', () => {
+    const summary = summarizeMissionItemOutcomes(
+      {
+        first: 'correct',
+        stale: 'correct',
+      },
+      ['first', 'second'],
+    );
+
+    expect(summary).toMatchObject({
+      attemptedCount: 1,
+      correctCount: 1,
+      totalCount: 2,
+      isExposureComplete: false,
+      isMasteryComplete: false,
     });
   });
 

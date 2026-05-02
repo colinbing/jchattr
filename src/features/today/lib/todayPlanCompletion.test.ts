@@ -39,6 +39,38 @@ describe('today plan completion', () => {
     ).toBe(true);
   });
 
+  it('does not let a completed default key satisfy the same mission reinforce item', () => {
+    const defaultKey = getTodayPlanItemKey({
+      kind: 'mission',
+      missionId: 'mission-grammar-topic-desu',
+      sessionMode: 'default',
+    });
+    const reinforceKey = getTodayPlanItemKey({
+      kind: 'mission',
+      missionId: 'mission-grammar-topic-desu',
+      sessionMode: 'reinforce',
+    });
+
+    expect(
+      isTodayPlanItemCompleteForStudyDay(
+        {
+          key: reinforceKey,
+          kind: 'mission',
+        },
+        new Set([defaultKey]),
+      ),
+    ).toBe(false);
+    expect(
+      isTodayPlanItemCompleteForStudyDay(
+        {
+          key: defaultKey,
+          kind: 'mission',
+        },
+        new Set([reinforceKey]),
+      ),
+    ).toBe(false);
+  });
+
   it('marks review complete only when today review key is completed', () => {
     expect(
       isTodayPlanItemCompleteForStudyDay(

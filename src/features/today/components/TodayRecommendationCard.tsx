@@ -41,7 +41,7 @@ export function TodayRecommendationCard({
 
       <div className="mission-card__details">
         <p className="mission-card__skill-label">
-          {recommendation.kind === 'review' ? 'Why now' : 'Personal focus'}
+          {recommendation.kind === 'review' ? 'Why now' : 'Practice lane'}
         </p>
         <p className="mission-card__skill-value">
           {recommendation.kind === 'review'
@@ -62,9 +62,9 @@ export function TodayRecommendationCard({
         ) : null}
         {recommendation.kind === 'mission' ? (
           <p className="list-meta">
-            {recommendation.sessionMode === 'reinforce' ? 'Short reinforce pass. ' : ''}
+            {recommendation.sessionMode === 'reinforce' ? 'Reinforcement pass. ' : ''}
             {progress?.isCompleted
-              ? `Finished ${progress.completionCount} time${
+              ? `${progress.completionCount} finished pass${
                   progress.completionCount === 1 ? '' : 's'
                 } on this device. `
               : ''}

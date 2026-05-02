@@ -29,6 +29,27 @@ const voiceCoachSpikeRoutes =
       ]
     : [];
 
+function createTodayQaFixtureRoutes() {
+  const LazyTodayQaFixturePage = lazy(() =>
+    import('../features/today/routes/TodayQaFixturePage').then((module) => ({
+      default: module.TodayQaFixturePage,
+    })),
+  );
+
+  return [
+    {
+      path: 'dev/today-qa/:fixtureId',
+      element: (
+        <Suspense fallback={<span className="status-chip">Loading Today QA...</span>}>
+          <LazyTodayQaFixturePage />
+        </Suspense>
+      ),
+    },
+  ];
+}
+
+const todayQaFixtureRoutes = import.meta.env.DEV ? createTodayQaFixtureRoutes() : [];
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -63,6 +84,7 @@ export const router = createBrowserRouter([
         element: <SettingsPage />,
       },
       ...voiceCoachSpikeRoutes,
+      ...todayQaFixtureRoutes,
     ],
   },
 ]);

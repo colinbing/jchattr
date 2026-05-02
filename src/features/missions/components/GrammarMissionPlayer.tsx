@@ -76,6 +76,10 @@ export function GrammarMissionPlayer({
   );
   const sessionExamples = sessionExampleVariant.items;
   const sessionDrills = sessionDrillVariant.items;
+  const sessionDrillIds = useMemo(
+    () => sessionDrills.map((drill) => drill.id),
+    [sessionDrills],
+  );
   const sessionSteps = useMemo(
     () => getMissionSteps(sessionMode, sessionExamples.length, sessionDrills.length),
     [sessionDrills.length, sessionExamples.length, sessionMode],
@@ -127,8 +131,8 @@ export function GrammarMissionPlayer({
   const currentExample = sessionExamples[currentExampleIndex] ?? null;
   const currentDrill = sessionDrills[currentDrillIndex] ?? null;
   const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByDrillId, sessionDrills.length),
-    [resultsByDrillId, sessionDrills.length],
+    () => summarizeMissionItemOutcomes(resultsByDrillId, sessionDrillIds),
+    [resultsByDrillId, sessionDrillIds],
   );
 
   useEffect(() => {

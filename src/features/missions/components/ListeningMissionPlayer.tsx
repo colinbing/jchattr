@@ -67,6 +67,10 @@ export function ListeningMissionPlayer({
   );
   const sessionItems = sessionItemVariant.items;
   const sessionExamples = sessionExampleVariant.items;
+  const sessionItemIds = useMemo(
+    () => sessionItems.map((item) => item.id),
+    [sessionItems],
+  );
   const supportExamples = useMemo(
     () =>
       sessionExamples.map((example) => ({
@@ -105,8 +109,8 @@ export function ListeningMissionPlayer({
   const showPrep = !hasCompletedPrep && supportExamples.length > 0;
   const progressValue = showPrep ? 0 : ((currentItemIndex + 1) / sessionItems.length) * 100;
   const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByItemId, sessionItems.length),
-    [resultsByItemId, sessionItems.length],
+    () => summarizeMissionItemOutcomes(resultsByItemId, sessionItemIds),
+    [resultsByItemId, sessionItemIds],
   );
   const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
   const primaryLesson = relatedLessons[0];

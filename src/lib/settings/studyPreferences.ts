@@ -5,24 +5,10 @@ export const STUDY_PREFERENCES_STORAGE_KEY = 'japanese-os.study-preferences.v1';
 const STUDY_PREFERENCES_UPDATED_EVENT = 'japanese-os:study-preferences-updated';
 const STUDY_PREFERENCES_VERSION = 1;
 
-export type StudyFocusMode =
-  | 'balanced'
-  | 'more-listening'
-  | 'more-output'
-  | 'light-day'
-  | 'class-prep'
-  | 'weak-points-first';
-
 export type ReadingDisplayMode =
   | 'guided-reveal'
   | 'kana-support'
   | 'japanese-only';
-
-export type StudyFocusModeOption = {
-  id: StudyFocusMode;
-  label: string;
-  summary: string;
-};
 
 export type ReadingDisplayModeOption = {
   id: ReadingDisplayMode;
@@ -32,43 +18,9 @@ export type ReadingDisplayModeOption = {
 
 export interface StudyPreferencesRecord {
   version: number;
-  focusMode: StudyFocusMode;
   readingDisplayMode: ReadingDisplayMode;
   updatedAt: string | null;
 }
-
-export const STUDY_FOCUS_MODE_OPTIONS: StudyFocusModeOption[] = [
-  {
-    id: 'balanced',
-    label: 'Balanced',
-    summary: 'Keep grammar, listening, output, and reading in normal rotation.',
-  },
-  {
-    id: 'more-listening',
-    label: 'More listening',
-    summary: 'Prefer extra ear-first practice when the daily loop has room.',
-  },
-  {
-    id: 'more-output',
-    label: 'More output',
-    summary: 'Prefer more typing and sentence-building support practice.',
-  },
-  {
-    id: 'light-day',
-    label: 'Light day',
-    summary: 'Favor shorter optional follow-up work after the core plan.',
-  },
-  {
-    id: 'class-prep',
-    label: 'Class prep',
-    summary: 'Prefer practical beginner patterns that make lessons feel familiar.',
-  },
-  {
-    id: 'weak-points-first',
-    label: 'Weak points first',
-    summary: 'Prefer extra support for misses once required Review stays protected.',
-  },
-];
 
 export const READING_DISPLAY_MODE_OPTIONS: ReadingDisplayModeOption[] = [
   {
@@ -88,16 +40,12 @@ export const READING_DISPLAY_MODE_OPTIONS: ReadingDisplayModeOption[] = [
   },
 ];
 
-const STUDY_FOCUS_MODE_IDS = new Set<StudyFocusMode>(
-  STUDY_FOCUS_MODE_OPTIONS.map((option) => option.id),
-);
 const READING_DISPLAY_MODE_IDS = new Set<ReadingDisplayMode>(
   READING_DISPLAY_MODE_OPTIONS.map((option) => option.id),
 );
 
 const DEFAULT_STUDY_PREFERENCES: StudyPreferencesRecord = {
   version: STUDY_PREFERENCES_VERSION,
-  focusMode: 'balanced',
   readingDisplayMode: 'guided-reveal',
   updatedAt: null,
 };
@@ -143,18 +91,6 @@ export function readStudyPreferences(): StudyPreferencesRecord {
     cachedStudyPreferences = DEFAULT_STUDY_PREFERENCES;
     return cachedStudyPreferences;
   }
-}
-
-export function setStudyFocusMode(focusMode: StudyFocusMode, updatedAt = new Date()) {
-  const currentPreferences = readStudyPreferences();
-  const nextPreferences = parseStudyPreferences({
-    ...currentPreferences,
-    focusMode,
-    updatedAt: updatedAt.toISOString(),
-  });
-
-  writeStudyPreferences(nextPreferences);
-  return nextPreferences;
 }
 
 export function setReadingDisplayMode(
@@ -224,16 +160,9 @@ function parseStudyPreferences(rawValue: unknown): StudyPreferencesRecord {
 
   return {
     version: STUDY_PREFERENCES_VERSION,
-    focusMode: sanitizeFocusMode(rawValue.focusMode),
     readingDisplayMode: sanitizeReadingDisplayMode(rawValue.readingDisplayMode),
     updatedAt: sanitizeTimestamp(rawValue.updatedAt),
   };
-}
-
-function sanitizeFocusMode(value: unknown): StudyFocusMode {
-  return typeof value === 'string' && STUDY_FOCUS_MODE_IDS.has(value as StudyFocusMode)
-    ? (value as StudyFocusMode)
-    : DEFAULT_STUDY_PREFERENCES.focusMode;
 }
 
 function sanitizeReadingDisplayMode(value: unknown): ReadingDisplayMode {

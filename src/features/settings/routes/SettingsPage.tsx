@@ -16,8 +16,6 @@ import {
 import {
   READING_DISPLAY_MODE_OPTIONS,
   setReadingDisplayMode,
-  setStudyFocusMode,
-  STUDY_FOCUS_MODE_OPTIONS,
   useStudyPreferences,
 } from '../../../lib/settings/studyPreferences';
 
@@ -41,15 +39,11 @@ export function SettingsPage() {
   const aiOutputCoachStatus = getAiOutputCoachConfigStatus();
   const [pendingResetId, setPendingResetId] = useState<StudyDataStoreId | null>(null);
   const [lastResetMessage, setLastResetMessage] = useState<string | null>(null);
-  const [lastFocusMessage, setLastFocusMessage] = useState<string | null>(null);
   const [lastReadingDisplayMessage, setLastReadingDisplayMessage] = useState<string | null>(
     null,
   );
   const weakPointList = getWeakPointList(weakPoints);
   const audioStatus = getListeningAudioStatus();
-  const currentFocusOption =
-    STUDY_FOCUS_MODE_OPTIONS.find((option) => option.id === studyPreferences.focusMode) ??
-    STUDY_FOCUS_MODE_OPTIONS[0];
   const currentReadingDisplayOption =
     READING_DISPLAY_MODE_OPTIONS.find(
       (option) => option.id === studyPreferences.readingDisplayMode,
@@ -197,49 +191,6 @@ export function SettingsPage() {
             </p>
           </div>
         </details>
-      </SurfaceCard>
-
-      <SurfaceCard
-        title="Study focus"
-        description="Choose the study shape you want most days."
-      >
-        <div className="settings-focus">
-          <div className="settings-focus__current">
-            <span className="mission-card__skill-label">Current mode</span>
-            <strong>{currentFocusOption.label}</strong>
-            <p>{currentFocusOption.summary}</p>
-          </div>
-          <div
-            className="settings-focus__options"
-            role="radiogroup"
-            aria-label="Study focus mode"
-          >
-            {STUDY_FOCUS_MODE_OPTIONS.map((option) => (
-              <button
-                key={option.id}
-                type="button"
-                className={`settings-focus-option${
-                  option.id === studyPreferences.focusMode
-                    ? ' settings-focus-option--selected'
-                    : ''
-                }`}
-                role="radio"
-                aria-checked={option.id === studyPreferences.focusMode}
-                onClick={() => {
-                  setStudyFocusMode(option.id);
-                  setLastFocusMessage(`Focus mode saved: ${option.label}.`);
-                }}
-              >
-                <span className="settings-focus-option__label">{option.label}</span>
-              </button>
-            ))}
-          </div>
-          {lastFocusMessage ? (
-            <p className="settings-feedback" role="status" aria-live="polite">
-              {lastFocusMessage}
-            </p>
-          ) : null}
-        </div>
       </SurfaceCard>
 
       <SurfaceCard
