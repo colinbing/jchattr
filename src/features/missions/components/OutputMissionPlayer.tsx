@@ -8,6 +8,7 @@ import type {
   GrammarLesson,
   Mission,
   OutputTask,
+  ScenarioStep,
   VocabItem,
 } from '../../../lib/content/types';
 import { getOutputMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
@@ -17,6 +18,7 @@ import {
 } from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
+import { deriveScenarioAttemptPlan, evaluateScenarioStep } from '../lib/scenarioAttempt';
 import {
   buildMissionCompletionRouteState,
   formatMissionReplayVariant,
@@ -77,6 +79,10 @@ export function OutputMissionPlayer({
     () => sessionTasks.map((task) => task.id),
     [sessionTasks],
   );
+  const scenarioAttemptPlan = useMemo(
+    () => deriveScenarioAttemptPlan(mission, sessionTasks),
+    [mission, sessionTasks],
+  );
   const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
     Record<string, OutputEvaluationResult | null>
@@ -100,7 +106,8 @@ export function OutputMissionPlayer({
     );
   });
   const currentTask = sessionTasks[currentTaskIndex];
-  const currentScenarioStep = mission.scenario?.steps.find((step) => step.id === currentTask.id);
+  const currentScenarioStep =
+    scenarioAttemptPlan?.stepsByTaskId[currentTask.id]?.step ?? null;
   const currentResponse = responsesByTaskId[currentTask.id] ?? '';
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
@@ -237,6 +244,7 @@ export function OutputMissionPlayer({
         <OutputTaskCard
           missionId={mission.id}
           task={currentTask}
+          scenarioStep={currentScenarioStep}
           relatedVocab={relatedVocab}
           response={currentResponse}
           feedback={currentFeedback}
@@ -300,6 +308,7 @@ export function OutputMissionPlayer({
 type OutputTaskCardProps = {
   missionId: string;
   task: OutputTask;
+  scenarioStep: ScenarioStep | null;
   relatedVocab: VocabItem[];
   response: string;
   feedback: OutputEvaluationResult | null;
@@ -318,6 +327,7 @@ type OutputTaskCardProps = {
 function OutputTaskCard({
   missionId,
   task,
+  scenarioStep,
   relatedVocab,
   response,
   feedback,
@@ -350,7 +360,9 @@ function OutputTaskCard({
       return;
     }
 
-    const nextFeedback = evaluateOutputResponse(task, response);
+    const nextFeedback = scenarioStep
+      ? evaluateScenarioStep(scenarioStep, task, response).outputEvaluation
+      : evaluateOutputResponse(task, response);
 
     if (!nextFeedback.isAccepted) {
       recordWeakPoint({
