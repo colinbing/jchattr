@@ -9,6 +9,7 @@ export type DailySessionRecord = {
   version: number;
   currentStudyDayKey: string;
   plansByStudyDay: Record<string, unknown>;
+  completedPlanItemKeysByStudyDay: Record<string, string[]>;
   completedStudyDayKeys: string[];
   updatedAt: string;
 };
@@ -26,6 +27,7 @@ function createEmptyDailySessionRecord(studyDayKey: string): DailySessionRecord 
     version: DAILY_SESSION_VERSION,
     currentStudyDayKey: studyDayKey,
     plansByStudyDay: {},
+    completedPlanItemKeysByStudyDay: {},
     completedStudyDayKeys: [],
     updatedAt: new Date().toISOString(),
   };
@@ -73,7 +75,37 @@ export function writeDailySessionPlan(
       ...currentRecord.plansByStudyDay,
       [studyDayKey]: plan,
     },
+    completedPlanItemKeysByStudyDay: currentRecord.completedPlanItemKeysByStudyDay,
     completedStudyDayKeys,
+    updatedAt: new Date().toISOString(),
+  };
+
+  writeDailySessionRecord(nextRecord);
+  return nextRecord;
+}
+
+export function markDailySessionPlanItemComplete(
+  studyDayKey: string,
+  planItemKey: string,
+) {
+  const safePlanItemKey = planItemKey.trim();
+
+  if (!isStudyDayKey(studyDayKey) || !safePlanItemKey) {
+    return readDailySessionRecord(studyDayKey);
+  }
+
+  const currentRecord = readDailySessionRecord(studyDayKey);
+  const completedKeysForDay =
+    currentRecord.completedPlanItemKeysByStudyDay[studyDayKey] ?? [];
+  const nextRecord: DailySessionRecord = {
+    ...currentRecord,
+    currentStudyDayKey: studyDayKey,
+    completedPlanItemKeysByStudyDay: {
+      ...currentRecord.completedPlanItemKeysByStudyDay,
+      [studyDayKey]: Array.from(
+        new Set([...completedKeysForDay, safePlanItemKey]),
+      ).sort(),
+    },
     updatedAt: new Date().toISOString(),
   };
 
@@ -141,6 +173,9 @@ function sanitizeDailySessionRecord(rawValue: unknown, studyDayKey: string): Dai
         ? rawValue.currentStudyDayKey
         : studyDayKey,
     plansByStudyDay: sanitizePlansByStudyDay(rawValue.plansByStudyDay),
+    completedPlanItemKeysByStudyDay: sanitizeCompletedPlanItemKeysByStudyDay(
+      rawValue.completedPlanItemKeysByStudyDay,
+    ),
     completedStudyDayKeys: sanitizeStudyDayKeys(rawValue.completedStudyDayKeys),
     updatedAt:
       typeof rawValue.updatedAt === 'string' && !Number.isNaN(Date.parse(rawValue.updatedAt))
@@ -160,6 +195,32 @@ function sanitizePlansByStudyDay(value: unknown) {
     }
 
     record[key] = plan;
+    return record;
+  }, {});
+}
+
+function sanitizeCompletedPlanItemKeysByStudyDay(value: unknown) {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  return Object.entries(value).reduce<Record<string, string[]>>((record, [key, planItemKeys]) => {
+    if (!isStudyDayKey(key) || !Array.isArray(planItemKeys)) {
+      return record;
+    }
+
+    const safePlanItemKeys = Array.from(
+      new Set(
+        planItemKeys.filter((item): item is string => {
+          return typeof item === 'string' && item.trim().length > 0;
+        }),
+      ),
+    ).sort();
+
+    if (safePlanItemKeys.length > 0) {
+      record[key] = safePlanItemKeys;
+    }
+
     return record;
   }, {});
 }

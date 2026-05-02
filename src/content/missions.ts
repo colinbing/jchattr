@@ -704,6 +704,101 @@ export const missions = [
     ],
   },
   {
+    id: 'mission-scenario-preference-chat',
+    type: 'output',
+    title: 'Scenario: ask about simple preferences',
+    targetSkill: 'output-confidence',
+    contentRefs: {
+      grammarLessonIds: ['grammar-preference-suki-kirai', 'grammar-preference-questions'],
+      vocabIds: ['vocab-suki', 'vocab-yakyuu', 'vocab-nomimono', 'vocab-cha'],
+      exampleIds: [
+        'ex-nomimono-nani-suki',
+        'ex-cha-suki',
+        'ex-yakyuu-ga-suki-desu-ka',
+      ],
+    },
+    estimatedMinutes: 5,
+    unlockRules: {
+      requiredMissionIds: ['mission-output-preference-questions'],
+    },
+    scenario: {
+      kind: 'scenario',
+      scenarioId: 'scenario-preference-chat-01',
+      setting: 'meetup',
+      communicativeGoal:
+        'Ask one preference question, answer with one liked drink, and ask one follow-up yes/no preference question.',
+      sourcePackIds: [4],
+      grammarLessonIds: ['grammar-preference-suki-kirai', 'grammar-preference-questions'],
+      vocabIds: ['vocab-suki', 'vocab-yakyuu', 'vocab-nomimono', 'vocab-cha'],
+      exampleIds: [
+        'ex-nomimono-nani-suki',
+        'ex-cha-suki',
+        'ex-yakyuu-ga-suki-desu-ka',
+      ],
+      steps: [
+        {
+          id: 'scenario-preference-drink-question',
+          actor: 'learner',
+          moveType: 'type',
+          prompt: 'A classmate is choosing a drink. Ask what drink they like.',
+          supportExampleIds: ['ex-nomimono-nani-suki'],
+          acceptableAnswers: ['のみものはなにがすきですか。', 'のみものはなにがすきですか'],
+          requiredTokenPatterns: ['のみもの', 'は', 'なに', 'が', 'すき', 'です', 'か'],
+          weakPointItemId: 'scenario-preference-drink-question',
+        },
+        {
+          id: 'scenario-preference-tea-answer',
+          actor: 'learner',
+          moveType: 'type',
+          prompt: 'Answer with one simple line: "I like tea."',
+          supportExampleIds: ['ex-cha-suki'],
+          acceptableAnswers: ['ちゃがすきです。', 'ちゃがすきです'],
+          requiredTokenPatterns: ['ちゃ', 'が', 'すき', 'です'],
+          weakPointItemId: 'scenario-preference-tea-answer',
+        },
+        {
+          id: 'scenario-preference-baseball-question',
+          actor: 'learner',
+          moveType: 'type',
+          prompt: 'Ask if the other person likes baseball.',
+          supportExampleIds: ['ex-yakyuu-ga-suki-desu-ka'],
+          acceptableAnswers: ['やきゅうがすきですか。', 'やきゅうがすきですか'],
+          requiredTokenPatterns: ['やきゅう', 'が', 'すき', 'です', 'か'],
+          weakPointItemId: 'scenario-preference-baseball-question',
+        },
+      ],
+    },
+    outputTasks: [
+      {
+        id: 'scenario-preference-drink-question',
+        prompt: 'Type the preference question: "What drink do you like?"',
+        acceptableAnswers: ['のみものはなにがすきですか。', 'のみものはなにがすきですか'],
+        hint: 'Start with のみものは, then ask なにがすきですか.',
+        evaluation: {
+          tokenPatterns: [['のみもの', 'は', 'なに', 'が', 'すき', 'です', 'か']],
+        },
+      },
+      {
+        id: 'scenario-preference-tea-answer',
+        prompt: 'Type one preference answer: "I like tea."',
+        acceptableAnswers: ['ちゃがすきです。', 'ちゃがすきです'],
+        hint: 'Use the thing plus が plus すきです.',
+        evaluation: {
+          tokenPatterns: [['ちゃ', 'が', 'すき', 'です']],
+        },
+      },
+      {
+        id: 'scenario-preference-baseball-question',
+        prompt: 'Type the yes/no question: "Do you like baseball?"',
+        acceptableAnswers: ['やきゅうがすきですか。', 'やきゅうがすきですか'],
+        hint: 'Use やきゅうがすきですか.',
+        evaluation: {
+          tokenPatterns: [['やきゅう', 'が', 'すき', 'です', 'か']],
+        },
+      },
+    ],
+  },
+  {
     id: 'mission-scenario-meetup-plan',
     type: 'output',
     title: 'Scenario: make a simple meetup plan',

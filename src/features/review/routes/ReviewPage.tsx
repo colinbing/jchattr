@@ -3,6 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
 import {
+  getCurrentStudyDayKey,
+  markDailySessionPlanItemComplete,
+} from '../../../lib/progress/dailySession';
+import {
   markReviewBatchComplete,
   useReviewLoopProgress,
 } from '../../../lib/progress/reviewLoop';
@@ -23,6 +27,7 @@ import {
   type ReviewBatchItem,
 } from '../lib/reviewBatch';
 import { applyReviewBatchResults } from '../lib/reviewResolution';
+import { getTodayPlanItemKey } from '../../today/lib/todayPlanKeys';
 
 const WEAK_POINT_GROUPS: WeakPointItemType[] = [
   'grammar-drill',
@@ -226,6 +231,10 @@ export function ReviewPage() {
             onComplete={(itemResults) => {
               const weakPointKeys = itemResults.map((itemResult) => itemResult.weakPointKey);
               markReviewBatchComplete(weakPointKeys);
+              markDailySessionPlanItemComplete(
+                getCurrentStudyDayKey(),
+                getTodayPlanItemKey({ kind: 'review' }),
+              );
               const latestWeakPointStore = replaceWeakPoints(
                 applyReviewBatchResults(readWeakPoints(), itemResults),
               );

@@ -9,9 +9,14 @@ import {
   markCapstoneComplete,
   useCapstoneProgress,
 } from '../../../lib/progress/capstoneProgress';
+import {
+  getCurrentStudyDayKey,
+  markDailySessionPlanItemComplete,
+} from '../../../lib/progress/dailySession';
 import { useMissionProgress } from '../../../lib/progress/missionProgress';
 import { deriveSeenVocabLookup } from '../../../lib/progress/seenVocab';
 import { useStudyPreferences } from '../../../lib/settings/studyPreferences';
+import { getTodayPlanItemKey } from '../../today/lib/todayPlanKeys';
 import type {
   CapstoneCheck,
   CapstoneLine,
@@ -94,6 +99,14 @@ export function CapstoneStoryPlayer({
     }
 
     markCapstoneComplete(story.id);
+    markDailySessionPlanItemComplete(
+      getCurrentStudyDayKey(),
+      getTodayPlanItemKey({
+        kind: 'capstone',
+        capstoneStoryId: story.id,
+        capstoneMode: mode,
+      }),
+    );
     setIsFinished(true);
   }
 

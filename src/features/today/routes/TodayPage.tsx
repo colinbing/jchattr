@@ -17,14 +17,12 @@ import {
   getMissionProgressEntry,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
-import {
-  getCapstoneProgressEntry,
-  useCapstoneProgress,
-} from '../../../lib/progress/capstoneProgress';
+import { useCapstoneProgress } from '../../../lib/progress/capstoneProgress';
 import {
   getCurrentStudyDayKey,
   getStudyDayLabel,
   getWeekTrackerDays,
+  markDailySessionPlanItemComplete,
   readDailySessionRecord,
   writeDailySessionPlan,
 } from '../../../lib/progress/dailySession';
@@ -35,8 +33,9 @@ import {
   deriveTodayRecommendations,
   type TodayRecommendation,
 } from '../lib/todayRecommendations';
+import { isTodayPlanItemCompleteForStudyDay } from '../lib/todayPlanCompletion';
+import { getTodayPlanItemKey } from '../lib/todayPlanKeys';
 import {
-  buildMissionCompletionTitle,
   buildMissionPracticeRecap,
   buildMissionReviewImpact,
   buildMissionSkillRecap,
@@ -44,12 +43,6 @@ import {
   formatTargetSkillLabel,
 } from '../lib/todayPlanFormatting';
 import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
-import {
-  setStudyFocusMode,
-  STUDY_FOCUS_MODE_OPTIONS,
-  type StudyFocusMode,
-  useStudyPreferences,
-} from '../../../lib/settings/studyPreferences';
 
 export function TodayPage() {
   const location = useLocation();
@@ -60,7 +53,6 @@ export function TodayPage() {
   const weakPoints = useWeakPoints();
   const reviewLoopProgress = useReviewLoopProgress();
   const continueState = useContinueState();
-  const studyPreferences = useStudyPreferences();
   const [studyDayKey, setStudyDayKey] = useState(() => getCurrentStudyDayKey());
   const [dailySessionRecord, setDailySessionRecord] = useState(() =>
     readDailySessionRecord(studyDayKey),
@@ -78,7 +70,6 @@ export function TodayPage() {
     weakPoints,
     reviewLoopProgress,
     capstoneProgress,
-    { studyFocusMode: studyPreferences.focusMode },
   );
   const progressOverview = deriveProgressOverview(starterContent, missionProgress, weakPoints);
   const continueMission = resolveContinueMission(
@@ -104,6 +95,9 @@ export function TodayPage() {
   const liveRecommendationByKey = createRecommendationByKey(visibleRecommendations);
   const liveReviewRecommendation =
     recommendations.find((recommendation) => recommendation.kind === 'review') ?? null;
+  const completedPlanItemKeys = new Set(
+    dailySessionRecord.completedPlanItemKeysByStudyDay[studyDayKey] ?? [],
+  );
   const planState = resolveTodayPlanState({
     snapshot: todayPlanSnapshot,
     starterContent,
@@ -112,6 +106,7 @@ export function TodayPage() {
     liveReviewRecommendation,
     missionProgress,
     capstoneProgress,
+    completedPlanItemKeys,
     weakPointCount: weakPointList.length,
     continueMission,
   });
@@ -121,7 +116,13 @@ export function TodayPage() {
     });
   const optionalContinueMission =
     continueMission &&
-    !planState.planKeys.has(`mission:${continueMission.mission.id}`) &&
+    !planState.planKeys.has(
+      getTodayPlanItemKey({
+        kind: 'mission',
+        missionId: continueMission.mission.id,
+        sessionMode: 'default',
+      }),
+    ) &&
     planState.remainingCount === 0
       ? continueMission
       : null;
@@ -151,14 +152,30 @@ export function TodayPage() {
 
     if (nextMissionCompletion) {
       setMissionCompletion(nextMissionCompletion);
+      setDailySessionRecord(
+        markDailySessionPlanItemComplete(
+          studyDayKey,
+          getTodayPlanItemKey({
+            kind: 'mission',
+            missionId: nextMissionCompletion.missionId,
+            sessionMode: nextMissionCompletion.sessionMode,
+          }),
+        ),
+      );
     }
 
     if (nextReviewCompletion) {
       setReviewCompletion(nextReviewCompletion);
+      setDailySessionRecord(
+        markDailySessionPlanItemComplete(
+          studyDayKey,
+          getTodayPlanItemKey({ kind: 'review' }),
+        ),
+      );
     }
 
     navigate(location.pathname, { replace: true });
-  }, [location.pathname, location.state, navigate]);
+  }, [location.pathname, location.state, navigate, studyDayKey]);
 
   useEffect(() => {
     const nextRecord = writeDailySessionPlan(
@@ -251,21 +268,28 @@ export function TodayPage() {
       ) : null}
 
       {missionCompletion ? (
-        <SurfaceCard
-          className="today-support-card"
-          title="Mission finished"
-          description={
-            missionCompletion.sessionMode === 'reinforce'
-              ? 'Short follow-up pass done. Keep the loop moving with the next Today step.'
-              : 'That mission pass is done. Keep moving with the next Today step.'
-          }
+        <details
+          className="today-completion-disclosure"
+          aria-label="Finished mission details"
         >
-          <div className="review-return-card mission-return-card">
-            <p className="review-launch-card__title">
-              {buildMissionCompletionTitle(missionCompletion)}
-            </p>
+          <summary className="today-completion-disclosure__summary">
+            <span className="today-completion-disclosure__copy">
+              <span className="today-completion-disclosure__eyebrow">
+                Mission finished
+              </span>
+              <strong>{missionCompletion.missionTitle}</strong>
+            </span>
+            <span className="today-completion-disclosure__stats">
+              {formatMissionCompletionStats(missionCompletion)}
+            </span>
+          </summary>
+
+          <div className="today-completion-disclosure__body">
             <p className="review-launch-card__body">
-              {missionCompletion.missionTitle} · {formatMissionTypeLabel(missionCompletion.missionType)} ·{' '}
+              {formatMissionCompletionBody(missionCompletion)}
+            </p>
+            <p className="review-launch-card__body today-completion-disclosure__meta">
+              {formatMissionTypeLabel(missionCompletion.missionType)} ·{' '}
               {formatTargetSkillLabel(missionCompletion.targetSkill)}
             </p>
 
@@ -292,7 +316,7 @@ export function TodayPage() {
                 : 'Today core work is complete. Bonus practice is optional.'}
             </p>
           </div>
-        </SurfaceCard>
+        </details>
       ) : null}
 
       {reviewCompletion ? (
@@ -351,79 +375,47 @@ export function TodayPage() {
       ) : null}
 
       <SurfaceCard
-        className="today-support-card"
+        className="today-support-card today-bonus-card"
         title={planState.remainingCount === 0 ? 'Optional bonus practice' : 'Bonus later'}
         description={
           planState.remainingCount === 0
-            ? 'Today is complete. Open this only if you want extra practice.'
-            : 'Open this only if you want more after the main plan.'
+            ? 'Today is complete. Add one focused pass only if you still want more.'
+            : 'Extra practice is available after the main plan.'
         }
       >
-        <TodayFocusModeControl focusMode={studyPreferences.focusMode} />
-
-        <details className="today-details">
-          <summary className="today-details__summary">
+        <div className="today-bonus-card__header">
+          <p className="today-bonus-card__meta">
             {bonusRecommendations.length > 0
-              ? `${bonusRecommendations.length} bonus option${
+              ? `${bonusRecommendations.length} option${
                   bonusRecommendations.length === 1 ? '' : 's'
-                }`
+                } · about ${getRecommendationMinuteTotal(bonusRecommendations)} min`
               : 'No bonus slot right now'}
-          </summary>
-          {bonusRecommendations.length > 0 ? (
-            <div className="mission-list" role="list" aria-label="Bonus practice">
-              {bonusRecommendations.map((recommendation) => (
-                <div key={recommendation.id} role="listitem">
-                  <TodayRecommendationCard
-                    recommendation={recommendation}
-                    missionProgress={missionProgress}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="today-details__body">
-              No extra slot is needed right now. Clear the main plan, then come back later if you
-              want more.
-            </p>
-          )}
-        </details>
+          </p>
+        </div>
+
+        {bonusRecommendations.length > 0 ? (
+          <div
+            className="mission-list today-bonus-list"
+            role="list"
+            aria-label="Bonus practice"
+          >
+            {bonusRecommendations.map((recommendation) => (
+              <div key={getRecommendationKey(recommendation)} role="listitem">
+                <TodayRecommendationCard
+                  recommendation={recommendation}
+                  missionProgress={missionProgress}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="today-details__body">
+            No extra slot is needed right now. Clear the main plan, then come back later if you
+            want more.
+          </p>
+        )}
       </SurfaceCard>
     </PageShell>
-  );
-}
-
-function TodayFocusModeControl({ focusMode }: { focusMode: StudyFocusMode }) {
-  const currentFocusOption =
-    STUDY_FOCUS_MODE_OPTIONS.find((option) => option.id === focusMode) ??
-    STUDY_FOCUS_MODE_OPTIONS[0];
-
-  return (
-    <details className="today-focus-control">
-      <summary className="today-focus-control__summary">
-        <span>Focus</span>
-        <strong>{currentFocusOption.label}</strong>
-      </summary>
-      <div
-        className="today-focus-control__options"
-        role="radiogroup"
-        aria-label="Today focus mode"
-      >
-        {STUDY_FOCUS_MODE_OPTIONS.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            className={`today-focus-control__option${
-              option.id === focusMode ? ' today-focus-control__option--selected' : ''
-            }`}
-            role="radio"
-            aria-checked={option.id === focusMode}
-            onClick={() => setStudyFocusMode(option.id)}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-    </details>
   );
 }
 
@@ -487,6 +479,7 @@ type ResolveTodayPlanStateParams = {
   liveReviewRecommendation: TodayRecommendation | null;
   missionProgress: ReturnType<typeof useMissionProgress>;
   capstoneProgress: ReturnType<typeof useCapstoneProgress>;
+  completedPlanItemKeys: Set<string>;
   weakPointCount: number;
   continueMission: ContinueMissionSummary | null;
 };
@@ -509,6 +502,22 @@ function CompletionRecap({ items }: { items: CompletionRecapItem[] }) {
   );
 }
 
+function formatMissionCompletionStats(missionCompletion: MissionCompletionSummary) {
+  const reviewItemCount = missionCompletion.incorrectCount + missionCompletion.supportedCount;
+
+  return `${missionCompletion.attemptedCount}/${missionCompletion.totalCount} attempted · ${
+    missionCompletion.correctCount
+  } correct · ${reviewItemCount} review item${reviewItemCount === 1 ? '' : 's'}`;
+}
+
+function formatMissionCompletionBody(missionCompletion: MissionCompletionSummary) {
+  if (missionCompletion.sessionMode === 'reinforce') {
+    return 'Short follow-up pass saved. Expand this only when you want the pass details.';
+  }
+
+  return 'Mission pass saved. Expand this only when you want the pass details.';
+}
+
 function resolveTodayPlanState({
   snapshot,
   starterContent,
@@ -517,10 +526,11 @@ function resolveTodayPlanState({
   liveReviewRecommendation,
   missionProgress,
   capstoneProgress,
+  completedPlanItemKeys,
   weakPointCount,
   continueMission,
 }: ResolveTodayPlanStateParams): TodayPlanState {
-  const safeSnapshot = shouldRecreateTodayPlanSnapshot({
+  const candidateSnapshot = shouldRecreateTodayPlanSnapshot({
     snapshot,
     liveCoreRecommendations,
     missionProgress,
@@ -530,7 +540,20 @@ function resolveTodayPlanState({
   })
     ? createTodayPlanSnapshot(liveCoreRecommendations)
     : snapshot;
-  const baseItems = safeSnapshot.items.filter((item) => isValidTodayPlanItem(item));
+  const safeSnapshot = areTodayPlanSnapshotsEqual(candidateSnapshot, snapshot)
+    ? snapshot
+    : candidateSnapshot;
+  const baseItems = safeSnapshot.items
+    .filter((item) => isValidTodayPlanItem(item))
+    .map(normalizeTodayPlanSnapshotItem);
+  const normalizedSnapshot: TodayPlanSnapshot =
+    baseItems.length === safeSnapshot.items.length &&
+    baseItems.every((item, index) => item === safeSnapshot.items[index])
+      ? safeSnapshot
+      : {
+          ...safeSnapshot,
+          items: baseItems,
+        };
   const hasReviewItem = baseItems.some((item) => item.key === 'review-loop');
   const reviewPlanItem =
     liveReviewRecommendation && !hasReviewItem
@@ -542,9 +565,7 @@ function resolveTodayPlanState({
   const summaryItems = planItems.map((item) => {
     const isCompleted = isTodayPlanItemComplete(
       item,
-      missionProgress,
-      capstoneProgress,
-      liveReviewRecommendation,
+      completedPlanItemKeys,
     );
 
     return {
@@ -561,9 +582,7 @@ function resolveTodayPlanState({
           item.missionId === continueMission.mission.id &&
           !isTodayPlanItemComplete(
             item,
-            missionProgress,
-            capstoneProgress,
-            liveReviewRecommendation,
+            completedPlanItemKeys,
           )
         );
       })
@@ -575,9 +594,7 @@ function resolveTodayPlanState({
   const remainingPlanItems = planItems.filter((item) => {
     return !isTodayPlanItemComplete(
       item,
-      missionProgress,
-      capstoneProgress,
-      liveReviewRecommendation,
+      completedPlanItemKeys,
     );
   });
   const shouldPromoteExtraContinue = Boolean(
@@ -618,7 +635,7 @@ function resolveTodayPlanState({
   ];
 
   return {
-    snapshot: safeSnapshot,
+    snapshot: normalizedSnapshot,
     planKeys: new Set(planItems.map((item) => item.key)),
     summaryItems: renderedSummaryItems,
     completedCount: renderedSummaryItems.filter((item) => item.status === 'done').length,
@@ -718,6 +735,98 @@ function createTodayPlanSnapshotItem(
   };
 }
 
+function normalizeTodayPlanSnapshotItem(
+  item: TodayPlanSnapshotItem,
+): TodayPlanSnapshotItem {
+  if (item.kind === 'review') {
+    const key = getTodayPlanItemKey({ kind: 'review' });
+
+    if (item.key === key) {
+      return item;
+    }
+
+    return {
+      ...item,
+      key,
+    };
+  }
+
+  if (item.kind === 'capstone' && item.capstoneStoryId) {
+    const key = getTodayPlanItemKey({
+      kind: 'capstone',
+      capstoneStoryId: item.capstoneStoryId,
+      capstoneMode: item.capstoneMode,
+    });
+
+    if (item.key === key) {
+      return item;
+    }
+
+    return {
+      ...item,
+      key,
+    };
+  }
+
+  if (item.kind === 'mission' && item.missionId) {
+    const key = getTodayPlanItemKey({
+      kind: 'mission',
+      missionId: item.missionId,
+      sessionMode: item.sessionMode,
+    });
+
+    if (item.key === key) {
+      return item;
+    }
+
+    return {
+      ...item,
+      key,
+    };
+  }
+
+  return item;
+}
+
+function areTodayPlanSnapshotsEqual(
+  left: TodayPlanSnapshot,
+  right: TodayPlanSnapshot,
+) {
+  return (
+    left.version === right.version &&
+    left.items.length === right.items.length &&
+    left.items.every((item, index) => {
+      return areTodayPlanSnapshotItemsEqual(item, right.items[index]);
+    })
+  );
+}
+
+function areTodayPlanSnapshotItemsEqual(
+  left: TodayPlanSnapshotItem,
+  right: TodayPlanSnapshotItem | undefined,
+) {
+  if (!right) {
+    return false;
+  }
+
+  return (
+    left.key === right.key &&
+    left.kind === right.kind &&
+    left.title === right.title &&
+    left.to === right.to &&
+    left.minutes === right.minutes &&
+    left.missionId === right.missionId &&
+    left.missionType === right.missionType &&
+    left.targetSkill === right.targetSkill &&
+    left.sessionMode === right.sessionMode &&
+    left.capstoneStoryId === right.capstoneStoryId &&
+    left.capstoneMode === right.capstoneMode &&
+    left.capstoneLineCount === right.capstoneLineCount &&
+    left.capstoneCheckCount === right.capstoneCheckCount &&
+    left.batchSize === right.batchSize
+  );
+}
+
 function shouldRecreateTodayPlanSnapshot({
   snapshot,
   liveCoreRecommendations,
@@ -768,23 +877,9 @@ function isValidTodayPlanItem(item: TodayPlanSnapshotItem) {
 
 function isTodayPlanItemComplete(
   item: TodayPlanSnapshotItem,
-  missionProgress: ReturnType<typeof useMissionProgress>,
-  capstoneProgress: ReturnType<typeof useCapstoneProgress>,
-  liveReviewRecommendation: TodayRecommendation | null,
+  completedPlanItemKeys: Set<string>,
 ) {
-  if (item.kind === 'review') {
-    return !liveReviewRecommendation;
-  }
-
-  if (item.kind === 'capstone') {
-    return item.capstoneStoryId
-      ? getCapstoneProgressEntry(capstoneProgress, item.capstoneStoryId).isCompleted
-      : false;
-  }
-
-  return item.missionId
-    ? getMissionProgressEntry(missionProgress, item.missionId).isCompleted
-    : false;
+  return isTodayPlanItemCompleteForStudyDay(item, completedPlanItemKeys);
 }
 
 function buildTodayPlanAction(
@@ -862,16 +957,22 @@ function createRecommendationByKey(recommendations: TodayRecommendation[]) {
 
 function getRecommendationKey(recommendation: TodayRecommendation) {
   if (recommendation.kind === 'review') {
-    return 'review-loop';
+    return getTodayPlanItemKey({ kind: 'review' });
   }
 
   if (recommendation.kind === 'capstone') {
-    return recommendation.capstoneMode === 'recombination'
-      ? `capstone-recombination:${recommendation.capstoneStory.id}`
-      : `capstone:${recommendation.capstoneStory.id}`;
+    return getTodayPlanItemKey({
+      kind: 'capstone',
+      capstoneStoryId: recommendation.capstoneStory.id,
+      capstoneMode: recommendation.capstoneMode,
+    });
   }
 
-  return `mission:${recommendation.mission.id}`;
+  return getTodayPlanItemKey({
+    kind: 'mission',
+    missionId: recommendation.mission.id,
+    sessionMode: recommendation.sessionMode,
+  });
 }
 
 function isTodayPlanSnapshot(value: unknown): value is TodayPlanSnapshot {
