@@ -1527,21 +1527,21 @@ Required audit:
 
 This patch is complete only when:
 
-- [ ] Test harness exists.
-- [ ] `npm run test` passes.
-- [ ] `npm run typecheck` passes.
-- [ ] `npm run build` passes.
-- [ ] Weak points use compound keys or have an equivalent collision-safe identity.
-- [ ] Legacy weak-point data migrates safely.
-- [ ] Review resolution is transactional.
-- [ ] Mission state distinguishes attempted/exposure from correct/mastery.
-- [ ] UI copy no longer implies mastery after wrong/supported answers.
-- [ ] Continue state is more precise or a documented partial v2 migration is complete.
-- [ ] Output evaluator has meaningful tests and documented limits.
-- [ ] Voice spike remains isolated.
-- [ ] Manual local visual QA is complete.
-- [ ] This patch document is updated with final status.
-- [ ] Codex recommends the next best patch.
+- [x] Test harness exists.
+- [x] `npm run test` passes.
+- [x] `npm run typecheck` passes.
+- [x] `npm run build` passes.
+- [x] Weak points use compound keys or have an equivalent collision-safe identity.
+- [x] Legacy weak-point data migrates safely.
+- [x] Review resolution is transactional.
+- [x] Mission state distinguishes attempted/exposure from correct/mastery.
+- [x] UI copy no longer implies mastery after wrong/supported answers.
+- [x] Continue state is more precise or a documented partial v2 migration is complete.
+- [x] Output evaluator has meaningful tests and documented limits.
+- [x] Voice spike remains isolated.
+- [x] Manual local visual QA is complete.
+- [x] This patch document is updated with final status.
+- [x] Codex recommends the next best patch.
 
 ---
 
@@ -1709,13 +1709,24 @@ Codex must update this section as work is completed.
 
 ---
 
-## Gate 10 final audit — pending
+## Gate 10 audit — 2026-05-02 03:18 EDT
 
-- Completed:
-- Files changed:
-- Commands run:
-- Results:
-- Manual UI checks:
-- Remaining issues:
-- Recommended next patch:
-- Merge readiness:
+- Completed: Implemented Phase 8 output evaluation guardrails. Expanded deterministic evaluator tests for exact accepted answers, punctuation tolerance, configured token-pattern acceptance, missing particles, swapped particles, wrong token order, unknown extra text, unrelated text, and kanji/kana acceptance boundaries. Documented near `evaluateOutputResponse` that this checker is deterministic, pattern-based, and not an open-ended Japanese grammar judge. No user-facing copy changed because current output UI already uses pattern-focused "Check answer" language rather than open-ended grading claims.
+- Files changed: `src/lib/outputEvaluation.ts`, `src/lib/outputEvaluation.test.ts`, `jchattr_patch_01_core_stability.md`.
+- Commands run: `npm run test -- src/lib/outputEvaluation.test.ts`; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`.
+- Results: Focused evaluator test passed (1 file, 11 tests). Full `npm run test` passed (11 files, 59 tests). `npm run typecheck` passed. `npm run build` passed with the existing Vite large chunk warning.
+- Manual UI checks: Ran the app at `http://127.0.0.1:5173/`. In-app browser smoke loaded `mission-output-daily-lines`, submitted an unacceptable output answer, confirmed "Not quite" pattern feedback, edited to an accepted answer, confirmed "Correct" feedback, and saw no new in-app browser console logs. True mobile Chrome CDP smoke used `390x844`, DPR 3 and checked the same wrong/edit/correct output mission flow with no horizontal overflow. A screenshot was captured and visually reviewed. Chrome console reported only `/favicon.ico` 404s; no app runtime/page errors were reported.
+- Risks / questions: The evaluator remains intentionally limited to accepted answers and configured token patterns. Future AI-assisted output feedback should stay advisory and must not override this local deterministic pass/fail result.
+- Recommended next action: Run the final Patch 01 wrap-up audit across the stabilized curriculum/review/progress loop, then decide whether to start Patch 02 or address any remaining final-audit findings.
+
+## Gate 11 final audit — 2026-05-02 10:02 EDT
+
+- Completed: Final Patch 01 wrap-up audit across the stabilized curriculum, review, progress, mission library, output evaluator, continue-state, weak-point, and capstone surfaces. No implementation code was changed in this audit gate.
+- Files changed: `jchattr_patch_01_core_stability.md` only in this gate. Current uncommitted Patch 01 code changes remain `src/lib/outputEvaluation.ts` and `src/lib/outputEvaluation.test.ts` from Gate 10.
+- Commands run: `git status --short`; read the final audit/checklist section of this patch document; `npm run test`; `npm run typecheck`; `npm run build`; `npm run dev -- --host 127.0.0.1`; in-app browser smoke; true mobile Chrome CDP QA at `390x844`, DPR 3.
+- Results: `npm run test` passed (11 files, 59 tests). `npm run typecheck` passed. `npm run build` passed. Build still emits Vite's existing large chunk warning for `dist/assets/index-*.js`; this is not a build failure.
+- Manual UI checks: In-app browser loaded Today and Review with no captured error logs. True mobile QA checked Today load; Missions reset and progressed states; grammar wrong/edit/correct plus exposure-not-mastery completion; Today recap after a missed grammar pass; output unacceptable answer; listening answer reveal as supported exposure; reading wrong answer; Review correct-before-completion, correct-then-reset-to-incorrect final state, and later correct final resolution; Missions finished/clean-pass/locked state text; Progress finished and clean-pass counters; capstone reveal/check/finish flow; mobile horizontal overflow; and console/network errors. Screenshot captured at `/tmp/jchattr-final-audit-mobile.png`.
+- Pass/fail status: Pass with nonblocking known issues below. Initial mobile automation had a few strict text assertions that did not match exact casing/wording, but follow-up checks and captured page text confirmed the intended flows and state transitions.
+- Remaining issues: Vite large chunk warning remains. The in-app browser does not expose a documented mobile viewport setter, so true iPhone-sized QA used temporary Chrome CDP. Some copy outside this stabilization target still uses generic "clear/cleared" wording for review/capstone checks, but mission completion/mastery language is now honest after wrong or supported attempts.
+- Recommended next patch: Patch 02 — `jp-immersion` stabilization, keeping AI/runtime work outside `jchattr` core unless a later patch explicitly adds the planned local-first integration boundary.
+- Merge readiness: Patch 01 is ready for human review from the stabilization-audit perspective. Do not call it merged or shipped until the user reviews and commits the current uncommitted changes.

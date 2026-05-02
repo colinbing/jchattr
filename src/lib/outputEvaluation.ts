@@ -12,6 +12,10 @@ export type OutputEvaluationResult = {
   expectedAnswer: string;
 };
 
+// Deterministic checker for controlled beginner output prompts.
+// It compares accepted answers and configured token patterns; it is not an
+// open-ended Japanese grammar judge. Future AI-assisted feedback should stay
+// advisory and must not override this local pass/fail result.
 export function evaluateOutputResponse(
   task: OutputTask,
   response: string,
