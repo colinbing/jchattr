@@ -9,12 +9,6 @@ import type {
   Mission,
 } from '../../../lib/content/types';
 import { getListeningMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
-import {
-  readContinueState,
-  resolveContinuePosition,
-  resolveContinueStepIndex,
-  updateContinueState,
-} from '../../../lib/progress/continueState';
 import { hasDistinctReading } from '../../../lib/japaneseText';
 import { getListeningTranslationChoices } from '../../../lib/listeningChoices';
 import {
@@ -29,11 +23,15 @@ import {
   type MissionSessionMode,
 } from '../lib/missionSession';
 import {
-  mergeMissionItemOutcome,
-  summarizeMissionItemOutcomes,
+  type MissionAttemptSummary,
   type MissionItemOutcome,
 } from '../lib/missionCompletion';
+import { useMissionAttemptOutcomes } from '../lib/useMissionAttemptOutcomes';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
+import {
+  useInitialMissionContinuePosition,
+  useMissionContinuePosition,
+} from '../lib/useMissionContinuePosition';
 
 type ListeningMissionPlayerProps = {
   mission: Mission;
@@ -43,6 +41,8 @@ type ListeningMissionPlayerProps = {
   choicePool: ListeningItem[];
   sessionMode: MissionSessionMode;
 };
+
+const LISTENING_CONTINUE_SECTION_IDS = ['prep', 'checks'];
 
 export function ListeningMissionPlayer({
   mission,
@@ -79,26 +79,17 @@ export function ListeningMissionPlayer({
       })),
     [choicePool, sessionExamples],
   );
-  const initialContinueStepIndex = useMemo(
-    () =>
-      resolveContinueStepIndex(
-        readContinueState(),
-        mission.id,
-        mission.type,
-        sessionItems.length - 1,
-      ),
-    [mission.id, mission.type, sessionItems.length],
-  );
-  const initialContinuePosition = useMemo(
-    () =>
-      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
-        sectionIds: ['prep', 'checks'],
-        legacySectionId: 'checks',
-        maxItemIndex: sessionItems.length - 1,
-      }),
-    [mission.id, mission.type, sessionItems.length],
-  );
-  const [resultsByItemId, setResultsByItemId] = useState<Record<string, MissionItemOutcome>>({});
+  const {
+    position: initialContinuePosition,
+    stepIndex: initialContinueStepIndex,
+  } = useInitialMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    sectionIds: LISTENING_CONTINUE_SECTION_IDS,
+    legacySectionId: 'checks',
+    maxItemIndex: sessionItems.length - 1,
+    maxStepIndex: sessionItems.length - 1,
+  });
   const [currentItemIndex, setCurrentItemIndex] = useState(
     () => initialContinuePosition?.itemIndex ?? initialContinueStepIndex ?? 0,
   );
@@ -108,24 +99,20 @@ export function ListeningMissionPlayer({
   const currentItem = sessionItems[currentItemIndex];
   const showPrep = !hasCompletedPrep && supportExamples.length > 0;
   const progressValue = showPrep ? 0 : ((currentItemIndex + 1) / sessionItems.length) * 100;
-  const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByItemId, sessionItemIds),
-    [resultsByItemId, sessionItemIds],
-  );
+  const { attemptSummary, recordItemOutcome: handleItemResult } =
+    useMissionAttemptOutcomes(sessionItemIds);
   const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
   const primaryLesson = relatedLessons[0];
 
-  useEffect(() => {
-    updateContinueState({
-      missionId: mission.id,
-      missionType: mission.type,
-      stepIndex: currentItemIndex,
-      position: {
-        sectionId: hasCompletedPrep ? 'checks' : 'prep',
-        itemIndex: currentItemIndex,
-      },
-    });
-  }, [currentItemIndex, hasCompletedPrep, mission.id, mission.type]);
+  useMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    stepIndex: currentItemIndex,
+    position: {
+      sectionId: hasCompletedPrep ? 'checks' : 'prep',
+      itemIndex: currentItemIndex,
+    },
+  });
 
   useEffect(() => {
     setCurrentItemIndex((index) => Math.min(index, Math.max(0, sessionItems.length - 1)));
@@ -135,13 +122,6 @@ export function ListeningMissionPlayer({
     missionId: mission.id,
     attemptSummary,
   });
-
-  function handleItemResult(itemId: string, outcome: MissionItemOutcome) {
-    setResultsByItemId((currentResults) => ({
-      ...currentResults,
-      [itemId]: mergeMissionItemOutcome(currentResults[itemId], outcome),
-    }));
-  }
 
   return (
     <div className="mission-player-shell mission-player-shell--listening">
@@ -339,7 +319,7 @@ type ListeningItemPanelProps = {
   avoidTranslations: string[];
   currentItemIndex: number;
   totalItems: number;
-  attemptSummary: ReturnType<typeof summarizeMissionItemOutcomes>;
+  attemptSummary: MissionAttemptSummary;
   canGoPrevious: boolean;
   isLastItem: boolean;
   onResult: (itemId: string, outcome: MissionItemOutcome) => void;

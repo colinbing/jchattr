@@ -12,12 +12,6 @@ import type {
 } from '../../../lib/content/types';
 import { getOutputMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
 import {
-  readContinueState,
-  resolveContinuePosition,
-  resolveContinueStepIndex,
-  updateContinueState,
-} from '../../../lib/progress/continueState';
-import {
   getMissionProgressEntry,
   useMissionProgress,
 } from '../../../lib/progress/missionProgress';
@@ -30,12 +24,15 @@ import {
   type MissionSessionMode,
 } from '../lib/missionSession';
 import {
-  mergeMissionItemOutcome,
-  summarizeMissionItemOutcomes,
   type MissionItemOutcome,
   type MissionAttemptSummary,
 } from '../lib/missionCompletion';
+import { useMissionAttemptOutcomes } from '../lib/useMissionAttemptOutcomes';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
+import {
+  useInitialMissionContinuePosition,
+  useMissionContinuePosition,
+} from '../lib/useMissionContinuePosition';
 
 type OutputMissionPlayerProps = {
   mission: Mission;
@@ -45,6 +42,8 @@ type OutputMissionPlayerProps = {
   relatedVocab: VocabItem[];
   sessionMode: MissionSessionMode;
 };
+
+const OUTPUT_CONTINUE_SECTION_IDS = ['tasks'];
 
 export function OutputMissionPlayer({
   mission,
@@ -78,24 +77,25 @@ export function OutputMissionPlayer({
     () => sessionTasks.map((task) => task.id),
     [sessionTasks],
   );
-  const [resultsByTaskId, setResultsByTaskId] = useState<Record<string, MissionItemOutcome>>({});
   const [responsesByTaskId, setResponsesByTaskId] = useState<Record<string, string>>({});
   const [feedbackByTaskId, setFeedbackByTaskId] = useState<
     Record<string, OutputEvaluationResult | null>
   >({});
-  const initialContinuePosition = useMemo(
-    () =>
-      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
-        sectionIds: ['tasks'],
-        legacySectionId: 'tasks',
-        maxItemIndex: sessionTasks.length - 1,
-      }),
-    [mission.id, mission.type, sessionTasks.length],
-  );
+  const {
+    position: initialContinuePosition,
+    stepIndex: initialContinueStepIndex,
+  } = useInitialMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    sectionIds: OUTPUT_CONTINUE_SECTION_IDS,
+    legacySectionId: 'tasks',
+    maxItemIndex: sessionTasks.length - 1,
+    maxStepIndex: sessionTasks.length - 1,
+  });
   const [currentTaskIndex, setCurrentTaskIndex] = useState(() => {
     return (
       initialContinuePosition?.itemIndex ??
-      resolveContinueStepIndex(readContinueState(), mission.id, mission.type, sessionTasks.length - 1) ??
+      initialContinueStepIndex ??
       0
     );
   });
@@ -104,23 +104,19 @@ export function OutputMissionPlayer({
   const currentResponse = responsesByTaskId[currentTask.id] ?? '';
   const currentFeedback = feedbackByTaskId[currentTask.id] ?? null;
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
-  const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByTaskId, sessionTaskIds),
-    [resultsByTaskId, sessionTaskIds],
-  );
+  const { attemptSummary, recordItemOutcome: handleTaskResult } =
+    useMissionAttemptOutcomes(sessionTaskIds);
   const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
 
-  useEffect(() => {
-    updateContinueState({
-      missionId: mission.id,
-      missionType: mission.type,
-      stepIndex: currentTaskIndex,
-      position: {
-        sectionId: 'tasks',
-        itemIndex: currentTaskIndex,
-      },
-    });
-  }, [currentTaskIndex, mission.id, mission.type]);
+  useMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    stepIndex: currentTaskIndex,
+    position: {
+      sectionId: 'tasks',
+      itemIndex: currentTaskIndex,
+    },
+  });
 
   useEffect(() => {
     setCurrentTaskIndex((index) => Math.min(index, Math.max(0, sessionTasks.length - 1)));
@@ -130,13 +126,6 @@ export function OutputMissionPlayer({
     missionId: mission.id,
     attemptSummary,
   });
-
-  function handleTaskResult(taskId: string, outcome: MissionItemOutcome) {
-    setResultsByTaskId((currentResults) => ({
-      ...currentResults,
-      [taskId]: mergeMissionItemOutcome(currentResults[taskId], outcome),
-    }));
-  }
 
   function updateTaskResponse(taskId: string, response: string) {
     setResponsesByTaskId((current) => ({

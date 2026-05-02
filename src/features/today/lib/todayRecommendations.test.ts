@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { contentPacks } from '../../../content/contentPacks';
-import { getEmptyCapstoneProgress } from '../../../lib/progress/capstoneProgress';
+import {
+  getEmptyCapstoneProgress,
+  type CapstoneProgressRecord,
+} from '../../../lib/progress/capstoneProgress';
 import { getEmptyMissionProgress, type MissionProgressRecord } from '../../../lib/progress/missionProgress';
 import { getEmptyReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import {
@@ -251,6 +254,53 @@ describe('deriveTodayRecommendations', () => {
     ).toBe(true);
   });
 
+  it('does not duplicate mission recommendations across core and reinforcement slots', () => {
+    const progress = completeMissions(getEmptyMissionProgress(), [
+      'mission-grammar-topic-desu',
+      'mission-listening-place-de',
+      'mission-output-daily-lines',
+      'mission-grammar-destination-ni',
+    ]);
+    const recommendations = deriveTodayRecommendations(
+      starterContent,
+      progress,
+      emptyWeakPoints,
+      getEmptyReviewLoopProgress(),
+      getEmptyCapstoneProgress(),
+      { limit: 20 },
+    );
+    const missionRecommendationIds = recommendations
+      .filter((recommendation) => recommendation.kind === 'mission')
+      .map((recommendation) => recommendation.mission.id);
+
+    expect(missionRecommendationIds).toHaveLength(new Set(missionRecommendationIds).size);
+  });
+
+  it('marks capstone recombination recommendations as bonus after closeout completion', () => {
+    const progress = completeMissions(
+      getEmptyMissionProgress(),
+      getMissionIdsForPackNumbers([1, 2, 3, 4, 5]),
+    );
+    const recommendations = deriveTodayRecommendations(
+      starterContent,
+      progress,
+      emptyWeakPoints,
+      getEmptyReviewLoopProgress(),
+      completeCapstones(getEmptyCapstoneProgress(), ['capstone-story-ch01-first-day']),
+      { limit: 10 },
+    );
+
+    expect(
+      recommendations.find(
+        (recommendation) =>
+          recommendation.kind === 'capstone' &&
+          recommendation.capstoneMode === 'recombination',
+      ),
+    ).toMatchObject({
+      priority: 'bonus',
+    });
+  });
+
   it('keeps unresolved weak points available for future review after today review key is satisfied', () => {
     const recommendations = deriveTodayRecommendations(
       starterContent,
@@ -297,6 +347,22 @@ function completeMissions(
     ),
     lastCompletedAtByMissionId: Object.fromEntries(
       missionIds.map((missionId) => [missionId, '2026-01-01T00:00:00.000Z']),
+    ),
+  };
+}
+
+function completeCapstones(
+  baseProgress: CapstoneProgressRecord,
+  storyIds: string[],
+): CapstoneProgressRecord {
+  return {
+    ...baseProgress,
+    completedStoryIds: storyIds,
+    completionCountsByStoryId: Object.fromEntries(
+      storyIds.map((storyId) => [storyId, 1]),
+    ),
+    lastCompletedAtByStoryId: Object.fromEntries(
+      storyIds.map((storyId) => [storyId, '2026-01-01T00:00:00.000Z']),
     ),
   };
 }

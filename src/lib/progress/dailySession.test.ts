@@ -6,6 +6,7 @@ import {
   markDailySessionPlanItemComplete,
   readDailySessionRecord,
   resetDailySessionProgress,
+  writeDailySessionPlan,
 } from './dailySession';
 
 let mockWindow: MockWindowControls;
@@ -18,6 +19,27 @@ describe('daily session progress', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+  });
+
+  it('reads an empty record for the requested study day when localStorage is empty', () => {
+    expect(readDailySessionRecord('2026-05-02')).toMatchObject({
+      version: 1,
+      currentStudyDayKey: '2026-05-02',
+      plansByStudyDay: {},
+      completedPlanItemKeysByStudyDay: {},
+      completedStudyDayKeys: [],
+    });
+  });
+
+  it('falls back safely when localStorage is corrupted', () => {
+    mockWindow.setRaw(DAILY_SESSION_STORAGE_KEY, '{not valid json');
+
+    expect(readDailySessionRecord('2026-05-02')).toMatchObject({
+      currentStudyDayKey: '2026-05-02',
+      plansByStudyDay: {},
+      completedPlanItemKeysByStudyDay: {},
+      completedStudyDayKeys: [],
+    });
   });
 
   it('parses records without completed plan item keys safely', () => {
@@ -85,5 +107,19 @@ describe('daily session progress', () => {
     expect(getCurrentStudyDayKey(new Date('2026-05-02T07:00:00.000Z'))).toBe(
       '2026-05-02',
     );
+  });
+
+  it('resets daily session progress for the current study day', () => {
+    writeDailySessionPlan('2026-05-02', { version: 1, items: [] }, true);
+    markDailySessionPlanItemComplete(
+      '2026-05-02',
+      'mission:mission-grammar-topic-desu:default',
+    );
+
+    const resetRecord = resetDailySessionProgress();
+
+    expect(resetRecord.plansByStudyDay).toEqual({});
+    expect(resetRecord.completedPlanItemKeysByStudyDay).toEqual({});
+    expect(resetRecord.completedStudyDayKeys).toEqual([]);
   });
 });

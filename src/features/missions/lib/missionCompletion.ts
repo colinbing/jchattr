@@ -52,6 +52,17 @@ export function mergeMissionItemOutcome(
   return 'correct';
 }
 
+export function recordMissionItemOutcome(
+  outcomesByItemId: Record<string, MissionItemOutcome>,
+  itemId: string,
+  outcome: MissionItemOutcome,
+): Record<string, MissionItemOutcome> {
+  return {
+    ...outcomesByItemId,
+    [itemId]: mergeMissionItemOutcome(outcomesByItemId[itemId], outcome),
+  };
+}
+
 function isMissionItemOutcome(value: unknown): value is MissionItemOutcome {
   return value === 'correct' || value === 'incorrect' || value === 'supported';
 }

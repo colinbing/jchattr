@@ -1,29 +1,45 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { installMockWindow, type MockWindowControls } from '../../test/mockWindow';
 import {
+  getDefaultStudyPreferences,
   readStudyPreferences,
+  resetStudyPreferences,
+  setReadingDisplayMode,
   STUDY_PREFERENCES_STORAGE_KEY,
 } from './studyPreferences';
 
+let mockWindow: MockWindowControls;
+
 describe('studyPreferences', () => {
+  beforeEach(() => {
+    mockWindow = installMockWindow();
+    resetStudyPreferences();
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });
 
+  it('reads default preferences when localStorage is empty', () => {
+    expect(readStudyPreferences()).toEqual(getDefaultStudyPreferences());
+  });
+
+  it('falls back safely when localStorage is corrupted', () => {
+    mockWindow.setRaw(STUDY_PREFERENCES_STORAGE_KEY, '{not valid json');
+
+    expect(readStudyPreferences()).toEqual(getDefaultStudyPreferences());
+  });
+
   it('parses legacy records with focusMode safely', () => {
-    const localStorage = createLocalStorageStub({
-      [STUDY_PREFERENCES_STORAGE_KEY]: JSON.stringify({
+    mockWindow.setRaw(
+      STUDY_PREFERENCES_STORAGE_KEY,
+      JSON.stringify({
         version: 1,
         focusMode: 'more-listening',
         readingDisplayMode: 'kana-support',
         updatedAt: '2026-01-01T00:00:00.000Z',
       }),
-    });
-    vi.stubGlobal('window', {
-      localStorage,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    });
+    );
 
     const preferences = readStudyPreferences();
 
@@ -34,18 +50,20 @@ describe('studyPreferences', () => {
     });
     expect('focusMode' in preferences).toBe(false);
   });
+
+  it('sets and resets reading display mode', () => {
+    expect(
+      setReadingDisplayMode(
+        'japanese-only',
+        new Date('2026-05-02T12:00:00.000Z'),
+      ),
+    ).toEqual({
+      version: 1,
+      readingDisplayMode: 'japanese-only',
+      updatedAt: '2026-05-02T12:00:00.000Z',
+    });
+
+    expect(resetStudyPreferences()).toEqual(getDefaultStudyPreferences());
+    expect(readStudyPreferences()).toEqual(getDefaultStudyPreferences());
+  });
 });
-
-function createLocalStorageStub(entries: Record<string, string>) {
-  const store = new Map(Object.entries(entries));
-
-  return {
-    getItem: vi.fn((key: string) => store.get(key) ?? null),
-    setItem: vi.fn((key: string, value: string) => {
-      store.set(key, value);
-    }),
-    removeItem: vi.fn((key: string) => {
-      store.delete(key);
-    }),
-  };
-}

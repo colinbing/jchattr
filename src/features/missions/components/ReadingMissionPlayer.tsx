@@ -11,12 +11,6 @@ import type {
 import { getStarterContent } from '../../../lib/content/loader';
 import { getVocabItemsForExampleIds } from '../../../lib/content/vocabSupport';
 import { getReadingMistakeExplanation } from '../../../lib/feedback/mistakeExplanations';
-import {
-  readContinueState,
-  resolveContinuePosition,
-  resolveContinueStepIndex,
-  updateContinueState,
-} from '../../../lib/progress/continueState';
 import { shouldShowReadingSupport } from '../../../lib/readingDisplay';
 import {
   getMissionProgressEntry,
@@ -34,11 +28,14 @@ import {
   type MissionSessionMode,
 } from '../lib/missionSession';
 import {
-  mergeMissionItemOutcome,
-  summarizeMissionItemOutcomes,
   type MissionItemOutcome,
 } from '../lib/missionCompletion';
+import { useMissionAttemptOutcomes } from '../lib/useMissionAttemptOutcomes';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
+import {
+  useInitialMissionContinuePosition,
+  useMissionContinuePosition,
+} from '../lib/useMissionContinuePosition';
 
 type ReadingMissionPlayerProps = {
   mission: Mission;
@@ -47,6 +44,8 @@ type ReadingMissionPlayerProps = {
   vocabItems: VocabItem[];
   sessionMode: MissionSessionMode;
 };
+
+const READING_CONTINUE_SECTION_IDS = ['checks'];
 
 type ReadingCheckFeedback = 'correct' | 'incorrect' | null;
 
@@ -76,46 +75,38 @@ export function ReadingMissionPlayer({
     () => sessionChecks.map((check) => check.id),
     [sessionChecks],
   );
-  const [resultsByCheckId, setResultsByCheckId] = useState<Record<string, MissionItemOutcome>>({});
-  const initialContinuePosition = useMemo(
-    () =>
-      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
-        sectionIds: ['checks'],
-        legacySectionId: 'checks',
-        maxItemIndex: sessionChecks.length - 1,
-      }),
-    [mission.id, mission.type, sessionChecks.length],
-  );
+  const {
+    position: initialContinuePosition,
+    stepIndex: initialContinueStepIndex,
+  } = useInitialMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    sectionIds: READING_CONTINUE_SECTION_IDS,
+    legacySectionId: 'checks',
+    maxItemIndex: sessionChecks.length - 1,
+    maxStepIndex: sessionChecks.length - 1,
+  });
   const [currentCheckIndex, setCurrentCheckIndex] = useState(() => {
     return (
       initialContinuePosition?.itemIndex ??
-      resolveContinueStepIndex(
-        readContinueState(),
-        mission.id,
-        mission.type,
-        sessionChecks.length - 1,
-      ) ?? 0
+      initialContinueStepIndex ?? 0
     );
   });
   const currentCheck = sessionChecks[currentCheckIndex];
   const currentExample = examplesById[currentCheck.exampleId];
   const progressValue = ((currentCheckIndex + 1) / sessionChecks.length) * 100;
-  const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByCheckId, sessionCheckIds),
-    [resultsByCheckId, sessionCheckIds],
-  );
+  const { attemptSummary, recordItemOutcome: handleCheckResult } =
+    useMissionAttemptOutcomes(sessionCheckIds);
 
-  useEffect(() => {
-    updateContinueState({
-      missionId: mission.id,
-      missionType: mission.type,
-      stepIndex: currentCheckIndex,
-      position: {
-        sectionId: 'checks',
-        itemIndex: currentCheckIndex,
-      },
-    });
-  }, [currentCheckIndex, mission.id, mission.type]);
+  useMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    stepIndex: currentCheckIndex,
+    position: {
+      sectionId: 'checks',
+      itemIndex: currentCheckIndex,
+    },
+  });
 
   useEffect(() => {
     setCurrentCheckIndex((index) => Math.min(index, Math.max(0, sessionChecks.length - 1)));
@@ -125,13 +116,6 @@ export function ReadingMissionPlayer({
     missionId: mission.id,
     attemptSummary,
   });
-
-  function handleCheckResult(checkId: string, outcome: MissionItemOutcome) {
-    setResultsByCheckId((currentResults) => ({
-      ...currentResults,
-      [checkId]: mergeMissionItemOutcome(currentResults[checkId], outcome),
-    }));
-  }
 
   function goToNextCheck() {
     if (currentCheckIndex < sessionChecks.length - 1) {

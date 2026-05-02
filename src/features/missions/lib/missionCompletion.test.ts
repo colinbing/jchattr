@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { mergeMissionItemOutcome, summarizeMissionItemOutcomes } from './missionCompletion';
+import {
+  mergeMissionItemOutcome,
+  recordMissionItemOutcome,
+  summarizeMissionItemOutcomes,
+} from './missionCompletion';
 
 describe('summarizeMissionItemOutcomes', () => {
   it('treats all correct items as exposure complete and mastery complete', () => {
@@ -78,6 +82,24 @@ describe('summarizeMissionItemOutcomes', () => {
     });
   });
 
+  it('dedupes duplicate expected ids before counting outcomes', () => {
+    const summary = summarizeMissionItemOutcomes(
+      {
+        first: 'correct',
+        second: 'correct',
+      },
+      ['first', 'first', 'second'],
+    );
+
+    expect(summary).toMatchObject({
+      attemptedCount: 2,
+      correctCount: 2,
+      totalCount: 2,
+      isExposureComplete: true,
+      isMasteryComplete: true,
+    });
+  });
+
   it('counts by expected ids instead of stale key insertion order', () => {
     const summary = summarizeMissionItemOutcomes(
       {
@@ -123,5 +145,17 @@ describe('summarizeMissionItemOutcomes', () => {
 
   it('keeps a prior supported reveal from becoming clean mastery after edit', () => {
     expect(mergeMissionItemOutcome('supported', 'correct')).toBe('supported');
+  });
+
+  it('records outcomes with the same precedence used by mission players', () => {
+    const afterMiss = recordMissionItemOutcome({}, 'first', 'incorrect');
+    const afterEdit = recordMissionItemOutcome(afterMiss, 'first', 'correct');
+    const afterSupport = recordMissionItemOutcome(afterEdit, 'second', 'supported');
+    const afterSupportedEdit = recordMissionItemOutcome(afterSupport, 'second', 'correct');
+
+    expect(afterSupportedEdit).toEqual({
+      first: 'incorrect',
+      second: 'supported',
+    });
   });
 });

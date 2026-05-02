@@ -10,6 +10,11 @@ console.log(`Grammar lessons: ${snapshot.content.summary.grammarLessonCount}`);
 console.log(`Vocab items: ${snapshot.content.summary.vocabCount}`);
 console.log(`Example sentences: ${snapshot.content.summary.exampleCount}`);
 console.log(`Listening items: ${snapshot.content.summary.listeningCount}`);
+console.log(
+  `Listening audio refs matched: ${snapshot.audioStatus.matchedAssetCount}/${snapshot.audioStatus.itemsWithAudioRefCount}`,
+);
+console.log(`Generated listening audio assets: ${snapshot.audioStatus.generatedAssetCount}`);
+console.log(`Listening audio refs missing assets: ${snapshot.audioStatus.missingItemCount}`);
 console.log(`Missions: ${snapshot.content.summary.missionCount}`);
 console.log(`Reading missions: ${snapshot.readingMissions.length}`);
 console.log(`Reading checks: ${snapshot.readingCheckCount}`);
@@ -86,3 +91,13 @@ recentPackSummaries.forEach((pack) => {
     `- Pack ${pack.packNumber}: ${pack.readingReuseCount}/${pack.linkedExampleCount} linked examples reused in reading (${percent}%)`,
   );
 });
+
+console.log('');
+console.log('Listening audio refs missing generated assets:');
+if (snapshot.audioStatus.missingItems.length === 0) {
+  console.log('- none');
+} else {
+  snapshot.audioStatus.missingItems.forEach((item) => {
+    console.log(`- ${item.id}: ${item.audioRef}`);
+  });
+}

@@ -13,12 +13,6 @@ import type {
 import {
   getGrammarMistakeExplanation,
 } from '../../../lib/feedback/mistakeExplanations';
-import {
-  readContinueState,
-  resolveContinuePosition,
-  resolveContinueStepIndex,
-  updateContinueState,
-} from '../../../lib/progress/continueState';
 import { normalizeJapaneseText } from '../../../lib/normalizeJapaneseText';
 import { formatReorderPrompt, getReorderTokens } from '../../../lib/reorderDrill';
 import {
@@ -33,11 +27,14 @@ import {
   type MissionSessionMode,
 } from '../lib/missionSession';
 import {
-  mergeMissionItemOutcome,
-  summarizeMissionItemOutcomes,
   type MissionItemOutcome,
 } from '../lib/missionCompletion';
+import { useMissionAttemptOutcomes } from '../lib/useMissionAttemptOutcomes';
 import { useMissionAutoComplete } from '../lib/useMissionAutoComplete';
+import {
+  useInitialMissionContinuePosition,
+  useMissionContinuePosition,
+} from '../lib/useMissionContinuePosition';
 
 type GrammarMissionPlayerProps = {
   mission: Mission;
@@ -84,16 +81,21 @@ export function GrammarMissionPlayer({
     () => getMissionSteps(sessionMode, sessionExamples.length, sessionDrills.length),
     [sessionDrills.length, sessionExamples.length, sessionMode],
   );
-  const grammarFocusTerms = useMemo(() => getGrammarFocusTerms(lesson), [lesson]);
-  const initialContinuePosition = useMemo(
-    () =>
-      resolveContinuePosition(readContinueState(), mission.id, mission.type, {
-        sectionIds: sessionSteps.map((step) => step.id),
-        maxItemIndex: Math.max(sessionExamples.length, sessionDrills.length) - 1,
-      }),
-    [mission.id, mission.type, sessionDrills.length, sessionExamples.length, sessionSteps],
+  const sessionStepIds = useMemo(
+    () => sessionSteps.map((step) => step.id),
+    [sessionSteps],
   );
-  const [resultsByDrillId, setResultsByDrillId] = useState<Record<string, MissionItemOutcome>>({});
+  const grammarFocusTerms = useMemo(() => getGrammarFocusTerms(lesson), [lesson]);
+  const {
+    position: initialContinuePosition,
+    stepIndex: initialContinueStepIndex,
+  } = useInitialMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    sectionIds: sessionStepIds,
+    maxItemIndex: Math.max(sessionExamples.length, sessionDrills.length) - 1,
+    maxStepIndex: sessionSteps.length - 1,
+  });
   const [currentExampleIndex, setCurrentExampleIndex] = useState(() =>
     initialContinuePosition?.sectionId === 'examples' &&
     initialContinuePosition.itemIndex !== null &&
@@ -117,39 +119,28 @@ export function GrammarMissionPlayer({
       return continueStepIndex;
     }
 
-    return (
-      resolveContinueStepIndex(
-        readContinueState(),
-        mission.id,
-        mission.type,
-        sessionSteps.length - 1,
-      ) ?? 0
-    );
+    return initialContinueStepIndex ?? 0;
   });
   const currentStep = sessionSteps[currentStepIndex] ?? sessionSteps[0];
   const progressValue = ((currentStepIndex + 1) / sessionSteps.length) * 100;
   const currentExample = sessionExamples[currentExampleIndex] ?? null;
   const currentDrill = sessionDrills[currentDrillIndex] ?? null;
-  const attemptSummary = useMemo(
-    () => summarizeMissionItemOutcomes(resultsByDrillId, sessionDrillIds),
-    [resultsByDrillId, sessionDrillIds],
-  );
+  const { attemptSummary, recordItemOutcome: handleDrillResult } =
+    useMissionAttemptOutcomes(sessionDrillIds);
 
-  useEffect(() => {
-    updateContinueState({
-      missionId: mission.id,
-      missionType: mission.type,
-      stepIndex: currentStepIndex,
-      position: {
-        sectionId: currentStep.id,
-        itemIndex: getGrammarContinueItemIndex({
-          currentStepId: currentStep.id,
-          currentExampleIndex,
-          currentDrillIndex,
-        }),
-      },
-    });
-  }, [currentDrillIndex, currentExampleIndex, currentStep.id, currentStepIndex, mission.id, mission.type]);
+  useMissionContinuePosition({
+    missionId: mission.id,
+    missionType: mission.type,
+    stepIndex: currentStepIndex,
+    position: {
+      sectionId: currentStep.id,
+      itemIndex: getGrammarContinueItemIndex({
+        currentStepId: currentStep.id,
+        currentExampleIndex,
+        currentDrillIndex,
+      }),
+    },
+  });
 
   useEffect(() => {
     setCurrentExampleIndex((index) => Math.min(index, Math.max(0, sessionExamples.length - 1)));
@@ -167,13 +158,6 @@ export function GrammarMissionPlayer({
     missionId: mission.id,
     attemptSummary,
   });
-
-  function handleDrillResult(drillId: string, outcome: MissionItemOutcome) {
-    setResultsByDrillId((currentResults) => ({
-      ...currentResults,
-      [drillId]: mergeMissionItemOutcome(currentResults[drillId], outcome),
-    }));
-  }
 
   function goToNextStep() {
     setCurrentStepIndex((index) => Math.min(sessionSteps.length - 1, index + 1));

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   MISSION_PROGRESS_STORAGE_KEY,
+  getEmptyMissionProgress,
   getMissionProgressEntry,
   markMissionExposureComplete,
   readMissionProgress,
@@ -18,6 +19,16 @@ describe('mission progress', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+  });
+
+  it('reads empty progress when localStorage is empty', () => {
+    expect(readMissionProgress()).toEqual(getEmptyMissionProgress());
+  });
+
+  it('falls back safely when localStorage is corrupted', () => {
+    mockWindow.setRaw(MISSION_PROGRESS_STORAGE_KEY, '{not valid json');
+
+    expect(readMissionProgress()).toEqual(getEmptyMissionProgress());
   });
 
   it('marks exposure completion without implying mastery after a miss', () => {
@@ -102,5 +113,24 @@ describe('mission progress', () => {
       masteryCount: 0,
       lastAttemptSummary: null,
     });
+  });
+
+  it('resets mission progress back to empty storage', () => {
+    markMissionExposureComplete(
+      'mission-grammar-topic-desu',
+      {
+        attemptedCount: 1,
+        correctCount: 1,
+        incorrectCount: 0,
+        supportedCount: 0,
+        totalCount: 1,
+        isExposureComplete: true,
+        isMasteryComplete: true,
+      },
+      new Date('2026-01-01T00:00:00.000Z'),
+    );
+
+    expect(resetMissionProgress()).toEqual(getEmptyMissionProgress());
+    expect(readMissionProgress()).toEqual(getEmptyMissionProgress());
   });
 });
