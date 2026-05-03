@@ -1,5 +1,8 @@
 export const DAILY_SESSION_STORAGE_KEY = 'japanese-os.daily-session.v1';
 
+// Daily session is route-owned state: Today reads/writes it directly, refreshes
+// on study-day rollover, and Settings resets it only through all-study-data.
+// Do not convert this key to an external store unless another live subscriber appears.
 const DAILY_SESSION_VERSION = 1;
 const STUDY_TIME_ZONE = 'America/New_York';
 const STUDY_DAY_ROLLOVER_HOUR = 3;

@@ -3,6 +3,8 @@ import { useSyncExternalStore } from 'react';
 export const MISSION_PROGRESS_STORAGE_KEY = 'japanese-os.mission-progress.v1';
 
 const MISSION_PROGRESS_UPDATED_EVENT = 'japanese-os:mission-progress-updated';
+// Keep the localStorage key stable until a real storage migration is needed.
+// This record version tracks the sanitized in-key schema shape, not the key suffix.
 const MISSION_PROGRESS_VERSION = 2;
 const EMPTY_MISSION_PROGRESS: MissionProgressRecord = {
   version: MISSION_PROGRESS_VERSION,

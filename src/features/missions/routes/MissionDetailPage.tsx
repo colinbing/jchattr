@@ -1,15 +1,9 @@
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
 import { getStarterContent } from '../../../lib/content/loader';
-import type {
-  ExampleSentence,
-  GrammarLesson,
-  ListeningItem,
-  OutputTask,
-  ReadingCheck,
-  VocabItem,
-} from '../../../lib/content/types';
 import type { MissionSessionMode } from '../lib/missionSession';
+import type { PlayableMissionDetailViewModel } from '../lib/missionDetailViewModel';
+import { resolveMissionDetailViewModel } from '../lib/missionDetailViewModel';
 import { GrammarMissionPlayer } from '../components/GrammarMissionPlayer';
 import { ListeningMissionPlayer } from '../components/ListeningMissionPlayer';
 import { OutputMissionPlayer } from '../components/OutputMissionPlayer';
@@ -22,202 +16,28 @@ export function MissionDetailPage() {
   const starterContent = getStarterContent();
   const sessionMode: MissionSessionMode =
     (location.state as MissionRouteState | null)?.sessionMode ?? 'default';
+  const viewModel = resolveMissionDetailViewModel(missionId, starterContent);
 
-  if (!missionId) {
+  if (viewModel.kind === 'fallback') {
     return (
       <MissionFallbackState
-        title="Mission unavailable"
-        description="This route needs a mission id before it can load starter content."
+        title={viewModel.title}
+        description={viewModel.description}
       />
-    );
-  }
-
-  const mission = starterContent.byId.missions[missionId];
-
-  if (!mission) {
-    return (
-      <MissionFallbackState
-        title="Mission not found"
-        description="The requested mission id does not exist in starter content."
-      />
-    );
-  }
-
-  if (mission.type === 'grammar') {
-    const lessonId = mission.contentRefs.grammarLessonIds?.[0];
-    const lesson = lessonId ? starterContent.byId.grammarLessons[lessonId] : undefined;
-
-    if (!lesson) {
-      return (
-        <MissionFallbackState
-          title="Lesson link missing"
-          description="This grammar mission does not have a valid linked grammar lesson yet."
-        />
-      );
-    }
-
-    const examples = resolveExamples(
-      starterContent.byId.exampleSentences,
-      lesson.exampleIds,
-      mission.contentRefs.exampleIds,
-    );
-
-    return (
-      <PageShell
-        eyebrow="Mission"
-        title={mission.title}
-        description="Focus on one grammar pass without the full mobile nav in the way."
-        aside={<span className="status-chip">Grammar</span>}
-        variant="compact"
-      >
-        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
-        <GrammarMissionPlayer
-          mission={mission}
-          lesson={lesson}
-          examples={examples}
-          sessionMode={sessionMode}
-        />
-      </PageShell>
-    );
-  }
-
-  if (mission.type === 'listening') {
-    const listeningItems = resolveListeningItems(
-      starterContent.byId.listeningItems,
-      mission.contentRefs.listeningItemIds,
-    );
-    const relatedLessons = resolveGrammarLessons(
-      starterContent.byId.grammarLessons,
-      mission.contentRefs.grammarLessonIds,
-    );
-    const relatedExamples = resolveExamples(
-      starterContent.byId.exampleSentences,
-      [],
-      mission.contentRefs.exampleIds,
-    );
-
-    if (listeningItems.length === 0) {
-      return (
-        <MissionFallbackState
-          title="Listening content missing"
-          description="This listening mission does not have starter listening items linked yet."
-        />
-      );
-    }
-
-    return (
-      <PageShell
-        eyebrow="Mission"
-        title={mission.title}
-        description="Stay with one listening line at a time and keep the space for the task."
-        aside={<span className="status-chip">Listening</span>}
-        variant="compact"
-      >
-        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
-        <ListeningMissionPlayer
-          mission={mission}
-          listeningItems={listeningItems}
-          relatedLessons={relatedLessons}
-          relatedExamples={relatedExamples}
-          choicePool={starterContent.listeningItems}
-          sessionMode={sessionMode}
-        />
-      </PageShell>
-    );
-  }
-
-  if (mission.type === 'output') {
-    const relatedLessons = resolveGrammarLessons(
-      starterContent.byId.grammarLessons,
-      mission.contentRefs.grammarLessonIds,
-    );
-    const relatedExamples = resolveExamples(
-      starterContent.byId.exampleSentences,
-      [],
-      mission.contentRefs.exampleIds,
-    );
-    const relatedVocab = resolveVocabItems(
-      starterContent.byId.vocabItems,
-      mission.contentRefs.vocabIds,
-    );
-    const outputTasks = resolveOutputTasks(mission.outputTasks);
-
-    if (outputTasks.length === 0) {
-      return (
-        <MissionFallbackState
-          title="Output content missing"
-          description="This output mission does not have starter prompts and accepted answers linked yet."
-        />
-      );
-    }
-
-    return (
-      <PageShell
-        eyebrow="Mission"
-        title={mission.title}
-        description="Keep the mission route focused on the current prompt and answer."
-        aside={<span className="status-chip">Output</span>}
-        variant="compact"
-      >
-        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
-        <OutputMissionPlayer
-          mission={mission}
-          tasks={outputTasks}
-          relatedLessons={relatedLessons}
-          relatedExamples={relatedExamples}
-          relatedVocab={relatedVocab}
-          sessionMode={sessionMode}
-        />
-      </PageShell>
-    );
-  }
-
-  if (mission.type === 'reading') {
-    const readingChecks = resolveReadingChecks(mission.readingChecks);
-    const examplesById = readingChecks.reduce<Record<string, ExampleSentence>>((record, check) => {
-      const example = starterContent.byId.exampleSentences[check.exampleId];
-
-      if (example) {
-        record[check.exampleId] = example;
-      }
-
-      return record;
-    }, {});
-
-    if (readingChecks.length === 0 || Object.keys(examplesById).length === 0) {
-      return (
-        <MissionFallbackState
-          title="Reading content missing"
-          description="This reading mission does not have starter reading checks linked yet."
-        />
-      );
-    }
-
-    return (
-      <PageShell
-        eyebrow="Mission"
-        title={mission.title}
-        description="Read first, answer, then reveal support without extra chrome."
-        aside={<span className="status-chip">Reading</span>}
-        variant="compact"
-      >
-        <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
-        <ReadingMissionPlayer
-          mission={mission}
-          checks={readingChecks}
-          examplesById={examplesById}
-          vocabItems={starterContent.vocabItems}
-          sessionMode={sessionMode}
-        />
-      </PageShell>
     );
   }
 
   return (
-    <MissionFallbackState
-      title="Mission type not supported yet"
-      description="This route currently supports grammar, listening, output, and reading starter missions."
-    />
+    <PageShell
+      eyebrow="Mission"
+      title={viewModel.mission.title}
+      description={viewModel.shellDescription}
+      aside={<span className="status-chip">{viewModel.statusLabel}</span>}
+      variant="compact"
+    >
+      <MissionRouteBar onGoBack={() => handleGoBack(navigate)} />
+      <MissionPlayerRenderer viewModel={viewModel} sessionMode={sessionMode} />
+    </PageShell>
   );
 }
 
@@ -229,6 +49,60 @@ type MissionRouteState = {
 type MissionRouteBarProps = {
   onGoBack: () => void;
 };
+
+type MissionPlayerRendererProps = {
+  viewModel: PlayableMissionDetailViewModel;
+  sessionMode: MissionSessionMode;
+};
+
+function MissionPlayerRenderer({
+  viewModel,
+  sessionMode,
+}: MissionPlayerRendererProps) {
+  switch (viewModel.kind) {
+    case 'grammar':
+      return (
+        <GrammarMissionPlayer
+          mission={viewModel.mission}
+          lesson={viewModel.lesson}
+          examples={viewModel.examples}
+          sessionMode={sessionMode}
+        />
+      );
+    case 'listening':
+      return (
+        <ListeningMissionPlayer
+          mission={viewModel.mission}
+          listeningItems={viewModel.listeningItems}
+          relatedLessons={viewModel.relatedLessons}
+          relatedExamples={viewModel.relatedExamples}
+          choicePool={viewModel.choicePool}
+          sessionMode={sessionMode}
+        />
+      );
+    case 'output':
+      return (
+        <OutputMissionPlayer
+          mission={viewModel.mission}
+          tasks={viewModel.tasks}
+          relatedLessons={viewModel.relatedLessons}
+          relatedExamples={viewModel.relatedExamples}
+          relatedVocab={viewModel.relatedVocab}
+          sessionMode={sessionMode}
+        />
+      );
+    case 'reading':
+      return (
+        <ReadingMissionPlayer
+          mission={viewModel.mission}
+          checks={viewModel.checks}
+          examplesById={viewModel.examplesById}
+          vocabItems={viewModel.vocabItems}
+          sessionMode={sessionMode}
+        />
+      );
+  }
+}
 
 function MissionRouteBar({ onGoBack }: MissionRouteBarProps) {
   return (
@@ -262,51 +136,6 @@ function handleGoBack(navigate: ReturnType<typeof useNavigate>) {
   }
 
   navigate('/');
-}
-
-function resolveExamples(
-  exampleRecord: Record<string, ExampleSentence>,
-  primaryIds: string[],
-  secondaryIds?: string[],
-) {
-  return Array.from(new Set([...primaryIds, ...(secondaryIds ?? [])]))
-    .map((exampleId) => exampleRecord[exampleId])
-    .filter((example): example is ExampleSentence => Boolean(example));
-}
-
-function resolveGrammarLessons(
-  lessonRecord: Record<string, GrammarLesson>,
-  lessonIds?: string[],
-) {
-  return (lessonIds ?? [])
-    .map((lessonId) => lessonRecord[lessonId])
-    .filter((lesson): lesson is GrammarLesson => Boolean(lesson));
-}
-
-function resolveListeningItems(
-  listeningRecord: Record<string, ListeningItem>,
-  listeningItemIds?: string[],
-) {
-  return (listeningItemIds ?? [])
-    .map((itemId) => listeningRecord[itemId])
-    .filter((item): item is ListeningItem => Boolean(item));
-}
-
-function resolveVocabItems(
-  vocabRecord: Record<string, VocabItem>,
-  vocabIds?: string[],
-) {
-  return (vocabIds ?? [])
-    .map((vocabId) => vocabRecord[vocabId])
-    .filter((item): item is VocabItem => Boolean(item));
-}
-
-function resolveOutputTasks(outputTasks?: OutputTask[]) {
-  return (outputTasks ?? []).filter((task): task is OutputTask => Boolean(task));
-}
-
-function resolveReadingChecks(readingChecks?: ReadingCheck[]) {
-  return (readingChecks ?? []).filter((check): check is ReadingCheck => Boolean(check));
 }
 
 type MissionFallbackStateProps = {

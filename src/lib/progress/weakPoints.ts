@@ -3,6 +3,8 @@ import { useSyncExternalStore } from 'react';
 export const WEAK_POINTS_STORAGE_KEY = 'japanese-os.weak-points.v1';
 
 const WEAK_POINTS_UPDATED_EVENT = 'japanese-os:weak-points-updated';
+// Keep the localStorage key stable until a real storage migration is needed.
+// This record version tracks the sanitized in-key schema shape, not the key suffix.
 const WEAK_POINTS_VERSION = 2;
 
 export type WeakPointItemType =

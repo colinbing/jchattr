@@ -53,6 +53,15 @@ AI may draft review-only content from a constrained source packet. Drafts must r
 
 Production content remains governed by TypeScript schemas, relation validation, reports, tests, and human review.
 
+## Scenario And Capstone Boundary
+
+Scenarios and capstones are not AI chat surfaces. They must remain local, deterministic, source-auditable learning loops built from checked-in TypeScript content.
+
+- Scenario pass/fail comes from the local output evaluator, not model judgment.
+- Capstone checks are fixed local comprehension checks, not generated questions.
+- AI may suggest draft copy or advisory feedback only outside correctness authority.
+- Adding open-ended scenario chat, AI grading, backend state, or synced conversation history requires an explicit product and architecture decision first.
+
 ## No Backend By Default
 
 Do not introduce a backend only to enable AI. Add backend/proxy infrastructure only after an explicit architecture decision that preserves local-first behavior for the core app.

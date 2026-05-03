@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Content coverage report
+        run: npm run report:content-coverage
+
+      - name: Reading reuse report
+        run: npm run report:reading-reuse
+
+      - name: Progression gaps report
+        run: npm run report:progression-gaps
+
+      - name: Content overlap report
+        run: npm run report:content-overlap
+
+      - name: Scenario inventory report
+        run: npm run report:scenario-inventory

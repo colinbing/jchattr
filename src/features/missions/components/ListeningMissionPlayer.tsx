@@ -22,6 +22,7 @@ import {
   selectMissionReplayVariant,
   type MissionSessionMode,
 } from '../lib/missionSession';
+import { getListeningMissionOutcome } from '../lib/listeningMissionOutcome';
 import {
   type MissionAttemptSummary,
   type MissionItemOutcome,
@@ -394,9 +395,13 @@ function ListeningItemPanel({
       return;
     }
 
-    const nextFeedback = selectedChoice === item.translation ? 'correct' : 'incorrect';
+    const nextFeedback = getListeningMissionOutcome({
+      isCorrect: selectedChoice === item.translation,
+      revealed,
+      readingMatchesTranscript,
+    });
 
-    if (nextFeedback === 'incorrect') {
+    if (nextFeedback !== 'correct') {
       recordWeakPoint({
         itemId: item.id,
         itemType: 'listening-check',
@@ -406,7 +411,7 @@ function ListeningItemPanel({
     }
 
     setFeedback(nextFeedback);
-    onResult(item.id, nextFeedback === 'correct' ? 'correct' : 'incorrect');
+    onResult(item.id, nextFeedback);
   }
 
   return (
@@ -623,11 +628,11 @@ function getListeningFeedbackBody(
 ) {
   switch (feedback) {
     case 'correct':
-      return revealed.focus || revealed.transcript
-        ? 'Support helped. This moves the line forward, but it is a lighter listening signal.'
-        : 'Clean first-pass recognition.';
+      return 'Clean first-pass recognition.';
     case 'supported':
-      return 'You saw the meaning, so this moves the pass forward but keeps the item in Review.';
+      return revealed.translation
+        ? 'You saw the meaning, so this moves the pass forward but keeps the item in Review.'
+        : 'Support helped, so this moves the pass forward but keeps the item in Review.';
     case 'incorrect':
       return `Correct answer: ${item.translation}`;
   }

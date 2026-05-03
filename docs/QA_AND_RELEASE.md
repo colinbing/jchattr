@@ -30,9 +30,9 @@ For documentation-only changes, still run `typecheck`, `test`, and `build` unles
 - Settings: routine reset controls, full reset, preferences, audio status.
 - Mobile viewport: portrait phone width, touch targets, no incoherent overlap, mission chrome behavior.
 
-## Recommended CI Workflow
+## CI Workflow
 
-If CI is not present, add a GitHub Actions workflow that runs on pull requests and pushes:
+The repository has a GitHub Actions workflow at `.github/workflows/ci.yml` that runs on pull requests:
 
 ```bash
 npm ci

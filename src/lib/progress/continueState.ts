@@ -4,6 +4,8 @@ import type { MissionType } from '../content/types';
 export const CONTINUE_STATE_STORAGE_KEY = 'japanese-os.continue-state.v1';
 
 const CONTINUE_STATE_UPDATED_EVENT = 'japanese-os:continue-state-updated';
+// Keep the localStorage key stable until a real storage migration is needed.
+// This record version tracks the sanitized in-key schema shape, not the key suffix.
 const CONTINUE_STATE_VERSION = 2;
 
 export interface ContinuePosition {

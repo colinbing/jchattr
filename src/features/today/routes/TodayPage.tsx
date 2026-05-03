@@ -25,22 +25,20 @@ import {
 import { useReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import { getWeakPointList, useWeakPoints } from '../../../lib/progress/weakPoints';
 import { deriveProgressOverview } from '../../../lib/progress/skillMap';
+import { deriveTodayRecommendations } from '../lib/todayRecommendations';
 import {
-  deriveTodayRecommendations,
-  type TodayRecommendation,
-} from '../lib/todayRecommendations';
-import { filterBonusRecommendations } from '../lib/todayBonusRecommendations';
-import { getTodayPlanItemKey } from '../lib/todayPlanKeys';
-import {
-  createRecommendationByKey,
   createTodayPlanSnapshot,
   getRecommendationKey,
   getRecommendationMinuteTotal,
   isTodayPlanSnapshot,
-  resolveTodayPlanState,
   type ContinueMissionSummary,
   type TodayPlanSnapshot,
 } from '../lib/todayPlanState';
+import { getTodayPlanItemKey } from '../lib/todayPlanKeys';
+import {
+  resolveTodayRecommendationPools,
+  resolveTodayViewModel,
+} from '../lib/todayViewModel';
 import {
   buildMissionPracticeRecap,
   buildMissionReviewImpact,
@@ -84,59 +82,30 @@ export function TodayPage() {
     missionProgress,
     continueState,
   );
-  const visibleRecommendations = filterContinueMissionRecommendation(
+  const recommendationPools = resolveTodayRecommendationPools(
     recommendations,
-    continueMission?.mission.id ?? null,
+    continueMission,
   );
-  const coreEligibleRecommendations = visibleRecommendations.filter(isCoreRecommendation);
-  const liveCoreRecommendations =
-    coreEligibleRecommendations.length > 2
-      ? coreEligibleRecommendations.slice(0, 2)
-      : coreEligibleRecommendations;
   const [todayPlanSnapshot, setTodayPlanSnapshot] = useState<TodayPlanSnapshot>(() => {
     const storedPlan = dailySessionRecord.plansByStudyDay[studyDayKey];
     return isTodayPlanSnapshot(storedPlan)
       ? storedPlan
-      : createTodayPlanSnapshot(liveCoreRecommendations);
+      : createTodayPlanSnapshot(recommendationPools.liveCoreRecommendations);
   });
-  const liveRecommendationByKey = createRecommendationByKey(visibleRecommendations);
-  const liveReviewRecommendation =
-    recommendations.find((recommendation) => recommendation.kind === 'review') ?? null;
   const completedPlanItemKeys = new Set(
     dailySessionRecord.completedPlanItemKeysByStudyDay[studyDayKey] ?? [],
   );
-  const planState = resolveTodayPlanState({
-    snapshot: todayPlanSnapshot,
+  const todayViewModel = resolveTodayViewModel({
+    recommendationPools,
+    todayPlanSnapshot,
     starterContent,
-    liveCoreRecommendations,
-    liveRecommendationByKey,
-    liveReviewRecommendation,
     missionProgress,
     capstoneProgress,
     completedPlanItemKeys,
     weakPointCount: weakPointList.length,
     continueMission,
   });
-  const bonusRecommendations = filterBonusRecommendations(
-    visibleRecommendations,
-    {
-      planKeys: planState.planKeys,
-      missionIds: planState.planMissionIds,
-      capstoneStoryIds: planState.planCapstoneStoryIds,
-    },
-  );
-  const optionalContinueMission =
-    continueMission &&
-    !planState.planKeys.has(
-      getTodayPlanItemKey({
-        kind: 'mission',
-        missionId: continueMission.mission.id,
-        sessionMode: 'default',
-      }),
-    ) &&
-    planState.remainingCount === 0
-      ? continueMission
-      : null;
+  const { planState, bonusRecommendations, optionalContinueMission } = todayViewModel;
   const missionCompletionSkill = missionCompletion
     ? progressOverview.skillAreas.find(
         (skillArea) => skillArea.id === missionCompletion.targetSkill,
@@ -217,7 +186,7 @@ export function TodayPage() {
       setTodayPlanSnapshot(
         isTodayPlanSnapshot(storedPlan)
           ? storedPlan
-          : createTodayPlanSnapshot(liveCoreRecommendations),
+          : createTodayPlanSnapshot(recommendationPools.liveCoreRecommendations),
       );
     }
 
@@ -231,7 +200,7 @@ export function TodayPage() {
       document.removeEventListener('visibilitychange', refreshStudyDay);
       window.clearInterval(intervalId);
     };
-  }, [liveCoreRecommendations, studyDayKey]);
+  }, [recommendationPools.liveCoreRecommendations, studyDayKey]);
 
   return (
     <PageShell
@@ -477,26 +446,6 @@ function formatMissionCompletionBody(missionCompletion: MissionCompletionSummary
   }
 
   return 'Mission pass saved. Expand this only when you want the pass details.';
-}
-
-function filterContinueMissionRecommendation(
-  recommendations: TodayRecommendation[],
-  continueMissionId: string | null,
-) {
-  if (!continueMissionId) {
-    return recommendations;
-  }
-
-  return recommendations.filter((recommendation) => {
-    return (
-      recommendation.kind !== 'mission' ||
-      recommendation.mission.id !== continueMissionId
-    );
-  });
-}
-
-function isCoreRecommendation(recommendation: TodayRecommendation) {
-  return recommendation.priority !== 'bonus';
 }
 
 function buildReviewCompletionBody(reviewCompletion: TodayReviewCompletion) {

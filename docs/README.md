@@ -30,6 +30,10 @@ Current repo reality beats stale docs. If an archived patch plan, old prompt, or
 - [AI_BOUNDARIES.md](AI_BOUNDARIES.md)
 - [CODEX_WORKFLOW.md](CODEX_WORKFLOW.md)
 
+## Completed Records
+
+- [REMEDIATION_PLAN.md](REMEDIATION_PLAN.md): completed 2026-05-03 remediation audit and phase record. Use it as context, not as an active implementation queue.
+
 ## Archive
 
 [archive/](archive/) contains historical plans, audits, prompt templates, and review-only drafts. Those files can explain why earlier decisions were made, but they are not current source of truth.

@@ -4,6 +4,7 @@ import { KanaAssistInput } from '../../../components/KanaAssistInput';
 import { KanaAssistTextarea } from '../../../components/KanaAssistTextarea';
 import { MistakeExplanationDrawer } from '../../../components/MistakeExplanationDrawer';
 import { SurfaceCard } from '../../../components/layout/PageShell';
+import { MissionFeedbackBlock } from '../../missions/components/MissionFeedbackBlock';
 import type { GrammarDrill } from '../../../lib/content/types';
 import {
   getGrammarMistakeExplanation,
@@ -658,18 +659,15 @@ function OutputReviewFeedback({
   feedback: OutputEvaluationResult;
 }) {
   return (
-    <div
-      className={`mission-feedback mission-feedback--${feedback.tone}`}
-      role="status"
-      aria-live="polite"
-    >
-      <p className="mission-feedback__title">{feedback.title}</p>
-      <p className="mission-feedback__body">
-        {feedback.isAccepted
+    <MissionFeedbackBlock
+      tone={feedback.tone}
+      title={feedback.title}
+      body={
+        feedback.isAccepted
           ? 'Retry recorded for this item.'
-          : `${feedback.message} Try: ${formatExpectedReviewAnswer(feedback.expectedAnswer)} This item stays open for another pass.`}
-      </p>
-    </div>
+          : `${feedback.message} Try: ${formatExpectedReviewAnswer(feedback.expectedAnswer)} This item stays open for another pass.`
+      }
+    />
   );
 }
 
@@ -793,20 +791,15 @@ function ReviewFeedback({
   answer: string;
 }) {
   return (
-    <div
-      className={`mission-feedback mission-feedback--${result}`}
-      role="status"
-      aria-live="polite"
-    >
-      <p className="mission-feedback__title">
-        {result === 'correct' ? 'Correct.' : 'Not quite.'}
-      </p>
-      <p className="mission-feedback__body">
-        {result === 'correct'
+    <MissionFeedbackBlock
+      tone={result}
+      title={result === 'correct' ? 'Correct.' : 'Not quite.'}
+      body={
+        result === 'correct'
           ? 'Retry recorded for this item.'
-          : `Expected answer: ${formatExpectedReviewAnswer(answer)} This item stays open for another pass.`}
-      </p>
-    </div>
+          : `Expected answer: ${formatExpectedReviewAnswer(answer)} This item stays open for another pass.`
+      }
+    />
   );
 }
 
@@ -816,16 +809,11 @@ function formatExpectedReviewAnswer(answer: string) {
 
 function SupportedExposureFeedback() {
   return (
-    <div
-      className="mission-feedback mission-feedback--supported"
-      role="status"
-      aria-live="polite"
-    >
-      <p className="mission-feedback__title">Supported exposure.</p>
-      <p className="mission-feedback__body">
-        You saw the answer, so this pass can continue but the retry stays open.
-      </p>
-    </div>
+    <MissionFeedbackBlock
+      tone="supported"
+      title="Supported exposure."
+      body="You saw the answer, so this pass can continue but the retry stays open."
+    />
   );
 }
 

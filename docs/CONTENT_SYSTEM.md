@@ -29,6 +29,16 @@ Scenario-specific contracts live in `src/lib/content/scenarioContracts.ts`.
 
 Scenario missions are output missions with structured scenario metadata. Capstones have their own story/line/check structures and route.
 
+## Scenario And Capstone Scope
+
+Scenarios and capstones are local, deterministic learning surfaces, not chat systems.
+
+Scenario missions must stay structured output missions. Each scenario step maps to an output task, uses fixed acceptable answers/token patterns, and is evaluated by the local deterministic output evaluator. Scenario metadata should name its source packs, grammar lessons, vocab items, and examples so the scenario remains source-auditable.
+
+Capstones must stay source-auditable story/check content. Every capstone line needs explicit grammar/vocab tags and source examples; naturalized lines should also point back to source lines when they recombine earlier material. Capstone checks remain fixed-choice local comprehension checks.
+
+Do not promote a scenario or capstone when it requires open-ended chat, runtime AI grading, backend state, hidden content generation, or grammar/vocab outside the reviewed source scope. AI-assisted drafts may inform review, but promotion into `src/content/` requires human review and the normal schema/report gates.
+
 ## Content Expansion Rules
 
 - Add content in narrow reviewed batches.

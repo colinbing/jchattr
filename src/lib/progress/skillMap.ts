@@ -38,6 +38,12 @@ export interface ProgressOverview {
   skillAreas: SkillAreaProgress[];
 }
 
+export interface SkillMapCoverageGaps {
+  unmappedGrammarLessonIds: string[];
+  unmappedMissionIds: string[];
+  unmappedMissionTargetSkills: TargetSkill[];
+}
+
 type SkillSignalDefinition = {
   id: SkillAreaId;
   label: string;
@@ -152,6 +158,55 @@ const SKILL_SIGNAL_DEFINITIONS: SkillSignalDefinition[] = [
     available: true,
   },
 ];
+
+export function getSkillMapCoverageGaps(
+  starterContent: StarterContent,
+): SkillMapCoverageGaps {
+  const availableDefinitions = SKILL_SIGNAL_DEFINITIONS.filter(
+    (definition) => definition.available,
+  );
+  const mappedMissionTargetSkills = new Set<TargetSkill>(
+    availableDefinitions.flatMap((definition) => [
+      definition.id,
+      ...(definition.missionTargetSkills ?? []),
+    ]),
+  );
+  const unmappedMissionTargetSkills = Array.from(
+    new Set(
+      starterContent.missions
+        .map((mission) => mission.targetSkill)
+        .filter((targetSkill) => !mappedMissionTargetSkills.has(targetSkill)),
+    ),
+  ).sort();
+  const unmappedMissionIds = starterContent.missions
+    .filter((mission) =>
+      !availableDefinitions.some((definition) =>
+        missionMatchesSkill(definition, mission),
+      ),
+    )
+    .map((mission) => mission.id)
+    .sort();
+  const unmappedGrammarLessonIds = starterContent.grammarLessons
+    .map((lesson) => lesson.id)
+    .filter((lessonId) => {
+      const linkedMissions = starterContent.missions.filter((mission) =>
+        (mission.contentRefs.grammarLessonIds ?? []).includes(lessonId),
+      );
+
+      return !linkedMissions.some((mission) =>
+        availableDefinitions.some((definition) =>
+          missionMatchesSkill(definition, mission),
+        ),
+      );
+    })
+    .sort();
+
+  return {
+    unmappedGrammarLessonIds,
+    unmappedMissionIds,
+    unmappedMissionTargetSkills,
+  };
+}
 
 // Heuristics stay intentionally small:
 // - not-enough-data: no related finished passes and no related misses, or the area is not instrumented yet

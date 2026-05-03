@@ -4,7 +4,7 @@
 
 JCHATTR is a working local-first React + TypeScript study app. Current reports show 207 missions, 100 grammar lessons, 550 vocab items, 731 example sentences, 361 listening items with matched generated audio assets, 49 reading missions, and 11 capstone stories covering all 10 chapters.
 
-The app is in a quality-hardening phase: the main product loop exists, and the next useful work is verification, risk reduction, and targeted simplification.
+The app is in a quality-hardening phase: the main product loop exists, CI is wired for pull requests, and the next useful work is risk reduction, targeted simplification, and content-roadmap decisions.
 
 ## Implemented
 
@@ -17,31 +17,36 @@ The app is in a quality-hardening phase: the main product loop exists, and the n
 - Structured content: Zod schemas, relation validation, content indexes, capstone validation, scenario contracts, and report scripts.
 - Local persistence: browser localStorage stores for mission progress, capstone progress, weak points, review loop, continue state, daily sessions, and study preferences.
 - Reports/tests: Vitest unit tests plus content coverage, reading reuse, progression gap, content overlap, scenario inventory, and build-status summary reports.
+- CI: GitHub Actions runs install, typecheck, tests, build, and standard content reports on pull requests.
 - AI boundaries: optional mistake explanation and output coach helpers are disabled by default, endpoint-gated, schema-validated, and correctness-locked.
 
 ## Current Known Risks
 
-- CI/automated quality gates are not documented as present.
-- `TodayPage.tsx` is still a large route/controller and should be decomposed carefully.
-- Grammar focus/highlight rules appear to remain close to `GrammarMissionPlayer`.
-- Skill-map mappings are hand-maintained and can miss new content lanes without guardrails.
-- Archived docs contain many historical prompts and audit notes that should not be treated as current truth.
+- Vite still reports a large main bundle after production build.
+- Scenario/application coverage is intentionally partial; the scenario inventory report lists pack ranges without scenario missions.
+- `TodayPage.tsx` is smaller after view-model extraction, but should only be simplified further through narrow, tested slices.
+- Review and mission players still duplicate some interaction patterns beyond the shared feedback block.
+- Skill-map mappings remain hand-maintained, with tests now guarding current starter-content coverage.
 
 ## Next Priorities
 
-1. Add CI or another verified quality gate for typecheck, test, build, and content reports.
-2. Re-audit listening supported-exposure versus mastery semantics.
-3. Extract grammar focus rules into a small tested helper.
-4. Split Today route/controller logic without changing recommendation behavior.
-5. Add skill-map/content mapping tests or reports.
+1. Confirm the new pull request CI workflow passes after the branch is pushed.
+2. Decide whether to address the Vite large chunk warning with route-level code splitting.
+3. Decide whether scenario/application coverage gaps should become a content roadmap item.
+4. Continue Today route simplification only through narrow, tested behavior-preserving slices.
+5. Extract additional Review/mission UI primitives only when one small duplication clearly justifies it.
 
 ## Last Verified Commands
 
 - `npm run report:build-status-summary`: passed on 2026-05-03.
 - `npm run report:content-coverage`: passed on 2026-05-03.
 - `npm run typecheck`: passed on 2026-05-03.
-- `npm run test`: passed on 2026-05-03, 29 files and 148 tests.
+- `npm run test`: passed on 2026-05-03, 34 files and 175 tests.
 - `npm run build`: passed on 2026-05-03; Vite reported the existing large main-chunk warning.
+- `npm run report:reading-reuse`: passed on 2026-05-03.
+- `npm run report:progression-gaps`: passed on 2026-05-03, 0 progression issues and 0 registry warnings.
+- `npm run report:content-overlap`: passed on 2026-05-03.
+- `npm run report:scenario-inventory`: passed on 2026-05-03 with existing scenario coverage warnings.
 
 ## Notes
 

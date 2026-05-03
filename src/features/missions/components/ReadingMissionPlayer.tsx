@@ -20,6 +20,7 @@ import { deriveSeenVocabLookup } from '../../../lib/progress/seenVocab';
 import { useStudyPreferences } from '../../../lib/settings/studyPreferences';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
+import { MissionFeedbackBlock } from './MissionFeedbackBlock';
 import { VocabSupportChips } from './VocabSupportChips';
 import {
   buildFinishMissionToTodayParams,
@@ -402,20 +403,15 @@ function ReadingCheckCard({
       </div>
 
       {feedback ? (
-        <div
-          className={`mission-feedback mission-feedback--${feedback}`}
-          role="status"
-          aria-live="polite"
-        >
-          <p className="mission-feedback__title">
-            {feedback === 'correct' ? 'Correct.' : 'Close read, but not this one.'}
-          </p>
-          <p className="mission-feedback__body">
-            {feedback === 'correct'
+        <MissionFeedbackBlock
+          tone={feedback}
+          title={feedback === 'correct' ? 'Correct.' : 'Close read, but not this one.'}
+          body={
+            feedback === 'correct'
               ? 'You matched the line before the reveal.'
-              : `The best match here is: ${check.answer}`}
-          </p>
-        </div>
+              : `The best match here is: ${check.answer}`
+          }
+        />
       ) : null}
 
       {mistakeExplanation ? (
