@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Patch 01 — jchattr Core Stability, Learning Semantics, and QA Hardening
 
 > **Repo target:** `colinbing/jchattr`  

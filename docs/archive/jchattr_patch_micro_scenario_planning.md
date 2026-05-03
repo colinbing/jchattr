@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # jchattr controlled micro-scenario planning patch
 
 ## Source baseline

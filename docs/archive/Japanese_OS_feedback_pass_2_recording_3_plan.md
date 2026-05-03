@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Japanese OS Feedback Pass 2 — Recording 3 Live Mobile Use
 
 ## Purpose

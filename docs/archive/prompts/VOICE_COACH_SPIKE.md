@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Voice Coach Spike
 
 ## Purpose

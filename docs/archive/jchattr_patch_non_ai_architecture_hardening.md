@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # jchattr Patch Series — Non-AI Architecture Hardening & Pre-Scenario Readiness
 
 > **Repo target:** `colinbing/jchattr`  

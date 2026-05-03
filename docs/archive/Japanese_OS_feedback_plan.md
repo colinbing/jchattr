@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Japanese OS — Voice Feedback Triage and Implementation Plan
 
 ## Source

@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Review-Only Scenario Draft — Pack 05 Place Question Check
 
 Status: human-approved and promoted to production content after review.

@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # N5 Curriculum Plan
 
 ## Purpose

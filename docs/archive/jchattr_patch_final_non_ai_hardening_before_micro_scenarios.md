@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # jchattr Patch — Final Non-AI Hardening Before Micro-Scenarios
 
 > **Repo target:** `colinbing/jchattr`  

@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Review-Only Scenario Draft — Pack 04 Preference Chat
 
 Status: human-reviewed and promoted to production content on 2026-05-02.

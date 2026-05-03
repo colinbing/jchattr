@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # Patch 02 — jp-immersion Stabilization
 
 Patch 02 starts from Patch 01's stabilized local curriculum/review/progress loop. The goal is to harden the boundary for scenario/application practice before any broader `jp-immersion`, AI, chat, account, sync, analytics, or backend work.

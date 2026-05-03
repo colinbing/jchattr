@@ -1,3 +1,5 @@
+> Archived historical document. Not current source of truth.
+
 # JCHATTR Next Feature Plan
 
 ## Purpose
