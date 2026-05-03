@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { PageShell, SurfaceCard } from '../../../components/layout/PageShell';
-import type { Mission, StarterContent } from '../../../lib/content/types';
+import type { StarterContent } from '../../../lib/content/types';
 import { SessionSummary } from '../components/SessionSummary';
 import { TodayRecommendationCard } from '../components/TodayRecommendationCard';
 import { getStarterContent } from '../../../lib/content/loader';
@@ -48,6 +48,7 @@ import {
   formatMissionTypeLabel,
   formatTargetSkillLabel,
 } from '../lib/todayPlanFormatting';
+import { formatContinueDetailFromPosition } from '../lib/todayContinueDetail';
 import type { MissionCompletionSummary } from '../../missions/lib/missionSession';
 
 export function TodayPage() {
@@ -558,52 +559,12 @@ function resolveContinueMission(
 
   return {
     mission,
-    detail: formatContinueDetail(starterContent, mission, continueState.stepIndex),
+    detail: formatContinueDetailFromPosition({
+      starterContent,
+      mission,
+      continueState,
+    }),
   };
-}
-
-function formatContinueDetail(
-  starterContent: StarterContent,
-  mission: Mission,
-  stepIndex: number | null,
-) {
-  if (mission.type === 'grammar') {
-    const sectionNames = ['lesson intro', 'examples', 'common mistakes', 'drills'];
-    const safeStepIndex =
-      typeof stepIndex === 'number' && sectionNames[stepIndex]
-        ? stepIndex
-        : 0;
-
-    return `Resume ${sectionNames[safeStepIndex]} (${safeStepIndex + 1} of ${sectionNames.length}).`;
-  }
-
-  if (mission.type === 'listening') {
-    const totalItems = mission.contentRefs.listeningItemIds?.length ?? 0;
-    const safeStepIndex =
-      typeof stepIndex === 'number' && stepIndex >= 0 && stepIndex < totalItems
-        ? stepIndex
-        : 0;
-
-    return `Resume listening item ${safeStepIndex + 1} of ${totalItems}.`;
-  }
-
-  if (mission.type === 'reading') {
-    const totalChecks = starterContent.byId.missions[mission.id].readingChecks?.length ?? 0;
-    const safeStepIndex =
-      typeof stepIndex === 'number' && stepIndex >= 0 && stepIndex < totalChecks
-        ? stepIndex
-        : 0;
-
-    return `Resume reading check ${safeStepIndex + 1} of ${totalChecks}.`;
-  }
-
-  const totalTasks = starterContent.byId.missions[mission.id].outputTasks?.length ?? 0;
-  const safeStepIndex =
-    typeof stepIndex === 'number' && stepIndex >= 0 && stepIndex < totalTasks
-      ? stepIndex
-      : 0;
-
-  return `Resume output task ${safeStepIndex + 1} of ${totalTasks}.`;
 }
 
 function formatCountedNoun(count: number, noun: string) {

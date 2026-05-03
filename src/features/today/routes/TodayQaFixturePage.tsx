@@ -12,12 +12,13 @@ import {
 import { TodayRecommendationCard } from '../components/TodayRecommendationCard';
 import type { TodayRecommendation } from '../lib/todayRecommendations';
 
-type TodayQaFixtureId =
+export type TodayQaFixtureId =
   | 'no-bonus'
   | 'one-bonus'
   | 'review-return'
   | 'reinforce-plan'
-  | 'completed-summary';
+  | 'completed-summary'
+  | 'completed-no-bonus';
 
 type TodayQaFixture = {
   id: TodayQaFixtureId;
@@ -34,12 +35,13 @@ type TodayQaFixture = {
   };
 };
 
-const fixtureIds: TodayQaFixtureId[] = [
+export const todayQaFixtureIds: TodayQaFixtureId[] = [
   'no-bonus',
   'one-bonus',
   'review-return',
   'reinforce-plan',
   'completed-summary',
+  'completed-no-bonus',
 ];
 
 export function TodayQaFixturePage() {
@@ -78,7 +80,7 @@ export function TodayQaFixturePage() {
         description="Open fixed Today states without changing saved progress."
       >
         <ul className="simple-list">
-          {fixtureIds.map((id) => (
+          {todayQaFixtureIds.map((id) => (
             <li key={id}>
               <Link to={`/dev/today-qa/${id}`} className="inline-link">
                 {id === fixture.id ? `Viewing ${id}` : id}
@@ -158,7 +160,7 @@ export function TodayQaFixturePage() {
   );
 }
 
-function createTodayQaFixture(id: TodayQaFixtureId): TodayQaFixture {
+export function createTodayQaFixture(id: TodayQaFixtureId): TodayQaFixture {
   const starterContent = getStarterContent();
   const grammarMission = starterContent.byId.missions['mission-grammar-topic-desu'];
   const listeningMission = starterContent.byId.missions['mission-listening-place-de'];
@@ -195,7 +197,7 @@ function createTodayQaFixture(id: TodayQaFixtureId): TodayQaFixture {
         label: 'Review return',
         description: 'Review pass returned with unresolved work still open.',
         items: [
-          createSummaryItem('Retry weak spots first', 'Review clear.', 'done'),
+          createSummaryItem('Retry weak spots first', 'Review pass done.', 'done'),
           createSummaryItem(grammarMission.title, 'Grammar · sentence structure · 4 min', 'current'),
         ],
         remainingMinutes: 4,
@@ -226,7 +228,7 @@ function createTodayQaFixture(id: TodayQaFixtureId): TodayQaFixture {
         label: 'Completed summary',
         description: 'Core plan complete with finished-today summary and optional bonus.',
         items: [
-          createSummaryItem(grammarMission.title, 'Review clear.', 'done'),
+          createSummaryItem(grammarMission.title, 'Grammar · sentence structure · 4 min', 'done'),
           createSummaryItem(outputMission.title, 'Output · output confidence · 5 min', 'done'),
         ],
         remainingMinutes: 0,
@@ -236,6 +238,24 @@ function createTodayQaFixture(id: TodayQaFixtureId): TodayQaFixture {
           title: 'Finished today',
           description: `${outputMission.title} · 2/2 attempted · 2 correct · 0 review items`,
           body: 'Core work is finished for today. Bonus practice is optional.',
+        },
+      };
+    case 'completed-no-bonus':
+      return {
+        id,
+        label: 'Completed no bonus',
+        description: 'Core plan complete without optional bonus recommendations.',
+        items: [
+          createSummaryItem(grammarMission.title, 'Grammar · sentence structure · 4 min', 'done'),
+          createSummaryItem(outputMission.title, 'Output · output confidence · 5 min', 'done'),
+        ],
+        remainingMinutes: 0,
+        bonusRecommendations: [],
+        missionProgress: progressWithGrammarComplete,
+        supportCard: {
+          title: 'Finished today',
+          description: `${outputMission.title} · 2/2 attempted · 2 correct · 0 review items`,
+          body: 'Core work is finished for today. No extra slot is needed right now.',
         },
       };
     case 'one-bonus':
@@ -300,5 +320,5 @@ function createFixtureWeekDays(isTodayComplete: boolean) {
 }
 
 function isTodayQaFixtureId(value: string): value is TodayQaFixtureId {
-  return fixtureIds.includes(value as TodayQaFixtureId);
+  return todayQaFixtureIds.includes(value as TodayQaFixtureId);
 }

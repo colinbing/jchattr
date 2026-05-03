@@ -20,7 +20,7 @@ import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { evaluateOutputResponse, type OutputEvaluationResult } from '../../../lib/outputEvaluation';
 import { deriveScenarioAttemptPlan, evaluateScenarioStep } from '../lib/scenarioAttempt';
 import {
-  buildMissionCompletionRouteState,
+  buildFinishMissionToTodayParams,
   formatMissionReplayVariant,
   selectMissionReplayVariant,
   type MissionSessionMode,
@@ -113,7 +113,11 @@ export function OutputMissionPlayer({
   const progressValue = ((currentTaskIndex + 1) / sessionTasks.length) * 100;
   const { attemptSummary, recordItemOutcome: handleTaskResult } =
     useMissionAttemptOutcomes(sessionTaskIds);
-  const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
+  const finishToToday = buildFinishMissionToTodayParams({
+    mission,
+    sessionMode,
+    attemptSummary,
+  });
 
   useMissionContinuePosition({
     missionId: mission.id,
@@ -155,7 +159,7 @@ export function OutputMissionPlayer({
     }
 
     completeMissionIfReady();
-    navigate('/', { state: completionState });
+    navigate(finishToToday.to, { state: finishToToday.state });
   }
 
   return (

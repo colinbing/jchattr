@@ -191,12 +191,13 @@ describe('resolveTodayPlanState', () => {
     const state = resolveState({
       recommendations: [reviewRecommendation],
       completedPlanItemKeys: new Set([getTodayPlanItemKey({ kind: 'review' })]),
+      weakPointCount: 2,
     });
 
     expect(state.summaryItems).toEqual([
       expect.objectContaining({
         id: 'review-loop',
-        meta: 'Review clear.',
+        meta: 'Review pass done.',
         status: 'done',
       }),
     ]);

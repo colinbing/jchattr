@@ -23,6 +23,11 @@ export type MissionCompletionRouteState = {
   missionCompletion: MissionCompletionSummary;
 };
 
+export type FinishMissionToTodayParams = {
+  to: '/';
+  state: MissionCompletionRouteState;
+};
+
 export type MissionReplayVariantMeta = {
   sessionMode: MissionSessionMode;
   variantId: string;
@@ -60,6 +65,21 @@ export function buildMissionCompletionRouteState(
       isExposureComplete: attemptSummary.isExposureComplete,
       isMasteryComplete: attemptSummary.isMasteryComplete,
     },
+  };
+}
+
+export function buildFinishMissionToTodayParams({
+  mission,
+  sessionMode,
+  attemptSummary,
+}: {
+  mission: Mission;
+  sessionMode: MissionSessionMode;
+  attemptSummary: MissionAttemptSummary;
+}): FinishMissionToTodayParams {
+  return {
+    to: '/',
+    state: buildMissionCompletionRouteState(mission, sessionMode, attemptSummary),
   };
 }
 

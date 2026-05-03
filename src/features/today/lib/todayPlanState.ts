@@ -531,7 +531,7 @@ function buildTodayPlanAction(
 function formatTodayPlanItemMeta(item: TodayPlanSnapshotItem, isCompleted: boolean) {
   if (item.kind === 'review') {
     if (isCompleted) {
-      return 'Review clear.';
+      return 'Review pass done.';
     }
 
     return `${item.batchSize ?? 1} retry item${(item.batchSize ?? 1) === 1 ? '' : 's'} · about ${

@@ -17,7 +17,7 @@ import {
 } from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import {
-  buildMissionCompletionRouteState,
+  buildFinishMissionToTodayParams,
   formatMissionReplayVariant,
   selectMissionReplayVariant,
   type MissionSessionMode,
@@ -101,7 +101,11 @@ export function ListeningMissionPlayer({
   const progressValue = showPrep ? 0 : ((currentItemIndex + 1) / sessionItems.length) * 100;
   const { attemptSummary, recordItemOutcome: handleItemResult } =
     useMissionAttemptOutcomes(sessionItemIds);
-  const completionState = buildMissionCompletionRouteState(mission, sessionMode, attemptSummary);
+  const finishToToday = buildFinishMissionToTodayParams({
+    mission,
+    sessionMode,
+    attemptSummary,
+  });
   const primaryLesson = relatedLessons[0];
 
   useMissionContinuePosition({
@@ -208,7 +212,7 @@ export function ListeningMissionPlayer({
             }
             onFinish={() => {
               completeMissionIfReady();
-              navigate('/', { state: completionState });
+              navigate(finishToToday.to, { state: finishToToday.state });
             }}
           />
         )}

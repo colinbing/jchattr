@@ -21,7 +21,7 @@ import {
 } from '../../../lib/progress/missionProgress';
 import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import {
-  buildMissionCompletionRouteState,
+  buildFinishMissionToTodayParams,
   formatMissionReplayVariant,
   selectMissionReplayVariant,
   type MissionSessionMode,
@@ -127,6 +127,11 @@ export function GrammarMissionPlayer({
   const currentDrill = sessionDrills[currentDrillIndex] ?? null;
   const { attemptSummary, recordItemOutcome: handleDrillResult } =
     useMissionAttemptOutcomes(sessionDrillIds);
+  const finishToToday = buildFinishMissionToTodayParams({
+    mission,
+    sessionMode,
+    attemptSummary,
+  });
 
   useMissionContinuePosition({
     missionId: mission.id,
@@ -174,13 +179,7 @@ export function GrammarMissionPlayer({
     }
 
     completeMissionIfReady();
-    navigate('/', {
-      state: buildMissionCompletionRouteState(
-        mission,
-        sessionMode,
-        attemptSummary,
-      ),
-    });
+    navigate(finishToToday.to, { state: finishToToday.state });
   }
 
   return (
@@ -409,13 +408,7 @@ export function GrammarMissionPlayer({
                   className="mission-button mission-button--link"
                   onClick={() => {
                     completeMissionIfReady();
-                    navigate('/', {
-                      state: buildMissionCompletionRouteState(
-                        mission,
-                        sessionMode,
-                        attemptSummary,
-                      ),
-                    });
+                    navigate(finishToToday.to, { state: finishToToday.state });
                   }}
                 >
                   Finish to Today

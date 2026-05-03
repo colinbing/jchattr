@@ -1,8 +1,5 @@
 import type { StarterContent } from '../../../lib/content/types';
-import {
-  getMissionProgressEntry,
-  type MissionProgressRecord,
-} from '../../../lib/progress/missionProgress';
+import type { MissionProgressRecord } from '../../../lib/progress/missionProgress';
 import type { CapstoneProgressRecord } from '../../../lib/progress/capstoneProgress';
 import type { ReviewLoopProgress } from '../../../lib/progress/reviewLoop';
 import type { WeakPointStore } from '../../../lib/progress/weakPoints';
@@ -11,14 +8,15 @@ import {
   getCapstoneRecombinationRecommendation,
 } from './todayCapstoneRecommendation';
 import {
-  buildMissionPersonalization,
-  buildNextMissionReason,
+  buildNextMissionRecommendation,
+  buildRemainingMissionRecommendations,
+  buildSupportMissionRecommendation,
   createMissionRecommendationContextById,
   getFallbackReinforcementAnchor,
   isMissionUnlocked,
   isScenarioMission,
+  selectNextOpenMission,
   selectSupportMission,
-  sortRemainingMissionsByRecommendationPriority,
 } from './todayMissionRecommendation';
 import {
   deriveReviewAwareness,
@@ -77,35 +75,17 @@ export function deriveTodayRecommendations(
     recommendations.push(reviewRecommendation);
   }
 
-  const nextMission = unlockedMissions.find((mission) => {
-    return getMissionProgressEntry(missionProgress, mission.id).completionCount === 0;
-  });
+  const nextMission = selectNextOpenMission(unlockedMissions, missionProgress);
 
   if (nextMission) {
-    const nextMissionPersonalization = buildMissionPersonalization(
+    recommendations.push(buildNextMissionRecommendation({
       starterContent,
-      nextMission,
+      mission: nextMission,
       missionProgress,
       reviewAwareness,
       missionContextById,
-    );
-
-    recommendations.push({
-      id: nextMission.id,
-      kind: 'mission',
-      slotLabel: 'Next up',
-      title: nextMission.title,
-      reason: buildNextMissionReason(
-        Boolean(reviewRecommendation),
-        reviewAwareness,
-        nextMissionPersonalization,
-      ),
-      ctaLabel: 'Open mission',
-      to: `/mission/${nextMission.id}`,
-      mission: nextMission,
-      sessionMode: 'default',
-      personalFocus: nextMissionPersonalization.focus,
-    });
+      hasReviewRecommendation: Boolean(reviewRecommendation),
+    }));
     selectedMissionIds.add(nextMission.id);
   }
 
@@ -148,24 +128,13 @@ export function deriveTodayRecommendations(
   );
 
   if (supportMission) {
-    recommendations.push({
-      id: supportMission.mission.id,
-      kind: 'mission',
-      slotLabel: supportMission.slotLabel,
-      title: supportMission.mission.title,
-      reason: supportMission.reason,
-      ctaLabel: supportMission.ctaLabel,
-      to: `/mission/${supportMission.mission.id}`,
-      mission: supportMission.mission,
-      sessionMode: supportMission.sessionMode,
-      personalFocus: buildMissionPersonalization(
-        starterContent,
-        supportMission.mission,
-        missionProgress,
-        reviewAwareness,
-        missionContextById,
-      ).focus,
-    });
+    recommendations.push(buildSupportMissionRecommendation({
+      starterContent,
+      supportMission,
+      missionProgress,
+      reviewAwareness,
+      missionContextById,
+    }));
     selectedMissionIds.add(supportMission.mission.id);
   }
 
@@ -173,44 +142,15 @@ export function deriveTodayRecommendations(
     return recommendations.slice(0, limit);
   }
 
-  const remainingMissions = sortRemainingMissionsByRecommendationPriority(
-    unlockedMissions.filter((mission) => !selectedMissionIds.has(mission.id)),
+  recommendations.push(...buildRemainingMissionRecommendations({
     starterContent,
+    unlockedMissions,
     missionProgress,
     reviewAwareness,
-  );
-
-  remainingMissions.forEach((mission) => {
-    if (recommendations.length >= limit) {
-      return;
-    }
-
-    const progress = getMissionProgressEntry(missionProgress, mission.id);
-    const slotLabel = progress.completionCount === 0 ? 'Keep moving' : 'Light pass';
-    const baseReason =
-      progress.completionCount === 0
-        ? 'This is another open step if you want to keep the path moving.'
-        : 'This has had lighter practice than your other completed missions.';
-
-    recommendations.push({
-      id: mission.id,
-      kind: 'mission',
-      slotLabel,
-      title: mission.title,
-      reason: baseReason,
-      ctaLabel: 'Open mission',
-      to: `/mission/${mission.id}`,
-      mission,
-      sessionMode: progress.completionCount > 0 ? 'reinforce' : 'default',
-      personalFocus: buildMissionPersonalization(
-        starterContent,
-        mission,
-        missionProgress,
-        reviewAwareness,
-        missionContextById,
-      ).focus,
-    });
-  });
+    missionContextById,
+    selectedMissionIds,
+    limit: limit - recommendations.length,
+  }));
 
   return recommendations.slice(0, limit);
 }

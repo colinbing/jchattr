@@ -22,7 +22,7 @@ import { recordWeakPoint } from '../../../lib/progress/weakPoints';
 import { MissionCompletionCard } from './MissionCompletionCard';
 import { VocabSupportChips } from './VocabSupportChips';
 import {
-  buildMissionCompletionRouteState,
+  buildFinishMissionToTodayParams,
   formatMissionReplayVariant,
   selectMissionReplayVariant,
   type MissionSessionMode,
@@ -97,6 +97,11 @@ export function ReadingMissionPlayer({
   const progressValue = ((currentCheckIndex + 1) / sessionChecks.length) * 100;
   const { attemptSummary, recordItemOutcome: handleCheckResult } =
     useMissionAttemptOutcomes(sessionCheckIds);
+  const finishToToday = buildFinishMissionToTodayParams({
+    mission,
+    sessionMode,
+    attemptSummary,
+  });
 
   useMissionContinuePosition({
     missionId: mission.id,
@@ -124,13 +129,7 @@ export function ReadingMissionPlayer({
     }
 
     completeMissionIfReady();
-    navigate('/', {
-      state: buildMissionCompletionRouteState(
-        mission,
-        sessionMode,
-        attemptSummary,
-      ),
-    });
+    navigate(finishToToday.to, { state: finishToToday.state });
   }
 
   return (
@@ -250,11 +249,7 @@ export function ReadingMissionPlayer({
         totalCount={sessionChecks.length}
         unitLabel="reading check"
         sessionMode={sessionMode}
-        returnState={buildMissionCompletionRouteState(
-          mission,
-          sessionMode,
-          attemptSummary,
-        )}
+        returnState={finishToToday.state}
         onReturn={completeMissionIfReady}
       />
     </div>
